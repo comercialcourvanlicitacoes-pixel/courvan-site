@@ -11,8 +11,6 @@ collections:
     folder: "content/posts"
     create: true
     slug: "{{slug}}"
-    extension: "json"
-    format: "json"
     fields:
       - { label: "Título", name: "title", widget: "string" }
       - { label: "Data", name: "date", widget: "datetime" }
