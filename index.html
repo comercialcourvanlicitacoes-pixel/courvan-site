@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Courvan Assessoria em Licitações</title>
+
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
     body{background:#07162b;color:#fff;line-height:1.6}
@@ -26,31 +27,41 @@
     @media(max-width:768px){.hero{grid-template-columns:1fr}.hero h1{font-size:38px}}
   </style>
 </head>
+
 <body>
+
 <header>
   <nav>
     <div class="logo">COURVAN <span>Licitações</span></div>
+
     <div class="menu">
       <a href="#inicio">Início</a>
       <a href="#servicos">Serviços</a>
       <a href="#sobre">Sobre Nós</a>
-      <a href="#blog">Blog</a>
+
+      <!-- 🔥 AJUSTE DO BLOG (AGORA REAL) -->
+      <a href="blog/">Blog</a>
+
       <a href="#contato">Contato</a>
       <a href="https://app.clickup.com/login" target="_blank">Área do Cliente</a>
     </div>
   </nav>
+
   <div class="hero" id="inicio">
     <div>
       <h1>A estratégia certa para <span class="gold">vencer licitações</span></h1>
       <p>Assessoria especializada em pregão eletrônico, análise de editais, documentação e estratégias para conquistar contratos públicos.</p>
+
       <a href="https://wa.me/5531998864001" target="_blank" class="btn">Fale no WhatsApp</a>
       <a href="https://app.clickup.com/login" target="_blank" class="btn">Área do Cliente</a>
     </div>
+
     <div>
       <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200" style="width:100%;border-radius:20px;" />
     </div>
   </div>
 </header>
+
 <section id="servicos">
   <h2>Nossos Serviços</h2>
   <div class="cards">
@@ -60,19 +71,29 @@
     <div class="card"><h3>Recursos</h3><p>Defesas e recursos administrativos.</p></div>
   </div>
 </section>
+
 <section id="sobre">
   <h2>Sobre Nós</h2>
   <p>A Courvan Assessoria em Licitações atua com excelência na captação, análise e execução estratégica de processos licitatórios, oferecendo segurança jurídica, agilidade e foco em resultados.</p>
 </section>
+
+<!-- BLOG VISUAL (opcional, só preview na home) -->
 <section id="blog">
   <h2>Blog / Conteúdo</h2>
-  <div id="blog-posts" class="cards">
-    <p>Carregando posts...</p>
+  <p>Confira nossos artigos no blog oficial.</p>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Estratégias para vencer licitações</h3>
+      <p>Como aumentar suas chances em pregões públicos.</p>
+      <a class="btn" href="blog/">Acessar Blog</a>
+    </div>
   </div>
 </section>
-</section>
+
 <section id="contato" class="contact">
   <h2>Entre em contato</h2>
+
   <form>
     <input type="text" placeholder="Seu nome" required>
     <input type="email" placeholder="Seu e-mail" required>
@@ -80,25 +101,14 @@
     <textarea rows="5" placeholder="Digite sua mensagem"></textarea>
     <button class="btn" type="submit">Enviar</button>
   </form>
+
   <p>WhatsApp: (31) 99886-4001</p>
   <p>comercial.courvanlicitacoes@gmail.com</p>
 </section>
+
 <footer>
   © 2026 Courvan Assessoria em Licitações
 </footer>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-<script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-      if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.href = "/admin/";
-        });
-      }
-    });
-  }
-</script>
-<script src="script.js"></script>
 </body>
 </html>
