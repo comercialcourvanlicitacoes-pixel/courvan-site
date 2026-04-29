@@ -1,20 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Meu Blog</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog - Courvan</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:#07162b;
+      color:#fff;
+      padding:40px;
+    }
+
+    h1{
+      color:#d8a84e;
+      margin-bottom:20px;
+    }
+
+    a{
+      color:#d8a84e;
+      text-decoration:none;
+      font-weight:bold;
+    }
+
+    .card{
+      background:#0c2748;
+      padding:20px;
+      border-radius:12px;
+      margin-top:20px;
+    }
+
+    .btn{
+      display:inline-block;
+      margin-top:15px;
+      background:#d8a84e;
+      color:#07162b;
+      padding:10px 16px;
+      border-radius:8px;
+      font-weight:bold;
+    }
+  </style>
 </head>
+
 <body>
 
-  <h1>Meu Blog</h1>
+  <h1>Blog Courvan</h1>
 
-  <a href="post1.html">Primeiro post</a>
+  <div class="card">
+    <h2>Primeiro post</h2>
+    <p>Estratégias para vencer licitações públicas.</p>
 
-  <br><br>
+    <!-- 🔥 CORREÇÃO IMPORTANTE -->
+    <a class="btn" href="./post1.html">Ler post</a>
+  </div>
 
-  <a href="https://wa.me/5531999999999" target="_blank">
-    Falar no WhatsApp
-  </a>
+  <br>
+
+  <a href="../index.html">← Voltar para o site</a>
 
 </body>
 </html>
