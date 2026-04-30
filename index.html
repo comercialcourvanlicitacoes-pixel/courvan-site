@@ -105,13 +105,22 @@
 <section id="contato" class="contact">
   <h2>Entre em contato</h2>
 
-  <form>
-    <input type="text" placeholder="Seu nome" required>
-    <input type="email" placeholder="Seu e-mail" required>
-    <input type="text" placeholder="Seu telefone">
-    <textarea rows="5" placeholder="Digite sua mensagem"></textarea>
-    <button class="btn" type="submit">Enviar</button>
-  </form>
+<form action="https://formspree.io/f/mqenkele" method="POST">
+
+  <input type="text" name="nome" placeholder="Seu nome" required>
+
+  <input type="email" name="email" placeholder="Seu e-mail" required>
+
+  <input type="text" name="telefone" placeholder="Seu telefone">
+
+  <textarea name="mensagem" rows="5" placeholder="Digite sua mensagem"></textarea>
+
+  <!-- Assunto do e-mail -->
+  <input type="hidden" name="_subject" value="Novo lead do site Courvan">
+
+  <button class="btn" type="submit">Enviar</button>
+
+</form>
 
   <p>WhatsApp: (31) 99886-4001</p>
   <p>comercial.courvanlicitacoes@gmail.com</p>
