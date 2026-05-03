@@ -8,30 +8,119 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
     body{background:#07162b;color:#fff;line-height:1.6}
+
     header{
-  background: #2c5282;
-  padding: 20px 8%;
-}
-    nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
-    .logo{font-size:34px;font-weight:700}
-    .logo {
-  display: flex;
-  align-items: center;
-}
-    .logo span{color:#d8a84e}
-    .menu a{color:#fff;text-decoration:none;margin:0 10px}
-    .hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:40px;padding:80px 8%}
-    .hero h1{font-size:56px;line-height:1.1}
+      background:#2c5282;
+      padding:20px 8%;
+    }
+
+    nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+    }
+
+    .logo img{
+      height:90px;
+    }
+
+    .menu a{
+      color:#fff;
+      text-decoration:none;
+      margin:0 10px;
+      font-weight:500;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      align-items:center;
+      gap:40px;
+      padding:60px 8%;
+    }
+
+    .hero h1{font-size:48px}
     .gold{color:#d8a84e}
-    .btn{display:inline-block;background:#d8a84e;color:#07162b;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;margin-top:20px;margin-right:10px}
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#d8a84e;
+      color:#07162b;
+      padding:12px 22px;
+      border-radius:8px;
+      text-decoration:none;
+      font-weight:bold;
+      margin-top:15px;
+      margin-right:10px;
+    }
+
+    .btn.whatsapp{
+      background:#25D366;
+      color:#fff;
+    }
+
     section{padding:70px 8%}
-    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
-    .card{background:#0c2748;padding:24px;border-radius:16px}
-    .contact{background:#d8a84e;color:#07162b;text-align:center}
-    form{max-width:600px;margin:30px auto;display:grid;gap:15px}
-    input,textarea{padding:14px;border:none;border-radius:8px;width:100%}
-    footer{padding:25px;text-align:center;background:#05101f}
-    @media(max-width:768px){.hero{grid-template-columns:1fr}.hero h1{font-size:38px}}
+
+    h2{margin-bottom:20px}
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:#0c2748;
+      padding:24px;
+      border-radius:16px;
+    }
+
+    .highlight{
+      background:#d8a84e;
+      color:#07162b;
+      padding:30px;
+      border-radius:16px;
+      margin-top:30px;
+    }
+
+    .contact{
+      background:#d8a84e;
+      color:#07162b;
+      text-align:center;
+    }
+
+    form{
+      max-width:600px;
+      margin:30px auto;
+      display:grid;
+      gap:15px;
+    }
+
+    input,textarea{
+      padding:14px;
+      border:none;
+      border-radius:8px;
+      width:100%;
+    }
+
+    footer{
+      padding:25px;
+      text-align:center;
+      background:#05101f;
+    }
+
+    @media(max-width:768px){
+      .hero{grid-template-columns:1fr}
+      .hero h1{font-size:34px}
+    }
   </style>
 </head>
 
@@ -39,20 +128,16 @@
 
 <header>
   <nav>
-     <div class="logo">
-  <a href="#inicio">
-    <img src="assets/logo.png" alt="Courvan Licitações" style="height:300px;">
-  </a>
-</div>
+    <div class="logo">
+      <a href="#inicio">
+        <img src="assets/logo.png" alt="Courvan Licitações">
+      </a>
+    </div>
 
     <div class="menu">
       <a href="#inicio">Início</a>
       <a href="#servicos">Serviços</a>
-      <a href="#sobre">Sobre Nós</a>
-
-      <!-- 🔥 AJUSTE DO BLOG (AGORA REAL) -->
-      <a href="/courvan-site/blog/index.html">Blog</a>
-
+      <a href="#sobre">Sobre</a>
       <a href="#contato">Contato</a>
       <a href="https://app.clickup.com/login" target="_blank">Área do Cliente</a>
     </div>
@@ -60,46 +145,87 @@
 
   <div class="hero" id="inicio">
     <div>
-      <h1>A estratégia certa para <span class="gold">vencer licitações</span></h1>
-      <p>Assessoria especializada em pregão eletrônico, análise de editais, documentação e estratégias para conquistar contratos públicos.</p>
+      <h1>Estratégia para <span class="gold">vencer licitações</span></h1>
 
-      <a href="https://wa.me/5531998864001" target="_blank" class="btn">Fale no WhatsApp</a>
-      <a href="https://app.clickup.com/login" target="_blank" class="btn">Área do Cliente</a>
+      <p>Assessoria completa para empresas que desejam vender para o governo com segurança, organização e estratégia.</p>
+
+      <a href="https://wa.me/5531998864001" target="_blank" class="btn whatsapp">
+        📲 Falar no WhatsApp
+      </a>
     </div>
 
     <div>
-      <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200" style="width:100%;border-radius:20px;" />
+      <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200" style="width:100%;border-radius:20px;">
     </div>
   </div>
 </header>
 
 <section id="servicos">
   <h2>Nossos Serviços</h2>
+
   <div class="cards">
-    <div class="card"><h3>Pregão Eletrônico</h3><p>Atuação completa em pregões e disputas de lances.</p></div>
-    <div class="card"><h3>Análise de Editais</h3><p>Identificação de oportunidades e riscos.</p></div>
-    <div class="card"><h3>Documentação</h3><p>Organização completa e habilitação.</p></div>
-    <div class="card"><h3>Recursos</h3><p>Defesas e recursos administrativos.</p></div>
+
+    <div class="card">
+      <h3>Oportunidades de Licitação</h3>
+      <p>Triagem e envio gratuito de licitações compatíveis com o seu negócio.</p>
+    </div>
+
+    <div class="card">
+      <h3>Análise de Editais</h3>
+      <p>Análise completa com identificação de riscos, exigências e viabilidade de participação.</p>
+    </div>
+
+    <div class="card">
+      <h3>Preparação e Cadastro</h3>
+      <p>Checklist de documentos, preparação de habilitação, cadastro em portais e envio de propostas.</p>
+    </div>
+
+    <div class="card">
+      <h3>Execução do Processo</h3>
+      <p>Acompanhamento de chat, julgamento, fases do processo e orientação estratégica (sem participação na fase de lances no plano básico).</p>
+    </div>
+
+    <div class="card">
+      <h3>Recursos e Defesas</h3>
+      <p>Elaboração de recursos, impugnações, esclarecimentos e demais peças administrativas.</p>
+    </div>
+
+    <div class="card">
+      <h3>Gestão Contratual</h3>
+      <p>Suporte completo na execução do contrato, incluindo reequilíbrio econômico-financeiro e gestão administrativa.</p>
+    </div>
+
   </div>
+
+  <div class="highlight">
+    <h2>🔥 Análise de Edital por R$100</h2>
+
+    <p><strong>Valide rapidamente se vale a pena participar de uma licitação.</strong></p>
+
+    <ul>
+      <li>✔ Análise completa do edital</li>
+      <li>✔ Checklist de documentos</li>
+      <li>✔ Cadastro de proposta</li>
+      <li>✔ Orientação sobre etapas e participação</li>
+      <li>✔ Esclarecimento de 1 dúvida</li>
+    </ul>
+
+    <p><strong>⚠ Não inclui participação na fase de lances.</strong></p>
+  </div>
+
 </section>
 
 <section id="sobre">
-  <h2>Sobre Nós</h2>
-  <p>A Courvan Assessoria em Licitações atua com excelência na captação, análise e execução estratégica de processos licitatórios, oferecendo segurança jurídica, agilidade e foco em resultados.</p>
-</section>
+  <h2>Sobre a Courvan</h2>
 
-<!-- BLOG VISUAL (opcional, só preview na home) -->
-<section id="blog">
-  <h2>Blog / Conteúdo</h2>
-  <p>Confira nossos artigos no blog oficial.</p>
+  <p>
+    A Courvan atua de forma estratégica na captação, análise e execução de licitações públicas,
+    oferecendo segurança jurídica, organização e foco em resultado.
+  </p>
 
-  <div class="cards">
-    <div class="card">
-      <h3>Estratégias para vencer licitações</h3>
-      <p>Como aumentar suas chances em pregões públicos.</p>
-      <a class="btn" href="/courvan-site/blog/index.html">Acessar Blog</a>
-    </div>
-  </div>
+  <p>
+    Nosso objetivo é simplificar o processo e aumentar suas chances de contratação com o poder público.
+  </p>
 </section>
 
 <section id="contato" class="contact">
@@ -108,14 +234,10 @@
 <form action="https://formspree.io/f/mqenkele" method="POST">
 
   <input type="text" name="nome" placeholder="Seu nome" required>
-
   <input type="email" name="email" placeholder="Seu e-mail" required>
-
   <input type="text" name="telefone" placeholder="Seu telefone">
-
   <textarea name="mensagem" rows="5" placeholder="Digite sua mensagem"></textarea>
 
-  <!-- Assunto do e-mail -->
   <input type="hidden" name="_subject" value="Novo lead do site Courvan">
 
   <button class="btn" type="submit">Enviar</button>
