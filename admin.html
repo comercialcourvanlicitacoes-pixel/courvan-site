@@ -1,33 +1,69 @@
-import {
-  getAuth,
-  createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Courvan</title>
+</head>
 
-import {
-  getFirestore,
-  collection,
-  addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<body>
 
-const auth = getAuth();
-const db = getFirestore();
+<h2>Criar Cliente</h2>
 
-/* CRIAR USUÁRIO + CLIENTE AUTOMATICAMENTE */
-async function criarUsuarioECliente(nome, email, senha, empresa) {
+<input id="nome" placeholder="Nome"><br><br>
+<input id="email" placeholder="Email"><br><br>
+<input id="senha" placeholder="Senha"><br><br>
+<input id="empresa" placeholder="Empresa"><br><br>
 
-  // 1. cria login
+<button onclick="criarUsuario()">Criar Cliente</button>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema",
+  storageBucket: "courvan-sistema.appspot.com",
+  messagingSenderId: "729755072978",
+  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* 🔥 FUNÇÃO CORRETA */
+window.criarUsuario = async function () {
+
+  const nome = document.getElementById("nome").value;
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+  const empresa = document.getElementById("empresa").value;
+
+  if (!nome || !email || !senha || !empresa) {
+    alert("Preencha todos os campos");
+    return;
+  }
+
   const cred = await createUserWithEmailAndPassword(auth, email, senha);
 
   const uid = cred.user.uid;
 
-  // 2. cria cliente vinculado automaticamente
   await addDoc(collection(db, "clientes"), {
-    nome: nome,
-    email: email,
-    empresa: empresa,
-    uid: uid,              // 🔥 vínculo automático
+    nome,
+    email,
+    empresa,
+    uid,
     status: "ativo"
   });
 
-  alert("Usuário e cliente criados com sucesso!");
-}
+  alert("Cliente criado com sucesso!");
+};
+
+</script>
+
+</body>
+</html>
