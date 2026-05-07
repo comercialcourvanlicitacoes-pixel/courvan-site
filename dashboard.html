@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Courvan</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:#07162b;
+      color:white;
+      display:flex;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      width:260px;
+      background:#0c2748;
+      padding:30px;
+    }
+
+    .sidebar h2{
+      margin-bottom:30px;
+      color:#d8a84e;
+    }
+
+    .sidebar a{
+      display:block;
+      color:white;
+      text-decoration:none;
+      margin-bottom:15px;
+      padding:12px;
+      border-radius:8px;
+      transition:0.3s;
+    }
+
+    .sidebar a:hover{
+      background:#16385f;
+    }
+
+    .content{
+      flex:1;
+      padding:40px;
+    }
+
+    .card{
+      background:#0c2748;
+      padding:25px;
+      border-radius:16px;
+      margin-bottom:20px;
+    }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:30px;
+    }
+
+    button{
+      background:#d8a84e;
+      border:none;
+      padding:12px 20px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+  <h2>Courvan</h2>
+
+  <a href="#">🏠 Dashboard</a>
+  <a href="#">📑 Licitações</a>
+  <a href="#">📁 Documentos</a>
+  <a href="#">💬 Chat</a>
+  <a href="#">⚙ Configurações</a>
+
+</div>
+
+<div class="content">
+
+  <div class="top">
+    <h1>Área do Cliente</h1>
+
+    <button onclick="logout()">
+      Sair
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Bem-vindo ao sistema da Courvan</h2>
+
+    <p>
+      Aqui você poderá acompanhar suas licitações,
+      documentos e demandas.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Status Inicial</h2>
+
+    <p>
+      Sistema conectado com Firebase com sucesso.
+    </p>
+  </div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getAuth,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema",
+  storageBucket: "courvan-sistema.appspot.com",
+  messagingSenderId: "729755072978",
+  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+
+  if (!user) {
+    window.location.href = "login.html";
+  }
+
+});
+
+window.logout = function(){
+
+  signOut(auth)
+    .then(() => {
+      window.location.href = "login.html";
+    });
+
+}
+
+</script>
+
+</body>
+</html>
