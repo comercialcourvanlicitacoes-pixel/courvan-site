@@ -330,7 +330,359 @@ document
     window.location.href = "login.html";
 
 });
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes - Courvan</title>
 
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:#07162b;
+      color:white;
+      display:flex;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      width:260px;
+      background:#0c2748;
+      padding:30px;
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    .sidebar h2{
+      color:#d8a84e;
+      margin-bottom:20px;
+    }
+
+    .sidebar a{
+      color:white;
+      text-decoration:none;
+      background:#16385f;
+      padding:14px;
+      border-radius:10px;
+      transition:0.3s;
+    }
+
+    .sidebar a:hover{
+      background:#1d4b7d;
+    }
+
+    .content{
+      flex:1;
+      padding:40px;
+    }
+
+    .top{
+      display:flex;
+      gap:10px;
+      margin-bottom:30px;
+      flex-wrap:wrap;
+    }
+
+    input{
+      padding:14px;
+      border:none;
+      border-radius:10px;
+      width:250px;
+    }
+
+    button{
+      padding:14px 20px;
+      border:none;
+      border-radius:10px;
+      background:#d8a84e;
+      color:#07162b;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      transform:translateY(-2px);
+    }
+
+    .clientes{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:#0c2748;
+      padding:25px;
+      border-radius:18px;
+      transition:0.3s;
+    }
+
+    .card:hover{
+      transform:translateY(-5px);
+      box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .card h2{
+      color:#d8a84e;
+      margin-bottom:15px;
+    }
+
+    .card p{
+      margin-bottom:10px;
+      opacity:0.95;
+    }
+
+    .btn-abrir{
+      width:100%;
+      margin-top:15px;
+    }
+
+    .logout{
+      margin-top:auto;
+      background:#a83232 !important;
+      color:white !important;
+    }
+
+    @media(max-width:900px){
+
+      body{
+        flex-direction:column;
+      }
+
+      .sidebar{
+        width:100%;
+      }
+
+      .content{
+        padding:25px;
+      }
+
+      input{
+        width:100%;
+      }
+
+      .top{
+        flex-direction:column;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+  <h2>Courvan</h2>
+
+  <a href="clientes.html">👥 Clientes</a>
+
+  <a href="admin.html">➕ Novo Cliente</a>
+
+  <a href="#" id="logoutBtn" class="logout">
+    🚪 Sair
+  </a>
+
+</div>
+
+<div class="content">
+
+  <h1 style="margin-bottom:25px;">Clientes</h1>
+
+  <div class="top">
+
+    <input type="text" id="nome" placeholder="Nome">
+
+    <input type="email" id="email" placeholder="Email">
+
+    <input type="text" id="empresa" placeholder="Empresa">
+
+    <button id="btnAdicionar">
+      Adicionar Cliente
+    </button>
+
+  </div>
+
+  <div class="clientes" id="clientes"></div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema",
+  storageBucket: "courvan-sistema.appspot.com",
+  messagingSenderId: "729755072978",
+  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+const auth = getAuth(app);
+
+const clientesDiv = document.getElementById("clientes");
+
+let unsubscribeClientes = null;
+
+/* 🔐 LOGIN */
+onAuthStateChanged(auth, (user) => {
+
+  if (!user) {
+
+    window.location.href = "login.html";
+    return;
+
+  }
+
+  /* 🔥 APENAS ADMIN ENTRA */
+  if(user.email !== "comercial.courvanlicitacoes@gmail.com"){
+
+    window.location.href = "cliente.html";
+    return;
+
+  }
+
+  iniciarListenerClientes();
+
+});
+
+/* 🔥 LISTENER CLIENTES */
+function iniciarListenerClientes(){
+
+  if(unsubscribeClientes){
+    unsubscribeClientes();
+  }
+
+  unsubscribeClientes = onSnapshot(
+    collection(db, "clientes"),
+    (snapshot) => {
+
+      clientesDiv.innerHTML = "";
+
+      snapshot.forEach((docItem) => {
+
+        const cliente = docItem.data();
+
+        clientesDiv.innerHTML += `
+          <div class="card">
+
+            <h2>${cliente.nome}</h2>
+
+            <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+
+            <p><strong>Email:</strong> ${cliente.email}</p>
+
+            <p><strong>Status:</strong> ${cliente.status}</p>
+
+            <button
+              class="btn-abrir"
+              onclick="abrirCliente('${docItem.id}')"
+            >
+              Abrir Cliente
+            </button>
+
+          </div>
+        `;
+
+      });
+
+    }
+  );
+}
+
+/* ➕ ADICIONAR CLIENTE */
+document
+  .getElementById("btnAdicionar")
+  .addEventListener("click", async () => {
+
+    const nome = document.getElementById("nome").value;
+
+    const email = document.getElementById("email").value;
+
+    const empresa = document.getElementById("empresa").value;
+
+    if(!nome || !email || !empresa){
+
+      alert("Preencha todos os campos");
+      return;
+
+    }
+
+    const user = auth.currentUser;
+
+    await addDoc(collection(db, "clientes"), {
+
+      uid: user.uid,
+      nome,
+      email,
+      empresa,
+      status: "ativo"
+
+    });
+
+    document.getElementById("nome").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("empresa").value = "";
+
+    alert("Cliente adicionado com sucesso!");
+
+});
+
+/* 🔓 LOGOUT */
+document
+  .getElementById("logoutBtn")
+  .addEventListener("click", async (e) => {
+
+    e.preventDefault();
+
+    await signOut(auth);
+
+    window.location.href = "login.html";
+
+});
+
+/* 🔥 ABRIR CLIENTE */
+window.abrirCliente = function(id){
+
+  window.location.href = `cliente.html?id=${id}`;
+
+}
+
+</script>
+
+</body>
+</html>
 /* 🔥 ABRIR CLIENTE */
 window.abrirCliente = function(id){
 
