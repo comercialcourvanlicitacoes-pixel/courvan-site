@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes - Courvan</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:#07162b;
+      color:white;
+      padding:40px;
+    }
+
+    h1{
+      margin-bottom:30px;
+    }
+
+    .top{
+      display:flex;
+      gap:10px;
+      margin-bottom:30px;
+      flex-wrap:wrap;
+    }
+
+    input{
+      padding:12px;
+      border:none;
+      border-radius:8px;
+      width:250px;
+    }
+
+    button{
+      padding:12px 20px;
+      border:none;
+      border-radius:8px;
+      background:#d8a84e;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .clientes{
+      display:grid;
+      gap:20px;
+    }
+
+    .card{
+      background:#0c2748;
+      padding:20px;
+      border-radius:16px;
+    }
+
+    .card h2{
+      margin-bottom:10px;
+      color:#d8a84e;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<h1>Clientes</h1>
+
+<div class="top">
+
+  <input type="text" id="nome" placeholder="Nome">
+  <input type="email" id="email" placeholder="Email">
+  <input type="text" id="empresa" placeholder="Empresa">
+
+  <button onclick="adicionarCliente()">
+    Adicionar Cliente
+  </button>
+
+</div>
+
+<div class="clientes" id="clientes"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema",
+  storageBucket: "courvan-sistema.appspot.com",
+  messagingSenderId: "729755072978",
+  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+const clientesDiv = document.getElementById("clientes");
+
+async function carregarClientes(){
+
+  clientesDiv.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "clientes"));
+
+  querySnapshot.forEach((doc) => {
+
+    const cliente = doc.data();
+
+    clientesDiv.innerHTML += `
+    
+      <div class="card">
+
+        <h2>${cliente.nome}</h2>
+
+        <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+
+        <p><strong>Email:</strong> ${cliente.email}</p>
+
+        <p><strong>Status:</strong> ${cliente.status}</p>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+window.adicionarCliente = async function(){
+
+  const nome = document.getElementById("nome").value;
+  const email = document.getElementById("email").value;
+  const empresa = document.getElementById("empresa").value;
+
+  if(!nome || !email || !empresa){
+
+    alert("Preencha todos os campos");
+    return;
+
+  }
+
+  await addDoc(collection(db, "clientes"), {
+
+    nome,
+    email,
+    empresa,
+    status: "ativo"
+
+  });
+
+  document.getElementById("nome").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("empresa").value = "";
+
+  carregarClientes();
+
+}
+
+carregarClientes();
+
+</script>
+
+</body>
+</html>
