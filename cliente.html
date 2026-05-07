@@ -1,183 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cliente - Courvan</title>
-
-  <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial,sans-serif;
-    }
-
-    body{
-      background:#07162b;
-      color:white;
-    }
-
-    .layout{
-      display:flex;
-      min-height:100vh;
-    }
-
-    .sidebar{
-      width:260px;
-      background:#0c2748;
-      padding:30px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .sidebar h2{
-      color:#d8a84e;
-      margin-bottom:20px;
-    }
-
-    .sidebar button{
-      padding:14px;
-      border:none;
-      border-radius:10px;
-      background:#16385f;
-      color:white;
-      cursor:pointer;
-      text-align:left;
-      transition:0.3s;
-      font-size:15px;
-    }
-
-    .sidebar button:hover{
-      background:#1d4b7d;
-    }
-
-    .content{
-      flex:1;
-      padding:40px;
-    }
-
-    .aba{
-      background:#0c2748;
-      padding:30px;
-      border-radius:18px;
-    }
-
-    h1{
-      color:#d8a84e;
-      margin-bottom:20px;
-    }
-
-    p{
-      margin-bottom:12px;
-      line-height:1.6;
-    }
-
-    .info-box{
-      margin-top:25px;
-      background:#16385f;
-      padding:20px;
-      border-radius:14px;
-    }
-
-    .info-box p{
-      margin-bottom:10px;
-    }
-
-    @media(max-width:900px){
-      .layout{flex-direction:column;}
-      .sidebar{width:100%;}
-      .content{padding:20px;}
-    }
-
-  </style>
-</head>
-
-<body>
-
-<div class="layout">
-
-  <div class="sidebar">
-
-    <h2 id="nomeCliente">Cliente</h2>
-
-    <button onclick="mostrarAba('dashboard')">📊 Dashboard</button>
-    <button onclick="mostrarAba('demandas')">📑 Demandas</button>
-    <button onclick="mostrarAba('documentos')">📁 Documentos</button>
-    <button onclick="mostrarAba('chat')">💬 Chat</button>
-    <button onclick="mostrarAba('licitacoes')">🏛 Licitações</button>
-    <button onclick="mostrarAba('config')">⚙ Configurações</button>
-
-  </div>
-
-  <div class="content">
-
-    <!-- DASHBOARD -->
-    <div id="dashboard" class="aba">
-
-      <h1>Dashboard do Cliente</h1>
-
-      <div class="info-box">
-        <p><strong>Nome:</strong> <span id="nome"></span></p>
-        <p><strong>Empresa:</strong> <span id="empresa"></span></p>
-        <p><strong>Email:</strong> <span id="email"></span></p>
-        <p><strong>Status:</strong> <span id="status"></span></p>
-      </div>
-
-    </div>
-
-    <!-- DEMANDAS -->
-    <div id="demandas" class="aba" style="display:none;">
-
-      <h1>Demandas</h1>
-
-      <input type="text" id="titulo" placeholder="Título da demanda"><br><br>
-
-      <textarea id="descricao" placeholder="Descrição"
-        style="width:100%;height:120px;padding:15px;border-radius:10px;border:none;"></textarea>
-
-      <br><br>
-
-      <input type="date" id="prazo"><br><br>
-
-      <select id="prioridade" style="padding:12px;border-radius:10px;border:none;">
-        <option value="baixa">Baixa</option>
-        <option value="media">Média</option>
-        <option value="alta">Alta</option>
-      </select>
-
-      <br><br>
-
-      <button onclick="criarDemanda()">Criar Demanda</button>
-
-      <br><br><br>
-
-      <div id="listaDemandas"></div>
-
-    </div>
-
-    <div id="documentos" class="aba" style="display:none;">
-      <h1>Documentos</h1>
-    </div>
-
-    <div id="chat" class="aba" style="display:none;">
-      <h1>Chat</h1>
-    </div>
-
-    <div id="licitacoes" class="aba" style="display:none;">
-      <h1>Licitações</h1>
-    </div>
-
-    <div id="config" class="aba" style="display:none;">
-      <h1>Configurações</h1>
-    </div>
-
-  </div>
-
-</div>
-
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -212,53 +32,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+/* 🔥 ESTADO GLOBAL LIMPO */
 let clienteIdGlobal = null;
 
-onAuthStateChanged(auth, async (user) => {
-
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  const q = query(
-    collection(db, "clientes"),
-    where("uid", "==", user.uid)
-  );
-
-  const snap = await getDocs(q);
-
-  if (snap.empty) {
-    alert("Nenhum cliente vinculado a este usuário");
-    return;
-  }
-
-  const docCliente = snap.docs[0];
-  const cliente = docCliente.data();
-
-  clienteIdGlobal = docCliente.id;
-
-  document.getElementById("nome").innerText = cliente.nome;
-  document.getElementById("nomeCliente").innerText = cliente.nome;
-  document.getElementById("empresa").innerText = cliente.empresa;
-  document.getElementById("email").innerText = cliente.email;
-  document.getElementById("status").innerText = cliente.status;
-
-  listarDemandas();
-});
-  
-let clienteIdGlobal = null;
-
-/* LOGIN + CARREGAMENTO CLIENTE */
-onAuthStateChanged(auth, async(user) => {
-
-  if(!user){
-    window.location.href = "login.html";
-    return;
-  }
-
-  let clienteIdGlobal = null;
-
+/* =========================
+   LOGIN + CARREGAMENTO
+========================= */
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -292,35 +71,17 @@ onAuthStateChanged(auth, async (user) => {
   listarDemandas();
 });
 
-  clienteIdGlobal = id;
-
-  const docRef = doc(db, "clientes", id);
-  const docSnap = await getDoc(docRef);
-
-  if(docSnap.exists()){
-
-    const cliente = docSnap.data();
-
-    document.getElementById("nome").innerText = cliente.nome;
-    document.getElementById("nomeCliente").innerText = cliente.nome;
-    document.getElementById("empresa").innerText = cliente.empresa;
-    document.getElementById("email").innerText = cliente.email;
-    document.getElementById("status").innerText = cliente.status;
-
-    listarDemandas();
-  }
-
-});
-
-/* CRIAR DEMANDA */
-window.criarDemanda = async function(){
+/* =========================
+   CRIAR DEMANDA
+========================= */
+window.criarDemanda = async function () {
 
   const titulo = document.getElementById("titulo").value;
   const descricao = document.getElementById("descricao").value;
   const prazo = document.getElementById("prazo").value;
   const prioridade = document.getElementById("prioridade").value;
 
-  if(!titulo){
+  if (!titulo) {
     alert("Digite um título");
     return;
   }
@@ -338,12 +99,14 @@ window.criarDemanda = async function(){
   document.getElementById("descricao").value = "";
 
   listarDemandas();
-}
+};
 
-/* LISTAR DEMANDAS */
-async function listarDemandas(){
+/* =========================
+   LISTAR DEMANDAS
+========================= */
+async function listarDemandas() {
 
-  if(!clienteIdGlobal) return;
+  if (!clienteIdGlobal) return;
 
   const q = query(
     collection(db, "demandas"),
@@ -356,7 +119,7 @@ async function listarDemandas(){
 
   div.innerHTML = "";
 
-  querySnapshot.forEach((docItem)=>{
+  querySnapshot.forEach((docItem) => {
 
     const d = docItem.data();
 
@@ -366,39 +129,32 @@ async function listarDemandas(){
         <p>${d.descricao}</p>
         <p><strong>Prazo:</strong> ${d.prazo}</p>
         <p><strong>Prioridade:</strong> ${d.prioridade}</p>
-        <select onchange="alterarStatus('${docItem.id}', this.value)" style="
-  padding:8px;
-  border-radius:8px;
-  border:none;
-  margin-top:10px;
-">
-  <option value="pendente" ${d.status === "pendente" ? "selected" : ""}>Pendente</option>
-  <option value="andamento" ${d.status === "andamento" ? "selected" : ""}>Em andamento</option>
-  <option value="concluido" ${d.status === "concluido" ? "selected" : ""}>Concluído</option>
-</select>
+
+        <select onchange="alterarStatus('${docItem.id}', this.value)"
+          style="padding:8px;border-radius:8px;border:none;margin-top:10px;">
+          <option value="pendente" ${d.status === "pendente" ? "selected" : ""}>Pendente</option>
+          <option value="andamento" ${d.status === "andamento" ? "selected" : ""}>Em andamento</option>
+          <option value="concluido" ${d.status === "concluido" ? "selected" : ""}>Concluído</option>
+        </select>
       </div>
     `;
-
   });
-
 }
 
-/* ABAS */
-window.mostrarAba = function(id){
+/* =========================
+   TROCAR ABA
+========================= */
+window.mostrarAba = function (id) {
 
-  document.querySelectorAll(".aba").forEach(a=>{
+  document.querySelectorAll(".aba").forEach(a => {
     a.style.display = "none";
   });
 
-  const el = document.getElementById(id);
-  el.style.display = "block";
+  document.getElementById(id).style.display = "block";
 
-  if(id === "demandas"){
+  if (id === "demandas") {
     listarDemandas();
   }
-}
+};
 
 </script>
-
-</body>
-</html>
