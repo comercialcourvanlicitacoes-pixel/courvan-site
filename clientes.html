@@ -17,11 +17,40 @@
     body{
       background:#07162b;
       color:white;
-      padding:40px;
+      display:flex;
+      min-height:100vh;
     }
 
-    h1{
-      margin-bottom:30px;
+    .sidebar{
+      width:260px;
+      background:#0c2748;
+      padding:30px;
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+
+    .sidebar h2{
+      color:#d8a84e;
+      margin-bottom:20px;
+    }
+
+    .sidebar a{
+      color:white;
+      text-decoration:none;
+      background:#16385f;
+      padding:14px;
+      border-radius:10px;
+      transition:0.3s;
+    }
+
+    .sidebar a:hover{
+      background:#1d4b7d;
+    }
+
+    .content{
+      flex:1;
+      padding:40px;
     }
 
     .top{
@@ -32,35 +61,82 @@
     }
 
     input{
-      padding:12px;
+      padding:14px;
       border:none;
-      border-radius:8px;
+      border-radius:10px;
       width:250px;
     }
 
     button{
-      padding:12px 20px;
+      padding:14px 20px;
       border:none;
-      border-radius:8px;
+      border-radius:10px;
       background:#d8a84e;
+      color:#07162b;
       font-weight:bold;
       cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      transform:translateY(-2px);
     }
 
     .clientes{
       display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
       gap:20px;
     }
 
     .card{
       background:#0c2748;
-      padding:20px;
-      border-radius:16px;
+      padding:25px;
+      border-radius:18px;
+      transition:0.3s;
+    }
+
+    .card:hover{
+      transform:translateY(-5px);
+      box-shadow:0 10px 25px rgba(0,0,0,0.3);
     }
 
     .card h2{
-      margin-bottom:10px;
       color:#d8a84e;
+      margin-bottom:15px;
+    }
+
+    .card p{
+      margin-bottom:10px;
+      opacity:0.95;
+    }
+
+    .btn-abrir{
+      width:100%;
+      margin-top:15px;
+    }
+
+    @media(max-width:900px){
+
+      body{
+        flex-direction:column;
+      }
+
+      .sidebar{
+        width:100%;
+      }
+
+      .content{
+        padding:25px;
+      }
+
+      input{
+        width:100%;
+      }
+
+      .top{
+        flex-direction:column;
+      }
+
     }
 
   </style>
@@ -68,21 +144,34 @@
 
 <body>
 
-<h1>Clientes</h1>
+<div class="sidebar">
 
-<div class="top">
+  <h2>Courvan</h2>
 
-  <input type="text" id="nome" placeholder="Nome">
-  <input type="email" id="email" placeholder="Email">
-  <input type="text" id="empresa" placeholder="Empresa">
-
-  <button onclick="adicionarCliente()">
-    Adicionar Cliente
-  </button>
+  <a href="dashboard.html">🏠 Dashboard</a>
+  <a href="clientes.html">👥 Clientes</a>
 
 </div>
 
-<div class="clientes" id="clientes"></div>
+<div class="content">
+
+  <h1 style="margin-bottom:25px;">Clientes</h1>
+
+  <div class="top">
+
+    <input type="text" id="nome" placeholder="Nome">
+    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="empresa" placeholder="Empresa">
+
+    <button onclick="adicionarCliente()">
+      Adicionar Cliente
+    </button>
+
+  </div>
+
+  <div class="clientes" id="clientes"></div>
+
+</div>
 
 <script type="module">
 
@@ -101,7 +190,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+  apiKey: "SUA_API_KEY",
   authDomain: "courvan-sistema.firebaseapp.com",
   projectId: "courvan-sistema",
   storageBucket: "courvan-sistema.appspot.com",
@@ -113,7 +202,7 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-  const auth = getAuth(app);
+const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
 
@@ -141,21 +230,19 @@ async function carregarClientes(){
     
       <div class="card">
 
-  <h2>${cliente.nome}</h2>
+        <h2>${cliente.nome}</h2>
 
-  <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+        <p><strong>Empresa:</strong> ${cliente.empresa}</p>
 
-  <p><strong>Email:</strong> ${cliente.email}</p>
+        <p><strong>Email:</strong> ${cliente.email}</p>
 
-  <p><strong>Status:</strong> ${cliente.status}</p>
+        <p><strong>Status:</strong> ${cliente.status}</p>
 
-  <br>
+        <button class="btn-abrir" onclick="abrirCliente('${doc.id}')">
+          Abrir Cliente
+        </button>
 
-  <button onclick="abrirCliente('${doc.id}')">
-    Abrir Cliente
-  </button>
-
-</div>
+      </div>
 
     `;
 
@@ -193,12 +280,12 @@ window.adicionarCliente = async function(){
 
 }
 
-  window.abrirCliente = function(id){
+window.abrirCliente = function(id){
 
   window.location.href = `cliente.html?id=${id}`;
 
 }
-  
+
 carregarClientes();
 
 </script>
