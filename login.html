@@ -6,6 +6,7 @@
   <title>Login - Courvan</title>
 
   <style>
+
     body{
       background:#07162b;
       color:white;
@@ -14,45 +15,75 @@
       justify-content:center;
       align-items:center;
       height:100vh;
+      margin:0;
     }
 
     .box{
       background:#0c2748;
       padding:40px;
       border-radius:16px;
-      width:300px;
+      width:320px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    h2{
+      margin-bottom:20px;
+      color:#d8a84e;
+      text-align:center;
     }
 
     input{
       width:100%;
-      padding:12px;
+      padding:14px;
       margin-top:10px;
       border:none;
-      border-radius:8px;
+      border-radius:10px;
+      box-sizing:border-box;
     }
 
     button{
       width:100%;
-      padding:12px;
+      padding:14px;
       margin-top:20px;
       background:#d8a84e;
       border:none;
-      border-radius:8px;
+      border-radius:10px;
       font-weight:bold;
       cursor:pointer;
+      transition:0.3s;
+      color:#07162b;
+      font-size:15px;
     }
+
+    button:hover{
+      transform:translateY(-2px);
+    }
+
   </style>
 </head>
 
 <body>
 
 <div class="box">
+
   <h2>Área do Cliente</h2>
 
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="senha" placeholder="Senha">
+  <input
+    type="email"
+    id="email"
+    placeholder="Email"
+  >
 
-  <button onclick="login()">Entrar</button>
+  <input
+    type="password"
+    id="senha"
+    placeholder="Senha"
+  >
+
+  <button onclick="login()">
+    Entrar
+  </button>
+
 </div>
 
 <script type="module">
@@ -67,27 +98,63 @@ import {
 const firebaseConfig = {
   apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
   authDomain: "courvan-sistema.firebaseapp.com",
-    projectId: "courvan-sistema",
+  projectId: "courvan-sistema",
   storageBucket: "courvan-sistema.firebasestorage.app",
   messagingSenderId: "729755072978",
   appId: "1:729755072978:web:e76e98fd704c10da34f00b"
 };
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
 
-window.login = function(){
+/* LOGIN */
+window.login = async function(){
 
   const email = document.getElementById("email").value;
+
   const senha = document.getElementById("senha").value;
 
-  signInWithEmailAndPassword(auth, email, senha)
-    .then(() => {
-      window.location.href = "dashboard.html";
-    })
-    .catch((error) => {
-      alert("Erro: " + error.message);
-    });
+  if(!email || !senha){
+
+    alert("Preencha email e senha");
+    return;
+
+  }
+
+  try{
+
+    const cred = await signInWithEmailAndPassword(
+      auth,
+      email,
+      senha
+    );
+
+    const user = cred.user;
+
+    /* 🔥 ADMIN */
+    if(user.email === "comercial.courvanlicitacoes@gmail.com"){
+
+      window.location.href = "clientes.html";
+
+    }
+
+    /* 🔥 CLIENTE */
+    else{
+
+      window.location.href = "cliente.html";
+
+    }
+
+  }
+
+  catch(error){
+
+    alert("Erro ao fazer login");
+
+    console.log(error);
+
+  }
 
 }
 
