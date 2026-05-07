@@ -142,6 +142,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+  import {
+  browserLocalPersistence,
+  setPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+setPersistence(auth, browserLocalPersistence);
+
 onAuthStateChanged(auth, (user) => {
 
   if (user) {
