@@ -324,6 +324,113 @@ onAuthStateChanged(auth, async(user) => {
 
 });
 
+window.criarDemanda = async function(){
+
+  const titulo = document.getElementById("titulo").value;
+
+  const descricao = document.getElementById("descricao").value;
+
+  const prazo = document.getElementById("prazo").value;
+
+  const prioridade = document.getElementById("prioridade").value;
+
+  const params = new URLSearchParams(window.location.search);
+
+  const clienteId = params.get("id");
+
+  if(!titulo){
+
+    alert("Digite um título");
+    return;
+
+  }
+
+  await addDoc(collection(db, "demandas"), {
+
+    clienteId,
+    titulo,
+    descricao,
+    prazo,
+    prioridade,
+    status: "pendente"
+
+  });
+
+  alert("Demanda criada!");
+
+  document.getElementById("titulo").value = "";
+
+  document.getElementById("descricao").value = "";
+
+  listarDemandas();
+
+}
+
+async function listarDemandas(){
+
+  const params = new URLSearchParams(window.location.search);
+
+  const clienteId = params.get("id");
+
+  const q = query(
+    collection(db, "demandas"),
+    where("clienteId", "==", clienteId)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const div = document.getElementById("listaDemandas");
+
+  div.innerHTML = "";
+
+  querySnapshot.forEach((doc)=>{
+
+    const demanda = doc.data();
+
+    div.innerHTML += `
+
+      <div style="
+        background:#16385f;
+        padding:20px;
+        border-radius:14px;
+        margin-bottom:15px;
+      ">
+
+        <h3 style="color:#d8a84e;">
+          ${demanda.titulo}
+        </h3>
+
+        <br>
+
+        <p>
+          ${demanda.descricao}
+        </p>
+
+        <br>
+
+        <p>
+          <strong>Prazo:</strong>
+          ${demanda.prazo}
+        </p>
+
+        <p>
+          <strong>Prioridade:</strong>
+          ${demanda.prioridade}
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+          ${demanda.status}
+        </p>
+
+      </div>
+
+    `;
+
+  });
+
+}
+  
 window.mostrarAba = function(id){
 
   document.querySelectorAll(".aba").forEach((aba)=>{
