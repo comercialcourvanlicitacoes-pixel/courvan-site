@@ -144,8 +144,14 @@ const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
 
-  if (!user) {
+  if (user) {
+
+    console.log("Usuário logado:", user.email);
+
+  } else {
+
     window.location.href = "login.html";
+
   }
 
 });
