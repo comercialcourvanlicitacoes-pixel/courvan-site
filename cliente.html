@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cliente - Courvan</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:#07162b;
+      color:white;
+      padding:40px;
+    }
+
+    .box{
+      background:#0c2748;
+      padding:30px;
+      border-radius:16px;
+    }
+
+    h1{
+      color:#d8a84e;
+      margin-bottom:20px;
+    }
+
+    p{
+      margin-bottom:10px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+
+  <h1 id="nome"></h1>
+
+  <p><strong>Empresa:</strong> <span id="empresa"></span></p>
+
+  <p><strong>Email:</strong> <span id="email"></span></p>
+
+  <p><strong>Status:</strong> <span id="status"></span></p>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema",
+  storageBucket: "courvan-sistema.appspot.com",
+  messagingSenderId: "729755072978",
+  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, async(user) => {
+
+  if(!user){
+
+    window.location.href = "login.html";
+    return;
+
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  const id = params.get("id");
+
+  const docRef = doc(db, "clientes", id);
+
+  const docSnap = await getDoc(docRef);
+
+  if(docSnap.exists()){
+
+    const cliente = docSnap.data();
+
+    document.getElementById("nome").innerText = cliente.nome;
+    document.getElementById("empresa").innerText = cliente.empresa;
+    document.getElementById("email").innerText = cliente.email;
+    document.getElementById("status").innerText = cliente.status;
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>
