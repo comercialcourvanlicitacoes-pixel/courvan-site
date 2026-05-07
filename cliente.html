@@ -217,6 +217,9 @@ let clienteIdGlobal = null;
 /* =========================
    LOGIN + BUSCAR CLIENTE
 ========================= */
+/* =========================
+   LOGIN + BUSCAR CLIENTE
+========================= */
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -224,6 +227,58 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
+  // 🔥 verifica se veio ID pela URL
+  const params = new URLSearchParams(window.location.search);
+
+  const clienteIdUrl = params.get("id");
+
+  // =========================
+  // MODO ADMIN
+  // =========================
+  if (clienteIdUrl) {
+
+    const q = query(
+      collection(db, "clientes")
+    );
+
+    const snap = await getDocs(q);
+
+    let clienteEncontrado = null;
+
+    snap.forEach((docItem) => {
+
+      if(docItem.id === clienteIdUrl){
+
+        clienteEncontrado = {
+          id: docItem.id,
+          ...docItem.data()
+        };
+
+      }
+
+    });
+
+    if(!clienteEncontrado){
+      alert("Cliente não encontrado");
+      return;
+    }
+
+    clienteIdGlobal = clienteEncontrado.id;
+
+    document.getElementById("nome").innerText = clienteEncontrado.nome;
+    document.getElementById("nomeCliente").innerText = clienteEncontrado.nome;
+    document.getElementById("empresa").innerText = clienteEncontrado.empresa;
+    document.getElementById("email").innerText = clienteEncontrado.email;
+    document.getElementById("status").innerText = clienteEncontrado.status;
+
+    listarDemandas();
+
+    return;
+  }
+
+  // =========================
+  // MODO CLIENTE
+  // =========================
   const q = query(
     collection(db, "clientes"),
     where("uid", "==", user.uid)
@@ -237,6 +292,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   const docCliente = snap.docs[0];
+
   const cliente = docCliente.data();
 
   clienteIdGlobal = docCliente.id;
@@ -248,6 +304,7 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("status").innerText = cliente.status;
 
   listarDemandas();
+
 });
 
 /* =========================
