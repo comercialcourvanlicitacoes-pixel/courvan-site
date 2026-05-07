@@ -141,15 +141,21 @@ async function carregarClientes(){
     
       <div class="card">
 
-        <h2>${cliente.nome}</h2>
+  <h2>${cliente.nome}</h2>
 
-        <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+  <p><strong>Empresa:</strong> ${cliente.empresa}</p>
 
-        <p><strong>Email:</strong> ${cliente.email}</p>
+  <p><strong>Email:</strong> ${cliente.email}</p>
 
-        <p><strong>Status:</strong> ${cliente.status}</p>
+  <p><strong>Status:</strong> ${cliente.status}</p>
 
-      </div>
+  <br>
+
+  <button onclick="abrirCliente('${doc.id}')">
+    Abrir Cliente
+  </button>
+
+</div>
 
     `;
 
