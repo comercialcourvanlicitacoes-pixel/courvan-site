@@ -1,0 +1,33 @@
+import {
+  getAuth,
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const auth = getAuth();
+const db = getFirestore();
+
+/* CRIAR USUÁRIO + CLIENTE AUTOMATICAMENTE */
+async function criarUsuarioECliente(nome, email, senha, empresa) {
+
+  // 1. cria login
+  const cred = await createUserWithEmailAndPassword(auth, email, senha);
+
+  const uid = cred.user.uid;
+
+  // 2. cria cliente vinculado automaticamente
+  await addDoc(collection(db, "clientes"), {
+    nome: nome,
+    email: email,
+    empresa: empresa,
+    uid: uid,              // 🔥 vínculo automático
+    status: "ativo"
+  });
+
+  alert("Usuário e cliente criados com sucesso!");
+}
