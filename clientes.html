@@ -149,7 +149,6 @@
   <h2>Courvan</h2>
 
   <a href="dashboard.html">🏠 Dashboard</a>
-
   <a href="clientes.html">👥 Clientes</a>
 
 </div>
@@ -161,12 +160,10 @@
   <div class="top">
 
     <input type="text" id="nome" placeholder="Nome">
-
     <input type="email" id="email" placeholder="Email">
-
     <input type="text" id="empresa" placeholder="Empresa">
 
-    <button onclick="adicionarCliente()">
+    <button id="btnAdicionar">
       Adicionar Cliente
     </button>
 
@@ -184,7 +181,7 @@ import {
   getFirestore,
   collection,
   addDoc,
-  getDocs
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -202,98 +199,83 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
 const auth = getAuth(app);
 
 const clientesDiv = document.getElementById("clientes");
 
-onAuthStateChanged(auth, async(user) => {
+let unsubscribeClientes = null;
+
+// 🔐 auth
+onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-
     window.location.href = "login.html";
     return;
-
   }
 
-  await carregarClientes();
-
+  iniciarListenerClientes();
 });
 
-async function carregarClientes(){
+// 🔥 tempo real (CORREÇÃO PRINCIPAL)
+function iniciarListenerClientes(){
 
-  clientesDiv.innerHTML = "";
+  if (unsubscribeClientes) unsubscribeClientes();
 
-  const querySnapshot = await getDocs(collection(db, "clientes"));
+  unsubscribeClientes = onSnapshot(collection(db, "clientes"), (snapshot) => {
 
-  querySnapshot.forEach((doc) => {
+    clientesDiv.innerHTML = "";
 
-    const cliente = doc.data();
+    snapshot.forEach((doc) => {
 
-    clientesDiv.innerHTML += `
-    
-      <div class="card">
+      const cliente = doc.data();
 
-        <h2>${cliente.nome}</h2>
+      clientesDiv.innerHTML += `
+        <div class="card">
 
-        <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+          <h2>${cliente.nome}</h2>
 
-        <p><strong>Email:</strong> ${cliente.email}</p>
+          <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+          <p><strong>Email:</strong> ${cliente.email}</p>
+          <p><strong>Status:</strong> ${cliente.status}</p>
 
-        <p><strong>Status:</strong> ${cliente.status}</p>
+          <button class="btn-abrir" onclick="abrirCliente('${doc.id}')">
+            Abrir Cliente
+          </button>
 
-        <button class="btn-abrir" onclick="abrirCliente('${doc.id}')">
-          Abrir Cliente
-        </button>
-
-      </div>
-
-    `;
-
+        </div>
+      `;
+    });
   });
-
 }
 
-window.adicionarCliente = async function(){
+// ➕ adicionar cliente (corrigido)
+document.getElementById("btnAdicionar").addEventListener("click", async () => {
 
   const nome = document.getElementById("nome").value;
-
   const email = document.getElementById("email").value;
-
   const empresa = document.getElementById("empresa").value;
 
   if(!nome || !email || !empresa){
-
     alert("Preencha todos os campos");
     return;
-
   }
 
   await addDoc(collection(db, "clientes"), {
-
     nome,
     email,
     empresa,
     status: "ativo"
-
   });
 
   document.getElementById("nome").value = "";
-
   document.getElementById("email").value = "";
-
   document.getElementById("empresa").value = "";
+});
 
-  carregarClientes();
-
-}
-
+// abrir cliente
 window.abrirCliente = function(id){
-
   window.location.href = `cliente.html?id=${id}`;
-
 }
 
 </script>
