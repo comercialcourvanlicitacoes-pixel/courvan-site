@@ -161,13 +161,55 @@
 
     <div id="demandas" class="aba" style="display:none;">
 
-      <h1>Demandas</h1>
+  <h1>Demandas</h1>
 
-      <p>
-        Aqui ficarão as tarefas, solicitações e acompanhamentos do cliente.
-      </p>
+  <br>
 
-    </div>
+  <input type="text" id="titulo" placeholder="Título da demanda">
+
+  <br><br>
+
+  <textarea
+    id="descricao"
+    placeholder="Descrição"
+    style="
+      width:100%;
+      height:120px;
+      padding:15px;
+      border-radius:10px;
+      border:none;
+    "
+  ></textarea>
+
+  <br><br>
+
+  <input type="date" id="prazo">
+
+  <br><br>
+
+  <select id="prioridade" style="
+    padding:12px;
+    border-radius:10px;
+    border:none;
+  ">
+
+    <option value="baixa">Baixa</option>
+    <option value="media">Média</option>
+    <option value="alta">Alta</option>
+
+  </select>
+
+  <br><br>
+
+  <button onclick="criarDemanda()">
+    Criar Demanda
+  </button>
+
+  <br><br><br>
+
+  <div id="listaDemandas"></div>
+
+</div>
 
     <div id="documentos" class="aba" style="display:none;">
 
