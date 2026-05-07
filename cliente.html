@@ -87,19 +87,9 @@
     }
 
     @media(max-width:900px){
-
-      .layout{
-        flex-direction:column;
-      }
-
-      .sidebar{
-        width:100%;
-      }
-
-      .content{
-        padding:20px;
-      }
-
+      .layout{flex-direction:column;}
+      .sidebar{width:100%;}
+      .content{padding:20px;}
     }
 
   </style>
@@ -113,142 +103,75 @@
 
     <h2 id="nomeCliente">Cliente</h2>
 
-    <button onclick="mostrarAba('dashboard')">
-      📊 Dashboard
-    </button>
-
-    <button onclick="mostrarAba('demandas')">
-      📑 Demandas
-    </button>
-
-    <button onclick="mostrarAba('documentos')">
-      📁 Documentos
-    </button>
-
-    <button onclick="mostrarAba('chat')">
-      💬 Chat
-    </button>
-
-    <button onclick="mostrarAba('licitacoes')">
-      🏛 Licitações
-    </button>
-
-    <button onclick="mostrarAba('config')">
-      ⚙ Configurações
-    </button>
+    <button onclick="mostrarAba('dashboard')">📊 Dashboard</button>
+    <button onclick="mostrarAba('demandas')">📑 Demandas</button>
+    <button onclick="mostrarAba('documentos')">📁 Documentos</button>
+    <button onclick="mostrarAba('chat')">💬 Chat</button>
+    <button onclick="mostrarAba('licitacoes')">🏛 Licitações</button>
+    <button onclick="mostrarAba('config')">⚙ Configurações</button>
 
   </div>
 
   <div class="content">
 
+    <!-- DASHBOARD -->
     <div id="dashboard" class="aba">
 
       <h1>Dashboard do Cliente</h1>
 
       <div class="info-box">
-
         <p><strong>Nome:</strong> <span id="nome"></span></p>
-
         <p><strong>Empresa:</strong> <span id="empresa"></span></p>
-
         <p><strong>Email:</strong> <span id="email"></span></p>
-
         <p><strong>Status:</strong> <span id="status"></span></p>
-
       </div>
 
     </div>
 
+    <!-- DEMANDAS -->
     <div id="demandas" class="aba" style="display:none;">
 
-  <h1>Demandas</h1>
+      <h1>Demandas</h1>
 
-  <br>
+      <input type="text" id="titulo" placeholder="Título da demanda"><br><br>
 
-  <input type="text" id="titulo" placeholder="Título da demanda">
+      <textarea id="descricao" placeholder="Descrição"
+        style="width:100%;height:120px;padding:15px;border-radius:10px;border:none;"></textarea>
 
-  <br><br>
+      <br><br>
 
-  <textarea
-    id="descricao"
-    placeholder="Descrição"
-    style="
-      width:100%;
-      height:120px;
-      padding:15px;
-      border-radius:10px;
-      border:none;
-    "
-  ></textarea>
+      <input type="date" id="prazo"><br><br>
 
-  <br><br>
+      <select id="prioridade" style="padding:12px;border-radius:10px;border:none;">
+        <option value="baixa">Baixa</option>
+        <option value="media">Média</option>
+        <option value="alta">Alta</option>
+      </select>
 
-  <input type="date" id="prazo">
+      <br><br>
 
-  <br><br>
+      <button onclick="criarDemanda()">Criar Demanda</button>
 
-  <select id="prioridade" style="
-    padding:12px;
-    border-radius:10px;
-    border:none;
-  ">
+      <br><br><br>
 
-    <option value="baixa">Baixa</option>
-    <option value="media">Média</option>
-    <option value="alta">Alta</option>
+      <div id="listaDemandas"></div>
 
-  </select>
-
-  <br><br>
-
-  <button onclick="criarDemanda()">
-    Criar Demanda
-  </button>
-
-  <br><br><br>
-
-  <div id="listaDemandas"></div>
-
-</div>
+    </div>
 
     <div id="documentos" class="aba" style="display:none;">
-
       <h1>Documentos</h1>
-
-      <p>
-        Área destinada ao upload e gerenciamento de documentos.
-      </p>
-
     </div>
 
     <div id="chat" class="aba" style="display:none;">
-
       <h1>Chat</h1>
-
-      <p>
-        Aqui ficará o sistema de comunicação com o cliente.
-      </p>
-
     </div>
 
     <div id="licitacoes" class="aba" style="display:none;">
-
       <h1>Licitações</h1>
-
-      <p>
-        Aqui serão exibidas as licitações vinculadas ao cliente.
-      </p>
-
     </div>
 
     <div id="config" class="aba" style="display:none;">
-
       <h1>Configurações</h1>
-
-      <p>
-        Configurações gerais e parâmetros do cliente.
-      </p>
-
     </div>
 
   </div>
@@ -264,10 +187,10 @@ import {
   doc,
   getDoc,
   addDoc,
-collection,
-query,
-where,
-getDocs
+  collection,
+  query,
+  where,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -285,26 +208,25 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
 const auth = getAuth(app);
 
+let clienteIdGlobal = null;
+
+/* LOGIN + CARREGAMENTO CLIENTE */
 onAuthStateChanged(auth, async(user) => {
 
   if(!user){
-
     window.location.href = "login.html";
     return;
-
   }
 
   const params = new URLSearchParams(window.location.search);
-
   const id = params.get("id");
 
-  const docRef = doc(db, "clientes", id);
+  clienteIdGlobal = id;
 
+  const docRef = doc(db, "clientes", id);
   const docSnap = await getDoc(docRef);
 
   if(docSnap.exists()){
@@ -313,69 +235,51 @@ onAuthStateChanged(auth, async(user) => {
 
     document.getElementById("nome").innerText = cliente.nome;
     document.getElementById("nomeCliente").innerText = cliente.nome;
-
     document.getElementById("empresa").innerText = cliente.empresa;
-
     document.getElementById("email").innerText = cliente.email;
-
     document.getElementById("status").innerText = cliente.status;
-    
+
     listarDemandas();
   }
 
 });
 
+/* CRIAR DEMANDA */
 window.criarDemanda = async function(){
 
   const titulo = document.getElementById("titulo").value;
-
   const descricao = document.getElementById("descricao").value;
-
   const prazo = document.getElementById("prazo").value;
-
   const prioridade = document.getElementById("prioridade").value;
 
-  const params = new URLSearchParams(window.location.search);
-
-  const clienteId = params.get("id");
-
   if(!titulo){
-
     alert("Digite um título");
     return;
-
   }
 
   await addDoc(collection(db, "demandas"), {
-
-    clienteId,
+    clienteId: clienteIdGlobal,
     titulo,
     descricao,
     prazo,
     prioridade,
     status: "pendente"
-
   });
 
-  alert("Demanda criada!");
-
   document.getElementById("titulo").value = "";
-
   document.getElementById("descricao").value = "";
 
   listarDemandas();
-
 }
 
+/* LISTAR DEMANDAS */
 async function listarDemandas(){
 
-  const params = new URLSearchParams(window.location.search);
-
-  const clienteId = params.get("id");
+  if(!clienteIdGlobal) return;
 
   const q = query(
     collection(db, "demandas"),
-    where("clienteId", "==", clienteId)
+    where("clienteId", "==", clienteIdGlobal)
   );
 
   const querySnapshot = await getDocs(q);
@@ -384,64 +288,37 @@ async function listarDemandas(){
 
   div.innerHTML = "";
 
-  querySnapshot.forEach((doc)=>{
+  querySnapshot.forEach((docItem)=>{
 
-    const demanda = doc.data();
+    const d = docItem.data();
 
     div.innerHTML += `
-
-      <div style="
-        background:#16385f;
-        padding:20px;
-        border-radius:14px;
-        margin-bottom:15px;
-      ">
-
-        <h3 style="color:#d8a84e;">
-          ${demanda.titulo}
-        </h3>
-
-        <br>
-
-        <p>
-          ${demanda.descricao}
-        </p>
-
-        <br>
-
-        <p>
-          <strong>Prazo:</strong>
-          ${demanda.prazo}
-        </p>
-
-        <p>
-          <strong>Prioridade:</strong>
-          ${demanda.prioridade}
-        </p>
-
-        <p>
-          <strong>Status:</strong>
-          ${demanda.status}
-        </p>
-
+      <div style="background:#16385f;padding:20px;border-radius:14px;margin-bottom:15px;">
+        <h3 style="color:#d8a84e;">${d.titulo}</h3>
+        <p>${d.descricao}</p>
+        <p><strong>Prazo:</strong> ${d.prazo}</p>
+        <p><strong>Prioridade:</strong> ${d.prioridade}</p>
+        <p><strong>Status:</strong> ${d.status}</p>
       </div>
-
     `;
 
   });
 
 }
-  
+
+/* ABAS */
 window.mostrarAba = function(id){
 
-  document.querySelectorAll(".aba").forEach((aba)=>{
-
-    aba.style.display = "none";
-
+  document.querySelectorAll(".aba").forEach(a=>{
+    a.style.display = "none";
   });
 
-  document.getElementById(id).style.display = "block";
+  const el = document.getElementById(id);
+  el.style.display = "block";
 
+  if(id === "demandas"){
+    listarDemandas();
+  }
 }
 
 </script>
