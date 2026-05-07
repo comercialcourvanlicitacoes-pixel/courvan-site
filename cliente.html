@@ -184,14 +184,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 
 import {
   getFirestore,
-  doc,
-  getDoc,
-  addDoc,
   collection,
   query,
   where,
   getDocs,
-  updateDoc
+  addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -212,18 +209,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+/* =========================
+   ESTADO GLOBAL (IMPORTANTE)
+========================= */
 let clienteIdGlobal = null;
 
-/* LOGIN + CARREGAMENTO CLIENTE */
-onAuthStateChanged(auth, async(user) => {
-
-  if(!user){
-    window.location.href = "login.html";
-    return;
-  }
-
-  let clienteIdGlobal = null;
-
+/* =========================
+   LOGIN + BUSCAR CLIENTE
+========================= */
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -257,35 +250,17 @@ onAuthStateChanged(auth, async (user) => {
   listarDemandas();
 });
 
-  clienteIdGlobal = id;
-
-  const docRef = doc(db, "clientes", id);
-  const docSnap = await getDoc(docRef);
-
-  if(docSnap.exists()){
-
-    const cliente = docSnap.data();
-
-    document.getElementById("nome").innerText = cliente.nome;
-    document.getElementById("nomeCliente").innerText = cliente.nome;
-    document.getElementById("empresa").innerText = cliente.empresa;
-    document.getElementById("email").innerText = cliente.email;
-    document.getElementById("status").innerText = cliente.status;
-
-    listarDemandas();
-  }
-
-});
-
-/* CRIAR DEMANDA */
-window.criarDemanda = async function(){
+/* =========================
+   CRIAR DEMANDA
+========================= */
+window.criarDemanda = async function () {
 
   const titulo = document.getElementById("titulo").value;
   const descricao = document.getElementById("descricao").value;
   const prazo = document.getElementById("prazo").value;
   const prioridade = document.getElementById("prioridade").value;
 
-  if(!titulo){
+  if (!titulo) {
     alert("Digite um título");
     return;
   }
@@ -303,25 +278,26 @@ window.criarDemanda = async function(){
   document.getElementById("descricao").value = "";
 
   listarDemandas();
-}
+};
 
-/* LISTAR DEMANDAS */
-async function listarDemandas(){
+/* =========================
+   LISTAR DEMANDAS
+========================= */
+async function listarDemandas() {
 
-  if(!clienteIdGlobal) return;
+  if (!clienteIdGlobal) return;
 
   const q = query(
     collection(db, "demandas"),
     where("clienteId", "==", clienteIdGlobal)
   );
 
-  const querySnapshot = await getDocs(q);
+  const snap = await getDocs(q);
 
   const div = document.getElementById("listaDemandas");
-
   div.innerHTML = "";
 
-  querySnapshot.forEach((docItem)=>{
+  snap.forEach((docItem) => {
 
     const d = docItem.data();
 
@@ -331,37 +307,33 @@ async function listarDemandas(){
         <p>${d.descricao}</p>
         <p><strong>Prazo:</strong> ${d.prazo}</p>
         <p><strong>Prioridade:</strong> ${d.prioridade}</p>
-        <select onchange="alterarStatus('${docItem.id}', this.value)" style="
-  padding:8px;
-  border-radius:8px;
-  border:none;
-  margin-top:10px;
-">
-  <option value="pendente" ${d.status === "pendente" ? "selected" : ""}>Pendente</option>
-  <option value="andamento" ${d.status === "andamento" ? "selected" : ""}>Em andamento</option>
-  <option value="concluido" ${d.status === "concluido" ? "selected" : ""}>Concluído</option>
-</select>
+
+        <select onchange="alterarStatus('${docItem.id}', this.value)"
+          style="padding:8px;border-radius:8px;border:none;margin-top:10px;">
+          <option value="pendente" ${d.status === "pendente" ? "selected" : ""}>Pendente</option>
+          <option value="andamento" ${d.status === "andamento" ? "selected" : ""}>Em andamento</option>
+          <option value="concluido" ${d.status === "concluido" ? "selected" : ""}>Concluído</option>
+        </select>
       </div>
     `;
-
   });
-
 }
 
-/* ABAS */
-window.mostrarAba = function(id){
+/* =========================
+   TROCAR ABA
+========================= */
+window.mostrarAba = function (id) {
 
-  document.querySelectorAll(".aba").forEach(a=>{
+  document.querySelectorAll(".aba").forEach(a => {
     a.style.display = "none";
   });
 
-  const el = document.getElementById(id);
-  el.style.display = "block";
+  document.getElementById(id).style.display = "block";
 
-  if(id === "demandas"){
+  if (id === "demandas") {
     listarDemandas();
   }
-}
+};
 
 </script>
 
