@@ -115,12 +115,6 @@
       margin-top:15px;
     }
 
-    .logout{
-      margin-top:auto;
-      background:#a83232 !important;
-      color:white !important;
-    }
-
     @media(max-width:900px){
 
       body{
@@ -154,11 +148,8 @@
 
   <h2>Courvan</h2>
 
+  <a href="dashboard.html">🏠 Dashboard</a>
   <a href="clientes.html">👥 Clientes</a>
-
-  <a href="admin.html">➕ Novo Cliente</a>
-
-  <a href="#" id="logoutBtn" class="logout">🚪 Sair</a>
 
 </div>
 
@@ -169,9 +160,7 @@
   <div class="top">
 
     <input type="text" id="nome" placeholder="Nome">
-
     <input type="email" id="email" placeholder="Email">
-
     <input type="text" id="empresa" placeholder="Empresa">
 
     <button id="btnAdicionar">
@@ -197,8 +186,7 @@ import {
 
 import {
   getAuth,
-  onAuthStateChanged,
-  signOut
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -211,131 +199,86 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
 const auth = getAuth(app);
 
 const clientesDiv = document.getElementById("clientes");
 
 let unsubscribeClientes = null;
 
-/* 🔐 LOGIN ADMIN */
+// 🔐 auth
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-
     window.location.href = "login.html";
     return;
-
-  }
-
-  /* 🔥 PROTEÇÃO ADMIN */
-  if(user.email !== "comercial.courvanlicitacoes@gmail.com"){
-
-    window.location.href = "cliente.html";
-    return;
-
   }
 
   iniciarListenerClientes();
-
 });
 
-/* 🔥 TEMPO REAL */
+// 🔥 tempo real (CORREÇÃO PRINCIPAL)
 function iniciarListenerClientes(){
 
   if (unsubscribeClientes) unsubscribeClientes();
 
-  unsubscribeClientes = onSnapshot(
-    collection(db, "clientes"),
-    (snapshot) => {
+  unsubscribeClientes = onSnapshot(collection(db, "clientes"), (snapshot) => {
 
-      clientesDiv.innerHTML = "";
+    clientesDiv.innerHTML = "";
 
-      snapshot.forEach((doc) => {
+    snapshot.forEach((doc) => {
 
-        const cliente = doc.data();
+      const cliente = doc.data();
 
-        clientesDiv.innerHTML += `
-          <div class="card">
+      clientesDiv.innerHTML += `
+        <div class="card">
 
-            <h2>${cliente.nome}</h2>
+          <h2>${cliente.nome}</h2>
 
-            <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+          <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+          <p><strong>Email:</strong> ${cliente.email}</p>
+          <p><strong>Status:</strong> ${cliente.status}</p>
 
-            <p><strong>Email:</strong> ${cliente.email}</p>
+          <button class="btn-abrir" onclick="abrirCliente('${doc.id}')">
+            Abrir Cliente
+          </button>
 
-            <p><strong>Status:</strong> ${cliente.status}</p>
-
-            <button
-              class="btn-abrir"
-              onclick="abrirCliente('${doc.id}')"
-            >
-              Abrir Cliente
-            </button>
-
-          </div>
-        `;
-      });
-    }
-  );
+        </div>
+      `;
+    });
+  });
 }
 
-/* ➕ ADICIONAR CLIENTE */
-document
-  .getElementById("btnAdicionar")
-  .addEventListener("click", async () => {
+// ➕ adicionar cliente (corrigido)
+document.getElementById("btnAdicionar").addEventListener("click", async () => {
 
-    const nome = document.getElementById("nome").value;
+  const nome = document.getElementById("nome").value;
+  const email = document.getElementById("email").value;
+  const empresa = document.getElementById("empresa").value;
 
-    const email = document.getElementById("email").value;
+  if(!nome || !email || !empresa){
+    alert("Preencha todos os campos");
+    return;
+  }
 
-    const empresa = document.getElementById("empresa").value;
+  const user = auth.currentUser;
 
-    if(!nome || !email || !empresa){
-
-      alert("Preencha todos os campos");
-      return;
-
-    }
-
-    const user = auth.currentUser;
-
-    await addDoc(collection(db, "clientes"), {
-
-      uid: user.uid,
-      nome,
-      email,
-      empresa,
-      status: "ativo"
-
-    });
-
-    document.getElementById("nome").value = "";
-
-    document.getElementById("email").value = "";
-
-    document.getElementById("empresa").value = "";
-
+await addDoc(collection(db, "clientes"), {
+  uid: user.uid,   // 👈 ESSA É A LIGAÇÃO
+  nome,
+  email,
+  empresa,
+  status: "ativo"
 });
 
-/* 🔓 LOGOUT */
-document
-  .getElementById("logoutBtn")
-  .addEventListener("click", async () => {
-
-    await signOut(auth);
-
-    window.location.href = "login.html";
-
+  document.getElementById("nome").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("empresa").value = "";
 });
 
-/* 🔥 ABRIR CLIENTE */
+// abrir cliente
 window.abrirCliente = function(id){
-
   window.location.href = `cliente.html?id=${id}`;
-
 }
 
 </script>
