@@ -298,7 +298,16 @@ async function listarDemandas(){
         <p>${d.descricao}</p>
         <p><strong>Prazo:</strong> ${d.prazo}</p>
         <p><strong>Prioridade:</strong> ${d.prioridade}</p>
-        <p><strong>Status:</strong> ${d.status}</p>
+        <select onchange="alterarStatus('${docItem.id}', this.value)" style="
+  padding:8px;
+  border-radius:8px;
+  border:none;
+  margin-top:10px;
+">
+  <option value="pendente" ${d.status === "pendente" ? "selected" : ""}>Pendente</option>
+  <option value="andamento" ${d.status === "andamento" ? "selected" : ""}>Em andamento</option>
+  <option value="concluido" ${d.status === "concluido" ? "selected" : ""}>Concluído</option>
+</select>
       </div>
     `;
 
