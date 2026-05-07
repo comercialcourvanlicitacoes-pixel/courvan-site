@@ -32,7 +32,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* 🔥 ESTADO GLOBAL LIMPO */
+/* =========================
+   ESTADO GLOBAL
+========================= */
 let clienteIdGlobal = null;
 
 /* =========================
@@ -116,7 +118,6 @@ async function listarDemandas() {
   const querySnapshot = await getDocs(q);
 
   const div = document.getElementById("listaDemandas");
-
   div.innerHTML = "";
 
   querySnapshot.forEach((docItem) => {
@@ -142,6 +143,18 @@ async function listarDemandas() {
 }
 
 /* =========================
+   ALTERAR STATUS (FALTAVA ISSO)
+========================= */
+window.alterarStatus = async function (id, status) {
+
+  await updateDoc(doc(db, "demandas", id), {
+    status: status
+  });
+
+  listarDemandas();
+};
+
+/* =========================
    TROCAR ABA
 ========================= */
 window.mostrarAba = function (id) {
@@ -150,7 +163,8 @@ window.mostrarAba = function (id) {
     a.style.display = "none";
   });
 
-  document.getElementById(id).style.display = "block";
+  const el = document.getElementById(id);
+  if (el) el.style.display = "block";
 
   if (id === "demandas") {
     listarDemandas();
