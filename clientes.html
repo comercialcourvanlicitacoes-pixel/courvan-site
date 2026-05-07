@@ -261,12 +261,15 @@ document.getElementById("btnAdicionar").addEventListener("click", async () => {
     return;
   }
 
-  await addDoc(collection(db, "clientes"), {
-    nome,
-    email,
-    empresa,
-    status: "ativo"
-  });
+  const user = auth.currentUser;
+
+await addDoc(collection(db, "clientes"), {
+  uid: user.uid,   // 👈 ESSA É A LIGAÇÃO
+  nome,
+  email,
+  empresa,
+  status: "ativo"
+});
 
   document.getElementById("nome").value = "";
   document.getElementById("email").value = "";
