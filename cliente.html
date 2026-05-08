@@ -970,17 +970,15 @@ function iniciarDocumentos(){
 
   const q = query(
 
-    collection(db, "documentos"),
+  collection(db, "documentos"),
 
-    where(
-      "clienteId",
-      "==",
-      clienteIdGlobal
-    ),
+  where(
+    "clienteId",
+    "==",
+    clienteIdGlobal
+  )
 
-    orderBy("data", "desc")
-
-  );
+);
 
   onSnapshot(q, (snapshot) => {
 
