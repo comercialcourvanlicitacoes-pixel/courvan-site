@@ -413,6 +413,47 @@ grupo.innerHTML += `
             </a>
           ` : ""}
 
+          <select
+  onchange="alterarStatusLicitacao('${docItem.id}', this.value)"
+  style="
+    margin-top:15px;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    width:100%;
+  "
+>
+
+  <option
+    value="aviso"
+    ${l.status === "aviso" ? "selected" : ""}
+  >
+    📢 Aviso
+  </option>
+
+  <option
+    value="andamento"
+    ${l.status === "andamento" ? "selected" : ""}
+  >
+    🟡 Em andamento
+  </option>
+
+  <option
+    value="vencida"
+    ${l.status === "vencida" ? "selected" : ""}
+  >
+    🟢 Vencida
+  </option>
+
+  <option
+    value="perdida"
+    ${l.status === "perdida" ? "selected" : ""}
+  >
+    🔴 Perdida
+  </option>
+
+</select>
+
         </div>
       `;
     });
