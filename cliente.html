@@ -248,9 +248,27 @@
 
 </div>
 
-    <div id="licitacoes" class="aba" style="display:none;">
-      <h1>Licitações</h1>
-    </div>
+    <h1>Licitações</h1>
+
+<div id="formLicitacao" style="display:flex;flex-direction:column;gap:10px;margin-bottom:30px;">
+
+  <input id="orgao" placeholder="Órgão público" style="padding:12px;border-radius:8px;border:none;">
+  
+  <input id="objeto" placeholder="Objeto da licitação" style="padding:12px;border-radius:8px;border:none;">
+
+  <input id="valor" placeholder="Valor estimado" style="padding:12px;border-radius:8px;border:none;">
+
+  <input id="dataSessao" type="date" style="padding:12px;border-radius:8px;border:none;">
+
+  <input id="linkEdital" placeholder="Link do edital" style="padding:12px;border-radius:8px;border:none;">
+
+  <button onclick="criarLicitacao()">
+    Criar Licitação
+  </button>
+
+</div>
+
+<div id="listaLicitacoes"></div>
 
     <div id="config" class="aba" style="display:none;">
       <h1>Configurações</h1>
