@@ -1024,21 +1024,34 @@ function iniciarDocumentos(){
             ${dataFormatada}
           </p>
 
-          <a
-            href="${d.link}"
-            target="_blank"
-            style="
-              display:inline-block;
-              background:#d8a84e;
-              color:#07162b;
-              padding:12px 18px;
-              border-radius:10px;
-              text-decoration:none;
-              font-weight:bold;
-            "
-          >
-            Abrir Documento
-          </a>
+          ${d.link ? `
+
+  <a
+    href="${d.link}"
+    target="_blank"
+    style="
+      display:inline-block;
+      background:#d8a84e;
+      color:#07162b;
+      padding:12px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:bold;
+    "
+  >
+    Abrir Documento
+  </a>
+
+` : `
+
+  <p style="
+    color:#ffb3b3;
+    font-size:14px;
+  ">
+    Link indisponível
+  </p>
+
+`}
 
         </div>
 
