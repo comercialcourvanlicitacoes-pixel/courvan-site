@@ -907,6 +907,137 @@ document.addEventListener("keydown", (e) => {
   }
 
 });
+
+/* =========================
+   ADICIONAR DOCUMENTO
+========================= */
+window.adicionarDocumento = async function () {
+
+  const nome =
+    document.getElementById("nomeDocumento").value;
+
+  const link =
+    document.getElementById("linkDocumento").value;
+
+  if (!nome || !link) {
+
+    alert("Preencha todos os campos");
+    return;
+
+  }
+
+  await addDoc(
+
+    collection(
+      db,
+      "documentos"
+    ),
+
+    {
+      clienteId: clienteIdGlobal,
+      nome,
+      link,
+      data: serverTimestamp()
+    }
+
+  );
+
+  document.getElementById("nomeDocumento").value = "";
+  document.getElementById("linkDocumento").value = "";
+
+};
+
+/* =========================
+   LISTAR DOCUMENTOS
+========================= */
+function iniciarDocumentos(){
+
+  const div =
+    document.getElementById(
+      "listaDocumentos"
+    );
+
+  const q = query(
+
+    collection(db, "documentos"),
+
+    where(
+      "clienteId",
+      "==",
+      clienteIdGlobal
+    ),
+
+    orderBy("data", "desc")
+
+  );
+
+  onSnapshot(q, (snapshot) => {
+
+    div.innerHTML = "";
+
+    snapshot.forEach((docItem) => {
+
+      const d = docItem.data();
+
+      let dataFormatada = "";
+
+      if(d.data){
+
+        dataFormatada =
+          new Date(
+            d.data.seconds * 1000
+          ).toLocaleString("pt-BR");
+
+      }
+
+      div.innerHTML += `
+
+        <div style="
+          background:#16385f;
+          padding:20px;
+          border-radius:14px;
+          margin-bottom:15px;
+        ">
+
+          <h3 style="
+            color:#d8a84e;
+            margin-bottom:10px;
+          ">
+            📄 ${d.nome}
+          </h3>
+
+          <p style="
+            margin-bottom:15px;
+            opacity:0.8;
+          ">
+            ${dataFormatada}
+          </p>
+
+          <a
+            href="${d.link}"
+            target="_blank"
+            style="
+              display:inline-block;
+              background:#d8a84e;
+              color:#07162b;
+              padding:12px 18px;
+              border-radius:10px;
+              text-decoration:none;
+              font-weight:bold;
+            "
+          >
+            Abrir Documento
+          </a>
+
+        </div>
+
+      `;
+
+    });
+
+  });
+
+}
   
 window.mostrarAba = function (id) {
 
