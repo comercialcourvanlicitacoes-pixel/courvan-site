@@ -393,7 +393,11 @@ function listarLicitacoes() {
 
       const l = docItem.data();
 
-      div.innerHTML += `
+      const grupo = document.getElementById(
+  `grupo-${l.status || "aviso"}`
+);
+
+grupo.innerHTML += `
         <div style="background:#16385f;padding:20px;border-radius:14px;margin-bottom:15px;">
 
           <h3 style="color:#d8a84e;">${l.orgao}</h3>
