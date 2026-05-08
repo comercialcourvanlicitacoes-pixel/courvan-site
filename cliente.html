@@ -351,6 +351,47 @@ window.criarLicitacao = async function () {
 ========================= */
 let clienteIdGlobal = null;
 
+function listarLicitacoes() {
+
+  const div = document.getElementById("listaLicitacoes");
+
+  const q = query(
+    collection(db, "licitacoes"),
+    where("clienteId", "==", clienteIdGlobal)
+  );
+
+  onSnapshot(q, (snapshot) => {
+
+    div.innerHTML = "";
+
+    snapshot.forEach((docItem) => {
+
+      const l = docItem.data();
+
+      div.innerHTML += `
+        <div style="background:#16385f;padding:20px;border-radius:14px;margin-bottom:15px;">
+
+          <h3 style="color:#d8a84e;">${l.orgao}</h3>
+
+          <p><strong>Objeto:</strong> ${l.objeto}</p>
+          <p><strong>Valor:</strong> ${l.valor}</p>
+          <p><strong>Data Sessão:</strong> ${l.dataSessao}</p>
+
+          ${l.linkEdital ? `
+            <a href="${l.linkEdital}" target="_blank"
+              style="display:inline-block;margin-top:10px;background:#d8a84e;color:#07162b;padding:10px 15px;border-radius:10px;text-decoration:none;">
+              Abrir Edital
+            </a>
+          ` : ""}
+
+        </div>
+      `;
+    });
+
+  });
+
+}
+  
 /* =========================
    LOGIN + BUSCAR CLIENTE
 ========================= */
