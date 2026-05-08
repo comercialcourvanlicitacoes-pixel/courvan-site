@@ -425,6 +425,24 @@ async function listarDemandas() {
   /* =========================
    ENVIAR MENSAGEM
 ========================= */
+
+  /* =========================
+   ENTER PARA ENVIAR
+========================= */
+document
+  .getElementById("mensagemInput")
+  .addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
+
+      e.preventDefault();
+
+      enviarMensagem();
+
+    }
+
+});
+  
 window.enviarMensagem = async function () {
 
   const input = document.getElementById("mensagemInput");
