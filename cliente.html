@@ -935,6 +935,14 @@ window.adicionarDocumento = async function () {
 
   }
 
+  if(
+  !link.startsWith("http://") &&
+  !link.startsWith("https://")
+){
+  alert("Cole o link completo do Google Drive");
+  return;
+}
+
   try {
 
     await addDoc(
