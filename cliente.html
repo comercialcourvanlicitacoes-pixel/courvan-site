@@ -666,6 +666,170 @@ mensagensDiv.innerHTML += `
   });
 
 }
+
+/* =========================
+   EXCLUIR DEMANDA
+========================= */
+window.excluirDemanda = async function(id){
+
+  const confirmar = confirm(
+    "Deseja realmente excluir esta demanda?"
+  );
+
+  if(!confirmar) return;
+
+  await deleteDoc(doc(db, "demandas", id));
+
+  listarDemandas();
+
+};
+
+/* =========================
+   ABRIR COMENTÁRIOS
+========================= */
+window.abrirComentarios = function(id){
+
+  const div = document.getElementById(
+    `comentarios-${id}`
+  );
+
+  if(div.style.display === "none"){
+
+    div.style.display = "block";
+
+    iniciarComentarios(id);
+
+  }else{
+
+    div.style.display = "none";
+
+  }
+
+};
+
+/* =========================
+   ENVIAR COMENTÁRIO
+========================= */
+window.enviarComentario = async function(demandaId){
+
+  const input = document.getElementById(
+    `input-comentario-${demandaId}`
+  );
+
+  const texto = input.value;
+
+  if(!texto) return;
+
+  const user = auth.currentUser;
+
+  await addDoc(
+
+    collection(
+      db,
+      "demandas",
+      demandaId,
+      "comentarios"
+    ),
+
+    {
+      texto,
+
+      nome:
+        user.email === "comercial.courvanlicitacoes@gmail.com"
+          ? "Equipe Courvan"
+          : document.getElementById("nome").innerText,
+
+      empresa:
+        user.email === "comercial.courvanlicitacoes@gmail.com"
+          ? "Courvan"
+          : document.getElementById("empresa").innerText,
+
+      data: serverTimestamp()
+    }
+
+  );
+
+  input.value = "";
+
+};
+
+/* =========================
+   LISTENER COMENTÁRIOS
+========================= */
+function iniciarComentarios(demandaId){
+
+  const div = document.getElementById(
+    `lista-comentarios-${demandaId}`
+  );
+
+  const q = query(
+
+    collection(
+      db,
+      "demandas",
+      demandaId,
+      "comentarios"
+    ),
+
+    orderBy("data")
+
+  );
+
+  onSnapshot(q, (snapshot)=>{
+
+    div.innerHTML = "";
+
+    snapshot.forEach((docItem)=>{
+
+      const c = docItem.data();
+
+      const dataFormatada = c.data
+        ? new Date(
+            c.data.seconds * 1000
+          ).toLocaleString("pt-BR")
+        : "";
+
+      div.innerHTML += `
+
+        <div style="
+          background:#16385f;
+          padding:12px;
+          border-radius:10px;
+          margin-bottom:10px;
+        ">
+
+          <strong>${c.nome}</strong>
+
+          <div style="
+            font-size:11px;
+            opacity:0.7;
+            margin-bottom:8px;
+          ">
+            ${c.empresa}
+          </div>
+
+          <div style="
+            margin-bottom:8px;
+          ">
+            ${c.texto}
+          </div>
+
+          <div style="
+            font-size:11px;
+            opacity:0.7;
+          ">
+            ${dataFormatada}
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+  });
+
+}
   
 window.mostrarAba = function (id) {
 
