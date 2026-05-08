@@ -922,8 +922,6 @@ document.addEventListener("keydown", (e) => {
 ========================= */
 window.adicionarDocumento = async function () {
 
-  alert("Documento adicionado!");
-
   const nome =
     document.getElementById("nomeDocumento").value;
 
@@ -937,24 +935,33 @@ window.adicionarDocumento = async function () {
 
   }
 
-  await addDoc(
+  try {
 
-    collection(
-      db,
-      "documentos"
-    ),
+    await addDoc(
 
-    {
-      clienteId: clienteIdGlobal,
-      nome,
-      link,
-      data: serverTimestamp()
-    }
+      collection(db, "documentos"),
 
-  );
+      {
+        clienteId: clienteIdGlobal,
+        nome,
+        link,
+        data: serverTimestamp()
+      }
 
-  document.getElementById("nomeDocumento").value = "";
-  document.getElementById("linkDocumento").value = "";
+    );
+
+    alert("Documento adicionado!");
+
+    document.getElementById("nomeDocumento").value = "";
+    document.getElementById("linkDocumento").value = "";
+
+  } catch(error){
+
+    console.log(error);
+
+    alert("Erro ao adicionar documento");
+
+  }
 
 };
 
