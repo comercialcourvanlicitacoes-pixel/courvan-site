@@ -2,65 +2,244 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - Courvan</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:#07162b;
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+    }
+
+    .box{
+      width:100%;
+      max-width:450px;
+      background:#0c2748;
+      padding:35px;
+      border-radius:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    h2{
+      color:#d8a84e;
+      margin-bottom:25px;
+      text-align:center;
+    }
+
+    input{
+      width:100%;
+      padding:14px;
+      margin-bottom:15px;
+      border:none;
+      border-radius:10px;
+      background:#16385f;
+      color:white;
+      font-size:15px;
+    }
+
+    input::placeholder{
+      color:#c7d5e5;
+    }
+
+    button{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:10px;
+      background:#d8a84e;
+      color:#07162b;
+      font-weight:bold;
+      font-size:15px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      transform:translateY(-2px);
+    }
+
+    .info{
+      margin-top:20px;
+      font-size:14px;
+      opacity:0.85;
+      line-height:1.6;
+    }
+
+  </style>
 </head>
 
 <body>
 
-<h2>Criar Cliente</h2>
+<div class="box">
 
-<input id="nome" placeholder="Nome"><br><br>
-<input id="email" placeholder="Email"><br><br>
-<input id="senha" placeholder="Senha"><br><br>
-<input id="empresa" placeholder="Empresa"><br><br>
+  <h2>➕ Criar Cliente</h2>
 
-<button onclick="criarUsuario()">Criar Cliente</button>
+  <input id="nome" placeholder="Nome">
+
+  <input id="email" type="email" placeholder="Email">
+
+  <input id="senha" type="password" placeholder="Senha">
+
+  <input id="empresa" placeholder="Empresa">
+
+  <button onclick="criarUsuario()">
+    Criar Cliente
+  </button>
+
+  <div class="info">
+    Ao criar o cliente, o sistema irá:
+    <br><br>
+    ✅ Criar login no Firebase Authentication
+    <br>
+    ✅ Criar documento em clientes
+    <br>
+    ✅ Vincular UID automaticamente
+    <br>
+    ✅ Criar estrutura de chat automaticamente
+  </div>
+
+</div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getAuth,
+  createUserWithEmailAndPassword
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  setDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
+
   apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+
   authDomain: "courvan-sistema.firebaseapp.com",
+
   projectId: "courvan-sistema",
+
   storageBucket: "courvan-sistema.appspot.com",
+
   messagingSenderId: "729755072978",
+
   appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+
 };
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
-/* 🔥 FUNÇÃO CORRETA */
+/* =========================
+   CRIAR USUÁRIO + CLIENTE
+========================= */
 window.criarUsuario = async function () {
 
-  const nome = document.getElementById("nome").value;
-  const email = document.getElementById("email").value;
-  const senha = document.getElementById("senha").value;
-  const empresa = document.getElementById("empresa").value;
+  try {
 
-  if (!nome || !email || !senha || !empresa) {
-    alert("Preencha todos os campos");
-    return;
+    const nome = document.getElementById("nome").value;
+
+    const email = document.getElementById("email").value;
+
+    const senha = document.getElementById("senha").value;
+
+    const empresa = document.getElementById("empresa").value;
+
+    if (!nome || !email || !senha || !empresa) {
+
+      alert("Preencha todos os campos");
+
+      return;
+
+    }
+
+    /* =========================
+       CRIA LOGIN FIREBASE
+    ========================= */
+    const cred = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      senha
+    );
+
+    const uid = cred.user.uid;
+
+    /* =========================
+       CRIA CLIENTE
+    ========================= */
+    const clienteRef = await addDoc(
+      collection(db, "clientes"),
+      {
+
+        nome,
+        email,
+        empresa,
+        uid,
+        status: "ativo"
+
+      }
+    );
+
+    /* =========================
+       CRIA CHAT AUTOMÁTICO
+    ========================= */
+    await setDoc(
+      doc(db, "chats", clienteRef.id),
+      {
+
+        clienteId: clienteRef.id,
+
+        criadoEm: new Date()
+
+      }
+    );
+
+    /* =========================
+       LIMPAR CAMPOS
+    ========================= */
+    document.getElementById("nome").value = "";
+
+    document.getElementById("email").value = "";
+
+    document.getElementById("senha").value = "";
+
+    document.getElementById("empresa").value = "";
+
+    alert("Cliente criado com sucesso!");
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Erro: " + error.message);
+
   }
 
-  const cred = await createUserWithEmailAndPassword(auth, email, senha);
-
-  const uid = cred.user.uid;
-
-  await addDoc(collection(db, "clientes"), {
-    nome,
-    email,
-    empresa,
-    uid,
-    status: "ativo"
-  });
-
-  alert("Cliente criado com sucesso!");
 };
 
 </script>
