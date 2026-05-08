@@ -324,6 +324,11 @@ onAuthStateChanged(auth, async (user) => {
   // =========================
   if (clienteIdUrl) {
 
+    // 🔥 mostra área admin documentos
+document.getElementById(
+  "formDocumentos"
+).style.display = "flex";
+
     const q = query(
       collection(db, "clientes")
     );
