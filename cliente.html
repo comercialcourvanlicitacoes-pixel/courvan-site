@@ -523,29 +523,54 @@ function iniciarChat(){
         ? "#d8a84e"
         : "#1d4b7d";
 
-      mensagensDiv.innerHTML += `
+      const dataFormatada = msg.data
+  ? new Date(msg.data.seconds * 1000).toLocaleString("pt-BR")
+  : "";
 
-        <div style="
-          text-align:${alinhamento};
-          margin-bottom:15px;
-        ">
+mensagensDiv.innerHTML += `
 
-          <div style="
-            display:inline-block;
-            background:${cor};
-            color:white;
-            padding:12px 16px;
-            border-radius:14px;
-            max-width:70%;
-          ">
+  <div style="
+    text-align:${alinhamento};
+    margin-bottom:15px;
+  ">
 
-            ${msg.texto}
+    <div style="
+      display:inline-block;
+      background:${cor};
+      color:white;
+      padding:12px 16px;
+      border-radius:14px;
+      max-width:70%;
+    ">
 
-          </div>
+      <div style="
+        font-size:12px;
+        opacity:0.8;
+        margin-bottom:6px;
+      ">
 
-        </div>
+        <strong>${msg.nome || "Usuário"}</strong>
 
-      `;
+      </div>
+
+      <div style="
+        margin-bottom:8px;
+      ">
+        ${msg.texto}
+      </div>
+
+      <div style="
+        font-size:11px;
+        opacity:0.7;
+      ">
+        ${dataFormatada}
+      </div>
+
+    </div>
+
+  </div>
+
+`;
     });
 
     // 🔥 scroll automático
