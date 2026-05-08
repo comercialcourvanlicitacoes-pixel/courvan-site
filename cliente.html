@@ -893,28 +893,25 @@ function iniciarComentarios(demandaId){
 ========================= */
 document.addEventListener("keydown", (e) => {
 
-  // tecla enter
   if (e.key !== "Enter") return;
 
-  // pega elemento ativo
   const ativo = document.activeElement;
 
-  // verifica se é input comentário
   if (
     ativo &&
     ativo.id &&
-    ativo.id.includes("comentarioInput-")
+    ativo.id.startsWith("input-comentario-")
   ) {
 
-    // impede comportamento padrão
     e.preventDefault();
 
-    // extrai id demanda
     const demandaId =
-      ativo.id.split("comentarioInput-")[1];
+      ativo.id.replace(
+        "input-comentario-",
+        ""
+      );
 
-    // envia
-    window.enviarComentario(demandaId);
+    enviarComentario(demandaId);
 
   }
 
