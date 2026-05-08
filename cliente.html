@@ -557,7 +557,17 @@ mensagensDiv.innerHTML += `
         margin-bottom:6px;
       ">
 
-        <strong>${msg.nome || "Usuário"}</strong>
+        <strong>
+  ${msg.nome || "Usuário"}
+</strong>
+
+<div style="
+  font-size:11px;
+  opacity:0.7;
+  margin-top:2px;
+">
+  ${msg.empresa || ""}
+</div>
 
       </div>
 
