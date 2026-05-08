@@ -830,6 +830,41 @@ function iniciarComentarios(demandaId){
   });
 
 }
+
+/* =========================
+   ENTER NOS COMENTÁRIOS
+========================= */
+document.addEventListener("keypress", (e) => {
+
+  // tecla enter
+  if (e.key !== "Enter") return;
+
+  // pega elemento ativo
+  const ativo = document.activeElement;
+
+  // verifica se é input de comentário
+  if (
+    ativo &&
+    ativo.id &&
+    ativo.id.startsWith("comentarioInput-")
+  ) {
+
+    // evita quebra de linha
+    e.preventDefault();
+
+    // pega id da demanda
+    const demandaId =
+      ativo.id.replace(
+        "comentarioInput-",
+        ""
+      );
+
+    // envia comentário
+    enviarComentario(demandaId);
+
+  }
+
+});
   
 window.mostrarAba = function (id) {
 
