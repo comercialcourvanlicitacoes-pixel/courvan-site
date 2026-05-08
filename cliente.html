@@ -472,9 +472,17 @@ window.enviarMensagem = async function () {
     {
   texto,
   autor,
-  nome: user.email === "comercial.courvanlicitacoes@gmail.com"
-    ? "Courvan"
-    : document.getElementById("nomeCliente").innerText,
+
+  nome:
+    user.email === "comercial.courvanlicitacoes@gmail.com"
+      ? "Equipe Courvan"
+      : document.getElementById("nome").innerText,
+
+  empresa:
+    user.email === "comercial.courvanlicitacoes@gmail.com"
+      ? "Courvan"
+      : document.getElementById("empresa").innerText,
+
   data: serverTimestamp()
 }
 
