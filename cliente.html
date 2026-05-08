@@ -314,6 +314,38 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+window.criarLicitacao = async function () {
+
+  const orgao = document.getElementById("orgao").value;
+  const objeto = document.getElementById("objeto").value;
+  const valor = document.getElementById("valor").value;
+  const dataSessao = document.getElementById("dataSessao").value;
+  const linkEdital = document.getElementById("linkEdital").value;
+
+  if (!orgao || !objeto) {
+    alert("Preencha órgão e objeto");
+    return;
+  }
+
+  await addDoc(collection(db, "licitacoes"), {
+    clienteId: clienteIdGlobal,
+    orgao,
+    objeto,
+    valor,
+    dataSessao,
+    linkEdital,
+    data: serverTimestamp()
+  });
+
+  document.getElementById("orgao").value = "";
+  document.getElementById("objeto").value = "";
+  document.getElementById("valor").value = "";
+  document.getElementById("dataSessao").value = "";
+  document.getElementById("linkEdital").value = "";
+
+  listarLicitacoes();
+};
+  
 /* =========================
    ESTADO GLOBAL (IMPORTANTE)
 ========================= */
