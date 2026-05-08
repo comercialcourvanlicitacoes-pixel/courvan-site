@@ -405,6 +405,20 @@ function listarLicitacoes() {
   );
 
 };
+
+window.excluirLicitacao = async function(id){
+
+  const confirmar = confirm(
+    "Deseja excluir esta licitação?"
+  );
+
+  if(!confirmar) return;
+
+  await deleteDoc(
+    doc(db, "licitacoes", id)
+  );
+
+};
   
 /* =========================
    LOGIN + BUSCAR CLIENTE
