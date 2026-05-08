@@ -365,7 +365,29 @@ function listarLicitacoes() {
 
   onSnapshot(q, (snapshot) => {
 
-    div.innerHTML = "";
+    div.innerHTML = `
+
+  <h2 style="margin-bottom:15px;color:#d8a84e;">
+    📢 Avisos de Licitação
+  </h2>
+  <div id="grupo-aviso"></div>
+
+  <h2 style="margin:30px 0 15px;color:#d8a84e;">
+    🟡 Em Andamento
+  </h2>
+  <div id="grupo-andamento"></div>
+
+  <h2 style="margin:30px 0 15px;color:#d8a84e;">
+    🟢 Vencidas
+  </h2>
+  <div id="grupo-vencida"></div>
+
+  <h2 style="margin:30px 0 15px;color:#d8a84e;">
+    🔴 Perdidas
+  </h2>
+  <div id="grupo-perdida"></div>
+
+`;
 
     snapshot.forEach((docItem) => {
 
