@@ -834,7 +834,7 @@ function iniciarComentarios(demandaId){
 /* =========================
    ENTER NOS COMENTÁRIOS
 ========================= */
-document.addEventListener("keypress", (e) => {
+document.addEventListener("keydown", (e) => {
 
   // tecla enter
   if (e.key !== "Enter") return;
@@ -842,25 +842,22 @@ document.addEventListener("keypress", (e) => {
   // pega elemento ativo
   const ativo = document.activeElement;
 
-  // verifica se é input de comentário
+  // verifica se é input comentário
   if (
     ativo &&
     ativo.id &&
-    ativo.id.startsWith("comentarioInput-")
+    ativo.id.includes("comentarioInput-")
   ) {
 
-    // evita quebra de linha
+    // impede comportamento padrão
     e.preventDefault();
 
-    // pega id da demanda
+    // extrai id demanda
     const demandaId =
-      ativo.id.replace(
-        "comentarioInput-",
-        ""
-      );
+      ativo.id.split("comentarioInput-")[1];
 
-    // envia comentário
-    enviarComentario(demandaId);
+    // envia
+    window.enviarComentario(demandaId);
 
   }
 
