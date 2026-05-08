@@ -159,8 +159,53 @@
     </div>
 
     <div id="documentos" class="aba" style="display:none;">
-      <h1>Documentos</h1>
-    </div>
+
+  <h1>Documentos</h1>
+
+  <!-- FORM -->
+  <div style="
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:30px;
+  ">
+
+    <input
+      type="text"
+      id="nomeDocumento"
+      placeholder="Nome do documento"
+      style="
+        flex:1;
+        min-width:250px;
+        padding:14px;
+        border:none;
+        border-radius:10px;
+      "
+    >
+
+    <input
+      type="text"
+      id="linkDocumento"
+      placeholder="Link Google Drive"
+      style="
+        flex:2;
+        min-width:300px;
+        padding:14px;
+        border:none;
+        border-radius:10px;
+      "
+    >
+
+    <button onclick="adicionarDocumento()">
+      Adicionar
+    </button>
+
+  </div>
+
+  <!-- LISTA -->
+  <div id="listaDocumentos"></div>
+
+</div>
 
     <div id="chat" class="aba" style="display:none;">
 
