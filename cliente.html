@@ -394,6 +394,17 @@ function listarLicitacoes() {
   });
 
 }
+
+  window.alterarStatusLicitacao = async function(id, status){
+
+  await updateDoc(
+    doc(db, "licitacoes", id),
+    {
+      status
+    }
+  );
+
+};
   
 /* =========================
    LOGIN + BUSCAR CLIENTE
