@@ -408,6 +408,73 @@ async function listarDemandas() {
         <p><strong>Prazo:</strong> ${d.prazo}</p>
         <p><strong>Prioridade:</strong> ${d.prioridade}</p>
 
+        <button
+  onclick="abrirComentarios('${docItem.id}')"
+  style="
+    margin-top:12px;
+    margin-right:10px;
+    background:#1d4b7d;
+    color:white;
+  "
+>
+  💬 Comentários
+</button>
+
+<button
+  onclick="excluirDemanda('${docItem.id}')"
+  style="
+    margin-top:12px;
+    background:#a83232;
+    color:white;
+  "
+>
+  🗑 Excluir
+</button>
+
+<div
+  id="comentarios-${docItem.id}"
+  style="
+    margin-top:20px;
+    display:none;
+    background:#102847;
+    padding:15px;
+    border-radius:12px;
+  "
+>
+
+  <div
+    id="lista-comentarios-${docItem.id}"
+    style="
+      max-height:250px;
+      overflow-y:auto;
+      margin-bottom:15px;
+    "
+  ></div>
+
+  <div style="display:flex;gap:10px;">
+
+    <input
+      type="text"
+      id="input-comentario-${docItem.id}"
+      placeholder="Digite um comentário..."
+      style="
+        flex:1;
+        padding:10px;
+        border:none;
+        border-radius:8px;
+      "
+    >
+
+    <button
+      onclick="enviarComentario('${docItem.id}')"
+    >
+      Enviar
+    </button>
+
+  </div>
+
+</div>
+
         <select onchange="alterarStatus('${docItem.id}', this.value)"
           style="padding:8px;border-radius:8px;border:none;margin-top:10px;">
           <option value="pendente" ${d.status === "pendente" ? "selected" : ""}>Pendente</option>
