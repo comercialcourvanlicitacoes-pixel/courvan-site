@@ -26,23 +26,60 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    /* MODAL */
-    #modal {
-      display:none;
-      position:fixed;
-      top:0;left:0;
-      width:100%;height:100%;
-      background:rgba(0,0,0,0.6);
-      justify-content:center;
-      align-items:center;
+    /* =========================
+       DRAWER (LATERAL)
+    ========================= */
+    #drawerOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      z-index: 999;
     }
 
-    #modalContentBox {
-      background:white;
-      padding:20px;
-      border-radius:12px;
-      width:380px;
+    #drawer {
+      position: fixed;
+      right: -420px;
+      top: 0;
+      width: 400px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+      padding: 20px;
+      transition: 0.3s;
+      z-index: 1000;
     }
+
+    #drawer.open {
+      right: 0;
+    }
+
+    #drawerOverlay.show {
+      display: block;
+    }
+
+    .drawer-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .item {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .btn-fechar {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #d8a84e;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 
@@ -52,25 +89,19 @@
 
 <div id="calendar"></div>
 
-<!-- MODAL -->
-<div id="modal">
-  <div id="modalContentBox">
-    <h3>📌 Licitação</h3>
-    <div id="modalContent"></div>
+<!-- DRAWER -->
+<div id="drawerOverlay" onclick="fecharDrawer()"></div>
 
-    <button onclick="fecharModal()" style="
-      margin-top:15px;
-      width:100%;
-      padding:10px;
-      border:none;
-      border-radius:8px;
-      background:#d8a84e;
-      font-weight:bold;
-      cursor:pointer;
-    ">
-      Fechar
-    </button>
-  </div>
+<div id="drawer">
+
+  <div class="drawer-title">📌 Licitação</div>
+
+  <div id="drawerContent"></div>
+
+  <button class="btn-fechar" onclick="fecharDrawer()">
+    Fechar
+  </button>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
@@ -105,38 +136,7 @@ const auth = getAuth(app);
 await setPersistence(auth, browserLocalPersistence);
 
 // =========================
-// MODAL
-// =========================
-window.abrirModal = function(html){
-  document.getElementById("modalContent").innerHTML = html;
-  document.getElementById("modal").style.display = "flex";
-};
-
-window.fecharModal = function(){
-  document.getElementById("modal").style.display = "none";
-};
-
-// =========================
-// LOGIN CHECK
-// =========================
-onAuthStateChanged(auth, (user) => {
-
-  if (!user) {
-    setTimeout(() => {
-      if (!auth.currentUser) {
-        window.location.href = "login.html";
-      } else {
-        iniciarCalendario();
-      }
-    }, 500);
-    return;
-  }
-
-  iniciarCalendario();
-});
-
-// =========================
-// CORES PADRÃO (IGUAL SISTEMA)
+// CORES STATUS
 // =========================
 function corStatus(status){
 
@@ -153,6 +153,44 @@ function corStatus(status){
 }
 
 // =========================
+// DRAWER CONTROL
+// =========================
+window.abrirDrawer = function(html){
+
+  document.getElementById("drawerContent").innerHTML = html;
+
+  document.getElementById("drawer").classList.add("open");
+
+  document.getElementById("drawerOverlay").classList.add("show");
+
+  document.body.style.overflow = "hidden";
+
+};
+
+window.fecharDrawer = function(){
+
+  document.getElementById("drawer").classList.remove("open");
+
+  document.getElementById("drawerOverlay").classList.remove("show");
+
+  document.body.style.overflow = "auto";
+
+};
+
+// =========================
+// LOGIN CHECK
+// =========================
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  iniciarCalendario();
+});
+
+// =========================
 // CALENDÁRIO
 // =========================
 async function iniciarCalendario() {
@@ -160,18 +198,17 @@ async function iniciarCalendario() {
   const calendarEl = document.getElementById("calendar");
 
   const snapshot = await getDocs(collection(db, "licitacoes"));
-
-  const clientesSnapshot = await getDocs(collection(db, "clientes"));
+  const clientesSnap = await getDocs(collection(db, "clientes"));
 
   const clientesMap = {};
 
-  clientesSnapshot.forEach(c => {
+  clientesSnap.forEach(c => {
     clientesMap[c.id] = c.data().nome;
   });
 
   const eventos = [];
 
-  snapshot.forEach((docItem) => {
+  snapshot.forEach(docItem => {
 
     const l = docItem.data();
 
@@ -216,13 +253,13 @@ async function iniciarCalendario() {
 
       const p = info.event.extendedProps;
 
-      abrirModal(`
-        <p><strong>Órgão:</strong> ${p.orgao}</p>
-        <p><strong>Objeto:</strong> ${p.objeto}</p>
-        <p><strong>Status:</strong> ${p.status}</p>
-        <p><strong>Valor:</strong> ${p.valor}</p>
-        <p><strong>Cliente:</strong> ${p.clienteNome}</p>
-        <p><strong>Link:</strong> ${p.linkEdital || "N/A"}</p>
+      abrirDrawer(`
+        <div class="item"><strong>Órgão:</strong> ${p.orgao}</div>
+        <div class="item"><strong>Objeto:</strong> ${p.objeto}</div>
+        <div class="item"><strong>Status:</strong> ${p.status}</div>
+        <div class="item"><strong>Valor:</strong> ${p.valor}</div>
+        <div class="item"><strong>Cliente:</strong> ${p.clienteNome}</div>
+        <div class="item"><strong>Link:</strong> ${p.linkEdital || "N/A"}</div>
       `);
 
     }
