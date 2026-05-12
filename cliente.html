@@ -1670,7 +1670,9 @@ chartPizza = new Chart(document.getElementById("chartPizza"), {
   });
 
   // GRÁFICO BARRAS
-  new Chart(document.getElementById("chartBar"), {
+  if (chartBar) chartBar.destroy();
+
+chartBar = new Chart(document.getElementById("chartBar"), {
     type: "bar",
     data: {
       labels: ["Total", "Andamento", "Vencidas", "Perdidas"],
