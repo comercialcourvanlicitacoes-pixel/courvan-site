@@ -296,6 +296,18 @@ function iniciarListenerClientes(){
               Abrir Cliente
             </button>
 
+            <button
+  onclick="excluirCliente('${doc.id}', '${cliente.nome}')"
+  style="
+    width:100%;
+    margin-top:10px;
+    background:#a83232;
+    color:white;
+  "
+>
+  🗑 Excluir Cliente
+</button>
+
           </div>
         `;
       });
