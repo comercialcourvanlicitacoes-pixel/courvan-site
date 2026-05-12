@@ -114,17 +114,17 @@ const auth = getAuth(app);
 window.login = async function(){
 
   const email = document.getElementById("email").value;
-
   const senha = document.getElementById("senha").value;
 
   if(!email || !senha){
-
     alert("Preencha email e senha");
     return;
-
   }
 
   try{
+
+    // 🔥 garante persistência da sessão
+    await setPersistence(auth, browserLocalPersistence);
 
     const cred = await signInWithEmailAndPassword(
       auth,
@@ -136,16 +136,12 @@ window.login = async function(){
 
     /* 🔥 ADMIN */
     if(user.email === "comercial.courvanlicitacoes@gmail.com"){
-
       window.location.href = "clientes.html";
-
     }
 
     /* 🔥 CLIENTE */
     else{
-
       window.location.href = "cliente.html";
-
     }
 
   }
@@ -153,13 +149,12 @@ window.login = async function(){
   catch(error){
 
     alert("Erro ao fazer login");
-
     console.log(error);
 
   }
 
 }
-
+  
 </script>
 
 </body>
