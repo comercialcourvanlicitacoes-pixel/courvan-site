@@ -1423,6 +1423,11 @@ document.addEventListener("keydown", (e) => {
 ========================= */
 window.adicionarDocumento = async function () {
 
+if (!clienteIdGlobal) {
+  alert("Cliente ainda não carregado. Aguarde.");
+  return;
+}
+  
   const nome =
     document.getElementById("nomeDocumento").value;
 
