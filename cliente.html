@@ -960,10 +960,19 @@ window.enviarMensagem = async function () {
 
 try{
 
-  const nomeCliente =
-    document.getElementById("nome").innerText;
+  let emailDestino = "";
 
-  const emailCliente = emailClienteGlobal;
+  // ADMIN enviou → cliente recebe
+  if(user.email === "comercial.courvanlicitacoes@gmail.com"){
+
+    emailDestino = emailClienteGlobal;
+
+  }else{
+
+    // CLIENTE enviou → admin recebe
+    emailDestino = "comercial.courvanlicitacoes@gmail.com";
+
+  }
 
   await emailjs.send(
 
@@ -971,12 +980,13 @@ try{
     "template_2qckj0y",
 
     {
-      nome: nomeCliente,
+      nome:
+        document.getElementById("nome").innerText,
 
       mensagem:
         "Você recebeu uma nova mensagem no chat da Courvan.",
 
-      to_email: emailCliente
+      to_email: emailDestino
     }
 
   );
