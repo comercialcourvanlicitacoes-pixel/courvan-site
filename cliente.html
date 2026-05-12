@@ -1657,7 +1657,9 @@ function atualizarDashboard(snapshot){
   });
 
   // GRÁFICO PIZZA
-  new Chart(document.getElementById("chartPizza"), {
+  if (chartPizza) chartPizza.destroy();
+
+chartPizza = new Chart(document.getElementById("chartPizza"), {
     type: "pie",
     data: {
       labels: ["Andamento", "Vencidas", "Perdidas"],
