@@ -197,7 +197,10 @@ async function iniciarCalendario() {
 
   const calendarEl = document.getElementById("calendar");
 
-  const snapshot = await getDocs(collection(db, "licitacoes"));
+  import {
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   const clientesSnap = await getDocs(collection(db, "clientes"));
 
   const clientesMap = {};
