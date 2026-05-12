@@ -951,6 +951,41 @@ window.enviarMensagem = async function () {
 
   input.value = "";
 
+    /* 📧 EMAIL AUTOMÁTICO */
+
+try{
+
+  const nomeCliente =
+    document.getElementById("nome").innerText;
+
+  const emailCliente =
+    document.getElementById("email").innerText;
+
+  await emailjs.send(
+
+    "service_p5ln9fw",
+    "template_2qckj0y",
+
+    {
+      nome: nomeCliente,
+
+      mensagem:
+        "Você recebeu uma nova mensagem no chat da Courvan.",
+
+      to_email: emailCliente
+    }
+
+  );
+
+}catch(error){
+
+  console.log(
+    "Erro ao enviar email:",
+    error
+  );
+
+}
+
 };
 
 /* =========================
