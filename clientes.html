@@ -276,7 +276,10 @@ function iniciarListenerClientes(){
         const cliente = doc.data();
 
         clientesDiv.innerHTML += `
-          <div class="card">
+          <div
+  class="card cardCliente"
+  data-nome="${cliente.nome.toLowerCase()}"
+>
 
             <h2>${cliente.nome}</h2>
 
