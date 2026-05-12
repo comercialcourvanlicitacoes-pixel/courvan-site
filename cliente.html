@@ -568,7 +568,7 @@ function listarLicitacoes() {
     where("clienteId", "==", clienteIdGlobal)
   );
 
-  onSnapshot(q, (snapshot) => {
+  unsubscribeLicitacoes = onSnapshot(q, (snapshot) => {
 
     atualizarDashboard(snapshot);
 
