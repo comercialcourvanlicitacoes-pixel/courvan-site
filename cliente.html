@@ -1601,37 +1601,7 @@ window.alterarSenha = async function () {
 
 window.logout = async function () {
 
-  async function rankingClientes() {
-
-  const snap = await getDocs(collection(db, "licitacoes"));
-
-  const ranking = {};
-
-  snap.forEach(doc => {
-
-    const l = doc.data();
-
-    const cliente = l.clienteId;
-
-    if (!ranking[cliente]) {
-      ranking[cliente] = {
-        total: 0,
-        vencidas: 0
-      };
-    }
-
-    ranking[cliente].total++;
-
-    if (l.status === "vencida") {
-      ranking[cliente].vencidas++;
-    }
-
-  });
-
-  console.log(ranking);
-}
-
-  const confirmar = confirm(
+    const confirmar = confirm(
     "Deseja sair do sistema?"
   );
 
