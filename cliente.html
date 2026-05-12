@@ -485,6 +485,9 @@ const firebaseConfig = {
   appId: "1:729755072978:web:e76e98fd704c10da34f00b"
 };
 
+let chartPizza = null;
+let chartBar = null;
+  
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
