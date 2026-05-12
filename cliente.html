@@ -552,7 +552,14 @@ const valor = parseFloat(valorRaw || "0") || 0;
 let clienteIdGlobal = null;
 
 window.abrirAgenda = function () {
-  mostrarAba("agenda");
+
+  if (!clienteIdGlobal) {
+    alert("Cliente ainda não carregado. Aguarde alguns segundos.");
+    return;
+  }
+
+  window.location.href = "agenda.html?id=" + clienteIdGlobal;
+
 };
   
 let unsubscribeLicitacoes = null;
