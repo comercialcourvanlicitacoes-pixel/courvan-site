@@ -551,6 +551,17 @@ const valor = parseFloat(valorRaw || "0") || 0;
 ========================= */
 let clienteIdGlobal = null;
 
+window.abrirAgenda = function () {
+
+  if (!clienteIdGlobal) {
+    alert("Cliente ainda não carregado. Aguarde alguns segundos.");
+    return;
+  }
+
+  window.location.href = "cliente.html?id=" + clienteIdGlobal;
+
+};
+  
 let unsubscribeLicitacoes = null;
   
 let modoAdmin = false;
