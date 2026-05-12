@@ -321,36 +321,73 @@ document
   .getElementById("btnAdicionar")
   .addEventListener("click", async () => {
 
-    const nome = document.getElementById("nome").value;
+    const nome =
+      document.getElementById("nome").value;
 
-    const email = document.getElementById("email").value;
+    const email =
+      document.getElementById("email").value;
 
-    const empresa = document.getElementById("empresa").value;
+    const empresa =
+      document.getElementById("empresa").value;
 
-    if(!nome || !email || !empresa){
+    const senha =
+      document.getElementById("senha").value;
+
+    if(!nome || !email || !empresa || !senha){
 
       alert("Preencha todos os campos");
       return;
 
     }
 
-    const user = auth.currentUser;
+    try{
 
-    await addDoc(collection(db, "clientes"), {
+      // 🔥 cria usuário no Authentication
+      const userCredential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          senha
+        );
 
-      uid: user.uid,
-      nome,
-      email,
-      empresa,
-      status: "ativo"
+      // 🔥 pega UID REAL do cliente
+      const uid =
+        userCredential.user.uid;
 
-    });
+      // 🔥 salva cliente no Firestore
+      await addDoc(
+        collection(db, "clientes"),
+        {
+          uid,
+          nome,
+          email,
+          empresa,
+          status: "ativo"
+        }
+      );
 
-    document.getElementById("nome").value = "";
+      alert("Cliente criado com sucesso!");
 
-    document.getElementById("email").value = "";
+      document.getElementById("nome").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("empresa").value = "";
+      document.getElementById("senha").value = "";
 
-    document.getElementById("empresa").value = "";
+    }catch(error){
+
+      console.log(error);
+
+      if(error.code === "auth/email-already-in-use"){
+
+        alert("Este email já está cadastrado.");
+
+      }else{
+
+        alert("Erro ao criar cliente.");
+
+      }
+
+    }
 
 });
 
