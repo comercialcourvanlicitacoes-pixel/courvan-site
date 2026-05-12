@@ -1,7 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda de Licitações</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f6fa;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    #calendar {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>📅 Agenda de Licitações</h2>
+
+<div id="calendar"></div>
+
+<!-- 🔥 IMPORTANTE: FullCalendar ANTES de tudo -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
 <script type="module">
 
 // =========================
-// FIREBASE IMPORTS
+// FIREBASE
 // =========================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
@@ -13,39 +52,43 @@ import {
 
 import {
   getAuth,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-
-// =========================
-// CONFIG FIREBASE
-// =========================
 const firebaseConfig = {
   apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
   authDomain: "courvan-sistema.firebaseapp.com",
-  projectId: "courvan-sistema",
-  storageBucket: "courvan-sistema.appspot.com",
-  messagingSenderId: "729755072978",
-  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+  projectId: "courvan-sistema"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// 🔥 mantém login mesmo abrindo nova página
+await setPersistence(auth, browserLocalPersistence);
 
 // =========================
-// LOGIN CHECK
+// LOGIN CHECK (CORRIGIDO)
 // =========================
 onAuthStateChanged(auth, (user) => {
 
+  console.log("AUTH USER:", user);
+
   if (!user) {
-    window.location.href = "login.html";
+    setTimeout(() => {
+      if (!auth.currentUser) {
+        window.location.href = "login.html";
+      } else {
+        iniciarCalendario();
+      }
+    }, 500);
     return;
   }
 
   iniciarCalendario();
-
 });
 
 
@@ -55,14 +98,12 @@ onAuthStateChanged(auth, (user) => {
 function corStatus(status){
 
   switch(status){
-
     case "aviso": return "#1d4b7d";
     case "andamento": return "#d8a84e";
     case "vencida": return "#2ecc71";
     case "perdida": return "#e74c3c";
     case "descartada": return "#2c3e50";
     default: return "#999";
-
   }
 
 }
@@ -73,17 +114,22 @@ function corStatus(status){
 // =========================
 function iniciarCalendario() {
 
-  const calendarEl = document.getElementById('calendar');
+  const calendarEl = document.getElementById("calendar");
+
+  if (!calendarEl) {
+    console.error("Elemento #calendar não encontrado");
+    return;
+  }
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
 
-    initialView: 'dayGridMonth',
-    locale: 'pt-br',
+    initialView: "dayGridMonth",
+    locale: "pt-br",
 
     headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,listWeek'
+      left: "prev,next today",
+      center: "title",
+      right: "dayGridMonth,timeGridWeek,listWeek"
     },
 
     events: async function(fetchInfo, successCallback) {
@@ -101,38 +147,34 @@ function iniciarCalendario() {
           if (!l.dataSessao) return;
 
           eventos.push({
-
             id: docItem.id,
             title: `${l.orgao || "Sem órgão"} - ${l.objeto || ""}`,
 
-            start: l.dataSessao?.includes("/")
+            start: l.dataSessao.includes("/")
               ? l.dataSessao.split("/").reverse().join("-")
               : l.dataSessao,
 
             color: corStatus(l.status),
 
             extendedProps: {
-              cliente: l.clienteId || "",
-              valor: l.valor || "",
-              status: l.status || "",
-              orgao: l.orgao || "",
-              objeto: l.objeto || "",
-              linkEdital: l.linkEdital || ""
+              orgao: l.orgao,
+              objeto: l.objeto,
+              status: l.status,
+              valor: l.valor,
+              cliente: l.clienteId,
+              linkEdital: l.linkEdital
             }
-
           });
 
         });
 
-        console.log("EVENTOS CARREGADOS:", eventos);
+        console.log("EVENTOS:", eventos);
 
         successCallback(eventos);
 
-      } catch (error) {
-
-        console.error("Erro calendário:", error);
+      } catch (err) {
+        console.error("Erro ao carregar calendário:", err);
         successCallback([]);
-
       }
 
     },
@@ -142,12 +184,12 @@ function iniciarCalendario() {
       const p = info.event.extendedProps;
 
       alert(
-        "📌 Licitação\n\n" +
+        "📌 LICITAÇÃO\n\n" +
         "Órgão: " + p.orgao + "\n" +
         "Objeto: " + p.objeto + "\n" +
         "Status: " + p.status + "\n" +
-        "Cliente ID: " + p.cliente + "\n" +
         "Valor: " + p.valor + "\n" +
+        "Cliente: " + p.cliente + "\n" +
         "Link: " + (p.linkEdital || "N/A")
       );
 
@@ -156,7 +198,11 @@ function iniciarCalendario() {
   });
 
   calendar.render();
+  console.log("Calendário renderizado com sucesso");
 
 }
 
 </script>
+
+</body>
+</html>
