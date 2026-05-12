@@ -220,6 +220,13 @@ const db = getFirestore(app);
 
 const auth = getAuth(app);
 
+const secondaryApp = initializeApp(
+  firebaseConfig,
+  "Secondary"
+);
+
+const secondaryAuth = getAuth(secondaryApp);
+  
 const clientesDiv = document.getElementById("clientes");
 
 let unsubscribeClientes = null;
