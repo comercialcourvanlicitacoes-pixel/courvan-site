@@ -441,9 +441,9 @@ window.criarLicitacao = async function () {
 
   const orgao = document.getElementById("orgao").value;
   const objeto = document.getElementById("objeto").value;
-  const valor = parseFloat(
-  document.getElementById("valor").value
-);
+  const valorRaw = document.getElementById("valor").value;
+
+const valor = parseFloat(valorRaw || "0") || 0;
   const dataSessao = document.getElementById("dataSessao").value;
   const linkEdital = document.getElementById("linkEdital").value;
 
