@@ -430,6 +430,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+emailjs.init("yg2qGBBvZjUbHwU_y");
+    
 window.criarLicitacao = async function () {
 
   const orgao = document.getElementById("orgao").value;
