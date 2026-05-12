@@ -1622,6 +1622,36 @@ window.logout = async function () {
   }
 
 };
+
+async function rankingClientes() {
+
+  const snap = await getDocs(collection(db, "licitacoes"));
+
+  const ranking = {};
+
+  snap.forEach(doc => {
+
+    const l = doc.data();
+
+    const cliente = l.clienteId;
+
+    if (!ranking[cliente]) {
+      ranking[cliente] = {
+        total: 0,
+        vencidas: 0
+      };
+    }
+
+    ranking[cliente].total++;
+
+    if (l.status === "vencida") {
+      ranking[cliente].vencidas++;
+    }
+
+  });
+
+  console.log("Ranking de clientes:", ranking);
+}
   
 window.mostrarAba = function (id) {
 
