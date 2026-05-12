@@ -371,6 +371,36 @@ window.abrirCliente = function(id){
 
 }
 
+/* 🔍 FILTRAR CLIENTES */
+window.filtrarClientes = function(){
+
+  const termo = document
+    .getElementById("pesquisaCliente")
+    .value
+    .toLowerCase();
+
+  const cards =
+    document.querySelectorAll(".cardCliente");
+
+  cards.forEach(card => {
+
+    const nome =
+      card.dataset.nome || "";
+
+    if(nome.includes(termo)){
+
+      card.style.display = "block";
+
+    }else{
+
+      card.style.display = "none";
+
+    }
+
+  });
+
+};
+  
 </script>
 
 </body>
