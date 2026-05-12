@@ -134,7 +134,7 @@
 
   <div class="sidebar">
 
-    <h2 id="nome" style="color:#d8a84e;"></h2>
+    <h2 id="nomeCliente">Cliente</h2>
 
     <button onclick="mostrarAba('dashboard')">📊 Dashboard</button>
     <button onclick="mostrarAba('demandas')">📑 Demandas</button>
@@ -142,7 +142,7 @@
     <button onclick="mostrarAba('chat')">💬 Chat</button>
     <button onclick="mostrarAba('licitacoes')">🏛 Licitações</button>
 
-<button onclick="abrirAgenda()">
+<button onclick="window.location.href='agenda.html'">
 📅 Agenda
 </button>
 
@@ -169,86 +169,16 @@
     <!-- DASHBOARD -->
     <div id="dashboard" class="aba">
 
-  <h1>Dashboard</h1>
+      <h1>Dashboard do Cliente</h1>
 
-<select id="filtroMes" onchange="listarLicitacoes()" style="margin-bottom:20px;padding:10px;border-radius:8px;">
-  <option value="">Todos os meses</option>
-  <option value="0">Janeiro</option>
-  <option value="1">Fevereiro</option>
-  <option value="2">Março</option>
-  <option value="3">Abril</option>
-  <option value="4">Maio</option>
-  <option value="5">Junho</option>
-  <option value="6">Julho</option>
-  <option value="7">Agosto</option>
-  <option value="8">Setembro</option>
-  <option value="9">Outubro</option>
-  <option value="10">Novembro</option>
-  <option value="11">Dezembro</option>
-</select>
+      <div class="info-box">
+        <p><strong>Nome:</strong> <span id="nome"></span></p>
+        <p><strong>Empresa:</strong> <span id="empresa"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>Status:</strong> <span id="status"></span></p>
+      </div>
 
-  <!-- KPIs -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:25px;">
-
-    <div style="background:#16385f;padding:20px;border-radius:14px;">
-      <h3>Total</h3>
-      <p id="kpiTotal" style="font-size:22px;font-weight:bold;">0</p>
     </div>
-
-    <div style="background:#1d4b7d;padding:20px;border-radius:14px;">
-      <h3>Andamento</h3>
-      <p id="kpiAndamento" style="font-size:22px;font-weight:bold;">0</p>
-    </div>
-
-    <div style="background:#2ecc71;padding:20px;border-radius:14px;">
-      <h3>Vencidas</h3>
-      <p id="kpiVencidas" style="font-size:22px;font-weight:bold;">0</p>
-    </div>
-
-    <div style="background:#e74c3c;padding:20px;border-radius:14px;">
-      <h3>Perdidas</h3>
-      <p id="kpiPerdidas" style="font-size:22px;font-weight:bold;">0</p>
-    </div>
-
-    <div style="background:#d8a84e;color:#07162b;padding:20px;border-radius:14px;">
-      <h3>Valor Total</h3>
-      <p id="kpiValor" style="font-size:18px;font-weight:bold;">R$ 0</p>
-    </div>
-
-    <div style="background:#0c2748;padding:20px;border-radius:14px;">
-      <h3>Taxa Sucesso</h3>
-      <p id="kpiTaxa" style="font-size:22px;font-weight:bold;">0%</p>
-    </div>
-
-  </div>
-
-  <!-- GRÁFICOS -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:30px;">
-
-    <div style="background:#0c2748;padding:20px;border-radius:14px;">
-      <h3>Distribuição</h3>
-      <canvas id="chartPizza"></canvas>
-    </div>
-
-    <div style="background:#0c2748;padding:20px;border-radius:14px;">
-      <h3>Status Geral</h3>
-      <canvas id="chartBar"></canvas>
-    </div>
-
-  </div>
-
-  <!-- PRÓXIMAS -->
-  <div style="background:#0c2748;padding:20px;border-radius:14px;">
-
-    <h3 style="margin-bottom:15px;">📅 Próximas Licitações</h3>
-
-    <div id="proximas"></div>
-
-  </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- DEMANDAS -->
     <div id="demandas" class="aba" style="display:none;">
@@ -501,9 +431,6 @@ const firebaseConfig = {
   appId: "1:729755072978:web:e76e98fd704c10da34f00b"
 };
 
-let chartPizza = null;
-let chartBar = null;
-  
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -514,9 +441,9 @@ window.criarLicitacao = async function () {
 
   const orgao = document.getElementById("orgao").value;
   const objeto = document.getElementById("objeto").value;
-  const valorRaw = document.getElementById("valor").value;
-
-const valor = parseFloat(valorRaw || "0") || 0;
+  const valor = parseFloat(
+  document.getElementById("valor").value
+);
   const dataSessao = document.getElementById("dataSessao").value;
   const linkEdital = document.getElementById("linkEdital").value;
 
@@ -551,26 +478,9 @@ const valor = parseFloat(valorRaw || "0") || 0;
 ========================= */
 let clienteIdGlobal = null;
 
-window.abrirAgenda = function () {
-
-  if (!clienteIdGlobal) {
-    alert("Cliente ainda não carregado. Aguarde alguns segundos.");
-    return;
-  }
-
-  window.location.href = "agenda.html?id=" + clienteIdGlobal;
-
-};
-  
-let unsubscribeLicitacoes = null;
-  
-let modoAdmin = false;
-  
 let emailClienteGlobal = "";
   
 function listarLicitacoes() {
-
-  const filtroMes = document.getElementById("filtroMes")?.value;
 
   const div = document.getElementById("listaLicitacoes");
 
@@ -579,13 +489,7 @@ function listarLicitacoes() {
     where("clienteId", "==", clienteIdGlobal)
   );
 
-  if (unsubscribeLicitacoes) {
-  unsubscribeLicitacoes();
-}
-
-unsubscribeLicitacoes = onSnapshot(q, (snapshot) => {
-
-    atualizarDashboard(snapshot);
+  onSnapshot(q, (snapshot) => {
 
     div.innerHTML = `
 
@@ -618,18 +522,9 @@ unsubscribeLicitacoes = onSnapshot(q, (snapshot) => {
 
     snapshot.forEach((docItem) => {
 
-  const l = docItem.data();
+      const l = docItem.data();
 
-  if (filtroMes !== "") {
-
-    const data = new Date(l.dataSessao);
-
-    if (data.getMonth().toString() !== filtroMes) {
-      return;
-    }
-  }
-
-  const grupo = document.getElementById(
+      const grupo = document.getElementById(
   `grupo-${l.status || "aviso"}`
 );
 
@@ -770,8 +665,6 @@ onAuthStateChanged(auth, async (user) => {
   // =========================
   if (clienteIdUrl) {
 
-    modoAdmin = true;
-
     // 🔥 mostra área admin documentos
 document.getElementById(
   "formDocumentos"
@@ -840,8 +733,6 @@ document.getElementById(
   }
 
   const docCliente = snap.docs[0];
-
-  modoAdmin = false;
 
   const cliente = docCliente.data();
 
@@ -1423,11 +1314,6 @@ document.addEventListener("keydown", (e) => {
 ========================= */
 window.adicionarDocumento = async function () {
 
-if (!clienteIdGlobal) {
-  alert("Cliente ainda não carregado. Aguarde.");
-  return;
-}
-  
   const nome =
     document.getElementById("nomeDocumento").value;
 
@@ -1482,22 +1368,26 @@ if (!clienteIdGlobal) {
 /* =========================
    LISTAR DOCUMENTOS
 ========================= */
-let unsubscribeDocumentos = null;
-
 function iniciarDocumentos(){
 
-  if (unsubscribeDocumentos) {
-    unsubscribeDocumentos();
-  }
-
-  const div = document.getElementById("listaDocumentos");
+  const div =
+    document.getElementById(
+      "listaDocumentos"
+    );
 
   const q = query(
-    collection(db, "documentos"),
-    where("clienteId", "==", clienteIdGlobal)
-  );
 
-  unsubscribeDocumentos = onSnapshot(q, (snapshot) => {
+  collection(db, "documentos"),
+
+  where(
+    "clienteId",
+    "==",
+    clienteIdGlobal
+  )
+
+);
+
+  onSnapshot(q, (snapshot) => {
 
     div.innerHTML = "";
 
@@ -1507,32 +1397,70 @@ function iniciarDocumentos(){
 
       let dataFormatada = "";
 
-      if (d.data) {
+      if(d.data){
+
         dataFormatada =
-          new Date(d.data.seconds * 1000).toLocaleString("pt-BR");
+          new Date(
+            d.data.seconds * 1000
+          ).toLocaleString("pt-BR");
+
       }
 
       div.innerHTML += `
+
         <div style="
           background:#16385f;
           padding:20px;
           border-radius:14px;
           margin-bottom:15px;
         ">
-          <h3 style="color:#d8a84e;margin-bottom:10px;">
+
+          <h3 style="
+            color:#d8a84e;
+            margin-bottom:10px;
+          ">
             📄 ${d.nome}
           </h3>
 
-          <p style="margin-bottom:15px;opacity:0.8;">
+          <p style="
+            margin-bottom:15px;
+            opacity:0.8;
+          ">
             ${dataFormatada}
           </p>
 
-          <a href="${d.link}" target="_blank"
-            style="display:inline-block;background:#d8a84e;color:#07162b;padding:12px 18px;border-radius:10px;text-decoration:none;">
-            Abrir Documento
-          </a>
+          ${d.link ? `
+
+  <a
+    href="${d.link}"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="
+      display:inline-block;
+      background:#d8a84e;
+      color:#07162b;
+      padding:12px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:bold;
+    "
+  >
+    Abrir Documento
+  </a>
+
+` : `
+
+  <p style="
+    color:#ffb3b3;
+    font-size:14px;
+  ">
+    Link indisponível
+  </p>
+
+`}
 
         </div>
+
       `;
 
     });
@@ -1579,7 +1507,7 @@ window.alterarSenha = async function () {
 
 window.logout = async function () {
 
-    const confirmar = confirm(
+  const confirmar = confirm(
     "Deseja sair do sistema?"
   );
 
@@ -1600,36 +1528,6 @@ window.logout = async function () {
   }
 
 };
-
-async function rankingClientes() {
-
-  const snap = await getDocs(collection(db, "licitacoes"));
-
-  const ranking = {};
-
-  snap.forEach(doc => {
-
-    const l = doc.data();
-
-    const cliente = l.clienteId;
-
-    if (!ranking[cliente]) {
-      ranking[cliente] = {
-        total: 0,
-        vencidas: 0
-      };
-    }
-
-    ranking[cliente].total++;
-
-    if (l.status === "vencida") {
-      ranking[cliente].vencidas++;
-    }
-
-  });
-
-  console.log("Ranking de clientes:", ranking);
-}
   
 window.mostrarAba = function (id) {
 
@@ -1644,93 +1542,6 @@ window.mostrarAba = function (id) {
   }
 };
 
-function atualizarDashboard(snapshot){
-
-  let total = 0;
-  let andamento = 0;
-  let vencidas = 0;
-  let perdidas = 0;
-  let valorTotal = 0;
-
-  let proximas = [];
-
-  snapshot.forEach(docItem => {
-
-    const l = docItem.data();
-
-    total++;
-
-    const valor = parseFloat(l.valor || 0);
-    valorTotal += valor;
-
-    if(l.status === "andamento") andamento++;
-    if(l.status === "vencida") vencidas++;
-    if(l.status === "perdida") perdidas++;
-
-    if(l.dataSessao){
-      proximas.push(l);
-    }
-
-  });
-
-  // KPIs
-  document.getElementById("kpiTotal").innerText = total;
-  document.getElementById("kpiAndamento").innerText = andamento;
-  document.getElementById("kpiVencidas").innerText = vencidas;
-  document.getElementById("kpiPerdidas").innerText = perdidas;
-  document.getElementById("kpiValor").innerText =
-    "R$ " + valorTotal.toLocaleString("pt-BR");
-
-  const taxa = total ? ((vencidas / total) * 100).toFixed(1) : 0;
-  document.getElementById("kpiTaxa").innerText = taxa + "%";
-
-  // próximas licitações
-  const div = document.getElementById("proximas");
-  div.innerHTML = "";
-
-  proximas.slice(0,5).forEach(l => {
-
-    div.innerHTML += `
-      <div style="padding:10px;border-bottom:1px solid #1d4b7d;">
-        <strong>${l.orgao}</strong> - ${l.objeto}<br>
-        <small>${l.dataSessao}</small>
-      </div>
-    `;
-
-  });
-
-  // GRÁFICO PIZZA
-  try {
-  if (chartPizza) chartPizza.destroy();
-} catch(e){}
-
-chartPizza = new Chart(document.getElementById("chartPizza"), {
-    type: "pie",
-    data: {
-      labels: ["Andamento", "Vencidas", "Perdidas"],
-      datasets: [{
-        data: [andamento, vencidas, perdidas]
-      }]
-    }
-  });
-
-  // GRÁFICO BARRAS
-  try {
-  if (chartBar) chartBar.destroy();
-} catch(e){}
-
-chartBar = new Chart(document.getElementById("chartBar"), {
-    type: "bar",
-    data: {
-      labels: ["Total", "Andamento", "Vencidas", "Perdidas"],
-      datasets: [{
-        data: [total, andamento, vencidas, perdidas]
-      }]
-    }
-  });
-
-}
-  
 </script>
 
 </body>
