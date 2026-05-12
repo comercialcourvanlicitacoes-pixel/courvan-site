@@ -1466,26 +1466,22 @@ window.adicionarDocumento = async function () {
 /* =========================
    LISTAR DOCUMENTOS
 ========================= */
+let unsubscribeDocumentos = null;
+
 function iniciarDocumentos(){
 
-  const div =
-    document.getElementById(
-      "listaDocumentos"
-    );
+  if (unsubscribeDocumentos) {
+    unsubscribeDocumentos();
+  }
+
+  const div = document.getElementById("listaDocumentos");
 
   const q = query(
+    collection(db, "documentos"),
+    where("clienteId", "==", clienteIdGlobal)
+  );
 
-  collection(db, "documentos"),
-
-  where(
-    "clienteId",
-    "==",
-    clienteIdGlobal
-  )
-
-);
-
-  onSnapshot(q, (snapshot) => {
+  unsubscribeDocumentos = onSnapshot(q, (snapshot) => {
 
     div.innerHTML = "";
 
@@ -1495,70 +1491,32 @@ function iniciarDocumentos(){
 
       let dataFormatada = "";
 
-      if(d.data){
-
+      if (d.data) {
         dataFormatada =
-          new Date(
-            d.data.seconds * 1000
-          ).toLocaleString("pt-BR");
-
+          new Date(d.data.seconds * 1000).toLocaleString("pt-BR");
       }
 
       div.innerHTML += `
-
         <div style="
           background:#16385f;
           padding:20px;
           border-radius:14px;
           margin-bottom:15px;
         ">
-
-          <h3 style="
-            color:#d8a84e;
-            margin-bottom:10px;
-          ">
+          <h3 style="color:#d8a84e;margin-bottom:10px;">
             📄 ${d.nome}
           </h3>
 
-          <p style="
-            margin-bottom:15px;
-            opacity:0.8;
-          ">
+          <p style="margin-bottom:15px;opacity:0.8;">
             ${dataFormatada}
           </p>
 
-          ${d.link ? `
-
-  <a
-    href="${d.link}"
-    target="_blank"
-    rel="noopener noreferrer"
-    style="
-      display:inline-block;
-      background:#d8a84e;
-      color:#07162b;
-      padding:12px 18px;
-      border-radius:10px;
-      text-decoration:none;
-      font-weight:bold;
-    "
-  >
-    Abrir Documento
-  </a>
-
-` : `
-
-  <p style="
-    color:#ffb3b3;
-    font-size:14px;
-  ">
-    Link indisponível
-  </p>
-
-`}
+          <a href="${d.link}" target="_blank"
+            style="display:inline-block;background:#d8a84e;color:#07162b;padding:12px 18px;border-radius:10px;text-decoration:none;">
+            Abrir Documento
+          </a>
 
         </div>
-
       `;
 
     });
