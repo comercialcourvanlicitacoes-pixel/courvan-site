@@ -169,16 +169,70 @@
     <!-- DASHBOARD -->
     <div id="dashboard" class="aba">
 
-      <h1>Dashboard do Cliente</h1>
+  <h1>Dashboard</h1>
 
-      <div class="info-box">
-        <p><strong>Nome:</strong> <span id="nome"></span></p>
-        <p><strong>Empresa:</strong> <span id="empresa"></span></p>
-        <p><strong>Email:</strong> <span id="email"></span></p>
-        <p><strong>Status:</strong> <span id="status"></span></p>
-      </div>
+  <!-- KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:25px;">
 
+    <div style="background:#16385f;padding:20px;border-radius:14px;">
+      <h3>Total</h3>
+      <p id="kpiTotal" style="font-size:22px;font-weight:bold;">0</p>
     </div>
+
+    <div style="background:#1d4b7d;padding:20px;border-radius:14px;">
+      <h3>Andamento</h3>
+      <p id="kpiAndamento" style="font-size:22px;font-weight:bold;">0</p>
+    </div>
+
+    <div style="background:#2ecc71;padding:20px;border-radius:14px;">
+      <h3>Vencidas</h3>
+      <p id="kpiVencidas" style="font-size:22px;font-weight:bold;">0</p>
+    </div>
+
+    <div style="background:#e74c3c;padding:20px;border-radius:14px;">
+      <h3>Perdidas</h3>
+      <p id="kpiPerdidas" style="font-size:22px;font-weight:bold;">0</p>
+    </div>
+
+    <div style="background:#d8a84e;color:#07162b;padding:20px;border-radius:14px;">
+      <h3>Valor Total</h3>
+      <p id="kpiValor" style="font-size:18px;font-weight:bold;">R$ 0</p>
+    </div>
+
+    <div style="background:#0c2748;padding:20px;border-radius:14px;">
+      <h3>Taxa Sucesso</h3>
+      <p id="kpiTaxa" style="font-size:22px;font-weight:bold;">0%</p>
+    </div>
+
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:30px;">
+
+    <div style="background:#0c2748;padding:20px;border-radius:14px;">
+      <h3>Distribuição</h3>
+      <canvas id="chartPizza"></canvas>
+    </div>
+
+    <div style="background:#0c2748;padding:20px;border-radius:14px;">
+      <h3>Status Geral</h3>
+      <canvas id="chartBar"></canvas>
+    </div>
+
+  </div>
+
+  <!-- PRÓXIMAS -->
+  <div style="background:#0c2748;padding:20px;border-radius:14px;">
+
+    <h3 style="margin-bottom:15px;">📅 Próximas Licitações</h3>
+
+    <div id="proximas"></div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- DEMANDAS -->
     <div id="demandas" class="aba" style="display:none;">
