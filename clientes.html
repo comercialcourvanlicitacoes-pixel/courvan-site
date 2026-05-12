@@ -53,33 +53,11 @@
       padding:40px;
     }
 
-    .top{
-      display:flex;
-      gap:10px;
-      margin-bottom:30px;
-      flex-wrap:wrap;
-    }
-
     input{
       padding:14px;
       border:none;
       border-radius:10px;
       width:250px;
-    }
-
-    button{
-      padding:14px 20px;
-      border:none;
-      border-radius:10px;
-      background:#d8a84e;
-      color:#07162b;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.3s;
-    }
-
-    button:hover{
-      transform:translateY(-2px);
     }
 
     .clientes{
@@ -105,11 +83,6 @@
       margin-bottom:15px;
     }
 
-    .card p{
-      margin-bottom:10px;
-      opacity:0.95;
-    }
-
     .btn-abrir{
       width:100%;
       margin-top:15px;
@@ -122,27 +95,10 @@
     }
 
     @media(max-width:900px){
-
-      body{
-        flex-direction:column;
-      }
-
-      .sidebar{
-        width:100%;
-      }
-
-      .content{
-        padding:25px;
-      }
-
-      input{
-        width:100%;
-      }
-
-      .top{
-        flex-direction:column;
-      }
-
+      body{flex-direction:column;}
+      .sidebar{width:100%;}
+      .content{padding:25px;}
+      input{width:100%;}
     }
 
   </style>
@@ -155,9 +111,7 @@
   <h2>Courvan</h2>
 
   <a href="clientes.html">👥 Clientes</a>
-
   <a href="admin.html">➕ Novo Cliente</a>
-
   <a href="#" id="logoutBtn" class="logout">🚪 Sair</a>
 
 </div>
@@ -166,22 +120,22 @@
 
   <h1 style="margin-bottom:25px;">Clientes</h1>
 
-<input
-  type="text"
-  id="pesquisaCliente"
-  placeholder="Pesquisar cliente..."
-  onkeyup="filtrarClientes()"
-  style="
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:10px;
-    margin-bottom:25px;
-    background:#16385f;
-    color:white;
-  "
->
-  
+  <input
+    type="text"
+    id="pesquisaCliente"
+    placeholder="Pesquisar cliente..."
+    onkeyup="filtrarClientes()"
+    style="
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:10px;
+      margin-bottom:25px;
+      background:#16385f;
+      color:white;
+    "
+  >
+
   <div class="clientes" id="clientes"></div>
 
 </div>
@@ -201,7 +155,7 @@ import {
 import {
   getAuth,
   onAuthStateChanged,
-  signOut  
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -214,11 +168,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
 const auth = getAuth(app);
-  
+
 const clientesDiv = document.getElementById("clientes");
 
 let unsubscribeClientes = null;
@@ -227,25 +179,20 @@ let unsubscribeClientes = null;
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-
     window.location.href = "login.html";
     return;
-
   }
 
-  /* 🔥 PROTEÇÃO ADMIN */
-  if(user.email !== "comercial.courvanlicitacoes@gmail.com"){
-
+  if (user.email !== "comercial.courvanlicitacoes@gmail.com") {
     window.location.href = "cliente.html";
     return;
-
   }
 
   iniciarListenerClientes();
 
 });
 
-/* 🔥 TEMPO REAL */
+/* 🔥 LISTA EM TEMPO REAL */
 function iniciarListenerClientes(){
 
   if (unsubscribeClientes) unsubscribeClientes();
@@ -254,44 +201,48 @@ function iniciarListenerClientes(){
     collection(db, "clientes"),
     (snapshot) => {
 
+      console.log("CLIENTES CARREGADOS:", snapshot.size);
+
       clientesDiv.innerHTML = "";
 
-      snapshot.forEach((doc) => {
+      snapshot.forEach((docItem) => {
 
-        const cliente = doc.data();
+        const cliente = docItem.data();
+
+        const nome = cliente?.nome || "Sem nome";
+        const empresa = cliente?.empresa || "-";
+        const email = cliente?.email || "-";
+        const status = cliente?.status || "-";
+
+        const nomeLower = nome.toLowerCase();
 
         clientesDiv.innerHTML += `
-          <div
-  class="card cardCliente"
-  data-nome="${cliente.nome.toLowerCase()}"
->
+          <div class="card cardCliente" data-nome="${nomeLower}">
 
-            <h2>${cliente.nome}</h2>
+            <h2>${nome}</h2>
 
-            <p><strong>Empresa:</strong> ${cliente.empresa}</p>
+            <p><strong>Empresa:</strong> ${empresa}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Status:</strong> ${status}</p>
 
-            <p><strong>Email:</strong> ${cliente.email}</p>
-
-            <p><strong>Status:</strong> ${cliente.status}</p>
-
-            <button
-              class="btn-abrir"
-              onclick="abrirCliente('${doc.id}')"
-            >
+            <button class="btn-abrir" onclick="abrirCliente('${docItem.id}')">
               Abrir Cliente
             </button>
 
             <button
-  onclick="excluirCliente('${doc.id}', '${cliente.nome}')"
-  style="
-    width:100%;
-    margin-top:10px;
-    background:#a83232;
-    color:white;
-  "
->
-  🗑 Excluir Cliente
-</button>
+              onclick="excluirCliente('${docItem.id}', '${nome}')"
+              style="
+                width:100%;
+                margin-top:10px;
+                background:#a83232;
+                color:white;
+                border:none;
+                padding:12px;
+                border-radius:10px;
+              "
+            >
+              🗑 Excluir Cliente
+            </button>
 
           </div>
         `;
@@ -301,92 +252,46 @@ function iniciarListenerClientes(){
 }
 
 /* 🔓 LOGOUT */
-document
-  .getElementById("logoutBtn")
-  .addEventListener("click", async () => {
-
-    await signOut(auth);
-
-    window.location.href = "login.html";
-
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
 });
 
 /* 🔥 ABRIR CLIENTE */
 window.abrirCliente = function(id){
-
   window.location.href = `cliente.html?id=${id}`;
+};
 
-}
-
-/* 🔍 FILTRAR CLIENTES */
+/* 🔍 FILTRO */
 window.filtrarClientes = function(){
 
-  const termo = document
-    .getElementById("pesquisaCliente")
-    .value
-    .toLowerCase();
+  const termo = document.getElementById("pesquisaCliente").value.toLowerCase();
 
-  const cards =
-    document.querySelectorAll(".cardCliente");
+  document.querySelectorAll(".cardCliente").forEach(card => {
 
-  cards.forEach(card => {
+    const nome = card.dataset.nome || "";
 
-    const nome =
-      card.dataset.nome || "";
-
-    if(nome.includes(termo)){
-
-      card.style.display = "block";
-
-    }else{
-
-      card.style.display = "none";
-
-    }
+    card.style.display = nome.includes(termo) ? "block" : "none";
 
   });
 
 };
 
-/* 🗑 EXCLUIR CLIENTE */
+/* 🗑 EXCLUIR */
 window.excluirCliente = async function(id, nome){
 
-  const confirmar1 = confirm(
-    `Deseja excluir o cliente "${nome}"?`
-  );
+  const confirmar = confirm(`Deseja excluir o cliente "${nome}"?`);
+  if(!confirmar) return;
 
-  if(!confirmar1) return;
+  const check = prompt("Digite EXCLUIR para confirmar");
+  if(check !== "EXCLUIR") return;
 
-  const confirmar2 = prompt(
-    `Digite EXCLUIR para confirmar`
-  );
+  await deleteDoc(doc(db, "clientes", id));
 
-  if(confirmar2 !== "EXCLUIR"){
-
-    alert("Confirmação inválida");
-
-    return;
-
-  }
-
-  try{
-
-    await deleteDoc(
-      doc(db, "clientes", id)
-    );
-
-    alert("Cliente excluído com sucesso");
-
-  }catch(error){
-
-    console.log(error);
-
-    alert("Erro ao excluir cliente");
-
-  }
+  alert("Cliente excluído com sucesso");
 
 };
-  
+
 </script>
 
 </body>
