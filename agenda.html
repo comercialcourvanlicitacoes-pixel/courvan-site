@@ -80,17 +80,12 @@ await setPersistence(auth, browserLocalPersistence);
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-    setTimeout(() => {
-      if (!auth.currentUser) {
-        window.location.href = "login.html";
-      } else {
-        iniciarCalendario();
-      }
-    }, 400);
+    window.location.href = "login.html";
     return;
   }
 
   iniciarCalendario();
+
 });
 
 
