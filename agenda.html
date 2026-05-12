@@ -50,6 +50,11 @@ import {
   query
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 
 // =========================
 // CONFIG FIREBASE
@@ -62,12 +67,29 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+
+// =========================
+// SEGURANÇA (LOGIN OBRIGATÓRIO)
+// =========================
+onAuthStateChanged(auth, (user) => {
+
+  if (!user) {
+    alert("Você precisa estar logado para acessar a agenda.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  iniciarCalendario();
+
+});
 
 
 // =========================
 // CALENDÁRIO
 // =========================
-document.addEventListener('DOMContentLoaded', function () {
+function iniciarCalendario() {
 
   const calendarEl = document.getElementById('calendar');
 
@@ -83,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
     },
 
     // =========================
-    // BUSCA FIREBASE REAL
+    // FIREBASE EVENTS
     // =========================
     events: async function(fetchInfo, successCallback) {
 
@@ -98,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
           const l = docItem.data();
 
-          // 🔥 SOMENTE EM ANDAMENTO
+          // 🔥 só em andamento
           if (l.status === "andamento") {
 
             eventos.push({
@@ -127,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
     },
 
     // =========================
-    // CLICK NO EVENTO
+    // CLICK EVENTO
     // =========================
     eventClick: function(info) {
 
@@ -146,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   calendar.render();
 
-});
+}
 
 </script>
 
