@@ -400,6 +400,45 @@ window.filtrarClientes = function(){
   });
 
 };
+
+/* 🗑 EXCLUIR CLIENTE */
+window.excluirCliente = async function(id, nome){
+
+  const confirmar1 = confirm(
+    `Deseja excluir o cliente "${nome}"?`
+  );
+
+  if(!confirmar1) return;
+
+  const confirmar2 = prompt(
+    `Digite EXCLUIR para confirmar`
+  );
+
+  if(confirmar2 !== "EXCLUIR"){
+
+    alert("Confirmação inválida");
+
+    return;
+
+  }
+
+  try{
+
+    await deleteDoc(
+      doc(db, "clientes", id)
+    );
+
+    alert("Cliente excluído com sucesso");
+
+  }catch(error){
+
+    console.log(error);
+
+    alert("Erro ao excluir cliente");
+
+  }
+
+};
   
 </script>
 
