@@ -73,7 +73,36 @@ const auth = getAuth(app);
 // =========================
 // SEGURANÇA (LOGIN OBRIGATÓRIO)
 // =========================
+import { getAuth, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth(app);
+
+// 🔥 espera o Firebase restaurar sessão corretamente
 onAuthStateChanged(auth, (user) => {
+
+  if (!user) {
+
+    // pequeno delay evita falso negativo
+    setTimeout(() => {
+
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      iniciarCalendario();
+
+    }, 500);
+
+    return;
+  }
+
+  iniciarCalendario();
+
+});
 
   if (!user) {
     alert("Você precisa estar logado para acessar a agenda.");
