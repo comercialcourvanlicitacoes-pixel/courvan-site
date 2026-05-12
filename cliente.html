@@ -603,16 +603,20 @@ function listarLicitacoes() {
 
     snapshot.forEach((docItem) => {
 
-      const l = docItem.data();
+  const l = docItem.data();
 
-if (filtroMes !== "") {
+  if (filtroMes !== "") {
 
-  const data = new Date(l.dataSessao);
+    const data = new Date(l.dataSessao);
 
-  if (data.getMonth().toString() !== filtroMes) {
-    return;
+    if (data.getMonth().toString() !== filtroMes) {
+      return;
+    }
   }
-}
+
+  const grupo = document.getElementById(
+    `grupo-${l.status || "aviso"}`
+  );
 
       const grupo = document.getElementById(
   `grupo-${l.status || "aviso"}`
