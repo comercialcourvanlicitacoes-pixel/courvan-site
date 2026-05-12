@@ -52,31 +52,11 @@ import {
 
 import {
   getAuth,
-  onAuthStateChanged,
-  setPersistence,
-  browserLocalPersistence
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-
-// =========================
-// CONFIG FIREBASE
-// =========================
-const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "courvan-sistema.firebaseapp.com",
-  projectId: "courvan-sistema"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
 
-// 🔥 garante login persistente
-await setPersistence(auth, browserLocalPersistence);
-
-// =========================
-// LOGIN CHECK CORRIGIDO
-// =========================
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
