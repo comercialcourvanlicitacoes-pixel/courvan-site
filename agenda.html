@@ -107,47 +107,47 @@ function iniciarCalendario() {
 
     events: async function(fetchInfo, successCallback) {
 
-      const eventos = [];
+  try {
 
-      try {
+    const snapshot = await getDocs(collection(db, "licitacoes"));
 
-        const q = query(collection(db, "licitacoes"));
-        const snapshot = await getDocs(q);
+    const eventos = [];
 
-        snapshot.forEach((docItem) => {
+    snapshot.forEach((docItem) => {
 
-          const l = docItem.data();
+      const l = docItem.data();
 
-          if (!l.dataSessao) return;
+      if (!l.dataSessao) return;
 
-          eventos.push({
+      eventos.push({
+        id: docItem.id,
+        title: `${l.orgao || "Sem órgão"} - ${l.objeto || ""}`,
+        start: l.dataSessao,
+        color: corStatus ? corStatus(l.status) : "#d8a84e",
+        extendedProps: {
+          cliente: l.clienteId || "",
+          valor: l.valor || "",
+          status: l.status || "",
+          orgao: l.orgao || "",
+          objeto: l.objeto || "",
+          linkEdital: l.linkEdital || ""
+        }
+      });
 
-            id: docItem.id,
-            title: `${l.orgao} - ${l.objeto}`,
-            start: l.dataSessao,
-            color: corStatus(l.status),
+    });
 
-            extendedProps: {
-              cliente: l.clienteId,
-              valor: l.valor,
-              status: l.status,
-              orgao: l.orgao,
-              objeto: l.objeto,
-              linkEdital: l.linkEdital || ""
-            }
+    console.log("EVENTOS CARREGADOS:", eventos);
 
-          });
+    successCallback(eventos);
 
-        });
+  } catch (error) {
 
-        successCallback(eventos);
+    console.error("Erro calendário:", error);
+    successCallback([]);
 
-      } catch (error) {
-        console.error("Erro ao carregar licitações:", error);
-        successCallback([]);
-      }
+  }
 
-    },
+}
 
     // =========================
     // CLICK EVENTO (DETALHADO)
