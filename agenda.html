@@ -37,6 +37,36 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
 <script type="module">
+
+// =========================
+// FIREBASE IMPORTS
+// =========================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+// =========================
+// CONFIG FIREBASE
+// =========================
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// =========================
+// CALENDÁRIO
+// =========================
 document.addEventListener('DOMContentLoaded', function () {
 
   const calendarEl = document.getElementById('calendar');
@@ -52,78 +82,55 @@ document.addEventListener('DOMContentLoaded', function () {
       right: 'dayGridMonth,timeGridWeek,listWeek'
     },
 
+    // =========================
+    // BUSCA FIREBASE REAL
+    // =========================
     events: async function(fetchInfo, successCallback) {
 
-  const eventos = [];
+      const eventos = [];
 
-  try {
+      try {
 
-    const q = query(collection(db, "licitacoes"));
+        const q = query(collection(db, "licitacoes"));
+        const snapshot = await getDocs(q);
 
-    const snapshot = await getDocs(q);
+        snapshot.forEach((docItem) => {
 
-    snapshot.forEach((docItem) => {
+          const l = docItem.data();
 
-      const l = docItem.data();
+          // 🔥 SOMENTE EM ANDAMENTO
+          if (l.status === "andamento") {
 
-      // 🔥 só "em andamento"
-      if (l.status === "andamento") {
+            eventos.push({
+              id: docItem.id,
+              title: `${l.orgao} - ${l.objeto}`,
+              start: l.dataSessao,
+              color: "#ffc107",
+              extendedProps: {
+                cliente: l.clienteId,
+                valor: l.valor,
+                status: l.status
+              }
+            });
 
-        eventos.push({
-          id: docItem.id,
-          title: `${l.orgao} - ${l.objeto}`,
-          start: l.dataSessao,
-          color: "#ffc107",
-          extendedProps: {
-            cliente: l.clienteId,
-            valor: l.valor,
-            status: l.status
           }
+
         });
 
+        successCallback(eventos);
+
+      } catch (error) {
+        console.error("Erro ao carregar licitações:", error);
+        successCallback([]);
       }
 
-    });
-
-    successCallback(eventos);
-
-  } catch (error) {
-    console.error("Erro ao carregar licitações:", error);
-    successCallback([]);
-  }
-
-}
-
-      // 🔥 DADOS MOCKADOS (depois vem do backend)
-      const eventos = [
-        {
-          id: 1,
-          title: "Prefeitura BH - Limpeza Urbana",
-          start: "2026-05-14",
-          color: "#28a745",
-          extendedProps: {
-            cliente: "Cliente A",
-            status: "Em andamento",
-            valor: "R$ 80.000"
-          }
-        },
-        {
-          id: 2,
-          title: "Estado MG - Alimentação Escolar",
-          start: "2026-05-18",
-          color: "#ffc107",
-          extendedProps: {
-            cliente: "Cliente B",
-            status: "A abrir",
-            valor: "R$ 250.000"
-          }
-        }
-      ];
-
-      successCallback(eventos);
     },
 
+    // =========================
+    // CLICK NO EVENTO
+    // =========================
     eventClick: function(info) {
+
       const p = info.event.extendedProps;
 
       alert(
@@ -132,11 +139,15 @@ document.addEventListener('DOMContentLoaded', function () {
         "\n📊 Status: " + p.status +
         "\n💰 Valor: " + p.valor
       );
+
     }
+
   });
 
   calendar.render();
+
 });
+
 </script>
 
 </body>
