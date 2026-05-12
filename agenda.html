@@ -26,9 +26,6 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    /* =========================
-       DRAWER (LATERAL)
-    ========================= */
     #drawerOverlay {
       position: fixed;
       inset: 0;
@@ -79,7 +76,6 @@
       font-weight: bold;
       cursor: pointer;
     }
-
   </style>
 </head>
 
@@ -89,19 +85,12 @@
 
 <div id="calendar"></div>
 
-<!-- DRAWER -->
 <div id="drawerOverlay" onclick="fecharDrawer()"></div>
 
 <div id="drawer">
-
   <div class="drawer-title">📌 Licitação</div>
-
   <div id="drawerContent"></div>
-
-  <button class="btn-fechar" onclick="fecharDrawer()">
-    Fechar
-  </button>
-
+  <button class="btn-fechar" onclick="fecharDrawer()">Fechar</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
@@ -113,7 +102,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import {
   getFirestore,
   collection,
-  getDocs
+  getDocs,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -136,7 +127,7 @@ const auth = getAuth(app);
 await setPersistence(auth, browserLocalPersistence);
 
 // =========================
-// CORES STATUS
+// STATUS COLOR
 // =========================
 function corStatus(status){
 
@@ -153,32 +144,23 @@ function corStatus(status){
 }
 
 // =========================
-// DRAWER CONTROL
+// DRAWER
 // =========================
 window.abrirDrawer = function(html){
-
   document.getElementById("drawerContent").innerHTML = html;
-
   document.getElementById("drawer").classList.add("open");
-
   document.getElementById("drawerOverlay").classList.add("show");
-
   document.body.style.overflow = "hidden";
-
 };
 
 window.fecharDrawer = function(){
-
   document.getElementById("drawer").classList.remove("open");
-
   document.getElementById("drawerOverlay").classList.remove("show");
-
   document.body.style.overflow = "auto";
-
 };
 
 // =========================
-// LOGIN CHECK
+// LOGIN + CONTROLE DE ACESSO
 // =========================
 onAuthStateChanged(auth, async (user) => {
 
@@ -187,27 +169,57 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  iniciarCalendario();
+  let clienteId = null;
+
+  // 👨‍💼 ADMIN
+  if (user.email === "comercial.courvanlicitacoes@gmail.com") {
+    clienteId = null; // vê tudo
+  } else {
+
+    // 👤 CLIENTE → busca ID real
+    const snap = await getDocs(
+      query(
+        collection(db, "clientes"),
+        where("uid", "==", user.uid)
+      )
+    );
+
+    if (snap.empty) return;
+
+    clienteId = snap.docs[0].id;
+  }
+
+  iniciarCalendario(clienteId);
+
 });
 
 // =========================
 // CALENDÁRIO
 // =========================
-async function iniciarCalendario() {
+async function iniciarCalendario(clienteId) {
 
   const calendarEl = document.getElementById("calendar");
 
-  import {
-  query,
-  where
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   const clientesSnap = await getDocs(collection(db, "clientes"));
 
   const clientesMap = {};
-
   clientesSnap.forEach(c => {
     clientesMap[c.id] = c.data().nome;
   });
+
+  // 🔥 QUERY CORRETA
+  let q;
+
+  if (!clienteId) {
+    q = collection(db, "licitacoes"); // ADMIN
+  } else {
+    q = query(
+      collection(db, "licitacoes"),
+      where("clienteId", "==", clienteId)
+    );
+  }
+
+  const snapshot = await getDocs(q);
 
   const eventos = [];
 
@@ -270,7 +282,6 @@ async function iniciarCalendario() {
   });
 
   calendar.render();
-
 }
 
 </script>
