@@ -122,7 +122,9 @@ function iniciarCalendario() {
       eventos.push({
         id: docItem.id,
         title: `${l.orgao || "Sem órgão"} - ${l.objeto || ""}`,
-        start: l.dataSessao,
+        start: l.dataSessao?.includes("/")
+  ? l.dataSessao.split("/").reverse().join("-")
+  : l.dataSessao,
         color: corStatus ? corStatus(l.status) : "#d8a84e",
         extendedProps: {
           cliente: l.clienteId || "",
