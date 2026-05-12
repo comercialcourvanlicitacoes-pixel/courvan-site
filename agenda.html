@@ -71,41 +71,11 @@ const auth = getAuth(app);
 
 
 // =========================
-// SEGURANÇA (LOGIN OBRIGATÓRIO)
+// LOGIN CHECK (CORRIGIDO)
 // =========================
-import { getAuth, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const auth = getAuth(app);
-
-// 🔥 espera o Firebase restaurar sessão corretamente
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-
-    // pequeno delay evita falso negativo
-    setTimeout(() => {
-
-      const currentUser = auth.currentUser;
-
-      if (!currentUser) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      iniciarCalendario();
-
-    }, 500);
-
-    return;
-  }
-
-  iniciarCalendario();
-
-});
-
-  if (!user) {
-    alert("Você precisa estar logado para acessar a agenda.");
     window.location.href = "login.html";
     return;
   }
@@ -133,9 +103,6 @@ function iniciarCalendario() {
       right: 'dayGridMonth,timeGridWeek,listWeek'
     },
 
-    // =========================
-    // FIREBASE EVENTS
-    // =========================
     events: async function(fetchInfo, successCallback) {
 
       const eventos = [];
@@ -149,14 +116,14 @@ function iniciarCalendario() {
 
           const l = docItem.data();
 
-          // 🔥 só em andamento
-          if (l.status === "andamento") {
+          // 🔥 SOMENTE EM ANDAMENTO
+          if (l.status === "andamento" && l.dataSessao) {
 
             eventos.push({
               id: docItem.id,
               title: `${l.orgao} - ${l.objeto}`,
               start: l.dataSessao,
-              color: "#ffc107",
+              color: "#d8a84e",
               extendedProps: {
                 cliente: l.clienteId,
                 valor: l.valor,
@@ -177,18 +144,15 @@ function iniciarCalendario() {
 
     },
 
-    // =========================
-    // CLICK EVENTO
-    // =========================
     eventClick: function(info) {
 
       const p = info.event.extendedProps;
 
       alert(
         "📌 Licitação: " + info.event.title +
-        "\n👤 Cliente: " + p.cliente +
+        "\n👤 Cliente: " + (p.cliente || "N/A") +
         "\n📊 Status: " + p.status +
-        "\n💰 Valor: " + p.valor
+        "\n💰 Valor: " + (p.valor || "N/A")
       );
 
     }
