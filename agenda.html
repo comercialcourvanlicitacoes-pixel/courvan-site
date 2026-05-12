@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda de Licitações</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f6fa;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    #calendar {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>📅 Agenda de Licitações</h2>
+
+<div id="calendar"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const calendarEl = document.getElementById('calendar');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+
+    initialView: 'dayGridMonth',
+    locale: 'pt-br',
+
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,listWeek'
+    },
+
+    events: function(fetchInfo, successCallback) {
+
+      // 🔥 DADOS MOCKADOS (depois vem do backend)
+      const eventos = [
+        {
+          id: 1,
+          title: "Prefeitura BH - Limpeza Urbana",
+          start: "2026-05-14",
+          color: "#28a745",
+          extendedProps: {
+            cliente: "Cliente A",
+            status: "Em andamento",
+            valor: "R$ 80.000"
+          }
+        },
+        {
+          id: 2,
+          title: "Estado MG - Alimentação Escolar",
+          start: "2026-05-18",
+          color: "#ffc107",
+          extendedProps: {
+            cliente: "Cliente B",
+            status: "A abrir",
+            valor: "R$ 250.000"
+          }
+        }
+      ];
+
+      successCallback(eventos);
+    },
+
+    eventClick: function(info) {
+      const p = info.event.extendedProps;
+
+      alert(
+        "📌 Licitação: " + info.event.title +
+        "\n👤 Cliente: " + p.cliente +
+        "\n📊 Status: " + p.status +
+        "\n💰 Valor: " + p.valor
+      );
+    }
+  });
+
+  calendar.render();
+});
+</script>
+
+</body>
+</html>
