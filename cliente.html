@@ -1700,7 +1700,9 @@ function atualizarDashboard(snapshot){
   });
 
   // GRÁFICO PIZZA
+  try {
   if (chartPizza) chartPizza.destroy();
+} catch(e){}
 
 chartPizza = new Chart(document.getElementById("chartPizza"), {
     type: "pie",
