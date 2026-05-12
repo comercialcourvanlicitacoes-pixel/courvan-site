@@ -545,6 +545,8 @@ function listarLicitacoes() {
 
   onSnapshot(q, (snapshot) => {
 
+    atualizarDashboard(snapshot);
+
     div.innerHTML = `
 
   <h2 style="margin-bottom:15px;color:#d8a84e;">
