@@ -1715,7 +1715,9 @@ chartPizza = new Chart(document.getElementById("chartPizza"), {
   });
 
   // GRÁFICO BARRAS
+  try {
   if (chartBar) chartBar.destroy();
+} catch(e){}
 
 chartBar = new Chart(document.getElementById("chartBar"), {
     type: "bar",
