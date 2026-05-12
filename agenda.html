@@ -52,7 +52,47 @@ document.addEventListener('DOMContentLoaded', function () {
       right: 'dayGridMonth,timeGridWeek,listWeek'
     },
 
-    events: function(fetchInfo, successCallback) {
+    events: async function(fetchInfo, successCallback) {
+
+  const eventos = [];
+
+  try {
+
+    const q = query(collection(db, "licitacoes"));
+
+    const snapshot = await getDocs(q);
+
+    snapshot.forEach((docItem) => {
+
+      const l = docItem.data();
+
+      // 🔥 só "em andamento"
+      if (l.status === "andamento") {
+
+        eventos.push({
+          id: docItem.id,
+          title: `${l.orgao} - ${l.objeto}`,
+          start: l.dataSessao,
+          color: "#ffc107",
+          extendedProps: {
+            cliente: l.clienteId,
+            valor: l.valor,
+            status: l.status
+          }
+        });
+
+      }
+
+    });
+
+    successCallback(eventos);
+
+  } catch (error) {
+    console.error("Erro ao carregar licitações:", error);
+    successCallback([]);
+  }
+
+}
 
       // 🔥 DADOS MOCKADOS (depois vem do backend)
       const eventos = [
