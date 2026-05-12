@@ -1438,6 +1438,30 @@ window.alterarSenha = async function () {
   }
 
 };
+
+window.logout = async function () {
+
+  const confirmar = confirm(
+    "Deseja sair do sistema?"
+  );
+
+  if (!confirmar) return;
+
+  try {
+
+    await signOut(auth);
+
+    window.location.href = "login.html";
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert("Erro ao sair");
+
+  }
+
+};
   
 window.mostrarAba = function (id) {
 
