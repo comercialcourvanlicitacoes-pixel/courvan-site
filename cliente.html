@@ -555,6 +555,8 @@ let emailClienteGlobal = "";
   
 function listarLicitacoes() {
 
+  const filtroMes = document.getElementById("filtroMes")?.value;
+
   const div = document.getElementById("listaLicitacoes");
 
   const q = query(
