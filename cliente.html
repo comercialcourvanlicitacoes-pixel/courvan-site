@@ -1596,6 +1596,85 @@ window.mostrarAba = function (id) {
   }
 };
 
+function atualizarDashboard(snapshot){
+
+  let total = 0;
+  let andamento = 0;
+  let vencidas = 0;
+  let perdidas = 0;
+  let valorTotal = 0;
+
+  let proximas = [];
+
+  snapshot.forEach(docItem => {
+
+    const l = docItem.data();
+
+    total++;
+
+    const valor = parseFloat(l.valor || 0);
+    valorTotal += valor;
+
+    if(l.status === "andamento") andamento++;
+    if(l.status === "vencida") vencidas++;
+    if(l.status === "perdida") perdidas++;
+
+    if(l.dataSessao){
+      proximas.push(l);
+    }
+
+  });
+
+  // KPIs
+  document.getElementById("kpiTotal").innerText = total;
+  document.getElementById("kpiAndamento").innerText = andamento;
+  document.getElementById("kpiVencidas").innerText = vencidas;
+  document.getElementById("kpiPerdidas").innerText = perdidas;
+  document.getElementById("kpiValor").innerText =
+    "R$ " + valorTotal.toLocaleString("pt-BR");
+
+  const taxa = total ? ((vencidas / total) * 100).toFixed(1) : 0;
+  document.getElementById("kpiTaxa").innerText = taxa + "%";
+
+  // próximas licitações
+  const div = document.getElementById("proximas");
+  div.innerHTML = "";
+
+  proximas.slice(0,5).forEach(l => {
+
+    div.innerHTML += `
+      <div style="padding:10px;border-bottom:1px solid #1d4b7d;">
+        <strong>${l.orgao}</strong> - ${l.objeto}<br>
+        <small>${l.dataSessao}</small>
+      </div>
+    `;
+
+  });
+
+  // GRÁFICO PIZZA
+  new Chart(document.getElementById("chartPizza"), {
+    type: "pie",
+    data: {
+      labels: ["Andamento", "Vencidas", "Perdidas"],
+      datasets: [{
+        data: [andamento, vencidas, perdidas]
+      }]
+    }
+  });
+
+  // GRÁFICO BARRAS
+  new Chart(document.getElementById("chartBar"), {
+    type: "bar",
+    data: {
+      labels: ["Total", "Andamento", "Vencidas", "Perdidas"],
+      datasets: [{
+        data: [total, andamento, vencidas, perdidas]
+      }]
+    }
+  });
+
+}
+  
 </script>
 
 </body>
