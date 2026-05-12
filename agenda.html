@@ -52,7 +52,9 @@ import {
 
 import {
   getAuth,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
@@ -69,20 +71,46 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// 🔥 garante login persistente
+await setPersistence(auth, browserLocalPersistence);
 
 // =========================
-// LOGIN CHECK (CORRIGIDO)
+// LOGIN CHECK CORRIGIDO
 // =========================
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-    window.location.href = "login.html";
+    setTimeout(() => {
+      if (!auth.currentUser) {
+        window.location.href = "login.html";
+      } else {
+        iniciarCalendario();
+      }
+    }, 400);
     return;
   }
 
   iniciarCalendario();
-
 });
+
+
+// =========================
+// FUNÇÃO COR DE STATUS
+// =========================
+function corStatus(status){
+
+  switch(status){
+
+    case "aviso": return "#1d4b7d";
+    case "andamento": return "#d8a84e";
+    case "vencida": return "#2ecc71";
+    case "perdida": return "#e74c3c";
+    case "descartada": return "#2c3e50";
+    default: return "#999";
+
+  }
+
+}
 
 
 // =========================
@@ -116,22 +144,25 @@ function iniciarCalendario() {
 
           const l = docItem.data();
 
-          // 🔥 SOMENTE EM ANDAMENTO
-          if (l.status === "andamento" && l.dataSessao) {
+          if (!l.dataSessao) return;
 
-            eventos.push({
-              id: docItem.id,
-              title: `${l.orgao} - ${l.objeto}`,
-              start: l.dataSessao,
-              color: "#d8a84e",
-              extendedProps: {
-                cliente: l.clienteId,
-                valor: l.valor,
-                status: l.status
-              }
-            });
+          eventos.push({
 
-          }
+            id: docItem.id,
+            title: `${l.orgao} - ${l.objeto}`,
+            start: l.dataSessao,
+            color: corStatus(l.status),
+
+            extendedProps: {
+              cliente: l.clienteId,
+              valor: l.valor,
+              status: l.status,
+              orgao: l.orgao,
+              objeto: l.objeto,
+              linkEdital: l.linkEdital || ""
+            }
+
+          });
 
         });
 
@@ -144,15 +175,21 @@ function iniciarCalendario() {
 
     },
 
+    // =========================
+    // CLICK EVENTO (DETALHADO)
+    // =========================
     eventClick: function(info) {
 
       const p = info.event.extendedProps;
 
       alert(
-        "📌 Licitação: " + info.event.title +
-        "\n👤 Cliente: " + (p.cliente || "N/A") +
-        "\n📊 Status: " + p.status +
-        "\n💰 Valor: " + (p.valor || "N/A")
+        "📌 Licitação\n\n" +
+        "Órgão: " + p.orgao + "\n" +
+        "Objeto: " + p.objeto + "\n" +
+        "Status: " + p.status + "\n" +
+        "Cliente ID: " + p.cliente + "\n" +
+        "Valor: " + p.valor + "\n" +
+        "Link: " + (p.linkEdital || "N/A")
       );
 
     }
