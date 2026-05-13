@@ -1,0 +1,61 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#07162b;
+  color:white;
+  padding:40px;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+}
+
+h1{
+  color:#d8a84e;
+  margin-bottom:30px;
+}
+
+.filtros{
+  display:flex;
+  gap:10px;
+  margin-bottom:30px;
+}
+
+input{
+  flex:1;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+}
+
+button{
+  padding:14px 20px;
+  border:none;
+  border-radius:10px;
+  background:#d8a84e;
+  color:#07162b;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.card{
+  background:#0c2748;
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+
+.card h2{
+  color:#d8a84e;
+  margin-bottom:10px;
+}
+
+.card p{
+  margin-bottom:8px;
+}
