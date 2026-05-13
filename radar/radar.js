@@ -13,14 +13,14 @@ botao.addEventListener("click", async () => {
   try{
 
     const resposta = await fetch(
-      `https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao?pagina=1&tamanhoPagina=10&termo=${palavra}`
+      `https://pncp.gov.br/api/search/?q=${palavra}`
     );
 
     const dados = await resposta.json();
 
     resultados.innerHTML = "";
 
-    if(!dados.data || dados.data.length === 0){
+    if(!dados.items || dados.items.length === 0){
 
       resultados.innerHTML = `
         <p>Nenhuma oportunidade encontrada.</p>
@@ -30,27 +30,28 @@ botao.addEventListener("click", async () => {
 
     }
 
-    dados.data.forEach(item => {
+    dados.items.slice(0,10).forEach(item => {
 
       resultados.innerHTML += `
 
         <div class="card">
 
-          <h2>${item.objetoCompra || "Sem título"}</h2>
+          <h2>${item.title || "Sem título"}</h2>
 
           <p>
             <strong>Órgão:</strong>
-            ${item.orgaoEntidade?.razaoSocial || "Não informado"}
-          </p>
-
-          <p>
-            <strong>Município:</strong>
-            ${item.unidadeOrgao?.municipioNome || "Não informado"}
+            ${item.organization || "Não informado"}
           </p>
 
           <p>
             <strong>Data:</strong>
-            ${item.dataAberturaProposta || "Não informado"}
+            ${item.date || "Não informado"}
+          </p>
+
+          <p>
+            <a href="${item.url}" target="_blank">
+              Abrir Licitação
+            </a>
           </p>
 
         </div>
