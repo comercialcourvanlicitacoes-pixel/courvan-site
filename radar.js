@@ -6,25 +6,13 @@ async function buscarLicitacoes(){
 
     const url =
       "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
-      "?dataInicial=20260501" +
+      "?dataInicial=20260514" +
       "&dataFinal=20260514" +
       "&codigoModalidadeContratacao=1" +
       "&pagina=1" +
-      "&tamanhoPagina=3";
+      "&tamanhoPagina=1";
 
-    const controller = new AbortController();
-
-    const timeout = setTimeout(() => {
-      controller.abort();
-    }, 60000);
-
-    const response = await fetch(url, {
-      signal: controller.signal
-    });
-
-    clearTimeout(timeout);
-
-    console.log("Resposta recebida.");
+    const response = await fetch(url);
 
     const data = await response.json();
 
