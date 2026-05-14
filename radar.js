@@ -8,11 +8,11 @@ async function buscarLicitacoes() {
 
     const url =
       "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
-      "?dataInicial=20260514" +
-      "&dataFinal=20260514" +
+      "?dataInicial=20260510" +   // 🔥 ampliado
+      "&dataFinal=20260514" +     // 🔥 ampliado
       "&codigoModalidadeContratacao=8" +
       "&pagina=1" +
-      "&tamanhoPagina=10";
+      "&tamanhoPagina=50";        // 🔥 aumentado
 
     console.log("Consultando PNCP...");
 
