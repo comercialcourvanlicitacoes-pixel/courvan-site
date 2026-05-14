@@ -4,8 +4,8 @@ async function buscarLicitacoes(){
 
     const url =
       "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
-      "?dataInicial=2026-05-01" +
-      "&dataFinal=2026-05-14" +
+      "?dataInicial=20260501" +
+      "&dataFinal=20260514" +
       "&codigoModalidadeContratacao=1" +
       "&pagina=1" +
       "&tamanhoPagina=20";
