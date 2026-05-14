@@ -1,5 +1,53 @@
 [
   {
+    "orgao": "MUNICIPIO DE BAIXA GRANDE",
+    "cidade": "Baixa Grande",
+    "estado": "BA",
+    "objeto": "Contratação de empresa especializada, visando à aquisição futura de \r\nutensílios domésticos destinados à composição e adequação das cozinhas das unidades \r\nde ensino da rede municipal de Baixa Grande/BA, com o propósito de garantir \r\ninfraestrutura adequada ao preparo, armazenamento e distribuição da alimentação \r\nescolar, assegurando melhores condições de trabalho aos servidores e a qualidade das \r\nrefeições oferecidas aos alunos.",
+    "tags": [],
+    "valor": 65504.82,
+    "modalidade": "Dispensa",
+    "abertura": "2026-04-15T08:00:00",
+    "encerramento": "2026-04-17T17:00:00",
+    "link": "sai.io.org.br/site/PublicadoPncp/159545?localConsulta=2&title=2&cod=1542"
+  },
+  {
+    "orgao": "COMANDO DA MARINHA",
+    "cidade": "Niterói",
+    "estado": "RJ",
+    "objeto": "Rádio Transceptor portátil VHF dual band VHF/UHF FM com capacidade mínima de 16 canais, potencia de saída 5W/1W, voltagem de 110V-220V (BIVOLT) e com capacidade de 800 metros em lugares fechados. Range de Frequência VHF 136.00-174.00 MHZ. Programável por PC ou manual",
+    "tags": [],
+    "valor": 1709.95,
+    "modalidade": "Dispensa",
+    "abertura": "2026-05-11T08:00:00",
+    "encerramento": "2026-05-14T08:04:00",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "COMANDO DA MARINHA",
+    "cidade": "Natal",
+    "estado": "RN",
+    "objeto": "Aquisição de equipamentos e componentes para refrigeração das áreas e habitações",
+    "tags": [],
+    "valor": 53535.27,
+    "modalidade": "Dispensa",
+    "abertura": "2026-05-11T08:00:00",
+    "encerramento": "2026-05-15T08:00:00",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE BELEM DE SAO FRANCISCO",
+    "cidade": "Belém do São Francisco",
+    "estado": "PE",
+    "objeto": "[Portal de Compras Públicas] - aquisição de 7 Kits Brincar e Incluir destinados aos alunos da rede pública de ensino de Belém do São Francisco/PE, visando atender às necessidades pedagógicas alinhadas às diretrizes da Base Nacional Comum Curricular (BNCC), conforme solicitação da Secretaria de Educação.",
+    "tags": [],
+    "valor": 63700,
+    "modalidade": "Dispensa",
+    "abertura": "2026-05-11T10:00:00",
+    "encerramento": "2026-05-14T10:00:00",
+    "link": "https://www.portaldecompraspublicas.com.br/processos/PE/Prefeitura-Municipal-de-Belem-de-Sao-Francisco-4988/DE-012-2026-2026-478448"
+  },
+  {
     "orgao": "INSTITUTO DE PREVIDENCIA E ASSISTENCIA DO MUNICIPIO DE ALEGRE",
     "cidade": "Alegre",
     "estado": "ES",
@@ -8,6 +56,20 @@
       "limpeza"
     ],
     "valor": 6830,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "INSTITUTO DE PREVIDENCIA E ASSISTENCIA DO MUNICIPIO DE ALEGRE",
+    "cidade": "Alegre",
+    "estado": "ES",
+    "objeto": "O IPASMA NECESSITA DE SERVICOS ESPECIALIZADOS DE CONSULTORIA E ASSESSORIA JURIDICA EM LICITACOES E CONTRATOS ADINISTRATIVOS, COM FOCO NO SUPORTE TECNICO JURIDICO A ESTRUTURACAO, REVISAO, ADEQUACAO E MANUTENCAO DOS PROCEDIENTOS ADM A LEI 14133/2021",
+    "tags": [
+      "administrativo"
+    ],
+    "valor": 42000,
     "modalidade": "Dispensa",
     "abertura": "Não informado",
     "encerramento": "Não informado",
@@ -29,6 +91,368 @@
     "link": "Sem link"
   },
   {
+    "orgao": "COMANDO DA MARINHA",
+    "cidade": "Rio Grande",
+    "estado": "RS",
+    "objeto": "Aquisição de eletrodos, discos de corte, mangueiras de combate a alagamento, lâmpadas de emergência e cabos elétricos.",
+    "tags": [],
+    "valor": 6364.68,
+    "modalidade": "Dispensa",
+    "abertura": "2026-05-11T08:00:00",
+    "encerramento": "2026-05-14T08:00:00",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "CONSELHO REGIONAL DE ENGENHARIA E AGRONOMIA DA PARAIBA - CREA-PB",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "objeto": "Contratação de empresa especializada no fornecimento de café e açúcar para atender à demanda de consumo da Sede e demais Inspetorias do Conselho Regional de Engenharia e Agronomia da Paraíba.",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 9048,
+    "modalidade": "Dispensa",
+    "abertura": "2026-05-11T08:00:00",
+    "encerramento": "2026-05-14T08:00:00",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAIS DE CONSTRUÇÃO PARA MANUTENÇÃO DA POLICLINICA CENTRAL. C.O. 1002.",
+    "tags": [],
+    "valor": 1607,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAIS DE CONSTRUÇÃO PARA MANUTENÇÃO DA POLICLINICA CENTRAL. C.O. 1002.",
+    "tags": [],
+    "valor": 4351.8,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "PRESTAÇÃO DE SERVIÇO PARA REVISÃO DE 50.000KMS NO VEÍCULO CHEVROLET SPIN 1.8L AT LTZ, DE PLACA TCT7G66, FROTA 308, UTILIZADO NA SECRETARIA DE SAÚDE. C.O. 1002.",
+    "tags": [],
+    "valor": 503.98,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "SERVIÇO DE MANUTENÇÃO DE IMPRESSORA DESTINADA A CRECHE ERMELINDA CASCELLY CURY - 2º ENDEREÇO.\nFONTE: 500 - C.O 1001",
+    "tags": [],
+    "valor": 485,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAIS  AMBULATORIAIS - COLETOR DE URINA(BOLSA DESCARTAVEL) E LUVA NITRILICA SEM PÓ G - DESTINADOS A  UTILIZAÇÃO NOS ATENDIMENTOS DOS PACIENTES.",
+    "tags": [],
+    "valor": 577,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAL AMBULATORIAL -  BOTA DE UNNA E PASTA DE CONTATO PARA ELETROENCEFALOGRAMA - DESTINADOS NA UTILIZAÇÃO NOS ATENDIMENTOS DOS PACIENTE.",
+    "tags": [],
+    "valor": 2465.76,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "CONTRATAÇÃO DE SERVIÇO DE BUFFET DE CAFÉ DA MANHÃ PARA O LANÇAMENTO DA 4ª EDIÇÃO DO ANDRADAS CAFÉ FESTIVAL, CARDÁPIO PARA 75 PESSOAS.",
+    "tags": [],
+    "valor": 3000,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MANGUEIRA PARA USO DO CAMINHÃO PIPA, PLACA HMG-3106, FROTA 197,  CAMINHÃO PIPA, PLACA GTM4D54, FROTA 231, CAMINHÃO PIPA, PLACA HNH0G45, FROTA 303 E CAMINHÃO PIPA, FROTA 321 UTILIZADOS NA SECRETARIA MUNICIPAL DE OBRAS E SERVIÇOS PÚBLICOS DE ANDRADAS-MG.",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 3750,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAIS AMBULATORIAIS - AGULHA PARA ACUPUNTURA 0,20/15 E OXIMETROS DE  DEDO - DESTINADOS AO SETOR DE ESPECIALIDADES, POLICLINICA E AO SETOR DE FISIOTERAPIA, PARA UTILIZAÇÃO NOS ATENDIMENTOS AO PACIENTES.",
+    "tags": [],
+    "valor": 599,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE TERMINAL PARA MANUTENÇÃO DO VEÍCULO MOTONIVELADORA CATERPILLAR, FROTA 203 UTILIZADO NA SECRETARIA MUNICIPAL DE OBRAS E SERVIÇOS PÚBLICOS.",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 570,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MOTOR DE PARTIDA PARA  MANUTENÇÃO  DO VEÍCULO CAMINHÃO DE PLACA RFA6F40, FROTA 251 UTILIZADO NA SECRETARIA MUNICIPAL DE OBRAS.",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 2145,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "PRESTAÇÃO DE SERVIÇO PARA INSTALAÇÃO DE APARELHOS DE ARES CONDICIONADOS NO CENTRO DE ATENÇÃO PSICOSSOCIAL - CAPS I. \nC.O.: 1002.",
+    "tags": [],
+    "valor": 4680,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA EXECUÇÃO DE ANÁLISES MICROBIOLÓGICAS DE AMOSTRAS DE ÁGUAS, NO PERÍODO DE DOZE MESES. RESOLUÇÃO N.º 9528/2024, BB, C/C 38977-3. FONTE 1621(ESTIMATIVO)",
+    "tags": [],
+    "valor": 5415.12,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE TINTA LATEX TOQUE FOSCO COMPLETO , COR BEBIDA PÚRPURA, PARA MANUTENÇÃO DA PINTURA DO PAVILHÃO DO VINHO.",
+    "tags": [],
+    "valor": 704,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAIS DE PINTURA QUE SERÃO UTILIZADOS NA MANUTENÇÃO DA PINTURA DO PAVILHÃO DO VINHO.",
+    "tags": [],
+    "valor": 1076.5,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "CONTRATAÇÃO DE ZOOTECNISTA PARA REALIZAÇÃO DA INSEMINAÇÃO EM REBANHO BOVINO, ATENDENDO AO PROJETO\nMAIS GENETICA PARA MÊS DE MARÇO DE 2026.",
+    "tags": [],
+    "valor": 3000,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE BANCOS DESTINADOS AO PARQUE MUNICIPAL RICARDO SASSERON.\nFONTE: 500.",
+    "tags": [],
+    "valor": 15480,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAL ELÉTRICO DIVERSO DESTINADO A MANUTENÇÃO DOS PRÉDIOS DAS ESCOLAS MUNICIPAIS.\nFONTE 500 - C.O 1001\nESTIMATIVO",
+    "tags": [],
+    "valor": 18,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "INSTITUTO FEDERAL DE EDUCACAO, CIENCIA E TECNOLOGIA DO RIO GRANDE DO SUL",
+    "cidade": "Bento Gonçalves",
+    "estado": "RS",
+    "objeto": "Contratação de serviços comuns de engenharia inerentes a Manutenção Preventiva de ares-condicionados.",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 90831.16,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAL ELÉTRICO DIVERSO DESTINADO A MANUTENÇÃO DOS PRÉDIOS DAS ESCOLAS MUNICIPAIS.\nFONTE 500 - C.O 1001\nESTIMATIVO",
+    "tags": [],
+    "valor": 565,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE MATERIAL ELÉTRICO DIVERSO DESTINADO A MANUTENÇÃO DOS PRÉDIOS DAS ESCOLAS MUNICIPAIS.\nFONTE 500 - C.O 1001\nESTIMATIVO",
+    "tags": [],
+    "valor": 2924.59,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE ÓLEO 10W30 PARA USO DOS VEÍCULOS UTILIZADOS  NA GUARDA MUNICIPAL DE ANDRADAS - MG.",
+    "tags": [],
+    "valor": 1680,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE VENTILADOR PARA O CENTRO DE ATENDIMENTO AO TURISTA.",
+    "tags": [],
+    "valor": 277.2,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "CONTRATAÇÃO DE SERVIÇO DE MANUTENÇÃO DE GELADEIRA INDUSTRIAL (INSTALAÇÃO DE TRAVAS NAS PORTAS) UTILIZADA NA REFRIGERAÇÃO DE ITENS DA MERENDA ESCOLAR.\nFONTE: 500 - C.O 0000\nESTIMATIVO",
+    "tags": [],
+    "valor": 888,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE DOIS VENTILADORES PARA SALAS ADMINISTRATIVAS DO TEATRO MUNCIPAL STIVANIN GIUSEPPE.",
+    "tags": [],
+    "valor": 554.4,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "CONSELHO REGIONAL DE ENGENHARIA E AGRONOMIA DA PARAIBA - CREA-PB",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "objeto": "Contratação de empresa especializada no fornecimento de materiais gráficos para atender à demanda da Sede e demais Inspetorias do Conselho Regional de Engenharia e Agronomia da Paraíba.",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 64050.5,
+    "modalidade": "Dispensa",
+    "abertura": "2026-05-12T08:00:00",
+    "encerramento": "2026-05-15T08:00:00",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUSIÇÃO DE CIMENTO PARA REDES DE DRENAGEM DE ÁGUA PLUVIAL E ESGOTAMENTO SANITÁRIO PARA A PAVIMENTAÇÃO DE TRECHO DA AVENIDA SÃO JOSÉ CONFORME PROCESSO 14.468/2025",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 1785,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
     "orgao": "MUNICIPIO DE ANDRADAS",
     "cidade": "Andradas",
     "estado": "MG",
@@ -37,6 +461,168 @@
       "limpeza"
     ],
     "valor": 260,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "CONTRATAÇÃO DE PALESTRANTE PARA O EVENTO \"PALESTRA MAGNA SOBRE AUTISMO E NEURODIVERSIDADE\", SOBRE O TEMA \"NEUROCIENCIA EDUCACIONAL: UMA LUZ NO FIM DO TUNEL - FERRAMENTAS PRÁTICAS DA NEUROCIENCIA PARA A SALA DE AULA\" QUE SERÁ REALIZADO NO PAVILHÃO DO VINHO NO DIA 8 DE ABRIL, DESTINADO AOS PROFISSIONAIS DE EDUCAÇÃO E PAIS DE ALUNOS.\nFONTE 500 - C.O 1001",
+    "tags": [],
+    "valor": 5000,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE PASSAGEM AÉREA (IDA E VOLTA), DESTINADA A SECRETÁRIA MUNICIPAL DE FAZENDA, SANDRA DE CÁSSIA ROSSI, PARA BELO HORIZONTE, NO DIA 15 DE ABRIL DE 2026, PARA TRATAR DE ASSUNTOS DE INTERESSE DESTA MUNICIPALIDADE JUNTO AO TRIBUNAL DE CONTAS DO ESTADO DE MINAS GERAIS. FONTE 1.500.",
+    "tags": [],
+    "valor": 1512.41,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE PASSAGEM AÉREA (IDA E VOLTA), DESTINADA AO PROCURADOR GERAL DO MUNICÍPIO, DANIEL HENRIQUE FERRAZ, PARA BELO HORIZONTE, NO DIA 15 DE ABRIL DE 2026, PARA TRATAR DE ASSUNTOS DE INTERESSE DESTA MUNICIPALIDADE JUNTO AO TRIBUNAL DE CONTAS DO ESTADO DE MINAS GERAIS. FONTE 1.500.",
+    "tags": [],
+    "valor": 1512.41,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE PASSAGEM AÉREA (IDA E VOLTA), DESTINADA A CONROLADORA INTERNA, MARIANA TEIXEIRA CANCHERINI RIBEIRO, PARA BELO HORIZONTE, NO DIA 15 DE ABRIL DE 2026, PARA TRATAR DE ASSUNTOS DE INTERESSE DESTA MUNICIPALIDADE JUNTO AO TRIBUNAL DE CONTAS DO ESTADO DE MINAS GERAIS. FONTE 1.501.",
+    "tags": [],
+    "valor": 1512.41,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "PASSAGEM AÉREA DESTINADA A EXCELENTÍSSIMA SENHORA PREFEITA MARGOT NAVARRO GRAZIANI PIOLI, PARA VIAGEM A BELO HORIZONTE-MG, IDA NO DIA 15/04/2026 E VOLTA NO DIA 15/04/2026, PARA PARTICIPAR DE REUNIÃO NO TRIBUNAL DE CONTAS COM OS CONSELHEIROS E TRATAR DE ASSUNTOS DE INTERESSE DESTA MUNICIPALIDADE.",
+    "tags": [],
+    "valor": 1512.41,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISICAO DE APARELHO DE AR-CONDICIONADO DESTINADO A DIVISAO DE TECNOLOGIA DA INFORMACAO.",
+    "tags": [
+      "ti"
+    ],
+    "valor": 3641.68,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "INSTITUTO FEDERAL DE EDUCACAO, CIENCIA E TECNOLOGIA DO RIO GRANDE DO SUL",
+    "cidade": "Bento Gonçalves",
+    "estado": "RS",
+    "objeto": "CONTRATAÇÃO DE SERVIÇOS COMUNS DE ENGENHARIA INERENTES À MANUTENÇÃO PREDIAL CORRETIVA E PREVENTIVA, COM FORNECIMENTO DE MATERIAIS, EQUIPAMENTOS, FERRAMENTAS E UTENSÍLIOS NECESSÁRIOS PARA O IFRS – CAMPUS VERANÓPOLIS.",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 127556.88,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "CONSELHO REGIONAL DE ENGENHARIA E AGRONOMIA DA PARAIBA - CREA-PB",
+    "cidade": "João Pessoa",
+    "estado": "PB",
+    "objeto": "Contratação de empresa especializada para o fornecimento de caixas de som novas de primeiro uso, conforme especificações e quantitativos detalhados no Termo de Referência, a serem entregues nas instalações do Conselho Regional de Engenharia e Agronomia da Paraíba (Crea-PB), em João Pessoa e em suas inspetorias localizadas no Estado da Paraíba.",
+    "tags": [
+      "construcao"
+    ],
+    "valor": 28.14,
+    "modalidade": "Dispensa",
+    "abertura": "2026-05-13T08:00:00",
+    "encerramento": "2026-05-18T08:00:00",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE MIRANTE DO PARANAPANEMA",
+    "cidade": "Mirante do Paranapanema",
+    "estado": "SP",
+    "objeto": "contratação de SERVIÇOS DE MANUTENÇÃO PREVENTIVA E CORRETIVA DE VEÍCULOS EM PERÍODO DE GARANTIA DE FÁBRICA - REVISÃO DE 40.000 km, veículo Citroen/C3 AIRCROSS FL 7, placa TJR 7E26, Revisão de 500 horas, Pá Carregadeira LW300KV, frota 180",
+    "tags": [],
+    "valor": 12843.21,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE DEZ MIL COPOS DE PAPEL PERSONALIZADO PARA O EVENTO ANDRADAS CAFÉ FESTIVAL QUE SE REALIZARÁ NOS DIAS 30 DE ABRIL A 03 DE MAIO DE  2026.",
+    "tags": [],
+    "valor": 5600,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE APARELHOS DE ARES CONDIONADOS E CORTINA DE AR COM SERVIÇO DE INSTALAÇÃO PARA SECRETARIA DE SAUDE E VIGILÂNCIA EM SAÚDE. C.O.: 1002.",
+    "tags": [],
+    "valor": 12000,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "PLACAS COMEMORATIVAS DO PRÊMIO CUMBUCA “CIDADE GASTRONÔMICA 2026”, QUE SERÃO ENTREGUES DURANTE A CERIMÔNIA DE LANÇAMENTO NO DIA 10 DE ABRIL.",
+    "tags": [],
+    "valor": 8000,
+    "modalidade": "Dispensa",
+    "abertura": "Não informado",
+    "encerramento": "Não informado",
+    "link": "Sem link"
+  },
+  {
+    "orgao": "MUNICIPIO DE ANDRADAS",
+    "cidade": "Andradas",
+    "estado": "MG",
+    "objeto": "AQUISIÇÃO DE QUATRO BALANÇAS DIGITAIS A SEREM UTILIZADAS NO EVENTO ANDRADAS CAFÉ FESTIVAL DO DIA 01 A 03 DE MAIO DE 2026.",
+    "tags": [],
+    "valor": 680,
     "modalidade": "Dispensa",
     "abertura": "Não informado",
     "encerramento": "Não informado",
