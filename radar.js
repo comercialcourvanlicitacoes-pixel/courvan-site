@@ -8,13 +8,11 @@ async function buscarLicitacoes() {
 
     const url =
       "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
-      "?dataInicial=20260510" +   // 🔥 ampliado
-      "&dataFinal=20260514" +     // 🔥 ampliado
+      "?dataInicial=20260510" +
+      "&dataFinal=20260514" +
       "&codigoModalidadeContratacao=8" +
       "&pagina=1" +
-      "&tamanhoPagina=50";        // 🔥 aumentado
-
-    console.log("Consultando PNCP...");
+      "&tamanhoPagina=50";
 
     const response = await fetch(url);
 
@@ -26,15 +24,9 @@ async function buscarLicitacoes() {
 
     console.log("Total recebido:", lista.length);
 
-    // 🔎 filtro base rápido
-    const palavrasChave = [
-      "limpeza",
-      "zeladoria",
-      "conservação",
-      "higienização"
-    ];
+    // ❌ REMOVIDO FILTRO PESADO
+    // agora você NÃO corta dados aqui
 
-    // 🧠 categorias para tags
     const categorias = {
       limpeza: ["limpeza", "zeladoria", "higienização", "conservação"],
       construcao: ["obra", "engenharia", "reforma", "pavimentação"],
@@ -42,25 +34,7 @@ async function buscarLicitacoes() {
       administrativo: ["gestão", "consultoria", "apoio administrativo"]
     };
 
-    // ⚡ FILTRO INICIAL (leve e rápido)
-    const resultados = lista.filter((item) => {
-
-      const obj = item.objetoCompra;
-
-      if (!obj) return false;
-
-      const texto = obj.toLowerCase();
-
-      return palavrasChave.some(palavra =>
-        texto.includes(palavra)
-      );
-
-    });
-
-    console.log("Quantidade filtrada:", resultados.length);
-
-    // 🧩 MAPEAMENTO FINAL COM TAGS
-    const licitacoesFormatadas = resultados.map((item) => {
+    const licitacoesFormatadas = lista.map((item) => {
 
       const objetoTexto = item.objetoCompra || "";
       const objetoLower = objetoTexto.toLowerCase();
@@ -78,7 +52,7 @@ async function buscarLicitacoes() {
 
         objeto: objetoTexto,
 
-        // 🧠 TAGS INTELIGENTES
+        // tags continuam úteis (mas não para filtro obrigatório)
         tags: Object.keys(categorias).filter(categoria =>
           categorias[categoria].some(palavra =>
             objetoLower.includes(palavra)
@@ -112,10 +86,6 @@ async function buscarLicitacoes() {
     );
 
     console.log("Arquivo criado com sucesso!");
-
-    console.log("Verificando existência do arquivo...");
-
-    console.log(fs.existsSync("./oportunidades.json"));
 
   } catch (error) {
 
