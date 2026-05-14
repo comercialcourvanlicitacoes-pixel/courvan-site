@@ -486,6 +486,33 @@ window.criarLicitacao = async function () {
 let clienteIdGlobal = null;
 
 let emailClienteGlobal = "";
+
+window.salvarConfiguracoes = async function () {
+
+  const nome = document.getElementById("configNome").value;
+  const empresa = document.getElementById("configEmpresa").value;
+  const telefone = document.getElementById("configTelefone").value;
+  const cidade = document.getElementById("configCidade").value;
+  const segmentos = document.getElementById("configSegmentos").value;
+
+  if (!clienteIdGlobal) {
+    alert("Cliente não carregado");
+    return;
+  }
+
+  await updateDoc(
+    doc(db, "clientes", clienteIdGlobal),
+    {
+      nome,
+      empresa,
+      telefone,
+      cidade,
+      segmentos
+    }
+  );
+
+  alert("Configurações salvas com sucesso!");
+};
   
 function listarLicitacoes() {
 
