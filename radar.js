@@ -1,5 +1,8 @@
 const admin = require("firebase-admin");
 
+// =============================
+// FIREBASE INIT (via GitHub Secret)
+// =============================
 const serviceAccount = JSON.parse(
   process.env.FIREBASE_SERVICE_ACCOUNT
 );
@@ -10,6 +13,9 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+// =============================
+// FUNÇÃO PRINCIPAL
+// =============================
 async function buscarLicitacoes() {
 
   try {
@@ -32,9 +38,8 @@ async function buscarLicitacoes() {
     console.log("Total recebido:", lista.length);
 
     // =============================
-    // BUSCAR CLIENTES DO FIRESTORE
+    // BUSCAR CLIENTES
     // =============================
-
     const clientesSnap = await db.collection("clientes").get();
 
     const clientes = [];
@@ -47,30 +52,19 @@ async function buscarLicitacoes() {
       });
     });
 
-    const categorias = {
-      limpeza: ["limpeza", "zeladoria", "higienização", "conservação"],
-      construcao: ["obra", "engenharia", "reforma", "pavimentação"],
-      ti: ["software", "sistema", "tecnologia", "licença"],
-      administrativo: ["gestão", "consultoria", "apoio administrativo"]
-    };
-
+    // =============================
+    // LICITAÇÕES FORMATADAS
+    // =============================
     const licitacoes = lista.map(item => {
 
       const objetoTexto = item.objetoCompra || "";
       const objetoLower = objetoTexto.toLowerCase();
-
-      const tags = Object.keys(categorias).filter(cat =>
-        categorias[cat].some(p =>
-          objetoLower.includes(p)
-        )
-      );
 
       return {
         orgao: item.orgaoEntidade?.razaoSocial || "Não informado",
         cidade: item.unidadeOrgao?.municipioNome || "Não informado",
         estado: item.unidadeOrgao?.ufSigla || "Não informado",
         objeto: objetoTexto,
-        tags,
         valor: item.valorTotalEstimado || 0,
         modalidade: item.modalidadeNome || "Não informado",
         abertura: item.dataAberturaProposta || "Não informado",
@@ -80,19 +74,27 @@ async function buscarLicitacoes() {
 
     });
 
-    console.log("Processando clientes e segmentação...");
+    console.log("Processando clientes...");
 
+    // =============================
+    // LOOP CLIENTE + FILTRO SEGMENTO
+    // =============================
     for (const cliente of clientes) {
 
       if (!cliente.segmentos) continue;
 
-      const segmentos = cliente.segmentos.split(",").map(s => s.trim());
+      const segmentos = cliente.segmentos
+        .split(",")
+        .map(s => s.trim());
 
       for (const licitacao of licitacoes) {
 
-        const texto = (
-          licitacao.objeto + " " + licitacao.orgao + " " + licitacao.tags.join(" ")
-        ).toLowerCase();
+        const texto =
+          (
+            licitacao.objeto +
+            " " +
+            licitacao.orgao
+          ).toLowerCase();
 
         const match = segmentos.some(seg =>
           texto.includes(seg)
@@ -103,7 +105,6 @@ async function buscarLicitacoes() {
         // =============================
         // EVITA DUPLICAÇÃO
         // =============================
-
         const existe = await db
           .collection("licitacoes")
           .where("clienteId", "==", cliente.id)
