@@ -1,4 +1,27 @@
-const fs = require("fs");
+const fetch = require("node-fetch");
+const admin = require("firebase-admin");
+
+// 🔐 inicializa Firebase Admin
+const serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
+
+// =============================
+// CONFIGURAÇÃO
+// =============================
+
+// 🔥 coloque aqui os IDs dos clientes que devem receber automaticamente
+const CLIENTES_ALVO = [
+  "COLOQUE_CLIENTE_ID_AQUI"
+];
+
+// =============================
+// FUNÇÃO PRINCIPAL
+// =============================
 
 async function buscarLicitacoes() {
 
@@ -24,9 +47,6 @@ async function buscarLicitacoes() {
 
     console.log("Total recebido:", lista.length);
 
-    // ❌ REMOVIDO FILTRO PESADO
-    // agora você NÃO corta dados aqui
-
     const categorias = {
       limpeza: ["limpeza", "zeladoria", "higienização", "conservação"],
       construcao: ["obra", "engenharia", "reforma", "pavimentação"],
@@ -41,51 +61,61 @@ async function buscarLicitacoes() {
 
       return {
 
-        orgao:
-          item.orgaoEntidade?.razaoSocial || "Não informado",
-
-        cidade:
-          item.unidadeOrgao?.municipioNome || "Não informado",
-
-        estado:
-          item.unidadeOrgao?.ufSigla || "Não informado",
+        orgao: item.orgaoEntidade?.razaoSocial || "Não informado",
+        cidade: item.unidadeOrgao?.municipioNome || "Não informado",
+        estado: item.unidadeOrgao?.ufSigla || "Não informado",
 
         objeto: objetoTexto,
 
-        // tags continuam úteis (mas não para filtro obrigatório)
         tags: Object.keys(categorias).filter(categoria =>
           categorias[categoria].some(palavra =>
             objetoLower.includes(palavra)
           )
         ),
 
-        valor:
-          item.valorTotalEstimado || 0,
-
-        modalidade:
-          item.modalidadeNome || "Não informado",
-
-        abertura:
-          item.dataAberturaProposta || "Não informado",
-
-        encerramento:
-          item.dataEncerramentoProposta || "Não informado",
-
-        link:
-          item.linkSistemaOrigem || "Sem link"
+        valor: item.valorTotalEstimado || 0,
+        modalidade: item.modalidadeNome || "Não informado",
+        abertura: item.dataAberturaProposta || "Não informado",
+        encerramento: item.dataEncerramentoProposta || "Não informado",
+        link: item.linkSistemaOrigem || "Sem link"
 
       };
 
     });
 
-    console.log("Criando arquivo oportunidades.json...");
+    console.log("Salvando no Firestore...");
 
-    fs.writeFileSync(
-      "./oportunidades.json",
-      JSON.stringify(licitacoesFormatadas, null, 2)
-    );
+    // =============================
+    // SALVAR PARA CADA CLIENTE
+    // =============================
 
-    console.log("Arquivo criado com sucesso!");
+    for (const clienteId of CLIENTES_ALVO) {
+
+      for (const licitacao of licitacoesFormatadas) {
+
+        const ref = db.collection("licitacoes");
+
+        // 🔥 prevenção simples de duplicação
+        const existe = await ref
+          .where("clienteId", "==", clienteId)
+          .where("objeto", "==", licitacao.objeto)
+          .limit(1)
+          .get();
+
+        if (!existe.empty) continue;
+
+        await ref.add({
+          clienteId,
+          ...licitacao,
+          status: "aviso",
+          dataCriacao: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+      }
+
+    }
+
+    console.log("Radar finalizado com sucesso!");
 
   } catch (error) {
 
