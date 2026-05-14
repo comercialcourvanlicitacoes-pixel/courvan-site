@@ -581,9 +581,14 @@ if (
     ? window.segmentosClienteCache
     : (clienteSegmentosGlobal || "");
 
-      const grupo = document.getElementById(
-  `grupo-${l.status || "aviso"}`
-);
+      const status = (l.status || "aviso").trim().toLowerCase();
+
+let grupo = document.getElementById(`grupo-${status}`);
+
+// fallback seguro
+if (!grupo) {
+  grupo = document.getElementById("grupo-aviso");
+}
 
 grupo.innerHTML += `
         <div style="background:#16385f;padding:20px;border-radius:14px;margin-bottom:15px;">
