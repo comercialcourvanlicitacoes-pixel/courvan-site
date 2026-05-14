@@ -10,7 +10,7 @@ async function buscarLicitacoes(){
       "&dataFinal=20260514" +
       "&codigoModalidadeContratacao=8" +
       "&pagina=1" +
-      "&tamanhoPagina=1";
+      "&tamanhoPagina=10";
 
     console.log("Consultando URL...");
 
