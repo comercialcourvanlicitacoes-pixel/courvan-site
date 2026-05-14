@@ -568,14 +568,14 @@ function listarLicitacoes() {
 
 // 🔥 filtro por segmento
 if (
-  segmentosClienteGlobal &&
-  !segmentosClienteGlobal
+  segmentosCliente &&
+  !segmentosCliente
     .split(",")
     .some(seg =>
-      textoLicitacao.includes(seg.trim())
+      textoLicitacao.includes(seg.trim().toLowerCase())
     )
 ) {
-  return; // não mostra essa licitação
+  return;
 }
 
       const segmentosCliente = (segmentosClienteGlobal || "").toLowerCase();
