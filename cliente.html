@@ -779,6 +779,9 @@ document.getElementById(
   emailClienteGlobal = cliente.email;
   document.getElementById("status").innerText = cliente.status;
 
+document.getElementById("configSegmentos").value =
+  cliente.segmentos || "";
+  
   listarDemandas();
 
   iniciarDocumentos();
