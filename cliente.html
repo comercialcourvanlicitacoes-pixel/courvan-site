@@ -777,6 +777,8 @@ document.getElementById(
 
   const cliente = docCliente.data();
 
+segmentosClienteGlobal = (cliente.segmentos || "").toLowerCase();
+  
   clienteIdGlobal = docCliente.id;
 
   document.getElementById("nome").innerText = cliente.nome;
