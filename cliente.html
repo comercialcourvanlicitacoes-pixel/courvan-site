@@ -558,6 +558,11 @@ function listarLicitacoes() {
 
       const l = docItem.data();
 
+      const segmentosCliente =
+  (emailClienteGlobal && window.segmentosClienteCache)
+    ? window.segmentosClienteCache
+    : (clienteSegmentosGlobal || "");
+
       const grupo = document.getElementById(
   `grupo-${l.status || "aviso"}`
 );
