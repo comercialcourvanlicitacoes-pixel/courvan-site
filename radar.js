@@ -55,25 +55,25 @@ async function buscarLicitacoes(){
       return {
 
         orgao:
-          item.orgaoEntidade?.razaoSocial || "Não informado",
+  item.orgaoEntidade?.razaoSocial || "Não informado",
 
-        cidade:
-          item.unidadeOrgao?.municipioNome || "Não informado",
+cidade:
+  item.unidadeOrgao?.municipioNome || "Não informado",
 
-        estado:
-          item.unidadeOrgao?.ufSigla || "Não informado",
+estado:
+  item.unidadeOrgao?.ufSigla || "Não informado",
 
-        objeto:
-          item.objetoCompra || "Não informado",
+objeto:
+  item.objetoCompra || "Não informado",
+
 tags: Object.keys(categorias).filter(categoria =>
   categorias[categoria].some(palavra =>
     (item.objetoCompra || "").toLowerCase().includes(palavra)
   )
-)
-        
+),
 
-        valor:
-          item.valorTotalEstimado || 0,
+valor:
+  item.valorTotalEstimado || 0,
 
         modalidade:
           item.modalidadeNome || "Não informado",
