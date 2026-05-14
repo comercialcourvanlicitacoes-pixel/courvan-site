@@ -1,8 +1,8 @@
 const fs = require("fs");
 
-async function buscarLicitacoes(){
+async function buscarLicitacoes() {
 
-  try{
+  try {
 
     console.log("Iniciando busca PNCP...");
 
@@ -22,8 +22,11 @@ async function buscarLicitacoes(){
 
     const data = await response.json();
 
-    console.log("Dados recebidos.");
+    const lista = data.data || [];
 
+    console.log("Total recebido:", lista.length);
+
+    // 🔎 filtro base rápido
     const palavrasChave = [
       "limpeza",
       "zeladoria",
@@ -31,49 +34,59 @@ async function buscarLicitacoes(){
       "higienização"
     ];
 
-    const resultados = data.data.filter((item) => {
+    // 🧠 categorias para tags
+    const categorias = {
+      limpeza: ["limpeza", "zeladoria", "higienização", "conservação"],
+      construcao: ["obra", "engenharia", "reforma", "pavimentação"],
+      ti: ["software", "sistema", "tecnologia", "licença"],
+      administrativo: ["gestão", "consultoria", "apoio administrativo"]
+    };
 
-      const objeto = item.objetoCompra?.toLowerCase() || "";
+    // ⚡ FILTRO INICIAL (leve e rápido)
+    const resultados = lista.filter((item) => {
 
-      return palavrasChave.some((palavra) =>
-        objeto.includes(palavra.toLowerCase())
+      const obj = item.objetoCompra;
+
+      if (!obj) return false;
+
+      const texto = obj.toLowerCase();
+
+      return palavrasChave.some(palavra =>
+        texto.includes(palavra)
       );
 
     });
 
     console.log("Quantidade filtrada:", resultados.length);
 
-    const categorias = {
-  limpeza: ["limpeza", "zeladoria", "higienização", "conservação"],
-  construcao: ["obra", "engenharia", "reforma", "pavimentação"],
-  ti: ["software", "sistema", "tecnologia", "licença"],
-  administrativo: ["gestão", "consultoria", "apoio administrativo"]
-};
-    
+    // 🧩 MAPEAMENTO FINAL COM TAGS
     const licitacoesFormatadas = resultados.map((item) => {
+
+      const objetoTexto = item.objetoCompra || "";
+      const objetoLower = objetoTexto.toLowerCase();
 
       return {
 
         orgao:
-  item.orgaoEntidade?.razaoSocial || "Não informado",
+          item.orgaoEntidade?.razaoSocial || "Não informado",
 
-cidade:
-  item.unidadeOrgao?.municipioNome || "Não informado",
+        cidade:
+          item.unidadeOrgao?.municipioNome || "Não informado",
 
-estado:
-  item.unidadeOrgao?.ufSigla || "Não informado",
+        estado:
+          item.unidadeOrgao?.ufSigla || "Não informado",
 
-objeto:
-  item.objetoCompra || "Não informado",
+        objeto: objetoTexto,
 
-tags: Object.keys(categorias).filter(categoria =>
-  categorias[categoria].some(palavra =>
-    (item.objetoCompra || "").toLowerCase().includes(palavra)
-  )
-),
+        // 🧠 TAGS INTELIGENTES
+        tags: Object.keys(categorias).filter(categoria =>
+          categorias[categoria].some(palavra =>
+            objetoLower.includes(palavra)
+          )
+        ),
 
-valor:
-  item.valorTotalEstimado || 0,
+        valor:
+          item.valorTotalEstimado || 0,
 
         modalidade:
           item.modalidadeNome || "Não informado",
@@ -104,10 +117,9 @@ valor:
 
     console.log(fs.existsSync("./oportunidades.json"));
 
-  }catch(error){
+  } catch (error) {
 
     console.log("ERRO:");
-
     console.log(error);
 
   }
