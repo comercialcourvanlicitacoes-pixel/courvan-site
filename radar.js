@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 async function buscarLicitacoes(){
 
   try{
@@ -68,9 +70,12 @@ async function buscarLicitacoes(){
 
     });
 
-    console.log("LICITAÇÕES FORMATADAS:");
+    fs.writeFileSync(
+      "oportunidades.json",
+      JSON.stringify(licitacoesFormatadas, null, 2)
+    );
 
-    console.log(JSON.stringify(licitacoesFormatadas, null, 2));
+    console.log("ARQUIVO oportunidades.json CRIADO!");
 
   }catch(error){
 
