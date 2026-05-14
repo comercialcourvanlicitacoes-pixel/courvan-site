@@ -560,6 +560,8 @@ function listarLicitacoes() {
 
       const l = docItem.data();
 
+      console.log("Licitação analisada:", l.objeto, "STATUS:", l.status);
+
       const textoLicitacao = (
   l.objeto + " " + l.orgao
 ).toLowerCase();
