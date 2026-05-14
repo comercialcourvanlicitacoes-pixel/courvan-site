@@ -21,7 +21,9 @@ jobs:
         run: npm install
 
       - name: Executar Radar
-        run: node radar.js
+  env:
+    FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+  run: node radar.js
 
       - name: Salvar oportunidades.json
         run: |
