@@ -31,7 +31,24 @@ async function buscarLicitacoes() {
       "&tamanhoPagina=50";
 
     const response = await fetch(url);
-    const data = await response.json();
+
+const text = await response.text();
+
+if (!response.ok) {
+  console.log("Erro HTTP PNCP:", response.status);
+  console.log("Resposta:", text);
+  return;
+}
+
+let data;
+
+try {
+  data = JSON.parse(text);
+} catch (e) {
+  console.log("PNCP retornou algo inválido:");
+  console.log(text);
+  return;
+}
 
     const lista = data.data || [];
 
