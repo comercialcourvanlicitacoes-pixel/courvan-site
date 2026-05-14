@@ -12,17 +12,65 @@ async function buscarLicitacoes(){
       "&pagina=1" +
       "&tamanhoPagina=10";
 
-    console.log("Consultando URL...");
-
     const response = await fetch(url);
-
-    console.log("Status HTTP:", response.status);
 
     const data = await response.json();
 
-    console.log("RESULTADO:");
+    const palavrasChave = [
+      "limpeza",
+      "zeladoria",
+      "conservação",
+      "higienização"
+    ];
 
-    console.log(JSON.stringify(data, null, 2));
+    const resultados = data.data.filter((item) => {
+
+      const objeto = item.objetoCompra?.toLowerCase() || "";
+
+      return palavrasChave.some((palavra) =>
+        objeto.includes(palavra.toLowerCase())
+      );
+
+    });
+
+    const licitacoesFormatadas = resultados.map((item) => {
+
+      return {
+
+        orgao:
+          item.orgaoEntidade?.razaoSocial || "Não informado",
+
+        cidade:
+          item.unidadeOrgao?.municipioNome || "Não informado",
+
+        estado:
+          item.unidadeOrgao?.ufSigla || "Não informado",
+
+        objeto:
+          item.objetoCompra || "Não informado",
+
+        valor:
+          item.valorTotalEstimado || 0,
+
+        modalidade:
+          item.modalidadeNome || "Não informado",
+
+        abertura:
+          item.dataAberturaProposta || "Não informado",
+
+        encerramento:
+          item.dataEncerramentoProposta || "Não informado",
+
+        link:
+          item.linkSistemaOrigem || "Sem link"
+
+      };
+
+    });
+
+    console.log("LICITAÇÕES FORMATADAS:");
+
+    console.log(JSON.stringify(licitacoesFormatadas, null, 2));
 
   }catch(error){
 
