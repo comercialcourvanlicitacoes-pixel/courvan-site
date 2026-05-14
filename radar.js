@@ -14,9 +14,15 @@ async function buscarLicitacoes(){
       "&pagina=1" +
       "&tamanhoPagina=10";
 
+    console.log("Consultando PNCP...");
+
     const response = await fetch(url);
 
+    console.log("Status HTTP:", response.status);
+
     const data = await response.json();
+
+    console.log("Dados recebidos.");
 
     const palavrasChave = [
       "limpeza",
@@ -34,6 +40,8 @@ async function buscarLicitacoes(){
       );
 
     });
+
+    console.log("Quantidade filtrada:", resultados.length);
 
     const licitacoesFormatadas = resultados.map((item) => {
 
@@ -70,12 +78,18 @@ async function buscarLicitacoes(){
 
     });
 
+    console.log("Criando arquivo oportunidades.json...");
+
     fs.writeFileSync(
-      "oportunidades.json",
+      "./oportunidades.json",
       JSON.stringify(licitacoesFormatadas, null, 2)
     );
 
-    console.log("ARQUIVO oportunidades.json CRIADO!");
+    console.log("Arquivo criado com sucesso!");
+
+    console.log("Verificando existência do arquivo...");
+
+    console.log(fs.existsSync("./oportunidades.json"));
 
   }catch(error){
 
