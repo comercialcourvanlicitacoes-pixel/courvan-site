@@ -16,14 +16,13 @@ jobs:
         with:
           node-version: 20
 
-      # 🔥 NOVO: instala dependências
       - name: Instalar dependências
         run: npm install
 
       - name: Executar Radar
-  env:
-    FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-  run: node radar.js
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node radar.js
 
       - name: Salvar oportunidades.json
         run: |
