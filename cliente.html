@@ -560,6 +560,15 @@ function listarLicitacoes() {
 
       const l = docItem.data();
 
+      console.log("📦 LICITAÇÃO RAW:", l);
+
+  console.log(
+    "Licitação analisada:",
+    l.objeto,
+    "STATUS:",
+    l.status
+  );
+
       console.log("Licitação analisada:", l.objeto, "STATUS:", l.status);
 
       const textoLicitacao = (
