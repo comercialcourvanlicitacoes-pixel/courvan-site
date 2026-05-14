@@ -43,6 +43,13 @@ async function buscarLicitacoes(){
 
     console.log("Quantidade filtrada:", resultados.length);
 
+    const categorias = {
+  limpeza: ["limpeza", "zeladoria", "higienização", "conservação"],
+  construcao: ["obra", "engenharia", "reforma", "pavimentação"],
+  ti: ["software", "sistema", "tecnologia", "licença"],
+  administrativo: ["gestão", "consultoria", "apoio administrativo"]
+};
+    
     const licitacoesFormatadas = resultados.map((item) => {
 
       return {
