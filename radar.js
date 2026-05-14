@@ -65,6 +65,12 @@ async function buscarLicitacoes(){
 
         objeto:
           item.objetoCompra || "Não informado",
+tags: Object.keys(categorias).filter(categoria =>
+  categorias[categoria].some(palavra =>
+    (item.objetoCompra || "").toLowerCase().includes(palavra)
+  )
+)
+        
 
         valor:
           item.valorTotalEstimado || 0,
