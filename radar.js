@@ -1,7 +1,6 @@
 const fetch = require("node-fetch");
 const admin = require("firebase-admin");
 
-// 🔐 inicializa Firebase Admin
 const serviceAccount = require("./serviceAccountKey.json");
 
 admin.initializeApp({
@@ -9,19 +8,6 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-
-// =============================
-// CONFIGURAÇÃO
-// =============================
-
-// 🔥 coloque aqui os IDs dos clientes que devem receber automaticamente
-const CLIENTES_ALVO = [
-  "COLOQUE_CLIENTE_ID_AQUI"
-];
-
-// =============================
-// FUNÇÃO PRINCIPAL
-// =============================
 
 async function buscarLicitacoes() {
 
@@ -38,14 +24,27 @@ async function buscarLicitacoes() {
       "&tamanhoPagina=50";
 
     const response = await fetch(url);
-
-    console.log("Status HTTP:", response.status);
-
     const data = await response.json();
 
     const lista = data.data || [];
 
     console.log("Total recebido:", lista.length);
+
+    // =============================
+    // BUSCAR CLIENTES DO FIRESTORE
+    // =============================
+
+    const clientesSnap = await db.collection("clientes").get();
+
+    const clientes = [];
+
+    clientesSnap.forEach(doc => {
+      clientes.push({
+        id: doc.id,
+        ...doc.data(),
+        segmentos: (doc.data().segmentos || "").toLowerCase()
+      });
+    });
 
     const categorias = {
       limpeza: ["limpeza", "zeladoria", "higienização", "conservação"],
@@ -54,76 +53,80 @@ async function buscarLicitacoes() {
       administrativo: ["gestão", "consultoria", "apoio administrativo"]
     };
 
-    const licitacoesFormatadas = lista.map((item) => {
+    const licitacoes = lista.map(item => {
 
       const objetoTexto = item.objetoCompra || "";
       const objetoLower = objetoTexto.toLowerCase();
 
-      return {
+      const tags = Object.keys(categorias).filter(cat =>
+        categorias[cat].some(p =>
+          objetoLower.includes(p)
+        )
+      );
 
+      return {
         orgao: item.orgaoEntidade?.razaoSocial || "Não informado",
         cidade: item.unidadeOrgao?.municipioNome || "Não informado",
         estado: item.unidadeOrgao?.ufSigla || "Não informado",
-
         objeto: objetoTexto,
-
-        tags: Object.keys(categorias).filter(categoria =>
-          categorias[categoria].some(palavra =>
-            objetoLower.includes(palavra)
-          )
-        ),
-
+        tags,
         valor: item.valorTotalEstimado || 0,
         modalidade: item.modalidadeNome || "Não informado",
         abertura: item.dataAberturaProposta || "Não informado",
         encerramento: item.dataEncerramentoProposta || "Não informado",
         link: item.linkSistemaOrigem || "Sem link"
-
       };
 
     });
 
-    console.log("Salvando no Firestore...");
+    console.log("Processando clientes e segmentação...");
 
-    // =============================
-    // SALVAR PARA CADA CLIENTE
-    // =============================
+    for (const cliente of clientes) {
 
-    for (const clienteId of CLIENTES_ALVO) {
+      if (!cliente.segmentos) continue;
 
-      for (const licitacao of licitacoesFormatadas) {
+      const segmentos = cliente.segmentos.split(",").map(s => s.trim());
 
-        const ref = db.collection("licitacoes");
+      for (const licitacao of licitacoes) {
 
-        // 🔥 prevenção simples de duplicação
-        const existe = await ref
-          .where("clienteId", "==", clienteId)
+        const texto = (
+          licitacao.objeto + " " + licitacao.orgao + " " + licitacao.tags.join(" ")
+        ).toLowerCase();
+
+        const match = segmentos.some(seg =>
+          texto.includes(seg)
+        );
+
+        if (!match) continue;
+
+        // =============================
+        // EVITA DUPLICAÇÃO
+        // =============================
+
+        const existe = await db
+          .collection("licitacoes")
+          .where("clienteId", "==", cliente.id)
           .where("objeto", "==", licitacao.objeto)
           .limit(1)
           .get();
 
         if (!existe.empty) continue;
 
-        await ref.add({
-          clienteId,
+        await db.collection("licitacoes").add({
+          clienteId: cliente.id,
           ...licitacao,
           status: "aviso",
           dataCriacao: admin.firestore.FieldValue.serverTimestamp()
         });
 
       }
-
     }
 
     console.log("Radar finalizado com sucesso!");
 
   } catch (error) {
-
-    console.log("ERRO:");
-    console.log(error);
-
+    console.log("ERRO:", error);
   }
-
 }
 
 buscarLicitacoes();
