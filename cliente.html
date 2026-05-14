@@ -578,10 +578,7 @@ if (
   return; // não mostra essa licitação
 }
 
-      const segmentosCliente =
-  (emailClienteGlobal && window.segmentosClienteCache)
-    ? window.segmentosClienteCache
-    : (clienteSegmentosGlobal || "");
+      const segmentosCliente = (segmentosClienteGlobal || "").toLowerCase();
 
       const status = (l.status || "aviso").trim().toLowerCase();
 
