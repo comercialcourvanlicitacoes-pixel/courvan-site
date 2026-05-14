@@ -20,3 +20,13 @@ jobs:
 
       - name: Executar Radar
         run: node radar.js
+
+      - name: Salvar oportunidades.json
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+          git add oportunidades.json
+          git commit -m "Atualizando oportunidades automaticamente" || echo "Sem alterações"
+
+          git push
