@@ -522,7 +522,7 @@ function listarLicitacoes() {
 
   const q = query(
     collection(db, "licitacoes"),
-    where("clienteId", "==", clienteIdGlobal)
+    where("clienteId", "==", clienteIdGlobal),
     orderBy("dataCriacao", "desc")
 );
   
