@@ -167,6 +167,7 @@ segmentos = segmentos
         console.log("LICITACAO TEXTO:", texto);
 
         const match = cliente.segmentos.some(seg => texto.includes(seg));
+        console.log("MATCH:", match);
         if (!match) continue;
 
         const existe = await db
