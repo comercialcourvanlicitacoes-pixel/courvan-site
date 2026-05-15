@@ -1635,6 +1635,10 @@ window.mostrarAba = function (id) {
 
 window.executarRadarManual = async function () {
 
+  const response = await fetch("https://courvanlicitacoes.com.br/run-radar", {
+  method: "POST"
+});
+  
   const status = document.getElementById("statusRadar");
 
   try {
