@@ -17,20 +17,23 @@ function getDb() {
 }
 
 /* =========================
-   UTILITÁRIOS DE TEXTO
+   NORMALIZAÇÃO
 ========================= */
 
 function normalize(text) {
   return String(text || "")
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function tokenize(text) {
   return normalize(text)
-    .split(/[^a-z0-9]+/g)
-    .filter(t => t.length > 2);
+    .split(" ")
+    .filter(Boolean);
 }
 
 /* =========================
@@ -41,6 +44,7 @@ function formatPncpDate(date) {
   const y = date.getUTCFullYear();
   const m = String(date.getUTCMonth() + 1).padStart(2, "0");
   const d = String(date.getUTCDate()).padStart(2, "0");
+
   return `${y}${m}${d}`;
 }
 
@@ -49,7 +53,7 @@ function sleep(ms) {
 }
 
 /* =========================
-   FETCH COM RETRY
+   FETCH RETRY
 ========================= */
 
 async function fetchPncpComRetry(url, tentativas = 4) {
@@ -59,7 +63,7 @@ async function fetchPncpComRetry(url, tentativas = 4) {
     try {
       const response = await fetch(url, {
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "User-Agent": "courvan-radar/1.0"
         }
       });
@@ -74,22 +78,33 @@ async function fetchPncpComRetry(url, tentativas = 4) {
       }
 
       return text;
+
     } catch (error) {
       ultimoErro = error;
 
       const status = error?.status;
-      const retryableHttp = [429, 500, 502, 503, 504].includes(status);
+
+      const retryableHttp =
+        [429, 500, 502, 503, 504].includes(status);
+
       const retryableNetwork =
         error?.name === "TypeError" ||
         error?.code === "ECONNRESET" ||
         error?.code === "ETIMEDOUT";
 
-      if (tentativa === tentativas || (!retryableHttp && !retryableNetwork)) {
+      if (
+        tentativa === tentativas ||
+        (!retryableHttp && !retryableNetwork)
+      ) {
         break;
       }
 
       const esperaMs = 1500 * tentativa;
-      console.log(`PNCP retry ${tentativa}/${tentativas} - aguardando ${esperaMs}ms`);
+
+      console.log(
+        `PNCP retry ${tentativa}/${tentativas} - aguardando ${esperaMs}ms`
+      );
+
       await sleep(esperaMs);
     }
   }
@@ -98,13 +113,51 @@ async function fetchPncpComRetry(url, tentativas = 4) {
 }
 
 /* =========================
-   BUSCA PRINCIPAL
+   MATCH
+========================= */
+
+function calcularMatch(segmentos, texto) {
+  const textoNormalizado = normalize(texto);
+
+  let score = 0;
+
+  for (const segmento of segmentos) {
+    const seg = normalize(segmento);
+
+    if (!seg) continue;
+
+    /* MATCH DIRETO */
+    if (textoNormalizado.includes(seg)) {
+      score += 3;
+      continue;
+    }
+
+    /* MATCH POR TOKENS */
+    const segTokens = tokenize(seg);
+
+    const encontrouToken = segTokens.some(token => {
+      if (token.length < 3) return false;
+
+      return textoNormalizado.includes(token);
+    });
+
+    if (encontrouToken) {
+      score += 1;
+    }
+  }
+
+  return score;
+}
+
+/* =========================
+   PRINCIPAL
 ========================= */
 
 async function buscarLicitacoes() {
   const db = getDb();
 
   const hoje = new Date();
+
   const inicio = new Date(hoje);
   inicio.setUTCDate(inicio.getUTCDate() - 5);
 
@@ -125,21 +178,26 @@ async function buscarLicitacoes() {
     const text = await fetchPncpComRetry(url, 4);
 
     let data;
+
     try {
       data = JSON.parse(text);
     } catch (e) {
-      console.log("Resposta inválida PNCP:", text);
+      console.log("Resposta inválida PNCP:");
+      console.log(text);
+
       throw new Error("JSON inválido PNCP");
     }
 
     const lista = data.data || [];
+
     console.log("Total recebido:", lista.length);
 
     /* =========================
        CLIENTES
     ========================= */
 
-    const clientesSnap = await db.collection("clientes").get();
+    const clientesSnap =
+      await db.collection("clientes").get();
 
     const clientes = [];
 
@@ -165,26 +223,55 @@ async function buscarLicitacoes() {
       });
     });
 
+    console.log("Clientes carregados:", clientes.length);
+
     /* =========================
        LICITAÇÕES
     ========================= */
 
     const licitacoes = lista.map(item => {
       return {
-        orgao: item.orgaoEntidade?.razaoSocial || "",
-        objeto: item.objetoCompra || "",
-        cidade: item.unidadeOrgao?.municipioNome || "",
-        estado: item.unidadeOrgao?.ufSigla || "",
-        valor: item.valorTotalEstimado || 0,
-        modalidade: item.modalidadeNome || "",
-        abertura: item.dataAberturaProposta || "",
-        encerramento: item.dataEncerramentoProposta || "",
-        link: item.linkSistemaOrigem || ""
+        pncpId:
+          item.numeroControlePNCP ||
+          item.sequencialCompra ||
+          Math.random().toString(36),
+
+        orgao:
+          item.orgaoEntidade?.razaoSocial || "",
+
+        objeto:
+          item.objetoCompra || "",
+
+        cidade:
+          item.unidadeOrgao?.municipioNome || "",
+
+        estado:
+          item.unidadeOrgao?.ufSigla || "",
+
+        valor:
+          item.valorTotalEstimado || 0,
+
+        modalidade:
+          item.modalidadeNome || "",
+
+        abertura:
+          item.dataAberturaProposta || "",
+
+        encerramento:
+          item.dataEncerramentoProposta || "",
+
+        link:
+          item.linkSistemaOrigem || ""
       };
     });
 
+    console.log(
+      "TOTAL LICITACOES PROCESSADAS:",
+      licitacoes.length
+    );
+
     /* =========================
-       MATCH INTELIGENTE
+       MATCH + INSERÇÃO
     ========================= */
 
     let totalInseridas = 0;
@@ -192,54 +279,67 @@ async function buscarLicitacoes() {
     for (const cliente of clientes) {
       if (!cliente.segmentos?.length) continue;
 
-      const segmentos = cliente.segmentos;
-
-      console.log("\nCLIENTE:", cliente.id);
-      console.log("SEGMENTOS:", segmentos);
+      console.log("\n======================");
+      console.log("CLIENTE:", cliente.id);
+      console.log("SEGMENTOS:", cliente.segmentos);
 
       for (const licitacao of licitacoes) {
-        const texto = normalize(`${licitacao.objeto} ${licitacao.orgao}`);
 
-        const tokensTexto = tokenize(texto);
+        const textoCompleto = `
+          ${licitacao.objeto}
+          ${licitacao.orgao}
+          ${licitacao.cidade}
+          ${licitacao.estado}
+          ${licitacao.modalidade}
+        `;
 
-        let score = 0;
+        console.log("\nPROCESSANDO LICITAÇÃO...");
+        console.log("OBJETO:", licitacao.objeto);
 
-        for (const seg of segmentos) {
-          const segTokens = tokenize(seg);
-
-          const matchParcial = segTokens.some(token =>
-            tokensTexto.includes(token)
-          );
-
-          if (matchParcial) score++;
-        }
+        const score = calcularMatch(
+          cliente.segmentos,
+          textoCompleto
+        );
 
         const match = score > 0;
 
+        console.log("SCORE:", score);
+        console.log("MATCH:", match);
+
         if (!match) continue;
+
+        /* DUPLICIDADE */
 
         const existe = await db
           .collection("licitacoes")
           .where("clienteId", "==", cliente.id)
-          .where("link", "==", licitacao.link)
+          .where("pncpId", "==", licitacao.pncpId)
           .limit(1)
           .get();
 
-        if (!existe.empty) continue;
+        if (!existe.empty) {
+          console.log("LICITAÇÃO JÁ EXISTE");
+          continue;
+        }
+
+        console.log("INSERINDO LICITAÇÃO...");
 
         await db.collection("licitacoes").add({
           clienteId: cliente.id,
           ...licitacao,
           score,
           status: "aviso",
-          dataCriacao: admin.firestore.FieldValue.serverTimestamp()
+          dataCriacao:
+            admin.firestore.FieldValue.serverTimestamp()
         });
 
         totalInseridas++;
       }
     }
 
-    const message = `Radar finalizado. Inseridas: ${totalInseridas}. Intervalo: ${dataInicial} a ${dataFinal}.`;
+    const message =
+      `Radar finalizado. Inseridas: ${totalInseridas}. ` +
+      `Intervalo: ${dataInicial} a ${dataFinal}.`;
 
     console.log("\n" + message);
 
@@ -254,6 +354,7 @@ async function buscarLicitacoes() {
     };
 
   } catch (error) {
+
     if (error?.status) {
       console.log("Erro HTTP PNCP:", error.status);
     }
@@ -263,6 +364,7 @@ async function buscarLicitacoes() {
     }
 
     console.log("ERRO:", error);
+
     throw error;
   }
 }
@@ -275,5 +377,8 @@ if (require.main === module) {
       console.log("Execução concluída:", result);
       process.exit(0);
     })
-    .catch(() => process.exit(1));
+    .catch(error => {
+      console.log(error);
+      process.exit(1);
+    });
 }
