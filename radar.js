@@ -1,43 +1,56 @@
 const admin = require("firebase-admin");
 
-// =============================
-// FIREBASE INIT (via GitHub Secret)
-// =============================
-const serviceAccount = JSON.parse(
-  process.env.FIREBASE_SERVICE_ACCOUNT
-);
+let initialized = false;
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+function getDb() {
+  if (!initialized) {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
-const db = admin.firestore();
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
 
-// =============================
-// FUNÇÃO PRINCIPAL
-// =============================
+    initialized = true;
+  }
+
+  return admin.firestore();
+}
+
+function formatPncpDate(date) {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
+  return `${y}${m}${d}`;
+}
+
 async function buscarLicitacoes() {
+  const db = getDb();
+
+  const hoje = new Date();
+  const inicio = new Date(hoje);
+  inicio.setUTCDate(inicio.getUTCDate() - 5);
+
+  const dataInicial = formatPncpDate(inicio);
+  const dataFinal = formatPncpDate(hoje);
 
   try {
-
     console.log("Iniciando busca PNCP...");
 
     const url =
       "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
-      "?dataInicial=20260510" +
-      "&dataFinal=20260514" +
+      `?dataInicial=${dataInicial}` +
+      `&dataFinal=${dataFinal}` +
       "&codigoModalidadeContratacao=8" +
       "&pagina=1" +
       "&tamanhoPagina=50";
 
     const response = await fetch(url);
-
     const text = await response.text();
 
     if (!response.ok) {
       console.log("Erro HTTP PNCP:", response.status);
       console.log("Resposta:", text);
-      return;
+      throw new Error(`PNCP HTTP ${response.status}`);
     }
 
     let data;
@@ -47,29 +60,25 @@ async function buscarLicitacoes() {
     } catch (e) {
       console.log("PNCP retornou algo inválido:");
       console.log(text);
-      return;
+      throw new Error("Resposta PNCP inválida");
     }
 
     const lista = data.data || [];
 
     console.log("Total recebido:", lista.length);
 
-    // =============================
-    // BUSCAR CLIENTES
-    // =============================
     const clientesSnap = await db.collection("clientes").get();
-
     const clientes = [];
 
     clientesSnap.forEach(doc => {
-
       const rawSegmentos = doc.data().segmentos || [];
 
       const segmentos = Array.isArray(rawSegmentos)
-        ? rawSegmentos.map(s => s.trim().toLowerCase())
+        ? rawSegmentos.map(s => String(s).trim().toLowerCase()).filter(Boolean)
         : String(rawSegmentos)
             .split(",")
-            .map(s => s.trim().toLowerCase());
+            .map(s => s.trim().toLowerCase())
+            .filter(Boolean);
 
       clientes.push({
         id: doc.id,
@@ -78,11 +87,7 @@ async function buscarLicitacoes() {
       });
     });
 
-    // =============================
-    // LICITAÇÕES FORMATADAS
-    // =============================
     const licitacoes = lista.map(item => {
-
       const objetoTexto = item.objetoCompra || "";
 
       return {
@@ -96,35 +101,19 @@ async function buscarLicitacoes() {
         encerramento: item.dataEncerramentoProposta || "Não informado",
         link: item.linkSistemaOrigem || "Sem link"
       };
-
     });
 
-    console.log("Processando clientes...");
+    let totalInseridas = 0;
 
-    // =============================
-    // LOOP CLIENTE + FILTRO SEGMENTO
-    // =============================
     for (const cliente of clientes) {
-
       if (!cliente.segmentos || cliente.segmentos.length === 0) continue;
 
       for (const licitacao of licitacoes) {
+        const texto = `${licitacao.objeto} ${licitacao.orgao}`.toLowerCase();
 
-        const texto = (
-          licitacao.objeto +
-          " " +
-          licitacao.orgao
-        ).toLowerCase();
-
-        const match = cliente.segmentos.some(seg =>
-          texto.includes(seg)
-        );
-
+        const match = cliente.segmentos.some(seg => texto.includes(seg));
         if (!match) continue;
 
-        // =============================
-        // EVITA DUPLICAÇÃO
-        // =============================
         const existe = await db
           .collection("licitacoes")
           .where("clienteId", "==", cliente.id)
@@ -141,14 +130,35 @@ async function buscarLicitacoes() {
           dataCriacao: admin.firestore.FieldValue.serverTimestamp()
         });
 
+        totalInseridas += 1;
       }
     }
 
-    console.log("Radar finalizado com sucesso!");
+    const message = `Radar finalizado. Inseridas: ${totalInseridas}. Intervalo: ${dataInicial} a ${dataFinal}.`;
+    console.log(message);
 
+    return {
+      ok: true,
+      totalRecebidasPncp: lista.length,
+      totalClientes: clientes.length,
+      totalInseridas,
+      dataInicial,
+      dataFinal,
+      message
+    };
   } catch (error) {
     console.log("ERRO:", error);
+    throw error;
   }
 }
 
-buscarLicitacoes();
+module.exports = { buscarLicitacoes };
+
+if (require.main === module) {
+  buscarLicitacoes()
+    .then(result => {
+      console.log("Execução direta concluída:", result);
+      process.exit(0);
+    })
+    .catch(() => process.exit(1));
+}
