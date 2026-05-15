@@ -159,8 +159,12 @@ segmentos = segmentos
     for (const cliente of clientes) {
       if (!cliente.segmentos || cliente.segmentos.length === 0) continue;
 
+      console.log("CLIENTE SEGMENTOS:", cliente.segmentos);
+    
       for (const licitacao of licitacoes) {
         const texto = `${licitacao.objeto} ${licitacao.orgao}`.toLowerCase();
+
+        console.log("LICITACAO TEXTO:", texto);
 
         const match = cliente.segmentos.some(seg => texto.includes(seg));
         if (!match) continue;
