@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "*/10 * * * *" # roda a cada 10 minutos
+    - cron: "*/10 * * * *"
 
 jobs:
   executar-radar:
@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
       - name: Instalar Node
         uses: actions/setup-node@v4
@@ -28,15 +26,3 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node radar.js
-
-      # (Opcional) só mantém se você realmente usa esse arquivo
-      - name: Salvar oportunidades.json
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-
-          git add oportunidades.json
-
-          git commit -m "Atualizando oportunidades automaticamente" || echo "Sem alterações"
-
-          git push
