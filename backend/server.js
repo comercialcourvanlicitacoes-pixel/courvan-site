@@ -2,22 +2,31 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// IMPORTA SUA FUNÇÃO DO RADAR
+// Importa função principal do radar
 const { buscarLicitacoes } = require("../radar");
 
 app.post("/run-radar", async (req, res) => {
   try {
     const resultado = await buscarLicitacoes();
-    res.json(resultado);
+    res.status(200).json(resultado);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Erro ao executar radar" });
+    console.error("Erro ao executar /run-radar:", error);
+
+    // Mantém resposta amigável para frontend
+    res.status(500).json({
+      ok: false,
+      error: "Erro ao executar radar",
+      detail: error?.message || "Falha interna"
+    });
   }
 });
 
-app.listen(3000, () => {
-  console.log("Servidor rodando na porta 3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
