@@ -32,23 +32,23 @@ async function buscarLicitacoes() {
 
     const response = await fetch(url);
 
-const text = await response.text();
+    const text = await response.text();
 
-if (!response.ok) {
-  console.log("Erro HTTP PNCP:", response.status);
-  console.log("Resposta:", text);
-  return;
-}
+    if (!response.ok) {
+      console.log("Erro HTTP PNCP:", response.status);
+      console.log("Resposta:", text);
+      return;
+    }
 
-let data;
+    let data;
 
-try {
-  data = JSON.parse(text);
-} catch (e) {
-  console.log("PNCP retornou algo inválido:");
-  console.log(text);
-  return;
-}
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.log("PNCP retornou algo inválido:");
+      console.log(text);
+      return;
+    }
 
     const lista = data.data || [];
 
@@ -62,14 +62,19 @@ try {
     const clientes = [];
 
     clientesSnap.forEach(doc => {
+
+      const rawSegmentos = doc.data().segmentos || [];
+
+      const segmentos = Array.isArray(rawSegmentos)
+        ? rawSegmentos.map(s => s.trim().toLowerCase())
+        : String(rawSegmentos)
+            .split(",")
+            .map(s => s.trim().toLowerCase());
+
       clientes.push({
         id: doc.id,
         ...doc.data(),
-        const rawSegmentos = doc.data().segmentos || [];
-
-const segmentos = Array.isArray(rawSegmentos)
-  ? rawSegmentos
-  : String(rawSegmentos).split(",");
+        segmentos
       });
     });
 
@@ -79,7 +84,6 @@ const segmentos = Array.isArray(rawSegmentos)
     const licitacoes = lista.map(item => {
 
       const objetoTexto = item.objetoCompra || "";
-      const objetoLower = objetoTexto.toLowerCase();
 
       return {
         orgao: item.orgaoEntidade?.razaoSocial || "Não informado",
@@ -102,22 +106,17 @@ const segmentos = Array.isArray(rawSegmentos)
     // =============================
     for (const cliente of clientes) {
 
-      if (!cliente.segmentos) continue;
-
-      const segmentos = cliente.segmentos
-        .split(",")
-        .map(s => s.trim());
+      if (!cliente.segmentos || cliente.segmentos.length === 0) continue;
 
       for (const licitacao of licitacoes) {
 
-        const texto =
-          (
-            licitacao.objeto +
-            " " +
-            licitacao.orgao
-          ).toLowerCase();
+        const texto = (
+          licitacao.objeto +
+          " " +
+          licitacao.orgao
+        ).toLowerCase();
 
-        const match = segmentos.some(seg =>
+        const match = cliente.segmentos.some(seg =>
           texto.includes(seg)
         );
 
