@@ -115,12 +115,21 @@ async function buscarLicitacoes() {
     clientesSnap.forEach(doc => {
       const rawSegmentos = doc.data().segmentos || [];
 
-      const segmentos = Array.isArray(rawSegmentos)
-        ? rawSegmentos.map(s => String(s).trim().toLowerCase()).filter(Boolean)
-        : String(rawSegmentos)
-            .split(",")
-            .map(s => s.trim().toLowerCase())
-            .filter(Boolean);
+      const raw = doc.data().segmentos;
+
+let segmentos = [];
+
+if (Array.isArray(raw)) {
+  segmentos = raw;
+} else if (typeof raw === "string") {
+  segmentos = raw.split(",");
+} else {
+  segmentos = [];
+}
+
+segmentos = segmentos
+  .map(s => String(s).trim().toLowerCase())
+  .filter(Boolean);
 
       clientes.push({
         id: doc.id,
