@@ -23,6 +23,55 @@ function formatPncpDate(date) {
   return `${y}${m}${d}`;
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fetchPncpComRetry(url, tentativas = 4) {
+  let ultimoErro = null;
+
+  for (let tentativa = 1; tentativa <= tentativas; tentativa += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "Accept": "application/json",
+          "User-Agent": "courvan-radar/1.0"
+        }
+      });
+
+      const text = await response.text();
+
+      if (!response.ok) {
+        const erro = new Error(`PNCP HTTP ${response.status}`);
+        erro.status = response.status;
+        erro.responseText = text;
+        throw erro;
+      }
+
+      return text;
+    } catch (error) {
+      ultimoErro = error;
+
+      const status = error?.status;
+      const retryableHttp = [429, 500, 502, 503, 504].includes(status);
+      const retryableNetwork =
+        error?.name === "TypeError" ||
+        error?.code === "ECONNRESET" ||
+        error?.code === "ETIMEDOUT";
+
+      if (tentativa === tentativas || (!retryableHttp && !retryableNetwork)) {
+        break;
+      }
+
+      const esperaMs = 1500 * tentativa;
+      console.log(`PNCP falhou (tentativa ${tentativa}/${tentativas}) - aguardando ${esperaMs}ms para tentar novamente...`);
+      await sleep(esperaMs);
+    }
+  }
+
+  throw ultimoErro;
+}
+
 async function buscarLicitacoes() {
   const db = getDb();
 
@@ -44,14 +93,7 @@ async function buscarLicitacoes() {
       "&pagina=1" +
       "&tamanhoPagina=50";
 
-    const response = await fetch(url);
-    const text = await response.text();
-
-    if (!response.ok) {
-      console.log("Erro HTTP PNCP:", response.status);
-      console.log("Resposta:", text);
-      throw new Error(`PNCP HTTP ${response.status}`);
-    }
+    const text = await fetchPncpComRetry(url, 4);
 
     let data;
 
@@ -147,6 +189,14 @@ async function buscarLicitacoes() {
       message
     };
   } catch (error) {
+    if (error?.status) {
+      console.log("Erro HTTP PNCP:", error.status);
+    }
+
+    if (error?.responseText) {
+      console.log("Resposta:", error.responseText);
+    }
+
     console.log("ERRO:", error);
     throw error;
   }
