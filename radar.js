@@ -65,7 +65,11 @@ try {
       clientes.push({
         id: doc.id,
         ...doc.data(),
-        segmentos: (doc.data().segmentos || "").toLowerCase()
+        const rawSegmentos = doc.data().segmentos || [];
+
+const segmentos = Array.isArray(rawSegmentos)
+  ? rawSegmentos
+  : String(rawSegmentos).split(",");
       });
     });
 
