@@ -571,26 +571,6 @@ function listarLicitacoes() {
 
       console.log("Licitação analisada:", l.objeto, "STATUS:", l.status);
 
-      const segmentosCliente = (segmentosClienteGlobal || "")
-  .toLowerCase()
-  .split(",")
-  .map(s => s.trim())
-  .filter(Boolean);
-
-const textoLicitacao = (
-  (l.objeto || "") + " " + (l.orgao || "")
-).toLowerCase();
-
-// 🔥 filtro por segmento (CORRIGIDO)
-if (
-  segmentosCliente.length > 0 &&
-  !segmentosCliente.some(seg =>
-    textoLicitacao.includes(seg)
-  )
-) {
-  return;
-}
-
       const status = (l.status || "aviso").trim().toLowerCase();
 
 let grupo = document.getElementById(`grupo-${status}`);
