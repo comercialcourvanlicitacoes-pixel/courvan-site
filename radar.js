@@ -4,7 +4,9 @@ let initialized = false;
 
 function getDb() {
   if (!initialized) {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    const serviceAccount = JSON.parse(
+      process.env.FIREBASE_SERVICE_ACCOUNT
+    );
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
@@ -71,15 +73,20 @@ async function fetchPncpComRetry(url, tentativas = 4) {
       const text = await response.text();
 
       if (!response.ok) {
-        const erro = new Error(`PNCP HTTP ${response.status}`);
+        const erro = new Error(
+          `PNCP HTTP ${response.status}`
+        );
+
         erro.status = response.status;
         erro.responseText = text;
+
         throw erro;
       }
 
       return text;
 
     } catch (error) {
+
       ultimoErro = error;
 
       const status = error?.status;
@@ -113,36 +120,38 @@ async function fetchPncpComRetry(url, tentativas = 4) {
 }
 
 /* =========================
-   MATCH
+   MATCH MELHORADO
 ========================= */
 
 function calcularMatch(segmentos, texto) {
-  const textoNormalizado = normalize(texto);
+
+  const textoTokens = tokenize(texto);
 
   let score = 0;
 
   for (const segmento of segmentos) {
-    const seg = normalize(segmento);
 
-    if (!seg) continue;
+    const segTokens = tokenize(segmento);
 
-    /* MATCH DIRETO */
-    if (textoNormalizado.includes(seg)) {
-      score += 3;
-      continue;
+    if (!segTokens.length) continue;
+
+    let matches = 0;
+
+    for (const token of segTokens) {
+
+      /* IGNORA PALAVRAS MUITO CURTAS */
+      if (token.length < 3) continue;
+
+      const encontrou =
+        textoTokens.includes(token);
+
+      if (encontrou) {
+        matches++;
+      }
     }
 
-    /* MATCH POR TOKENS */
-    const segTokens = tokenize(seg);
-
-    const encontrouToken = segTokens.some(token => {
-      if (token.length < 3) return false;
-
-      return textoNormalizado.includes(token);
-    });
-
-    if (encontrouToken) {
-      score += 1;
+    if (matches > 0) {
+      score += matches;
     }
   }
 
@@ -154,17 +163,25 @@ function calcularMatch(segmentos, texto) {
 ========================= */
 
 async function buscarLicitacoes() {
+
   const db = getDb();
 
   const hoje = new Date();
 
   const inicio = new Date(hoje);
-  inicio.setUTCDate(inicio.getUTCDate() - 5);
 
-  const dataInicial = formatPncpDate(inicio);
-  const dataFinal = formatPncpDate(hoje);
+  inicio.setUTCDate(
+    inicio.getUTCDate() - 5
+  );
+
+  const dataInicial =
+    formatPncpDate(inicio);
+
+  const dataFinal =
+    formatPncpDate(hoje);
 
   try {
+
     console.log("Iniciando busca PNCP...");
 
     const url =
@@ -175,22 +192,31 @@ async function buscarLicitacoes() {
       "&pagina=1" +
       "&tamanhoPagina=50";
 
-    const text = await fetchPncpComRetry(url, 4);
+    const text =
+      await fetchPncpComRetry(url, 4);
 
     let data;
 
     try {
+
       data = JSON.parse(text);
+
     } catch (e) {
+
       console.log("Resposta inválida PNCP:");
       console.log(text);
 
-      throw new Error("JSON inválido PNCP");
+      throw new Error(
+        "JSON inválido PNCP"
+      );
     }
 
     const lista = data.data || [];
 
-    console.log("Total recebido:", lista.length);
+    console.log(
+      "Total recebido:",
+      lista.length
+    );
 
     /* =========================
        CLIENTES
@@ -202,13 +228,21 @@ async function buscarLicitacoes() {
     const clientes = [];
 
     clientesSnap.forEach(doc => {
-      const raw = doc.data().segmentos;
+
+      const raw =
+        doc.data().segmentos;
 
       let segmentos = [];
 
+      /* ARRAY */
       if (Array.isArray(raw)) {
+
         segmentos = raw;
-      } else if (typeof raw === "string") {
+
+      }
+      /* STRING */
+      else if (typeof raw === "string") {
+
         segmentos = raw.split(",");
       }
 
@@ -223,14 +257,19 @@ async function buscarLicitacoes() {
       });
     });
 
-    console.log("Clientes carregados:", clientes.length);
+    console.log(
+      "Clientes carregados:",
+      clientes.length
+    );
 
     /* =========================
        LICITAÇÕES
     ========================= */
 
     const licitacoes = lista.map(item => {
+
       return {
+
         pncpId:
           item.numeroControlePNCP ||
           item.sequencialCompra ||
@@ -277,11 +316,22 @@ async function buscarLicitacoes() {
     let totalInseridas = 0;
 
     for (const cliente of clientes) {
-      if (!cliente.segmentos?.length) continue;
+
+      if (!cliente.segmentos?.length) {
+        continue;
+      }
 
       console.log("\n======================");
-      console.log("CLIENTE:", cliente.id);
-      console.log("SEGMENTOS:", cliente.segmentos);
+
+      console.log(
+        "CLIENTE:",
+        cliente.id
+      );
+
+      console.log(
+        "SEGMENTOS:",
+        cliente.segmentos
+      );
 
       for (const licitacao of licitacoes) {
 
@@ -293,8 +343,14 @@ async function buscarLicitacoes() {
           ${licitacao.modalidade}
         `;
 
-        console.log("\nPROCESSANDO LICITAÇÃO...");
-        console.log("OBJETO:", licitacao.objeto);
+        console.log(
+          "\nPROCESSANDO LICITAÇÃO..."
+        );
+
+        console.log(
+          "OBJETO:",
+          licitacao.objeto
+        );
 
         const score = calcularMatch(
           cliente.segmentos,
@@ -303,35 +359,56 @@ async function buscarLicitacoes() {
 
         const match = score > 0;
 
-        console.log("SCORE:", score);
-        console.log("MATCH:", match);
+        console.log(
+          "SCORE:",
+          score
+        );
 
-        if (!match) continue;
+        console.log(
+          "MATCH:",
+          match
+        );
 
-        /* DUPLICIDADE */
-
-        const existe = await db
-          .collection("licitacoes")
-          .where("clienteId", "==", cliente.id)
-          .where("pncpId", "==", licitacao.pncpId)
-          .limit(1)
-          .get();
-
-        if (!existe.empty) {
-          console.log("LICITAÇÃO JÁ EXISTE");
+        if (!match) {
           continue;
         }
 
-        console.log("INSERINDO LICITAÇÃO...");
+        console.log(
+          "INSERINDO LICITAÇÃO..."
+        );
 
-        await db.collection("licitacoes").add({
-          clienteId: cliente.id,
-          ...licitacao,
-          score,
-          status: "aviso",
-          dataCriacao:
-            admin.firestore.FieldValue.serverTimestamp()
-        });
+        /* =========================
+           ID FIXO
+           EVITA DUPLICIDADE
+        ========================= */
+
+        const docId =
+          `${cliente.id}_${licitacao.pncpId}`;
+
+        await db
+          .collection("licitacoes")
+          .doc(docId)
+          .set({
+
+            clienteId: cliente.id,
+
+            ...licitacao,
+
+            score,
+
+            segmentosMatch:
+              cliente.segmentos,
+
+            status: "aviso",
+
+            dataCriacao:
+              admin.firestore
+                .FieldValue
+                .serverTimestamp()
+
+          }, {
+            merge: true
+          });
 
         totalInseridas++;
       }
@@ -344,41 +421,73 @@ async function buscarLicitacoes() {
     console.log("\n" + message);
 
     return {
+
       ok: true,
-      totalRecebidasPncp: lista.length,
-      totalClientes: clientes.length,
+
+      totalRecebidasPncp:
+        lista.length,
+
+      totalClientes:
+        clientes.length,
+
       totalInseridas,
+
       dataInicial,
+
       dataFinal,
+
       message
     };
 
   } catch (error) {
 
     if (error?.status) {
-      console.log("Erro HTTP PNCP:", error.status);
+
+      console.log(
+        "Erro HTTP PNCP:",
+        error.status
+      );
     }
 
     if (error?.responseText) {
-      console.log("Resposta:", error.responseText);
+
+      console.log(
+        "Resposta:",
+        error.responseText
+      );
     }
 
-    console.log("ERRO:", error);
+    console.log(
+      "ERRO:",
+      error
+    );
 
     throw error;
   }
 }
 
-module.exports = { buscarLicitacoes };
+module.exports = {
+  buscarLicitacoes
+};
 
 if (require.main === module) {
+
   buscarLicitacoes()
+
     .then(result => {
-      console.log("Execução concluída:", result);
+
+      console.log(
+        "Execução concluída:",
+        result
+      );
+
       process.exit(0);
     })
+
     .catch(error => {
+
       console.log(error);
+
       process.exit(1);
     });
 }
