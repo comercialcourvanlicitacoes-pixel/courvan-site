@@ -16,6 +16,27 @@ function getDb() {
   return admin.firestore();
 }
 
+/* =========================
+   UTILITÁRIOS DE TEXTO
+========================= */
+
+function normalize(text) {
+  return String(text || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function tokenize(text) {
+  return normalize(text)
+    .split(/[^a-z0-9]+/g)
+    .filter(t => t.length > 2);
+}
+
+/* =========================
+   DATA PNCP
+========================= */
+
 function formatPncpDate(date) {
   const y = date.getUTCFullYear();
   const m = String(date.getUTCMonth() + 1).padStart(2, "0");
@@ -27,10 +48,14 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/* =========================
+   FETCH COM RETRY
+========================= */
+
 async function fetchPncpComRetry(url, tentativas = 4) {
   let ultimoErro = null;
 
-  for (let tentativa = 1; tentativa <= tentativas; tentativa += 1) {
+  for (let tentativa = 1; tentativa <= tentativas; tentativa++) {
     try {
       const response = await fetch(url, {
         headers: {
@@ -64,13 +89,17 @@ async function fetchPncpComRetry(url, tentativas = 4) {
       }
 
       const esperaMs = 1500 * tentativa;
-      console.log(`PNCP falhou (tentativa ${tentativa}/${tentativas}) - aguardando ${esperaMs}ms para tentar novamente...`);
+      console.log(`PNCP retry ${tentativa}/${tentativas} - aguardando ${esperaMs}ms`);
       await sleep(esperaMs);
     }
   }
 
   throw ultimoErro;
 }
+
+/* =========================
+   BUSCA PRINCIPAL
+========================= */
 
 async function buscarLicitacoes() {
   const db = getDb();
@@ -96,40 +125,38 @@ async function buscarLicitacoes() {
     const text = await fetchPncpComRetry(url, 4);
 
     let data;
-
     try {
       data = JSON.parse(text);
     } catch (e) {
-      console.log("PNCP retornou algo inválido:");
-      console.log(text);
-      throw new Error("Resposta PNCP inválida");
+      console.log("Resposta inválida PNCP:", text);
+      throw new Error("JSON inválido PNCP");
     }
 
     const lista = data.data || [];
-
     console.log("Total recebido:", lista.length);
 
+    /* =========================
+       CLIENTES
+    ========================= */
+
     const clientesSnap = await db.collection("clientes").get();
+
     const clientes = [];
 
     clientesSnap.forEach(doc => {
-      const rawSegmentos = doc.data().segmentos || [];
-
       const raw = doc.data().segmentos;
 
-let segmentos = [];
+      let segmentos = [];
 
-if (Array.isArray(raw)) {
-  segmentos = raw;
-} else if (typeof raw === "string") {
-  segmentos = raw.split(",");
-} else {
-  segmentos = [];
-}
+      if (Array.isArray(raw)) {
+        segmentos = raw;
+      } else if (typeof raw === "string") {
+        segmentos = raw.split(",");
+      }
 
-segmentos = segmentos
-  .map(s => String(s).trim().toLowerCase())
-  .filter(Boolean);
+      segmentos = segmentos
+        .map(s => normalize(s))
+        .filter(Boolean);
 
       clientes.push({
         id: doc.id,
@@ -138,42 +165,63 @@ segmentos = segmentos
       });
     });
 
-    const licitacoes = lista.map(item => {
-      const objetoTexto = item.objetoCompra || "";
+    /* =========================
+       LICITAÇÕES
+    ========================= */
 
+    const licitacoes = lista.map(item => {
       return {
-        orgao: item.orgaoEntidade?.razaoSocial || "Não informado",
-        cidade: item.unidadeOrgao?.municipioNome || "Não informado",
-        estado: item.unidadeOrgao?.ufSigla || "Não informado",
-        objeto: objetoTexto,
+        orgao: item.orgaoEntidade?.razaoSocial || "",
+        objeto: item.objetoCompra || "",
+        cidade: item.unidadeOrgao?.municipioNome || "",
+        estado: item.unidadeOrgao?.ufSigla || "",
         valor: item.valorTotalEstimado || 0,
-        modalidade: item.modalidadeNome || "Não informado",
-        abertura: item.dataAberturaProposta || "Não informado",
-        encerramento: item.dataEncerramentoProposta || "Não informado",
-        link: item.linkSistemaOrigem || "Sem link"
+        modalidade: item.modalidadeNome || "",
+        abertura: item.dataAberturaProposta || "",
+        encerramento: item.dataEncerramentoProposta || "",
+        link: item.linkSistemaOrigem || ""
       };
     });
+
+    /* =========================
+       MATCH INTELIGENTE
+    ========================= */
 
     let totalInseridas = 0;
 
     for (const cliente of clientes) {
-      if (!cliente.segmentos || cliente.segmentos.length === 0) continue;
+      if (!cliente.segmentos?.length) continue;
 
-      console.log("CLIENTE SEGMENTOS:", cliente.segmentos);
-    
+      const segmentos = cliente.segmentos;
+
+      console.log("\nCLIENTE:", cliente.id);
+      console.log("SEGMENTOS:", segmentos);
+
       for (const licitacao of licitacoes) {
-        const texto = `${licitacao.objeto} ${licitacao.orgao}`.toLowerCase();
+        const texto = normalize(`${licitacao.objeto} ${licitacao.orgao}`);
 
-        console.log("LICITACAO TEXTO:", texto);
+        const tokensTexto = tokenize(texto);
 
-        const match = cliente.segmentos.some(seg => texto.includes(seg));
-        console.log("MATCH:", match);
+        let score = 0;
+
+        for (const seg of segmentos) {
+          const segTokens = tokenize(seg);
+
+          const matchParcial = segTokens.some(token =>
+            tokensTexto.includes(token)
+          );
+
+          if (matchParcial) score++;
+        }
+
+        const match = score > 0;
+
         if (!match) continue;
 
         const existe = await db
           .collection("licitacoes")
           .where("clienteId", "==", cliente.id)
-          .where("objeto", "==", licitacao.objeto)
+          .where("link", "==", licitacao.link)
           .limit(1)
           .get();
 
@@ -182,16 +230,18 @@ segmentos = segmentos
         await db.collection("licitacoes").add({
           clienteId: cliente.id,
           ...licitacao,
+          score,
           status: "aviso",
           dataCriacao: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        totalInseridas += 1;
+        totalInseridas++;
       }
     }
 
     const message = `Radar finalizado. Inseridas: ${totalInseridas}. Intervalo: ${dataInicial} a ${dataFinal}.`;
-    console.log(message);
+
+    console.log("\n" + message);
 
     return {
       ok: true,
@@ -202,6 +252,7 @@ segmentos = segmentos
       dataFinal,
       message
     };
+
   } catch (error) {
     if (error?.status) {
       console.log("Erro HTTP PNCP:", error.status);
@@ -221,7 +272,7 @@ module.exports = { buscarLicitacoes };
 if (require.main === module) {
   buscarLicitacoes()
     .then(result => {
-      console.log("Execução direta concluída:", result);
+      console.log("Execução concluída:", result);
       process.exit(0);
     })
     .catch(() => process.exit(1));
