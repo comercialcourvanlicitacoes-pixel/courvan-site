@@ -1,110 +1,229 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Agenda de Licitações</title>
+<meta charset="UTF-8">
 
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+/>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f5f6fa;
-    }
+<title>Agenda de Licitações</title>
 
-    h2 {
-      text-align: center;
-    }
+<link
+  href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css"
+  rel="stylesheet"
+/>
 
-    #calendar {
-      max-width: 1100px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+<style>
 
-    #drawerOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      display: none;
-      z-index: 999;
-    }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
 
-    #drawer {
-      position: fixed;
-      right: -420px;
-      top: 0;
-      width: 400px;
-      height: 100%;
-      background: #fff;
-      box-shadow: -10px 0 30px rgba(0,0,0,0.2);
-      padding: 20px;
-      transition: 0.3s;
-      z-index: 1000;
-    }
+body{
+  background:#07162b;
+  color:white;
+  min-height:100vh;
+  padding:20px;
+}
 
-    #drawer.open {
-      right: 0;
-    }
+h2{
+  text-align:center;
+  color:#d8a84e;
+  margin-bottom:20px;
+}
 
-    #drawerOverlay.show {
-      display: block;
-    }
+/* CALENDÁRIO */
+#calendar-container{
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+}
 
-    .drawer-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
+#calendar{
+  background:#0c2748;
+  padding:20px;
+  border-radius:18px;
+  min-height:78vh;
+}
 
-    .item {
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
+/* FULLCALENDAR */
+.fc{
+  height:100%;
+}
 
-    .btn-fechar {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background: #d8a84e;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+.fc-toolbar-title{
+  color:white;
+  font-size:22px !important;
+}
+
+.fc-button{
+  background:#16385f !important;
+  border:none !important;
+}
+
+.fc-button-active{
+  background:#d8a84e !important;
+  color:#07162b !important;
+}
+
+.fc-daygrid-day{
+  background:#102847;
+}
+
+.fc-col-header-cell{
+  background:#16385f;
+}
+
+.fc-scrollgrid{
+  border:none !important;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th{
+  border-color:#1c4169 !important;
+}
+
+.fc-event{
+  border:none !important;
+  padding:3px;
+  border-radius:6px;
+  font-size:12px;
+}
+
+/* DRAWER */
+#drawerOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  z-index:999;
+}
+
+#drawer{
+  position:fixed;
+  right:-420px;
+  top:0;
+  width:400px;
+  max-width:100%;
+  height:100%;
+  background:#0c2748;
+  padding:25px;
+  transition:0.3s;
+  z-index:1000;
+  overflow-y:auto;
+}
+
+#drawer.open{
+  right:0;
+}
+
+#drawerOverlay.show{
+  display:block;
+}
+
+.drawer-title{
+  color:#d8a84e;
+  font-size:22px;
+  margin-bottom:25px;
+}
+
+.item{
+  margin-bottom:14px;
+  line-height:1.5;
+}
+
+.btn-fechar{
+  margin-top:30px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:#d8a84e;
+  color:#07162b;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+  body{
+    padding:10px;
+  }
+
+  #calendar{
+    padding:10px;
+    min-height:85vh;
+  }
+
+  .fc-toolbar{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .fc-toolbar-title{
+    font-size:18px !important;
+  }
+
+  #drawer{
+    width:100%;
+  }
+
+}
+
+</style>
 </head>
 
 <body>
 
 <h2>📅 Agenda de Licitações</h2>
 
-<div id="calendar"></div>
+<div id="calendar-container">
+  <div id="calendar"></div>
+</div>
 
-<div id="drawerOverlay" onclick="fecharDrawer()"></div>
+<div
+  id="drawerOverlay"
+  onclick="fecharDrawer()"
+></div>
 
 <div id="drawer">
-  <div class="drawer-title">📌 Licitação</div>
+
+  <div class="drawer-title">
+    📌 Licitação
+  </div>
+
   <div id="drawerContent"></div>
-  <button class="btn-fechar" onclick="fecharDrawer()">Fechar</button>
+
+  <button
+    class="btn-fechar"
+    onclick="fecharDrawer()"
+  >
+    Fechar
+  </button>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getFirestore,
   collection,
   getDocs,
   query,
-  where
+  where,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -121,167 +240,341 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
+
 const auth = getAuth(app);
 
-await setPersistence(auth, browserLocalPersistence);
+await setPersistence(
+  auth,
+  browserLocalPersistence
+);
 
-// =========================
-// STATUS COLOR
-// =========================
+/* =========================
+   STATUS COLOR
+========================= */
 function corStatus(status){
 
-  const s = (status || "").toLowerCase().trim();
+  const s = (status || "")
+    .toLowerCase()
+    .trim();
 
   switch(s){
-    case "aviso": return "#1d4b7d";
-    case "andamento": return "#d8a84e";
-    case "vencida": return "#2ecc71";
-    case "perdida": return "#e74c3c";
-    case "descartada": return "#2c3e50";
-    default: return "#999";
+
+    case "andamento":
+      return "#d8a84e";
+
+    case "vencida":
+      return "#2ecc71";
+
+    case "perdida":
+      return "#e74c3c";
+
+    default:
+      return "#999";
   }
+
 }
 
-// =========================
-// DRAWER
-// =========================
+/* =========================
+   DRAWER
+========================= */
 window.abrirDrawer = function(html){
-  document.getElementById("drawerContent").innerHTML = html;
-  document.getElementById("drawer").classList.add("open");
-  document.getElementById("drawerOverlay").classList.add("show");
+
+  document.getElementById(
+    "drawerContent"
+  ).innerHTML = html;
+
+  document
+    .getElementById("drawer")
+    .classList.add("open");
+
+  document
+    .getElementById("drawerOverlay")
+    .classList.add("show");
+
   document.body.style.overflow = "hidden";
+
 };
 
 window.fecharDrawer = function(){
-  document.getElementById("drawer").classList.remove("open");
-  document.getElementById("drawerOverlay").classList.remove("show");
+
+  document
+    .getElementById("drawer")
+    .classList.remove("open");
+
+  document
+    .getElementById("drawerOverlay")
+    .classList.remove("show");
+
   document.body.style.overflow = "auto";
+
 };
 
-// =========================
-// LOGIN + CONTROLE DE ACESSO
-// =========================
-onAuthStateChanged(auth, async (user) => {
+/* =========================
+   LOGIN
+========================= */
+onAuthStateChanged(auth, async (user)=>{
 
-  if (!user) {
-    window.location.href = "login.html";
+  if(!user){
+
+    window.location.href =
+      "login.html";
+
     return;
+
   }
 
   let clienteId = null;
 
-  // 👨‍💼 ADMIN
-  if (user.email === "comercial.courvanlicitacoes@gmail.com") {
-    clienteId = null; // vê tudo
-  } else {
+  // ADMIN
+  if(
+    user.email !==
+    "comercial.courvanlicitacoes@gmail.com"
+  ){
 
-    // 👤 CLIENTE → busca ID real
     const snap = await getDocs(
+
       query(
         collection(db, "clientes"),
         where("uid", "==", user.uid)
       )
+
     );
 
-    if (snap.empty) return;
+    if(snap.empty) return;
 
     clienteId = snap.docs[0].id;
+
   }
 
   iniciarCalendario(clienteId);
 
 });
 
-// =========================
-// CALENDÁRIO
-// =========================
-async function iniciarCalendario(clienteId) {
+/* =========================
+   CALENDÁRIO
+========================= */
+async function iniciarCalendario(clienteId){
 
-  const calendarEl = document.getElementById("calendar");
+  const calendarEl =
+    document.getElementById(
+      "calendar"
+    );
 
-  const clientesSnap = await getDocs(collection(db, "clientes"));
+  // CLIENTES
+  const clientesSnap =
+    await getDocs(
+      collection(db, "clientes")
+    );
 
   const clientesMap = {};
-  clientesSnap.forEach(c => {
-    clientesMap[c.id] = c.data().nome;
+
+  clientesSnap.forEach(c=>{
+
+    clientesMap[c.id] =
+      c.data().nome;
+
   });
 
-  // 🔥 QUERY CORRETA
+  // QUERY
   let q;
 
-  if (!clienteId) {
-    q = collection(db, "licitacoes"); // ADMIN
-  } else {
+  if(!clienteId){
+
+    // ADMIN
     q = query(
       collection(db, "licitacoes"),
-      where("clienteId", "==", clienteId)
+      where(
+        "status",
+        "in",
+        [
+          "andamento",
+          "vencida",
+          "perdida"
+        ]
+      )
     );
+
+  }else{
+
+    // CLIENTE
+    q = query(
+
+      collection(db, "licitacoes"),
+
+      where(
+        "clienteId",
+        "==",
+        clienteId
+      ),
+
+      where(
+        "status",
+        "in",
+        [
+          "andamento",
+          "vencida",
+          "perdida"
+        ]
+      )
+
+    );
+
   }
 
-  const snapshot = await getDocs(q);
+  // CALENDÁRIO
+  const calendar =
+    new FullCalendar.Calendar(
+      calendarEl,
+      {
 
-  const eventos = [];
+        initialView:"dayGridMonth",
 
-  snapshot.forEach(docItem => {
+        locale:"pt-br",
 
-    const l = docItem.data();
+        height:"auto",
 
-    if (!l.dataSessao) return;
+        expandRows:true,
 
-    eventos.push({
-      id: docItem.id,
-      title: `${l.orgao || "Sem órgão"} - ${l.objeto || ""}`,
+        headerToolbar:{
+          left:"prev,next today",
+          center:"title",
+          right:
+            "dayGridMonth,timeGridWeek,listWeek"
+        },
 
-      start: l.dataSessao.includes("/")
-        ? l.dataSessao.split("/").reverse().join("-")
-        : l.dataSessao,
+        events:[]
 
-      color: corStatus(l.status),
-
-      extendedProps: {
-        orgao: l.orgao,
-        objeto: l.objeto,
-        status: l.status,
-        valor: l.valor,
-        clienteNome: clientesMap[l.clienteId] || "Desconhecido",
-        linkEdital: l.linkEdital
       }
+    );
+
+  calendar.render();
+
+  // TEMPO REAL
+  onSnapshot(q, (snapshot)=>{
+
+    const eventos = [];
+
+    snapshot.forEach((docItem)=>{
+
+      const l = docItem.data();
+
+      if(!l.dataSessao) return;
+
+      eventos.push({
+
+        id:docItem.id,
+
+        title:
+          `${l.orgao || ""}`,
+
+        start:
+          l.dataSessao.includes("/")
+          ? l.dataSessao
+              .split("/")
+              .reverse()
+              .join("-")
+          : l.dataSessao,
+
+        color:
+          corStatus(l.status),
+
+        extendedProps:{
+
+          orgao:l.orgao,
+
+          objeto:l.objeto,
+
+          status:l.status,
+
+          valor:l.valor,
+
+          clienteNome:
+            clientesMap[
+              l.clienteId
+            ] || "Desconhecido",
+
+          linkEdital:
+            l.linkEdital
+
+        }
+
+      });
+
     });
+
+    calendar.removeAllEvents();
+
+    calendar.addEventSource(
+      eventos
+    );
 
   });
 
-  const calendar = new FullCalendar.Calendar(calendarEl, {
+  // CLICK EVENTO
+  calendar.on(
+    "eventClick",
+    function(info){
 
-    initialView: "dayGridMonth",
-    locale: "pt-br",
-
-    headerToolbar: {
-      left: "prev,next today",
-      center: "title",
-      right: "dayGridMonth,timeGridWeek,listWeek"
-    },
-
-    events: eventos,
-
-    eventClick: function(info) {
-
-      const p = info.event.extendedProps;
+      const p =
+        info.event.extendedProps;
 
       abrirDrawer(`
-        <div class="item"><strong>Órgão:</strong> ${p.orgao}</div>
-        <div class="item"><strong>Objeto:</strong> ${p.objeto}</div>
-        <div class="item"><strong>Status:</strong> ${p.status}</div>
-        <div class="item"><strong>Valor:</strong> ${p.valor}</div>
-        <div class="item"><strong>Cliente:</strong> ${p.clienteNome}</div>
-        <div class="item"><strong>Link:</strong> ${p.linkEdital || "N/A"}</div>
+
+        <div class="item">
+          <strong>Órgão:</strong>
+          ${p.orgao || "-"}
+        </div>
+
+        <div class="item">
+          <strong>Objeto:</strong>
+          ${p.objeto || "-"}
+        </div>
+
+        <div class="item">
+          <strong>Status:</strong>
+          ${p.status || "-"}
+        </div>
+
+        <div class="item">
+          <strong>Valor:</strong>
+          ${p.valor || "-"}
+        </div>
+
+        <div class="item">
+          <strong>Cliente:</strong>
+          ${p.clienteNome || "-"}
+        </div>
+
+        <div class="item">
+
+          <strong>Edital:</strong><br><br>
+
+          ${
+            p.linkEdital
+            ? `
+              <a
+                href="${p.linkEdital}"
+                target="_blank"
+                style="
+                  color:#d8a84e;
+                  word-break:break-all;
+                "
+              >
+                Abrir edital
+              </a>
+            `
+            : "Não informado"
+          }
+
+        </div>
+
       `);
 
     }
+  );
 
-  });
-
-  calendar.render();
 }
 
 </script>
