@@ -304,8 +304,8 @@
 
   <h1>Licitações</h1>
 
-  <button
-  onclick="executarRadarManual()"
+<button
+  onclick="document.getElementById('statusRadar').innerText='⏳ Atualizando licitações...'; executarRadarManual()"
   class="botaoPadrao"
   style="margin-bottom:20px;"
 >
@@ -1634,18 +1634,13 @@ window.mostrarAba = function (id) {
 };
 
 window.executarRadarManual = async function () {
-
-  const response = await fetch("https://courvanlicitacoes.com.br/run-radar", {
-  method: "POST"
-});
-  
   const status = document.getElementById("statusRadar");
 
   try {
 
     status.innerText = "⏳ Atualizando licitações...";
 
-    const response = await fetch("https://SEU-BACKEND.com/run-radar", {
+    const response = await fetch("https://courvanlicitacoes.com.br/run-radar", {
       method: "POST"
     });
 
@@ -1653,7 +1648,25 @@ window.executarRadarManual = async function () {
       throw new Error("Erro ao executar radar");
     }
 
-    status.innerText = "✅ Licitações atualizadas com sucesso!";
+    let detalhes = "";
+    try {
+      const payload = await response.json();
+      if (payload && typeof payload === "object") {
+        if (payload.message) {
+          detalhes = ` • ${payload.message}`;
+        } else if (payload.totalInseridas || payload.totalAtualizadas) {
+          const inseridas = payload.totalInseridas || 0;
+          const atualizadas = payload.totalAtualizadas || 0;
+          detalhes = ` • Inseridas: ${inseridas} | Atualizadas: ${atualizadas}`;
+        }
+      }
+    } catch (_) {
+      // backend pode não retornar JSON
+    }
+
+    const agora = new Date().toLocaleString("pt-BR");
+
+    status.innerText = `✅ Atualização concluída em ${agora}${detalhes}`;
 
     // força refresh da lista
     listarLicitacoes();
@@ -1661,7 +1674,6 @@ window.executarRadarManual = async function () {
   } catch (error) {
 
     console.log(error);
-
     status.innerText = "❌ Erro ao atualizar licitações";
 
   }
