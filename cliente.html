@@ -523,10 +523,7 @@ function listarLicitacoes() {
   const q = query(
     collection(db, "licitacoes"),
     where("clienteId", "==", clienteIdGlobal)
-  );const q = query(
-  collection(db, "licitacoes"),
-  where("clienteId", "==", clienteIdGlobal),
-  orderBy("dataCriacao", "desc")
+    orderBy("dataCriacao", "desc")
 );
   
   onSnapshot(q, (snapshot) => {
