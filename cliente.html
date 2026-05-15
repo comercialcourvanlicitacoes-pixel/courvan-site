@@ -1639,10 +1639,7 @@ window.executarRadarManual = async function () {
   try {
     status.innerText = "⏳ Atualizando licitações...";
 
-    const endpoints = [
-      "/run-radar",
-      "https://courvanlicitacoes.com.br/run-radar"
-    ];
+    const endpoints = ["/run-radar"];
 
     let response = null;
     let ultimoErro = null;
