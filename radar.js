@@ -191,7 +191,7 @@ async function fetchPncpComRetry(
       const response = await fetch(url, {
         headers: {
           Accept: "application/json",
-          "User-Agent": "courvan-radar/3.0"
+          "User-Agent": "courvan-radar/4.0"
         }
       });
 
@@ -271,7 +271,6 @@ async function buscarTodasPaginasPncp(
       "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
       `?dataInicial=${dataInicial}` +
       `&dataFinal=${dataFinal}` +
-      "&codigoModalidadeContratacao=8" +
       `&pagina=${pagina}` +
       "&tamanhoPagina=50";
 
@@ -319,7 +318,7 @@ function calcularMatch(
 
   let score = 0;
 
-  let detalhes = [];
+  const detalhes = new Set();
 
   const textoSet =
     new Set(textoTokens);
@@ -341,7 +340,7 @@ function calcularMatch(
 
         matches++;
 
-        detalhes.push(token);
+        detalhes.add(token);
       }
     }
 
@@ -355,7 +354,7 @@ function calcularMatch(
 
       score += 10;
 
-      detalhes.push(
+      detalhes.add(
         `EXATO:${segmento}`
       );
 
@@ -381,7 +380,7 @@ function calcularMatch(
 
   return {
     score,
-    detalhes
+    detalhes: [...detalhes]
   };
 }
 
@@ -396,11 +395,13 @@ function passarFiltros(
 
   /* CIDADES */
 
-  if (cliente.cidadesFiltro) {
+  if (
+    Array.isArray(cliente.cidadesFiltro) &&
+    cliente.cidadesFiltro.length
+  ) {
 
     const cidades =
       cliente.cidadesFiltro
-        .split(",")
         .map(c => normalize(c));
 
     const cidade =
@@ -418,11 +419,13 @@ function passarFiltros(
 
   /* ESTADOS */
 
-  if (cliente.estadosFiltro) {
+  if (
+    Array.isArray(cliente.estadosFiltro) &&
+    cliente.estadosFiltro.length
+  ) {
 
     const estados =
       cliente.estadosFiltro
-        .split(",")
         .map(e => normalize(e));
 
     const estado =
@@ -437,11 +440,13 @@ function passarFiltros(
 
   /* ÓRGÃOS */
 
-  if (cliente.orgaosFiltro) {
+  if (
+    Array.isArray(cliente.orgaosFiltro) &&
+    cliente.orgaosFiltro.length
+  ) {
 
     const orgaos =
       cliente.orgaosFiltro
-        .split(",")
         .map(o => normalize(o));
 
     const orgao =
@@ -669,7 +674,7 @@ async function buscarLicitacoes() {
         tokenizeSmart(textoCompleto);
 
       /* =========================
-         BUSCA CLIENTES RELEVANTES
+         CLIENTES RELEVANTES
       ========================= */
 
       const clientesRelevantes =
@@ -725,7 +730,9 @@ async function buscarLicitacoes() {
         const score =
           resultado.score;
 
-        if (score < 3) {
+        /* SCORE MÍNIMO */
+
+        if (score < 6) {
           continue;
         }
 
@@ -748,9 +755,10 @@ async function buscarLicitacoes() {
 
             ...licitacao,
 
-            score,
+            matchScore:
+              score,
 
-            detalhesMatch:
+            palavrasEncontradas:
               resultado.detalhes,
 
             segmentosMatch:
@@ -778,6 +786,32 @@ async function buscarLicitacoes() {
     );
 
     await Promise.all(promises);
+
+    /* =========================
+       LOG RADAR
+    ========================= */
+
+    await db
+      .collection("logsRadar")
+      .add({
+
+        dataExecucao:
+          admin.firestore
+            .FieldValue
+            .serverTimestamp(),
+
+        totalRecebidasPncp:
+          lista.length,
+
+        totalClientes:
+          clientesMap.size,
+
+        totalInseridas,
+
+        dataInicial,
+
+        dataFinal
+      });
 
     const message =
       `Radar finalizado. Inseridas: ${totalInseridas}`;
