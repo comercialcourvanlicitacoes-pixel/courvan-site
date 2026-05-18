@@ -357,7 +357,7 @@ async function buscarLicitacoes() {
           textoCompleto
         );
 
-        const match = score > 0;
+        const match = score >= 2;
 
         console.log(
           "SCORE:",
