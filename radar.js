@@ -3,9 +3,7 @@ const admin = require("firebase-admin");
 let initialized = false;
 
 function getDb() {
-
   if (!initialized) {
-
     const serviceAccount = JSON.parse(
       process.env.FIREBASE_SERVICE_ACCOUNT
     );
@@ -25,7 +23,6 @@ function getDb() {
 ========================= */
 
 function normalize(text) {
-
   return String(text || "")
     .toLowerCase()
     .normalize("NFD")
@@ -40,7 +37,6 @@ function normalize(text) {
 ========================= */
 
 function tokenize(text) {
-
   return normalize(text)
     .split(" ")
     .filter(Boolean);
@@ -51,42 +47,10 @@ function tokenize(text) {
 ========================= */
 
 const STOPWORDS = [
-  "de",
-  "da",
-  "do",
-  "das",
-  "dos",
-  "para",
-  "com",
-  "sem",
-  "por",
-  "em",
-  "na",
-  "no",
-  "nas",
-  "nos",
-  "a",
-  "o",
-  "as",
-  "os",
-  "e",
-  "ou",
-  "ao",
-  "aos",
-  "à",
-  "às",
-  "um",
-  "uma",
-  "uns",
-  "umas",
-  "servico",
-  "servicos",
-  "contratacao",
-  "aquisicao",
-  "empresa",
-  "material",
-  "prestacao",
-  "fornecimento"
+  "de","da","do","das","dos","para","com","sem","por","em",
+  "na","no","nas","nos","a","o","as","os","e","ou","ao","aos",
+  "à","às","um","uma","uns","umas","servico","servicos",
+  "contratacao","aquisicao","empresa","material","prestacao","fornecimento"
 ];
 
 /* =========================
@@ -94,27 +58,13 @@ const STOPWORDS = [
 ========================= */
 
 function stem(token) {
-
   let t = normalize(token);
 
-  const finais = [
-    "coes",
-    "cao",
-    "s",
-    "es",
-    "is",
-    "ns"
-  ];
+  const finais = ["coes","cao","s","es","is","ns"];
 
   for (const fim of finais) {
-
-    if (
-      t.endsWith(fim) &&
-      t.length > fim.length + 3
-    ) {
-
+    if (t.endsWith(fim) && t.length > fim.length + 3) {
       t = t.slice(0, -fim.length);
-
       break;
     }
   }
@@ -127,21 +77,12 @@ function stem(token) {
 ========================= */
 
 function tokenizeSmart(text) {
-
   return tokenize(text)
     .map(stem)
     .filter(token => {
-
       if (!token) return false;
-
-      if (token.length < 3) {
-        return false;
-      }
-
-      if (STOPWORDS.includes(token)) {
-        return false;
-      }
-
+      if (token.length < 3) return false;
+      if (STOPWORDS.includes(token)) return false;
       return true;
     });
 }
@@ -151,43 +92,25 @@ function tokenizeSmart(text) {
 ========================= */
 
 function formatPncpDate(date) {
-
   const y = date.getUTCFullYear();
-
-  const m = String(
-    date.getUTCMonth() + 1
-  ).padStart(2, "0");
-
-  const d = String(
-    date.getUTCDate()
-  ).padStart(2, "0");
-
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
   return `${y}${m}${d}`;
 }
 
 /* =========================
-   RETRY
+   RETRY MELHORADO
 ========================= */
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(r => setTimeout(r, ms));
 }
 
-async function fetchPncpComRetry(
-  url,
-  tentativas = 4
-) {
-
+async function fetchPncpComRetry(url, tentativas = 4) {
   let ultimoErro = null;
 
-  for (
-    let tentativa = 1;
-    tentativa <= tentativas;
-    tentativa++
-  ) {
-
+  for (let tentativa = 1; tentativa <= tentativas; tentativa++) {
     try {
-
       const response = await fetch(url, {
         headers: {
           Accept: "application/json",
@@ -198,106 +121,96 @@ async function fetchPncpComRetry(
       const text = await response.text();
 
       if (!response.ok) {
-
-        const erro = new Error(
-          `PNCP HTTP ${response.status}`
-        );
-
+        const erro = new Error(`PNCP HTTP ${response.status}`);
         erro.status = response.status;
         erro.responseText = text;
-
         throw erro;
       }
 
       return text;
 
     } catch (error) {
-
       ultimoErro = error;
 
       const status = error?.status;
 
       const retryableHttp =
-        [429, 500, 502, 503, 504]
-          .includes(status);
+        [429, 500, 502, 503, 504].includes(status);
 
       const retryableNetwork =
         error?.name === "TypeError" ||
         error?.code === "ECONNRESET" ||
         error?.code === "ETIMEDOUT";
 
-      if (
-        tentativa === tentativas ||
-        (!retryableHttp &&
-         !retryableNetwork)
-      ) {
+      if (tentativa === tentativas || (!retryableHttp && !retryableNetwork)) {
         break;
       }
 
-      const esperaMs =
-        1500 * tentativa;
+      const esperaMs = Math.min(10000 * tentativa, 60000);
 
-      console.log(
-        `Retry PNCP ${tentativa}/${tentativas}`
-      );
+      console.log(`Retry PNCP ${tentativa}/${tentativas} (${status || "NET"})`);
 
       await sleep(esperaMs);
     }
   }
 
-  throw ultimoErro;
+  // 🔥 NÃO QUEBRA O RADAR
+  console.log("PNCP falhou, retornando vazio parcial...");
+  return null;
 }
 
 /* =========================
-   BUSCA PAGINADA
+   BUSCA PAGINADA SEGURA
 ========================= */
 
-async function buscarTodasPaginasPncp(
-  dataInicial,
-  dataFinal
-) {
-
+async function buscarTodasPaginasPncp(dataInicial, dataFinal) {
   let pagina = 1;
-
   let todas = [];
 
   while (true) {
-
-    console.log(
-      `Página ${pagina}`
-    );
+    console.log(`Página ${pagina}`);
 
     const url =
-  "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
-  `?dataInicial=${dataInicial}` +
-  `&dataFinal=${dataFinal}` +
-  `&codigoModalidadeContratacao=8` +
-  `&pagina=${pagina}` +
-  `&tamanhoPagina=50`;
+      "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
+      `?dataInicial=${dataInicial}` +
+      `&dataFinal=${dataFinal}` +
+      `&codigoModalidadeContratacao=8` +
+      `&pagina=${pagina}` +
+      `&tamanhoPagina=50`;
 
-    const text =
-      await fetchPncpComRetry(url);
+    const text = await fetchPncpComRetry(url);
+
+    // 🔥 se PNCP caiu, não quebra
+    if (!text) {
+      console.log("PNCP indisponível nesta página. Encerrando paginação.");
+      break;
+    }
 
     let data;
 
     try {
-
       data = JSON.parse(text);
-
     } catch {
-
+      console.log("JSON inválido PNCP, encerrando paginação");
       break;
     }
 
-    const lista = data.data || [];
-
-    if (!lista.length) {
+    if (!data || !Array.isArray(data.data)) {
+      console.log("Resposta inesperada PNCP");
       break;
     }
+
+    const lista = data.data;
+
+    if (!lista.length) break;
 
     todas.push(...lista);
 
-    if (lista.length < 50) {
+    if (lista.length < 50) break;
+
+    // 🔥 segurança contra loop infinito
+    if (pagina >= 20) {
+      console.log("Limite de páginas atingido (segurança)");
       break;
     }
 
@@ -311,72 +224,32 @@ async function buscarTodasPaginasPncp(
    MATCH
 ========================= */
 
-function calcularMatch(
-  segmentos,
-  textoTokens,
-  textoNormalizado
-) {
-
+function calcularMatch(segmentos, textoTokens, textoNormalizado) {
   let score = 0;
-
   const detalhes = new Set();
-
-  const textoSet =
-    new Set(textoTokens);
+  const textoSet = new Set(textoTokens);
 
   for (const segmento of segmentos) {
-
-    const segTokens =
-      tokenizeSmart(segmento);
-
-    if (!segTokens.length) {
-      continue;
-    }
+    const segTokens = tokenizeSmart(segmento);
+    if (!segTokens.length) continue;
 
     let matches = 0;
 
     for (const token of segTokens) {
-
       if (textoSet.has(token)) {
-
         matches++;
-
         detalhes.add(token);
       }
     }
 
-    /* MATCH EXATO */
-
-    if (
-      textoNormalizado.includes(
-        normalize(segmento)
-      )
-    ) {
-
+    if (textoNormalizado.includes(normalize(segmento))) {
       score += 10;
-
-      detalhes.add(
-        `EXATO:${segmento}`
-      );
-
+      detalhes.add(`EXATO:${segmento}`);
       continue;
     }
 
-    /* MATCH PARCIAL */
-
-    if (matches > 0) {
-
-      score += matches * 3;
-    }
-
-    /* MATCH TOTAL */
-
-    if (
-      matches === segTokens.length
-    ) {
-
-      score += 5;
-    }
+    if (matches > 0) score += matches * 3;
+    if (matches === segTokens.length) score += 5;
   }
 
   return {
@@ -389,78 +262,26 @@ function calcularMatch(
    FILTROS
 ========================= */
 
-function passarFiltros(
-  cliente,
-  licitacao
-) {
+function passarFiltros(cliente, licitacao) {
+  if (Array.isArray(cliente.cidadesFiltro) && cliente.cidadesFiltro.length) {
+    const cidades = cliente.cidadesFiltro.map(c => normalize(c));
+    const cidade = normalize(licitacao.cidade);
 
-  /* CIDADES */
-
-  if (
-    Array.isArray(cliente.cidadesFiltro) &&
-    cliente.cidadesFiltro.length
-  ) {
-
-    const cidades =
-      cliente.cidadesFiltro
-        .map(c => normalize(c));
-
-    const cidade =
-      normalize(licitacao.cidade);
-
-    const ok =
-      cidades.some(c =>
-        cidade.includes(c)
-      );
-
-    if (!ok) {
-      return false;
-    }
+    if (!cidades.some(c => cidade.includes(c))) return false;
   }
 
-  /* ESTADOS */
+  if (Array.isArray(cliente.estadosFiltro) && cliente.estadosFiltro.length) {
+    const estados = cliente.estadosFiltro.map(e => normalize(e));
+    const estado = normalize(licitacao.estado);
 
-  if (
-    Array.isArray(cliente.estadosFiltro) &&
-    cliente.estadosFiltro.length
-  ) {
-
-    const estados =
-      cliente.estadosFiltro
-        .map(e => normalize(e));
-
-    const estado =
-      normalize(licitacao.estado);
-
-    if (
-      !estados.includes(estado)
-    ) {
-      return false;
-    }
+    if (!estados.includes(estado)) return false;
   }
 
-  /* ÓRGÃOS */
+  if (Array.isArray(cliente.orgaosFiltro) && cliente.orgaosFiltro.length) {
+    const orgaos = cliente.orgaosFiltro.map(o => normalize(o));
+    const orgao = normalize(licitacao.orgao);
 
-  if (
-    Array.isArray(cliente.orgaosFiltro) &&
-    cliente.orgaosFiltro.length
-  ) {
-
-    const orgaos =
-      cliente.orgaosFiltro
-        .map(o => normalize(o));
-
-    const orgao =
-      normalize(licitacao.orgao);
-
-    const ok =
-      orgaos.some(o =>
-        orgao.includes(o)
-      );
-
-    if (!ok) {
-      return false;
-    }
+    if (!orgaos.some(o => orgao.includes(o))) return false;
   }
 
   return true;
@@ -471,406 +292,146 @@ function passarFiltros(
 ========================= */
 
 async function buscarLicitacoes() {
-
   const db = getDb();
 
   const hoje = new Date();
-
   const inicio = new Date(hoje);
 
-  inicio.setUTCDate(
-    inicio.getUTCDate() - 1
-  );
+  inicio.setUTCDate(inicio.getUTCDate() - 1);
 
-  const dataInicial =
-    formatPncpDate(inicio);
-
-  const dataFinal =
-    formatPncpDate(hoje);
+  const dataInicial = formatPncpDate(inicio);
+  const dataFinal = formatPncpDate(hoje);
 
   try {
+    console.log("Iniciando radar...");
 
-    console.log(
-      "Iniciando radar..."
-    );
+    const lista = await buscarTodasPaginasPncp(dataInicial, dataFinal);
 
-    /* =========================
-       PNCP
-    ========================= */
+    console.log("Licitações PNCP:", lista.length);
 
-    const lista =
-      await buscarTodasPaginasPncp(
-        dataInicial,
-        dataFinal
-      );
+    const clientesSnap = await db.collection("clientes").get();
 
-    console.log(
-      "Licitações PNCP:",
-      lista.length
-    );
-
-    /* =========================
-       CLIENTES
-    ========================= */
-
-    const clientesSnap =
-      await db
-        .collection("clientes")
-        .get();
-
-    const mapaTokens =
-      new Map();
-
-    const clientesMap =
-      new Map();
+    const mapaTokens = new Map();
+    const clientesMap = new Map();
 
     clientesSnap.forEach(doc => {
+      const cliente = { id: doc.id, ...doc.data() };
 
-      const cliente = {
-        id: doc.id,
-        ...doc.data()
-      };
+      let segmentos = Array.isArray(cliente.segmentos)
+        ? cliente.segmentos
+        : String(cliente.segmentos || "").split(",");
 
-      let segmentos = [];
+      segmentos = segmentos.map(s => normalize(s)).filter(Boolean);
 
-      const raw =
-        cliente.segmentos;
+      cliente.segmentos = segmentos;
 
-      if (Array.isArray(raw)) {
+      clientesMap.set(cliente.id, cliente);
 
-        segmentos = raw;
+      const tokensUnicos = new Set();
 
-      } else if (
-        typeof raw === "string"
-      ) {
-
-        segmentos =
-          raw.split(",");
-      }
-
-      segmentos = segmentos
-        .map(s => normalize(s))
-        .filter(Boolean);
-
-      cliente.segmentos =
-        segmentos;
-
-      clientesMap.set(
-        cliente.id,
-        cliente
-      );
-
-      /* INDEXAÇÃO */
-
-      const tokensUnicos =
-        new Set();
-
-      for (const segmento of segmentos) {
-
-        const tokens =
-          tokenizeSmart(segmento);
-
-        for (const token of tokens) {
-
-          tokensUnicos.add(token);
+      for (const s of segmentos) {
+        for (const t of tokenizeSmart(s)) {
+          tokensUnicos.add(t);
         }
       }
 
       for (const token of tokensUnicos) {
-
-        if (
-          !mapaTokens.has(token)
-        ) {
-
-          mapaTokens.set(
-            token,
-            new Set()
-          );
+        if (!mapaTokens.has(token)) {
+          mapaTokens.set(token, new Set());
         }
-
-        mapaTokens
-          .get(token)
-          .add(cliente.id);
+        mapaTokens.get(token).add(cliente.id);
       }
     });
 
-    console.log(
-      "Clientes:",
-      clientesMap.size
-    );
-
-    /* =========================
-       LICITAÇÕES
-    ========================= */
-
-    const licitacoes =
-      lista.map(item => {
-
-        return {
-
-          pncpId:
-            item.numeroControlePNCP ||
-            item.sequencialCompra ||
-            Math.random()
-              .toString(36),
-
-          orgao:
-            item.orgaoEntidade
-              ?.razaoSocial || "",
-
-          objeto:
-            item.objetoCompra || "",
-
-          cidade:
-            item.unidadeOrgao
-              ?.municipioNome || "",
-
-          estado:
-            item.unidadeOrgao
-              ?.ufSigla || "",
-
-          valor:
-            item.valorTotalEstimado || 0,
-
-          modalidade:
-            item.modalidadeNome || "",
-
-          abertura:
-            item.dataAberturaProposta || "",
-
-          encerramento:
-            item.dataEncerramentoProposta || "",
-
-          link:
-            item.linkSistemaOrigem || ""
-        };
-      });
-
-    console.log(
-      "Processando matches..."
-    );
-
-    let totalInseridas = 0;
+    console.log("Clientes:", clientesMap.size);
 
     const promises = [];
+    let totalInseridas = 0;
 
-    /* =========================
-       LOOP PRINCIPAL
-    ========================= */
+    for (const licitacao of lista.map(item => ({
+      pncpId: item.numeroControlePNCP || Math.random().toString(36),
+      orgao: item.orgaoEntidade?.razaoSocial || "",
+      objeto: item.objetoCompra || "",
+      cidade: item.unidadeOrgao?.municipioNome || "",
+      estado: item.unidadeOrgao?.ufSigla || "",
+      valor: item.valorTotalEstimado || 0,
+      modalidade: item.modalidadeNome || ""
+    }))) {
 
-    for (const licitacao of licitacoes) {
+      const texto = normalize(`${licitacao.objeto} ${licitacao.orgao}`);
 
-      const textoCompleto = `
-        ${licitacao.objeto}
-        ${licitacao.orgao}
-        ${licitacao.cidade}
-        ${licitacao.estado}
-        ${licitacao.modalidade}
-      `;
+      const tokens = tokenizeSmart(texto);
 
-      const textoNormalizado =
-        normalize(textoCompleto);
+      const candidatos = new Set();
 
-      const tokensLicitacao =
-        tokenizeSmart(textoCompleto);
-
-      /* =========================
-         CLIENTES RELEVANTES
-      ========================= */
-
-      const clientesRelevantes =
-        new Set();
-
-      for (const token of tokensLicitacao) {
-
-        const clientesToken =
-          mapaTokens.get(token);
-
-        if (!clientesToken) {
-          continue;
-        }
-
-        for (const clienteId of clientesToken) {
-
-          clientesRelevantes.add(
-            clienteId
-          );
-        }
+      for (const t of tokens) {
+        const set = mapaTokens.get(t);
+        if (!set) continue;
+        for (const id of set) candidatos.add(id);
       }
 
-      /* =========================
-         ANALISA SOMENTE RELEVANTES
-      ========================= */
+      for (const id of candidatos) {
+        const cliente = clientesMap.get(id);
+        if (!cliente) continue;
 
-      for (const clienteId of clientesRelevantes) {
+        if (!passarFiltros(cliente, licitacao)) continue;
 
-        const cliente =
-          clientesMap.get(clienteId);
+        const result = calcularMatch(cliente.segmentos, tokens, texto);
 
-        if (!cliente) {
-          continue;
-        }
+        if (result.score < 6) continue;
 
-        const passouFiltros =
-          passarFiltros(
-            cliente,
-            licitacao
-          );
+        const docId = `${cliente.id}_${licitacao.pncpId}`
+          .replace(/[\/\\.#$\[\]]/g, "-");
 
-        if (!passouFiltros) {
-          continue;
-        }
-
-        const resultado =
-          calcularMatch(
-            cliente.segmentos,
-            tokensLicitacao,
-            textoNormalizado
-          );
-
-        const score =
-          resultado.score;
-
-        /* SCORE MÍNIMO */
-
-        if (score < 6) {
-          continue;
-        }
-
-        const docId =
-          `${cliente.id}_${licitacao.pncpId}`
-            .trim()
-            .toLowerCase()
-            .replace(
-              /[\/\\.#$\[\]]/g,
-              "-"
-            );
-
-        const promise = db
-          .collection("licitacoes")
-          .doc(docId)
-          .set({
-
-            clienteId:
-              cliente.id,
-
+        promises.push(
+          db.collection("licitacoes").doc(docId).set({
+            clienteId: cliente.id,
             ...licitacao,
-
-            matchScore:
-              score,
-
-            palavrasEncontradas:
-              resultado.detalhes,
-
-            segmentosMatch:
-              cliente.segmentos,
-
+            matchScore: result.score,
+            palavrasEncontradas: result.detalhes,
+            segmentosMatch: cliente.segmentos,
             status: "aviso",
-
-            dataCriacao:
-              admin.firestore
-                .FieldValue
-                .serverTimestamp()
-
-          }, {
-            merge: true
-          });
-
-        promises.push(promise);
+            dataCriacao: admin.firestore.FieldValue.serverTimestamp()
+          }, { merge: true })
+        );
 
         totalInseridas++;
       }
     }
 
-    console.log(
-      "Gravando Firestore..."
-    );
-
     await Promise.all(promises);
 
-    /* =========================
-       LOG RADAR
-    ========================= */
-
-    await db
-      .collection("logsRadar")
-      .add({
-
-        dataExecucao:
-          admin.firestore
-            .FieldValue
-            .serverTimestamp(),
-
-        totalRecebidasPncp:
-          lista.length,
-
-        totalClientes:
-          clientesMap.size,
-
-        totalInseridas,
-
-        dataInicial,
-
-        dataFinal
-      });
-
-    const message =
-      `Radar finalizado. Inseridas: ${totalInseridas}`;
-
-    console.log(message);
+    await db.collection("logsRadar").add({
+      dataExecucao: admin.firestore.FieldValue.serverTimestamp(),
+      totalRecebidasPncp: lista.length,
+      totalClientes: clientesMap.size,
+      totalInseridas,
+      dataInicial,
+      dataFinal
+    });
 
     return {
-
       ok: true,
-
-      totalRecebidasPncp:
-        lista.length,
-
-      totalClientes:
-        clientesMap.size,
-
       totalInseridas,
-
-      dataInicial,
-
-      dataFinal,
-
-      message
+      totalRecebidasPncp: lista.length
     };
 
   } catch (error) {
-
-    console.log(
-      "ERRO:",
-      error
-    );
-
+    console.log("ERRO:", error);
     throw error;
   }
 }
 
-module.exports = {
-  buscarLicitacoes
-};
+module.exports = { buscarLicitacoes };
 
 if (require.main === module) {
-
   buscarLicitacoes()
-
-    .then(result => {
-
-      console.log(
-        "Execução concluída:",
-        result
-      );
-
+    .then(r => {
+      console.log("OK:", r);
       process.exit(0);
     })
-
-    .catch(error => {
-
-      console.log(error);
-
+    .catch(e => {
+      console.log(e);
       process.exit(1);
     });
 }
