@@ -335,6 +335,73 @@ async function buscarLicitacoes() {
 
       for (const licitacao of licitacoes) {
 
+        /* =========================
+   FILTRO CIDADES
+========================= */
+
+if (cliente.cidadesFiltro) {
+
+  const cidades = cliente.cidadesFiltro
+    .split(",")
+    .map(c => normalize(c));
+
+  const cidadeLicitacao =
+    normalize(licitacao.cidade);
+
+  const cidadeOk =
+    cidades.some(c =>
+      cidadeLicitacao.includes(c)
+    );
+
+  if (!cidadeOk) {
+    continue;
+  }
+}
+
+/* =========================
+   FILTRO ESTADOS
+========================= */
+
+if (cliente.estadosFiltro) {
+
+  const estados = cliente.estadosFiltro
+    .split(",")
+    .map(e => normalize(e));
+
+  const estadoLicitacao =
+    normalize(licitacao.estado);
+
+  const estadoOk =
+    estados.includes(estadoLicitacao);
+
+  if (!estadoOk) {
+    continue;
+  }
+}
+
+/* =========================
+   FILTRO ÓRGÃOS
+========================= */
+
+if (cliente.orgaosFiltro) {
+
+  const orgaos = cliente.orgaosFiltro
+    .split(",")
+    .map(o => normalize(o));
+
+  const orgaoLicitacao =
+    normalize(licitacao.orgao);
+
+  const orgaoOk =
+    orgaos.some(o =>
+      orgaoLicitacao.includes(o)
+    );
+
+  if (!orgaoOk) {
+    continue;
+  }
+}
+
         const textoCompleto = `
           ${licitacao.objeto}
           ${licitacao.orgao}
