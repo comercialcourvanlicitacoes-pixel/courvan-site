@@ -4,6 +4,7 @@ let initialized = false;
 
 function getDb() {
   if (!initialized) {
+
     const serviceAccount = JSON.parse(
       process.env.FIREBASE_SERVICE_ACCOUNT
     );
@@ -23,6 +24,7 @@ function getDb() {
 ========================= */
 
 function normalize(text) {
+
   return String(text || "")
     .toLowerCase()
     .normalize("NFD")
@@ -33,9 +35,108 @@ function normalize(text) {
 }
 
 function tokenize(text) {
+
   return normalize(text)
     .split(" ")
     .filter(Boolean);
+}
+
+/* =========================
+   STOPWORDS
+========================= */
+
+const STOPWORDS = [
+  "de",
+  "da",
+  "do",
+  "das",
+  "dos",
+  "para",
+  "com",
+  "sem",
+  "por",
+  "em",
+  "na",
+  "no",
+  "nas",
+  "nos",
+  "a",
+  "o",
+  "as",
+  "os",
+  "e",
+  "ou",
+  "ao",
+  "aos",
+  "à",
+  "às",
+  "um",
+  "uma",
+  "uns",
+  "umas",
+  "servico",
+  "servicos",
+  "contratacao",
+  "aquisicao",
+  "empresa",
+  "material",
+  "prestacao",
+  "fornecimento"
+];
+
+/* =========================
+   STEM SIMPLES
+========================= */
+
+function stem(token) {
+
+  let t = normalize(token);
+
+  const finais = [
+    "coes",
+    "cao",
+    "s",
+    "es",
+    "is",
+    "ns"
+  ];
+
+  for (const fim of finais) {
+
+    if (
+      t.endsWith(fim) &&
+      t.length > fim.length + 3
+    ) {
+
+      t = t.slice(0, -fim.length);
+
+      break;
+    }
+  }
+
+  return t;
+}
+
+/* =========================
+   TOKENIZAÇÃO AVANÇADA
+========================= */
+
+function tokenizeSmart(text) {
+
+  return tokenize(text)
+    .map(stem)
+    .filter(token => {
+
+      if (!token) return false;
+
+      if (token.length < 3) return false;
+
+      if (STOPWORDS.includes(token)) {
+        return false;
+      }
+
+      return true;
+    });
 }
 
 /* =========================
@@ -43,9 +144,16 @@ function tokenize(text) {
 ========================= */
 
 function formatPncpDate(date) {
+
   const y = date.getUTCFullYear();
-  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(date.getUTCDate()).padStart(2, "0");
+
+  const m = String(
+    date.getUTCMonth() + 1
+  ).padStart(2, "0");
+
+  const d = String(
+    date.getUTCDate()
+  ).padStart(2, "0");
 
   return `${y}${m}${d}`;
 }
@@ -58,21 +166,32 @@ function sleep(ms) {
    FETCH RETRY
 ========================= */
 
-async function fetchPncpComRetry(url, tentativas = 4) {
+async function fetchPncpComRetry(
+  url,
+  tentativas = 4
+) {
+
   let ultimoErro = null;
 
-  for (let tentativa = 1; tentativa <= tentativas; tentativa++) {
+  for (
+    let tentativa = 1;
+    tentativa <= tentativas;
+    tentativa++
+  ) {
+
     try {
+
       const response = await fetch(url, {
         headers: {
           Accept: "application/json",
-          "User-Agent": "courvan-radar/1.0"
+          "User-Agent": "courvan-radar/2.0"
         }
       });
 
       const text = await response.text();
 
       if (!response.ok) {
+
         const erro = new Error(
           `PNCP HTTP ${response.status}`
         );
@@ -92,7 +211,8 @@ async function fetchPncpComRetry(url, tentativas = 4) {
       const status = error?.status;
 
       const retryableHttp =
-        [429, 500, 502, 503, 504].includes(status);
+        [429, 500, 502, 503, 504]
+          .includes(status);
 
       const retryableNetwork =
         error?.name === "TypeError" ||
@@ -101,12 +221,14 @@ async function fetchPncpComRetry(url, tentativas = 4) {
 
       if (
         tentativa === tentativas ||
-        (!retryableHttp && !retryableNetwork)
+        (!retryableHttp &&
+          !retryableNetwork)
       ) {
         break;
       }
 
-      const esperaMs = 1500 * tentativa;
+      const esperaMs =
+        1500 * tentativa;
 
       console.log(
         `PNCP retry ${tentativa}/${tentativas} - aguardando ${esperaMs}ms`
@@ -120,42 +242,227 @@ async function fetchPncpComRetry(url, tentativas = 4) {
 }
 
 /* =========================
-   MATCH MELHORADO
+   BUSCA PAGINADA PNCP
 ========================= */
 
-function calcularMatch(segmentos, texto) {
+async function buscarTodasPaginasPncp(
+  dataInicial,
+  dataFinal
+) {
 
-  const textoTokens = tokenize(texto);
+  let pagina = 1;
+
+  let todas = [];
+
+  while (true) {
+
+    console.log(
+      `Buscando página ${pagina}...`
+    );
+
+    const url =
+      "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
+      `?dataInicial=${dataInicial}` +
+      `&dataFinal=${dataFinal}` +
+      "&codigoModalidadeContratacao=8" +
+      `&pagina=${pagina}` +
+      "&tamanhoPagina=50";
+
+    const text =
+      await fetchPncpComRetry(url, 4);
+
+    let data;
+
+    try {
+
+      data = JSON.parse(text);
+
+    } catch (e) {
+
+      console.log("JSON inválido PNCP");
+      break;
+    }
+
+    const lista = data.data || [];
+
+    console.log(
+      `Página ${pagina}: ${lista.length} itens`
+    );
+
+    if (!lista.length) {
+      break;
+    }
+
+    todas.push(...lista);
+
+    if (lista.length < 50) {
+      break;
+    }
+
+    pagina++;
+  }
+
+  return todas;
+}
+
+/* =========================
+   MATCH INTELIGENTE
+========================= */
+
+function calcularMatch(
+  segmentos,
+  texto
+) {
+
+  const textoTokens =
+    tokenizeSmart(texto);
+
+  const textoSet =
+    new Set(textoTokens);
 
   let score = 0;
 
+  let detalhes = [];
+
   for (const segmento of segmentos) {
 
-    const segTokens = tokenize(segmento);
+    const segTokens =
+      tokenizeSmart(segmento);
 
-    if (!segTokens.length) continue;
+    if (!segTokens.length) {
+      continue;
+    }
 
     let matches = 0;
 
     for (const token of segTokens) {
 
-      /* IGNORA PALAVRAS MUITO CURTAS */
-      if (token.length < 3) continue;
+      if (textoSet.has(token)) {
 
-      const encontrou =
-        textoTokens.includes(token);
-
-      if (encontrou) {
         matches++;
+
+        detalhes.push(token);
       }
     }
 
+    /* MATCH EXATO */
+    if (
+      normalize(texto)
+        .includes(normalize(segmento))
+    ) {
+
+      score += 10;
+
+      detalhes.push(
+        `EXATO:${segmento}`
+      );
+
+      continue;
+    }
+
+    /* MATCH PARCIAL */
     if (matches > 0) {
-      score += matches * segTokens.length;
+
+      score += matches * 3;
+    }
+
+    /* MATCH TOTAL SEGMENTO */
+    if (
+      matches === segTokens.length
+    ) {
+
+      score += 5;
     }
   }
 
-  return score;
+  return {
+    score,
+    detalhes
+  };
+}
+
+/* =========================
+   FILTROS
+========================= */
+
+function passarFiltros(
+  cliente,
+  licitacao
+) {
+
+  /* =========================
+     CIDADES
+  ========================= */
+
+  if (cliente.cidadesFiltro) {
+
+    const cidades =
+      cliente.cidadesFiltro
+        .split(",")
+        .map(c => normalize(c));
+
+    const cidadeLicitacao =
+      normalize(licitacao.cidade);
+
+    const cidadeOk =
+      cidades.some(c =>
+        cidadeLicitacao.includes(c)
+      );
+
+    if (!cidadeOk) {
+      return false;
+    }
+  }
+
+  /* =========================
+     ESTADOS
+  ========================= */
+
+  if (cliente.estadosFiltro) {
+
+    const estados =
+      cliente.estadosFiltro
+        .split(",")
+        .map(e => normalize(e));
+
+    const estadoLicitacao =
+      normalize(licitacao.estado);
+
+    const estadoOk =
+      estados.includes(
+        estadoLicitacao
+      );
+
+    if (!estadoOk) {
+      return false;
+    }
+  }
+
+  /* =========================
+     ÓRGÃOS
+  ========================= */
+
+  if (cliente.orgaosFiltro) {
+
+    const orgaos =
+      cliente.orgaosFiltro
+        .split(",")
+        .map(o => normalize(o));
+
+    const orgaoLicitacao =
+      normalize(licitacao.orgao);
+
+    const orgaoOk =
+      orgaos.some(o =>
+        orgaoLicitacao.includes(o)
+      );
+
+    if (!orgaoOk) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /* =========================
@@ -182,39 +489,22 @@ async function buscarLicitacoes() {
 
   try {
 
-    console.log("Iniciando busca PNCP...");
+    console.log(
+      "Iniciando busca PNCP..."
+    );
 
-    const url =
-      "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
-      `?dataInicial=${dataInicial}` +
-      `&dataFinal=${dataFinal}` +
-      "&codigoModalidadeContratacao=8" +
-      "&pagina=1" +
-      "&tamanhoPagina=50";
+    /* =========================
+       BUSCA TODAS PÁGINAS
+    ========================= */
 
-    const text =
-      await fetchPncpComRetry(url, 4);
-
-    let data;
-
-    try {
-
-      data = JSON.parse(text);
-
-    } catch (e) {
-
-      console.log("Resposta inválida PNCP:");
-      console.log(text);
-
-      throw new Error(
-        "JSON inválido PNCP"
+    const lista =
+      await buscarTodasPaginasPncp(
+        dataInicial,
+        dataFinal
       );
-    }
-
-    const lista = data.data || [];
 
     console.log(
-      "Total recebido:",
+      "TOTAL RECEBIDO PNCP:",
       lista.length
     );
 
@@ -223,7 +513,9 @@ async function buscarLicitacoes() {
     ========================= */
 
     const clientesSnap =
-      await db.collection("clientes").get();
+      await db
+        .collection("clientes")
+        .get();
 
     const clientes = [];
 
@@ -234,14 +526,13 @@ async function buscarLicitacoes() {
 
       let segmentos = [];
 
-      /* ARRAY */
       if (Array.isArray(raw)) {
 
         segmentos = raw;
 
-      }
-      /* STRING */
-      else if (typeof raw === "string") {
+      } else if (
+        typeof raw === "string"
+      ) {
 
         segmentos = raw.split(",");
       }
@@ -266,43 +557,48 @@ async function buscarLicitacoes() {
        LICITAÇÕES
     ========================= */
 
-    const licitacoes = lista.map(item => {
+    const licitacoes =
+      lista.map(item => {
 
-      return {
+        return {
 
-        pncpId:
-          item.numeroControlePNCP ||
-          item.sequencialCompra ||
-          Math.random().toString(36),
+          pncpId:
+            item.numeroControlePNCP ||
+            item.sequencialCompra ||
+            Math.random()
+              .toString(36),
 
-        orgao:
-          item.orgaoEntidade?.razaoSocial || "",
+          orgao:
+            item.orgaoEntidade
+              ?.razaoSocial || "",
 
-        objeto:
-          item.objetoCompra || "",
+          objeto:
+            item.objetoCompra || "",
 
-        cidade:
-          item.unidadeOrgao?.municipioNome || "",
+          cidade:
+            item.unidadeOrgao
+              ?.municipioNome || "",
 
-        estado:
-          item.unidadeOrgao?.ufSigla || "",
+          estado:
+            item.unidadeOrgao
+              ?.ufSigla || "",
 
-        valor:
-          item.valorTotalEstimado || 0,
+          valor:
+            item.valorTotalEstimado || 0,
 
-        modalidade:
-          item.modalidadeNome || "",
+          modalidade:
+            item.modalidadeNome || "",
 
-        abertura:
-          item.dataAberturaProposta || "",
+          abertura:
+            item.dataAberturaProposta || "",
 
-        encerramento:
-          item.dataEncerramentoProposta || "",
+          encerramento:
+            item.dataEncerramentoProposta || "",
 
-        link:
-          item.linkSistemaOrigem || ""
-      };
-    });
+          link:
+            item.linkSistemaOrigem || ""
+        };
+      });
 
     console.log(
       "TOTAL LICITACOES PROCESSADAS:",
@@ -310,18 +606,22 @@ async function buscarLicitacoes() {
     );
 
     /* =========================
-       MATCH + INSERÇÃO
+       MATCH
     ========================= */
 
     let totalInseridas = 0;
 
     for (const cliente of clientes) {
 
-      if (!cliente.segmentos?.length) {
+      if (
+        !cliente.segmentos?.length
+      ) {
         continue;
       }
 
-      console.log("\n======================");
+      console.log(
+        "\n======================"
+      );
 
       console.log(
         "CLIENTE:",
@@ -335,72 +635,15 @@ async function buscarLicitacoes() {
 
       for (const licitacao of licitacoes) {
 
-        /* =========================
-   FILTRO CIDADES
-========================= */
+        const passouFiltros =
+          passarFiltros(
+            cliente,
+            licitacao
+          );
 
-if (cliente.cidadesFiltro) {
-
-  const cidades = cliente.cidadesFiltro
-    .split(",")
-    .map(c => normalize(c));
-
-  const cidadeLicitacao =
-    normalize(licitacao.cidade);
-
-  const cidadeOk =
-    cidades.some(c =>
-      cidadeLicitacao.includes(c)
-    );
-
-  if (!cidadeOk) {
-    continue;
-  }
-}
-
-/* =========================
-   FILTRO ESTADOS
-========================= */
-
-if (cliente.estadosFiltro) {
-
-  const estados = cliente.estadosFiltro
-    .split(",")
-    .map(e => normalize(e));
-
-  const estadoLicitacao =
-    normalize(licitacao.estado);
-
-  const estadoOk =
-    estados.includes(estadoLicitacao);
-
-  if (!estadoOk) {
-    continue;
-  }
-}
-
-/* =========================
-   FILTRO ÓRGÃOS
-========================= */
-
-if (cliente.orgaosFiltro) {
-
-  const orgaos = cliente.orgaosFiltro
-    .split(",")
-    .map(o => normalize(o));
-
-  const orgaoLicitacao =
-    normalize(licitacao.orgao);
-
-  const orgaoOk =
-    orgaos.some(o =>
-      orgaoLicitacao.includes(o)
-    );
-
-  if (!orgaoOk) {
-    continue;
-  }
-}
+        if (!passouFiltros) {
+          continue;
+        }
 
         const textoCompleto = `
           ${licitacao.objeto}
@@ -419,16 +662,32 @@ if (cliente.orgaosFiltro) {
           licitacao.objeto
         );
 
-        const score = calcularMatch(
-          cliente.segmentos,
-          textoCompleto
-        );
+        const resultado =
+          calcularMatch(
+            cliente.segmentos,
+            textoCompleto
+          );
 
-        const match = score >= 2;
+        const score =
+          resultado.score;
+
+        const detalhes =
+          resultado.detalhes;
+
+        /* =========================
+           LIMIAR MAIS INTELIGENTE
+        ========================= */
+
+        const match = score >= 3;
 
         console.log(
           "SCORE:",
           score
+        );
+
+        console.log(
+          "MATCHES:",
+          detalhes
         );
 
         console.log(
@@ -446,25 +705,31 @@ if (cliente.orgaosFiltro) {
 
         /* =========================
            ID FIXO
-           EVITA DUPLICIDADE
         ========================= */
 
         const docId =
-  `${cliente.id}_${licitacao.pncpId}`
-    .trim()
-    .toLowerCase()
-    .replace(/[\/\\.#$\[\]]/g, "-");
+          `${cliente.id}_${licitacao.pncpId}`
+            .trim()
+            .toLowerCase()
+            .replace(
+              /[\/\\.#$\[\]]/g,
+              "-"
+            );
 
         await db
           .collection("licitacoes")
           .doc(docId)
           .set({
 
-            clienteId: cliente.id,
+            clienteId:
+              cliente.id,
 
             ...licitacao,
 
             score,
+
+            detalhesMatch:
+              detalhes,
 
             segmentosMatch:
               cliente.segmentos,
