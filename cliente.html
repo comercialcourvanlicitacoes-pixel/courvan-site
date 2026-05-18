@@ -639,6 +639,11 @@ grupo.innerHTML += `
           <p><strong>Valor:</strong> ${l.valor}</p>
           <p><strong>Data Sessão:</strong> ${l.dataSessao}</p>
 
+          <p>
+<strong>Compatibilidade:</strong>
+${l.matchScore || 0}%
+</p>
+
           ${l.linkEdital ? `
             <a href="${l.linkEdital}" target="_blank"
               style="display:inline-block;margin-top:10px;background:#d8a84e;color:#07162b;padding:10px 15px;border-radius:10px;text-decoration:none;">
