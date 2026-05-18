@@ -268,11 +268,12 @@ async function buscarTodasPaginasPncp(
     );
 
     const url =
-      "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
-      `?dataInicial=${dataInicial}` +
-      `&dataFinal=${dataFinal}` +
-      `&pagina=${pagina}` +
-      "&tamanhoPagina=50";
+  "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao" +
+  `?dataInicial=${dataInicial}` +
+  `&dataFinal=${dataFinal}` +
+  `&codigoModalidadeContratacao=8` +
+  `&pagina=${pagina}` +
+  `&tamanhoPagina=50`;
 
     const text =
       await fetchPncpComRetry(url);
@@ -478,7 +479,7 @@ async function buscarLicitacoes() {
   const inicio = new Date(hoje);
 
   inicio.setUTCDate(
-    inicio.getUTCDate() - 5
+    inicio.getUTCDate() - 1
   );
 
   const dataInicial =
