@@ -3,6 +3,7 @@ const admin = require("firebase-admin");
 let initialized = false;
 
 function getDb() {
+
   if (!initialized) {
 
     const serviceAccount = JSON.parse(
@@ -33,6 +34,10 @@ function normalize(text) {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/* =========================
+   TOKENIZAÇÃO
+========================= */
 
 function tokenize(text) {
 
@@ -85,7 +90,7 @@ const STOPWORDS = [
 ];
 
 /* =========================
-   STEM SIMPLES
+   STEM
 ========================= */
 
 function stem(token) {
@@ -118,7 +123,7 @@ function stem(token) {
 }
 
 /* =========================
-   TOKENIZAÇÃO AVANÇADA
+   TOKENIZAÇÃO INTELIGENTE
 ========================= */
 
 function tokenizeSmart(text) {
@@ -129,7 +134,9 @@ function tokenizeSmart(text) {
 
       if (!token) return false;
 
-      if (token.length < 3) return false;
+      if (token.length < 3) {
+        return false;
+      }
 
       if (STOPWORDS.includes(token)) {
         return false;
@@ -158,13 +165,13 @@ function formatPncpDate(date) {
   return `${y}${m}${d}`;
 }
 
+/* =========================
+   RETRY
+========================= */
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-/* =========================
-   FETCH RETRY
-========================= */
 
 async function fetchPncpComRetry(
   url,
@@ -184,7 +191,7 @@ async function fetchPncpComRetry(
       const response = await fetch(url, {
         headers: {
           Accept: "application/json",
-          "User-Agent": "courvan-radar/2.0"
+          "User-Agent": "courvan-radar/3.0"
         }
       });
 
@@ -222,7 +229,7 @@ async function fetchPncpComRetry(
       if (
         tentativa === tentativas ||
         (!retryableHttp &&
-          !retryableNetwork)
+         !retryableNetwork)
       ) {
         break;
       }
@@ -231,7 +238,7 @@ async function fetchPncpComRetry(
         1500 * tentativa;
 
       console.log(
-        `PNCP retry ${tentativa}/${tentativas} - aguardando ${esperaMs}ms`
+        `Retry PNCP ${tentativa}/${tentativas}`
       );
 
       await sleep(esperaMs);
@@ -242,7 +249,7 @@ async function fetchPncpComRetry(
 }
 
 /* =========================
-   BUSCA PAGINADA PNCP
+   BUSCA PAGINADA
 ========================= */
 
 async function buscarTodasPaginasPncp(
@@ -257,7 +264,7 @@ async function buscarTodasPaginasPncp(
   while (true) {
 
     console.log(
-      `Buscando página ${pagina}...`
+      `Página ${pagina}`
     );
 
     const url =
@@ -269,7 +276,7 @@ async function buscarTodasPaginasPncp(
       "&tamanhoPagina=50";
 
     const text =
-      await fetchPncpComRetry(url, 4);
+      await fetchPncpComRetry(url);
 
     let data;
 
@@ -277,17 +284,12 @@ async function buscarTodasPaginasPncp(
 
       data = JSON.parse(text);
 
-    } catch (e) {
+    } catch {
 
-      console.log("JSON inválido PNCP");
       break;
     }
 
     const lista = data.data || [];
-
-    console.log(
-      `Página ${pagina}: ${lista.length} itens`
-    );
 
     if (!lista.length) {
       break;
@@ -306,23 +308,21 @@ async function buscarTodasPaginasPncp(
 }
 
 /* =========================
-   MATCH INTELIGENTE
+   MATCH
 ========================= */
 
 function calcularMatch(
   segmentos,
-  texto
+  textoTokens,
+  textoNormalizado
 ) {
-
-  const textoTokens =
-    tokenizeSmart(texto);
-
-  const textoSet =
-    new Set(textoTokens);
 
   let score = 0;
 
   let detalhes = [];
+
+  const textoSet =
+    new Set(textoTokens);
 
   for (const segmento of segmentos) {
 
@@ -346,9 +346,11 @@ function calcularMatch(
     }
 
     /* MATCH EXATO */
+
     if (
-      normalize(texto)
-        .includes(normalize(segmento))
+      textoNormalizado.includes(
+        normalize(segmento)
+      )
     ) {
 
       score += 10;
@@ -361,12 +363,14 @@ function calcularMatch(
     }
 
     /* MATCH PARCIAL */
+
     if (matches > 0) {
 
       score += matches * 3;
     }
 
-    /* MATCH TOTAL SEGMENTO */
+    /* MATCH TOTAL */
+
     if (
       matches === segTokens.length
     ) {
@@ -390,9 +394,7 @@ function passarFiltros(
   licitacao
 ) {
 
-  /* =========================
-     CIDADES
-  ========================= */
+  /* CIDADES */
 
   if (cliente.cidadesFiltro) {
 
@@ -401,22 +403,20 @@ function passarFiltros(
         .split(",")
         .map(c => normalize(c));
 
-    const cidadeLicitacao =
+    const cidade =
       normalize(licitacao.cidade);
 
-    const cidadeOk =
+    const ok =
       cidades.some(c =>
-        cidadeLicitacao.includes(c)
+        cidade.includes(c)
       );
 
-    if (!cidadeOk) {
+    if (!ok) {
       return false;
     }
   }
 
-  /* =========================
-     ESTADOS
-  ========================= */
+  /* ESTADOS */
 
   if (cliente.estadosFiltro) {
 
@@ -425,22 +425,17 @@ function passarFiltros(
         .split(",")
         .map(e => normalize(e));
 
-    const estadoLicitacao =
+    const estado =
       normalize(licitacao.estado);
 
-    const estadoOk =
-      estados.includes(
-        estadoLicitacao
-      );
-
-    if (!estadoOk) {
+    if (
+      !estados.includes(estado)
+    ) {
       return false;
     }
   }
 
-  /* =========================
-     ÓRGÃOS
-  ========================= */
+  /* ÓRGÃOS */
 
   if (cliente.orgaosFiltro) {
 
@@ -449,15 +444,15 @@ function passarFiltros(
         .split(",")
         .map(o => normalize(o));
 
-    const orgaoLicitacao =
+    const orgao =
       normalize(licitacao.orgao);
 
-    const orgaoOk =
+    const ok =
       orgaos.some(o =>
-        orgaoLicitacao.includes(o)
+        orgao.includes(o)
       );
 
-    if (!orgaoOk) {
+    if (!ok) {
       return false;
     }
   }
@@ -490,11 +485,11 @@ async function buscarLicitacoes() {
   try {
 
     console.log(
-      "Iniciando busca PNCP..."
+      "Iniciando radar..."
     );
 
     /* =========================
-       BUSCA TODAS PÁGINAS
+       PNCP
     ========================= */
 
     const lista =
@@ -504,7 +499,7 @@ async function buscarLicitacoes() {
       );
 
     console.log(
-      "TOTAL RECEBIDO PNCP:",
+      "Licitações PNCP:",
       lista.length
     );
 
@@ -517,14 +512,23 @@ async function buscarLicitacoes() {
         .collection("clientes")
         .get();
 
-    const clientes = [];
+    const mapaTokens =
+      new Map();
+
+    const clientesMap =
+      new Map();
 
     clientesSnap.forEach(doc => {
 
-      const raw =
-        doc.data().segmentos;
+      const cliente = {
+        id: doc.id,
+        ...doc.data()
+      };
 
       let segmentos = [];
+
+      const raw =
+        cliente.segmentos;
 
       if (Array.isArray(raw)) {
 
@@ -534,23 +538,59 @@ async function buscarLicitacoes() {
         typeof raw === "string"
       ) {
 
-        segmentos = raw.split(",");
+        segmentos =
+          raw.split(",");
       }
 
       segmentos = segmentos
         .map(s => normalize(s))
         .filter(Boolean);
 
-      clientes.push({
-        id: doc.id,
-        ...doc.data(),
-        segmentos
-      });
+      cliente.segmentos =
+        segmentos;
+
+      clientesMap.set(
+        cliente.id,
+        cliente
+      );
+
+      /* INDEXAÇÃO */
+
+      const tokensUnicos =
+        new Set();
+
+      for (const segmento of segmentos) {
+
+        const tokens =
+          tokenizeSmart(segmento);
+
+        for (const token of tokens) {
+
+          tokensUnicos.add(token);
+        }
+      }
+
+      for (const token of tokensUnicos) {
+
+        if (
+          !mapaTokens.has(token)
+        ) {
+
+          mapaTokens.set(
+            token,
+            new Set()
+          );
+        }
+
+        mapaTokens
+          .get(token)
+          .add(cliente.id);
+      }
     });
 
     console.log(
-      "Clientes carregados:",
-      clientes.length
+      "Clientes:",
+      clientesMap.size
     );
 
     /* =========================
@@ -601,41 +641,69 @@ async function buscarLicitacoes() {
       });
 
     console.log(
-      "TOTAL LICITACOES PROCESSADAS:",
-      licitacoes.length
+      "Processando matches..."
     );
-
-    /* =========================
-       MATCH
-    ========================= */
 
     let totalInseridas = 0;
 
     const promises = [];
 
-    for (const cliente of clientes) {
+    /* =========================
+       LOOP PRINCIPAL
+    ========================= */
 
-      if (
-        !cliente.segmentos?.length
-      ) {
-        continue;
+    for (const licitacao of licitacoes) {
+
+      const textoCompleto = `
+        ${licitacao.objeto}
+        ${licitacao.orgao}
+        ${licitacao.cidade}
+        ${licitacao.estado}
+        ${licitacao.modalidade}
+      `;
+
+      const textoNormalizado =
+        normalize(textoCompleto);
+
+      const tokensLicitacao =
+        tokenizeSmart(textoCompleto);
+
+      /* =========================
+         BUSCA CLIENTES RELEVANTES
+      ========================= */
+
+      const clientesRelevantes =
+        new Set();
+
+      for (const token of tokensLicitacao) {
+
+        const clientesToken =
+          mapaTokens.get(token);
+
+        if (!clientesToken) {
+          continue;
+        }
+
+        for (const clienteId of clientesToken) {
+
+          clientesRelevantes.add(
+            clienteId
+          );
+        }
       }
 
-      console.log(
-        "\n======================"
-      );
+      /* =========================
+         ANALISA SOMENTE RELEVANTES
+      ========================= */
 
-      console.log(
-        "CLIENTE:",
-        cliente.id
-      );
+      for (const clienteId of clientesRelevantes) {
 
-      console.log(
-        "SEGMENTOS:",
-        cliente.segmentos
-      );
+        const cliente =
+          clientesMap.get(clienteId);
 
-      for (const licitacao of licitacoes) {
+        if (!cliente) {
+          continue;
+        }
 
         const passouFiltros =
           passarFiltros(
@@ -647,67 +715,19 @@ async function buscarLicitacoes() {
           continue;
         }
 
-        const textoCompleto = `
-          ${licitacao.objeto}
-          ${licitacao.orgao}
-          ${licitacao.cidade}
-          ${licitacao.estado}
-          ${licitacao.modalidade}
-        `;
-
-        console.log(
-          "\nPROCESSANDO LICITAÇÃO..."
-        );
-
-        console.log(
-          "OBJETO:",
-          licitacao.objeto
-        );
-
         const resultado =
           calcularMatch(
             cliente.segmentos,
-            textoCompleto
+            tokensLicitacao,
+            textoNormalizado
           );
 
         const score =
           resultado.score;
 
-        const detalhes =
-          resultado.detalhes;
-
-        /* =========================
-           LIMIAR MAIS INTELIGENTE
-        ========================= */
-
-        const match = score >= 3;
-
-        console.log(
-          "SCORE:",
-          score
-        );
-
-        console.log(
-          "MATCHES:",
-          detalhes
-        );
-
-        console.log(
-          "MATCH:",
-          match
-        );
-
-        if (!match) {
+        if (score < 3) {
           continue;
         }
-
-        console.log(
-          "INSERINDO LICITAÇÃO..."
-        );
-
-        /* =========================
-           ID FIXO
-        ========================= */
 
         const docId =
           `${cliente.id}_${licitacao.pncpId}`
@@ -719,51 +739,50 @@ async function buscarLicitacoes() {
             );
 
         const promise = db
-  .collection("licitacoes")
-  .doc(docId)
-  .set({
+          .collection("licitacoes")
+          .doc(docId)
+          .set({
 
-    clienteId:
-      cliente.id,
+            clienteId:
+              cliente.id,
 
-    ...licitacao,
+            ...licitacao,
 
-    score,
+            score,
 
-    detalhesMatch:
-      detalhes,
+            detalhesMatch:
+              resultado.detalhes,
 
-    segmentosMatch:
-      cliente.segmentos,
+            segmentosMatch:
+              cliente.segmentos,
 
-    status: "aviso",
+            status: "aviso",
 
-    dataCriacao:
-      admin.firestore
-        .FieldValue
-        .serverTimestamp()
+            dataCriacao:
+              admin.firestore
+                .FieldValue
+                .serverTimestamp()
 
-  }, {
-    merge: true
-  });
+          }, {
+            merge: true
+          });
 
-promises.push(promise);
+        promises.push(promise);
 
         totalInseridas++;
       }
     }
 
     console.log(
-  "Aguardando inserts Firestore..."
-);
+      "Gravando Firestore..."
+    );
 
-await Promise.all(promises);
-    
+    await Promise.all(promises);
+
     const message =
-      `Radar finalizado. Inseridas: ${totalInseridas}. ` +
-      `Intervalo: ${dataInicial} a ${dataFinal}.`;
+      `Radar finalizado. Inseridas: ${totalInseridas}`;
 
-    console.log("\n" + message);
+    console.log(message);
 
     return {
 
@@ -773,7 +792,7 @@ await Promise.all(promises);
         lista.length,
 
       totalClientes:
-        clientes.length,
+        clientesMap.size,
 
       totalInseridas,
 
@@ -785,22 +804,6 @@ await Promise.all(promises);
     };
 
   } catch (error) {
-
-    if (error?.status) {
-
-      console.log(
-        "Erro HTTP PNCP:",
-        error.status
-      );
-    }
-
-    if (error?.responseText) {
-
-      console.log(
-        "Resposta:",
-        error.responseText
-      );
-    }
 
     console.log(
       "ERRO:",
