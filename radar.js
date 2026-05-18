@@ -753,6 +753,12 @@ promises.push(promise);
       }
     }
 
+    console.log(
+  "Aguardando inserts Firestore..."
+);
+
+await Promise.all(promises);
+    
     const message =
       `Radar finalizado. Inseridas: ${totalInseridas}. ` +
       `Intervalo: ${dataInicial} a ${dataFinal}.`;
