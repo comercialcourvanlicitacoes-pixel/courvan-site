@@ -853,13 +853,13 @@ document.getElementById("configSegmentos").value =
   cliente.segmentos || "";
 
 document.getElementById("configCidades").value =
-  cliente.cidadesFiltro || "";
+(cliente.cidadesFiltro || []).join(", ");
 
 document.getElementById("configEstados").value =
-  cliente.estadosFiltro || "";
+(cliente.estadosFiltro || []).join(", ");
 
 document.getElementById("configOrgaos").value =
-  cliente.orgaosFiltro || "";
+(cliente.orgaosFiltro || []).join(", ");
   
   listarDemandas();
 
