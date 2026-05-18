@@ -151,7 +151,7 @@ function calcularMatch(segmentos, texto) {
     }
 
     if (matches > 0) {
-      score += matches;
+      score += matches * segTokens.length;
     }
   }
 
