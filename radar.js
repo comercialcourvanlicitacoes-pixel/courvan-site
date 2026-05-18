@@ -383,7 +383,10 @@ async function buscarLicitacoes() {
         ========================= */
 
         const docId =
-          `${cliente.id}_${licitacao.pncpId}`;
+  `${cliente.id}_${licitacao.pncpId}`
+    .trim()
+    .toLowerCase()
+    .replace(/[\/\\.#$\[\]]/g, "-");
 
         await db
           .collection("licitacoes")
