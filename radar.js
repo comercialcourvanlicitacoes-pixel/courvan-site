@@ -718,34 +718,36 @@ async function buscarLicitacoes() {
               "-"
             );
 
-        await db
-          .collection("licitacoes")
-          .doc(docId)
-          .set({
+        const promise = db
+  .collection("licitacoes")
+  .doc(docId)
+  .set({
 
-            clienteId:
-              cliente.id,
+    clienteId:
+      cliente.id,
 
-            ...licitacao,
+    ...licitacao,
 
-            score,
+    score,
 
-            detalhesMatch:
-              detalhes,
+    detalhesMatch:
+      detalhes,
 
-            segmentosMatch:
-              cliente.segmentos,
+    segmentosMatch:
+      cliente.segmentos,
 
-            status: "aviso",
+    status: "aviso",
 
-            dataCriacao:
-              admin.firestore
-                .FieldValue
-                .serverTimestamp()
+    dataCriacao:
+      admin.firestore
+        .FieldValue
+        .serverTimestamp()
 
-          }, {
-            merge: true
-          });
+  }, {
+    merge: true
+  });
+
+promises.push(promise);
 
         totalInseridas++;
       }
