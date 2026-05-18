@@ -644,6 +644,13 @@ grupo.innerHTML += `
 ${l.matchScore || 0}%
 </p>
 
+${l.palavrasEncontradas?.length ? `
+<p>
+<strong>Palavras encontradas:</strong>
+${l.palavrasEncontradas.join(", ")}
+</p>
+` : ""}
+
           ${l.linkEdital ? `
             <a href="${l.linkEdital}" target="_blank"
               style="display:inline-block;margin-top:10px;background:#d8a84e;color:#07162b;padding:10px 15px;border-radius:10px;text-decoration:none;">
