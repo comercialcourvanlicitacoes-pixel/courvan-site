@@ -518,6 +518,15 @@ window.salvarConfiguracoes = async function () {
   const cidade = document.getElementById("configCidade").value;
   const segmentos = document.getElementById("configSegmentos").value;
 
+    const cidadesFiltro =
+  document.getElementById("configCidades").value;
+
+const estadosFiltro =
+  document.getElementById("configEstados").value;
+
+const orgaosFiltro =
+  document.getElementById("configOrgaos").value;
+
   if (!clienteIdGlobal) {
     alert("Cliente não carregado");
     return;
