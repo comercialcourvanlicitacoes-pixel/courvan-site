@@ -516,7 +516,11 @@ window.salvarConfiguracoes = async function () {
   const empresa = document.getElementById("configEmpresa").value;
   const telefone = document.getElementById("configTelefone").value;
   const cidade = document.getElementById("configCidade").value;
-  const segmentos = document.getElementById("configSegmentos").value;
+  const segmentos = document
+  .getElementById("configSegmentos")
+  .value
+  .toLowerCase()
+  .trim();
 
     const cidadesFiltro = document
   .getElementById("configCidades")
