@@ -611,6 +611,8 @@ async function buscarLicitacoes() {
 
     let totalInseridas = 0;
 
+    const promises = [];
+
     for (const cliente of clientes) {
 
       if (
