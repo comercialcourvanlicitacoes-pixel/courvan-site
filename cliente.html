@@ -823,6 +823,15 @@ segmentosClienteGlobal = (cliente.segmentos || "").toLowerCase();
 
 document.getElementById("configSegmentos").value =
   cliente.segmentos || "";
+
+document.getElementById("configCidades").value =
+  cliente.cidadesFiltro || "";
+
+document.getElementById("configEstados").value =
+  cliente.estadosFiltro || "";
+
+document.getElementById("configOrgaos").value =
+  cliente.orgaosFiltro || "";
   
   listarDemandas();
 
