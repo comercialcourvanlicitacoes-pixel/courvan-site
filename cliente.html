@@ -369,8 +369,8 @@ async function carregarRadarPersonalizado() {
   try {
     statusDiv.innerHTML = "Buscando novas oportunidades no radar...";
     
-    // URL FIXA DO SEU DOMÍNIO PARA FUNCIONAR EM QUALQUER AMBIENTE
-    const apiUrl = "https://www.courvanlicitacoes.com.br/api/oportunidades";
+    // COMO O SEU DOMÍNIO OFICIAL NÃO TEM A ROTA /api, BUSCAMOS DO CODESPACE
+    const apiUrl = "https://shiny-meme-9695v6j5g6vjcpgw6-3000.app.github.dev/api/oportunidades";
 
     const response = await fetch(`${apiUrl}?t=${Date.now()}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -436,7 +436,7 @@ async function carregarRadarPersonalizado() {
 
   } catch (error) {
     console.error("Erro radar:", error);
-    statusDiv.innerHTML = "Erro ao carregar oportunidades. Verifique se o site oficial está online.";
+    statusDiv.innerHTML = "Erro ao conectar com a API do Codespace. Certifique-se de que o Codespace está ativo.";
   }
 }
 
