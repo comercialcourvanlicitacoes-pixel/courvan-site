@@ -369,7 +369,7 @@ async function carregarRadarPersonalizado() {
   try {
     statusDiv.innerHTML = "Buscando novas oportunidades no radar...";
     
-    // COMO O SEU DOMÍNIO OFICIAL NÃO TEM A ROTA /api, BUSCAMOS DO CODESPACE
+    // URL PÚBLICA DO SEU CODESPACE
     const apiUrl = "https://shiny-meme-9695v6j5g6vjcpgw6-3000.app.github.dev/api/oportunidades";
 
     const response = await fetch(`${apiUrl}?t=${Date.now()}`);
@@ -436,7 +436,7 @@ async function carregarRadarPersonalizado() {
 
   } catch (error) {
     console.error("Erro radar:", error);
-    statusDiv.innerHTML = "Erro ao conectar com a API do Codespace. Certifique-se de que o Codespace está ativo.";
+    statusDiv.innerHTML = "Erro ao conectar com a API. Certifique-se de que o Codespace está ativo e a porta 3000 está como PUBLIC.";
   }
 }
 
