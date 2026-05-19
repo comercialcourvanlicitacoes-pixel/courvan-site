@@ -369,16 +369,19 @@ async function carregarRadarPersonalizado() {
   try {
     statusDiv.innerHTML = "Buscando novas oportunidades no radar...";
     
-    const response = await fetch(`/api/oportunidades?t=${Date.now()}`);
+    // URL FIXA DO SEU DOMÍNIO PARA FUNCIONAR EM QUALQUER AMBIENTE
+    const apiUrl = "https://www.courvanlicitacoes.com.br/api/oportunidades";
+
+    const response = await fetch(`${apiUrl}?t=${Date.now()}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const todasLicitacoes = await response.json();
     
     // APLICAR FILTROS DO CLIENTE
     const segmentos = (dadosClienteGlobal.segmentos || "").split(",").map(s => s.trim().toLowerCase()).filter(s => s);
-    const cidadesFiltro = dadosClienteGlobal.cidadesFiltro || [];
-    const estadosFiltro = dadosClienteGlobal.estadosFiltro || [];
-    const orgaosFiltro = dadosClienteGlobal.orgaosFiltro || [];
+    const cidadesFiltro = (dadosClienteGlobal.cidadesFiltro || []).map(c => c.toLowerCase());
+    const estadosFiltro = (dadosClienteGlobal.estadosFiltro || []).map(e => e.toUpperCase());
+    const orgaosFiltro = (dadosClienteGlobal.orgaosFiltro || []).map(o => o.toLowerCase());
 
     const licitacoesFiltradas = todasLicitacoes.filter(item => {
       const objeto = (item.objeto || "").toLowerCase();
@@ -386,10 +389,10 @@ async function carregarRadarPersonalizado() {
       const cidade = (item.cidade || "").toLowerCase();
       const estado = (item.estado || "").toUpperCase();
 
-      // 1. Filtro por Segmentos/Palavras-chave (Obrigatório se houver)
+      // 1. Filtro por Segmentos/Palavras-chave
       let matchSegmento = segmentos.length === 0;
       if (segmentos.length > 0) {
-        matchSegmento = segmentos.some(s => objeto.includes(s));
+        matchSegmento = segmentos.some(s => objeto.includes(s) || orgao.includes(s));
       }
 
       if (!matchSegmento) return false;
@@ -398,10 +401,10 @@ async function carregarRadarPersonalizado() {
       if (estadosFiltro.length > 0 && !estadosFiltro.includes(estado)) return false;
 
       // 3. Filtro por Cidade
-      if (cidadesFiltro.length > 0 && !cidadesFiltro.some(c => cidade.includes(c.toLowerCase()))) return false;
+      if (cidadesFiltro.length > 0 && !cidadesFiltro.some(c => cidade.includes(c))) return false;
 
       // 4. Filtro por Órgão
-      if (orgaosFiltro.length > 0 && !orgaosFiltro.some(o => orgao.includes(o.toLowerCase()))) return false;
+      if (orgaosFiltro.length > 0 && !orgaosFiltro.some(o => orgao.includes(o))) return false;
 
       return true;
     });
@@ -433,7 +436,7 @@ async function carregarRadarPersonalizado() {
 
   } catch (error) {
     console.error("Erro radar:", error);
-    statusDiv.innerHTML = "Erro ao conectar com o radar de licitações.";
+    statusDiv.innerHTML = "Erro ao carregar oportunidades. Verifique se o site oficial está online.";
   }
 }
 
@@ -451,12 +454,10 @@ onAuthStateChanged(auth, async (user) => {
 
   let docCliente;
   if (clienteIdUrl) {
-    // MODO ADMIN
     document.getElementById("formDocumentos").style.display = "flex";
     const snap = await getDocs(query(collection(db, "clientes")));
     docCliente = snap.docs.find(d => d.id === clienteIdUrl);
   } else {
-    // MODO CLIENTE
     const snap = await getDocs(query(collection(db, "clientes"), where("uid", "==", user.uid)));
     docCliente = snap.docs[0];
   }
@@ -470,14 +471,12 @@ onAuthStateChanged(auth, async (user) => {
   clienteIdGlobal = docCliente.id;
   emailClienteGlobal = dadosClienteGlobal.email;
 
-  // Preencher UI
   document.getElementById("nome").innerText = dadosClienteGlobal.nome;
   document.getElementById("nomeCliente").innerText = dadosClienteGlobal.nome;
   document.getElementById("empresa").innerText = dadosClienteGlobal.empresa;
   document.getElementById("email").innerText = dadosClienteGlobal.email;
   document.getElementById("status").innerText = dadosClienteGlobal.status;
 
-  // Preencher Config
   document.getElementById("configNome").value = dadosClienteGlobal.nome || "";
   document.getElementById("configEmpresa").value = dadosClienteGlobal.empresa || "";
   document.getElementById("configTelefone").value = dadosClienteGlobal.telefone || "";
@@ -487,15 +486,13 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("configEstados").value = (dadosClienteGlobal.estadosFiltro || []).join(", ");
   document.getElementById("configOrgaos").value = (dadosClienteGlobal.orgaosFiltro || []).join(", ");
 
-  // Iniciar módulos
   listarDemandas();
   iniciarDocumentos();
   iniciarChat();
   listarLicitacoes();
   
-  // Carregar radar inicialmente
   carregarRadarPersonalizado();
-  setInterval(carregarRadarPersonalizado, 30000); // Atualiza a cada 30s
+  setInterval(carregarRadarPersonalizado, 30000); 
 });
 
 window.mostrarAba = function (id) {
@@ -518,37 +515,15 @@ window.salvarConfiguracoes = async function () {
     nome, empresa, telefone, cidade, segmentos, cidadesFiltro, estadosFiltro, orgaosFiltro
   });
 
-  // Atualizar estado global para o radar refletir mudanças
   dadosClienteGlobal = { ...dadosClienteGlobal, nome, empresa, telefone, cidade, segmentos, cidadesFiltro, estadosFiltro, orgaosFiltro };
   
   alert("Configurações salvas!");
   carregarRadarPersonalizado();
 };
 
-// Funções de Licitações (Mantidas do original)
-window.criarLicitacao = async function () {
-  const orgao = document.getElementById("orgao").value;
-  const objeto = document.getElementById("objeto").value;
-  const valor = parseFloat(document.getElementById("valor").value) || 0;
-  const dataSessao = document.getElementById("dataSessao").value;
-  const linkEdital = document.getElementById("linkEdital").value;
-
-  if (!orgao || !objeto) return alert("Preencha órgão e objeto");
-
-  await addDoc(collection(db, "licitacoes"), {
-    clienteId: clienteIdGlobal, orgao, objeto, valor, dataSessao, linkEdital, status: "aviso", dataCriacao: serverTimestamp()
-  });
-
-  document.getElementById("orgao").value = "";
-  document.getElementById("objeto").value = "";
-  document.getElementById("valor").value = "";
-  document.getElementById("dataSessao").value = "";
-  document.getElementById("linkEdital").value = "";
-};
-
 function listarLicitacoes() {
   const div = document.getElementById("listaLicitacoes");
-  const q = query(collection(db, "licitacoes"), where("clienteId", "==", clienteIdGlobal), orderBy("dataCriacao", "desc"));
+  const q = query(collection(db, "licitacoes"), where("clienteId", "==", clienteIdGlobal));
   
   onSnapshot(q, (snapshot) => {
     div.innerHTML = `
@@ -559,8 +534,10 @@ function listarLicitacoes() {
       <h2 style="margin:30px 0 15px;color:#d8a84e;">⚫ Descartadas</h2><div id="grupo-descartada"></div>
     `;
 
-    snapshot.forEach((docItem) => {
-      const l = docItem.data();
+    const docs = snapshot.docs.map(d => ({id: d.id, ...d.data()}))
+                 .sort((a, b) => (b.dataCriacao?.seconds || 0) - (a.dataCriacao?.seconds || 0));
+
+    docs.forEach((l) => {
       const status = (l.status || "aviso").trim().toLowerCase();
       const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
 
@@ -570,24 +547,36 @@ function listarLicitacoes() {
           <p><strong>Objeto:</strong> ${l.objeto}</p>
           <p><strong>Valor:</strong> R$ ${Number(l.valor || 0).toLocaleString("pt-BR")}</p>
           <p><strong>Sessão:</strong> ${l.dataSessao}</p>
-          <select onchange="alterarStatusLicitacao('${docItem.id}', this.value)" style="margin-top:15px; padding:10px; border-radius:8px; width:100%;">
+          <select onchange="alterarStatusLicitacao('${l.id}', this.value)" style="margin-top:15px; padding:10px; border-radius:8px; width:100%;">
             <option value="aviso" ${status === "aviso" ? "selected" : ""}>📢 Aviso</option>
             <option value="andamento" ${status === "andamento" ? "selected" : ""}>🟡 Em andamento</option>
             <option value="vencida" ${status === "vencida" ? "selected" : ""}>🟢 Vencida</option>
             <option value="perdida" ${status === "perdida" ? "selected" : ""}>🔴 Perdida</option>
             <option value="descartada" ${status === "descartada" ? "selected" : ""}>⚫ Descartada</option>
           </select>
-          <button onclick="excluirLicitacao('${docItem.id}')" style="margin-top:12px; width:100%; padding:10px; border-radius:8px; background:#a83232; color:white; font-weight:bold;">🗑 Excluir</button>
+          <button onclick="excluirLicitacao('${l.id}')" style="margin-top:12px; width:100%; padding:10px; border-radius:8px; background:#a83232; color:white; font-weight:bold;">🗑 Excluir</button>
         </div>
       `;
     });
   });
 }
 
+window.criarLicitacao = async function () {
+  const orgao = document.getElementById("orgao").value;
+  const objeto = document.getElementById("objeto").value;
+  const valor = parseFloat(document.getElementById("valor").value) || 0;
+  const dataSessao = document.getElementById("dataSessao").value;
+  const linkEdital = document.getElementById("linkEdital").value;
+  if (!orgao || !objeto) return alert("Preencha órgão e objeto");
+  await addDoc(collection(db, "licitacoes"), {
+    clienteId: clienteIdGlobal, orgao, objeto, valor, dataSessao, linkEdital, status: "aviso", dataCriacao: serverTimestamp()
+  });
+  document.getElementById("orgao").value = ""; document.getElementById("objeto").value = "";
+};
+
 window.alterarStatusLicitacao = async (id, status) => await updateDoc(doc(db, "licitacoes", id), { status });
 window.excluirLicitacao = async (id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, "licitacoes", id)); };
 
-// Demandas, Documentos e Chat (Mantidos do original com melhorias visuais)
 async function listarDemandas() {
   if (!clienteIdGlobal) return;
   const snap = await getDocs(query(collection(db, "demandas"), where("clienteId", "==", clienteIdGlobal)));
@@ -657,7 +646,6 @@ function iniciarComentarios(id) {
   });
 }
 
-// Chat e Documentos (Simplificados para manter foco no Radar)
 function iniciarChat() {
   const div = document.getElementById("mensagens");
   onSnapshot(query(collection(db, "chats", clienteIdGlobal, "mensagens"), orderBy("data")), snap => {
@@ -685,8 +673,6 @@ window.enviarMensagem = async () => {
     nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
     empresa: isAdmin ? "Courvan" : document.getElementById("empresa").innerText, data: serverTimestamp()
   });
-  
-  // Notificação por email
   try {
     await emailjs.send("service_p5ln9fw", "template_2qckj0y", {
       nome: document.getElementById("nome").innerText,
@@ -694,7 +680,6 @@ window.enviarMensagem = async () => {
       to_email: isAdmin ? emailClienteGlobal : "comercial.courvanlicitacoes@gmail.com"
     });
   } catch(e) {}
-  
   input.value = "";
 };
 
