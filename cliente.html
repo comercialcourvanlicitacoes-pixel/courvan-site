@@ -370,7 +370,7 @@ async function carregarRadarPersonalizado() {
     statusDiv.innerHTML = "Buscando novas oportunidades no radar...";
     
     // COMO O SEU DOMÍNIO OFICIAL NÃO TEM A ROTA /api, BUSCAMOS DO CODESPACE
-    const apiUrl = "https://shiny-meme-9695v6j5g6vjcpgw6-3000.app.github.dev/api/oportunidades";
+    const apiUrl = "https://shiny-meme-9695v6j5g6vjcpgw6-3000.app.github.dev/oportunidades";
 
     const response = await fetch(`${apiUrl}?t=${Date.now()}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
