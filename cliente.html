@@ -300,10 +300,25 @@
 
     <button onclick="mostrarAba('dashboard')">📊 Dashboard</button>
     <button onclick="mostrarAba('radar')">📡 Radar Multi-Cliente</button>
-    <button onclick="mostrarAba('demandas')">📑 Demandas</button>
-    <button onclick="mostrarAba('documentos')">📁 Documentos</button>
-    <button onclick="mostrarAba('chat')">💬 Chat</button>
-    <button onclick="mostrarAba('licitacoes')">🏛 Minhas Licitações</button>
+    <button onclick="mostrarAba('demandas')">
+  📑 Demandas
+  <span class="notificacao-badge" id="badgeDemandas">0</span>
+</button>
+
+<button onclick="mostrarAba('documentos')">
+  📁 Documentos
+  <span class="notificacao-badge" id="badgeDocumentos">0</span>
+</button>
+
+<button onclick="mostrarAba('chat')">
+  💬 Chat
+  <span class="notificacao-badge" id="badgeChat">0</span>
+</button>
+
+<button onclick="mostrarAba('licitacoes')">
+  🏛 Minhas Licitações
+  <span class="notificacao-badge" id="badgeLicitacoes">0</span>
+</button>
     <button onclick="window.location.href='agenda.html'">📅 Agenda</button>
     <button onclick="mostrarAba('config')">⚙ Configurações</button>
 
