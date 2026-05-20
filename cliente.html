@@ -913,23 +913,7 @@ atualizarBadgePersistente(
   "licitacoes",
   docs
 );
-
-    const ultimoRegistro = docs[0];
-
-if (ultimoRegistro) {
-
-  const dataUltima =
-    ultimoRegistro.dataCriacao?.seconds
-      ? ultimoRegistro.dataCriacao.seconds * 1000
-      : Date.now();
-
-  atualizarBadgePersistente(
-    "licitacoes",
-    docs.length,
-    dataUltima
-  );
-}
-
+    
     docs.forEach((l) => {
       const status = (l.status || "aviso").trim().toLowerCase();
       const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
