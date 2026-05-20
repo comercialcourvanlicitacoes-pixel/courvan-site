@@ -778,9 +778,11 @@ window.mostrarAba = function (id) {
 }
 
   if (id === "licitacoes") {
-    notificacoesVisualizadas.licitacoes = true;
-    atualizarBadge("badgeLicitacoes", 0);
-  }
+
+  atualizarBadge("badgeLicitacoes", 0);
+
+  registrarVisualizacao("licitacoes");
+}
 
   if (id === "radar") {
     carregarRadarPersonalizado();
