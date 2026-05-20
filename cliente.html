@@ -1115,21 +1115,12 @@ function iniciarChat() {
       </div>`;
     });
     div.scrollTop = div.scrollHeight;
-    const ultimaMensagem = snap.docs[snap.docs.length - 1];
+    const mensagens = snap.docs.map(d => d.data());
 
-if (ultimaMensagem) {
-
-  const dataUltima =
-    ultimaMensagem.data()?.data?.seconds
-      ? ultimaMensagem.data().data.seconds * 1000
-      : Date.now();
-
-  atualizarBadgePersistente(
-    "chat",
-    snap.size,
-    dataUltima
-  );
-}
+atualizarBadgePersistente(
+  "chat",
+  mensagens
+);
   });
 }
 
