@@ -563,7 +563,26 @@ atualizarBadge("badgeDemandas", novas);
     ),
     (snap) => {
       if (!notificacoesVisualizadas.documentos) {
-  atualizarBadge("badgeDocumentos", snap.size);
+  const ultima =
+  dadosClienteGlobal?.ultimaVisualizacao_documentos || 0;
+
+let novas = 0;
+
+snap.forEach(docItem => {
+
+  const d = docItem.data();
+
+  const criado =
+    d.data?.seconds
+      ? d.data.seconds * 1000
+      : Date.now();
+
+  if (criado > ultima) {
+    novas++;
+  }
+});
+
+atualizarBadge("badgeDocumentos", novas);
 }
     }
   );
