@@ -5,67 +5,157 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Courvan</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
-    /* Estilos customizados para manter o padrão estético da Landing Page */
-    .gradient-text {
-      background: linear-gradient(135deg, #d8a84e 0%, #f0d080 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+
+    body{
+      background:#07162b;
+      color:white;
+      font-family:Arial;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
     }
-    .gradient-btn {
-      background: linear-gradient(135deg, #d8a84e 0%, #f0d080 100%);
+
+    .box{
+      background:#0c2748;
+      padding:40px;
+      border-radius:16px;
+      width:320px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
     }
+
+    h2{
+      margin-bottom:20px;
+      color:#d8a84e;
+      text-align:center;
+    }
+
+    input{
+      width:100%;
+      padding:14px;
+      margin-top:10px;
+      border:none;
+      border-radius:10px;
+      box-sizing:border-box;
+    }
+
+    button{
+      width:100%;
+      padding:14px;
+      margin-top:20px;
+      background:#d8a84e;
+      border:none;
+      border-radius:10px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.3s;
+      color:#07162b;
+      font-size:15px;
+    }
+
+    button:hover{
+      transform:translateY(-2px);
+    }
+
   </style>
 </head>
 
-<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-center items-center p-4" style="background: linear-gradient(135deg, #07162b 0%, #05101f 100%);">
+<body>
 
-  <div class="w-full max-w-sm bg-[#0c2748] rounded-2xl p-8 border border-white/5 shadow-2xl text-center">
-    
-    <div class="mb-6 flex justify-center">
-      <img src="assets/logo.png" alt="Courvan Logo" class="h-20 w-auto filter brightness-110 drop-shadow-lg">
-    </div>
+<div class="box">
 
-    <h2 class="text-2xl font-bold mb-8 gradient-text tracking-wide">Área do Cliente</h2>
+  <h2>Área do Cliente</h2>
 
-    <div class="space-y-4">
-      
-      <div class="relative text-left">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-          <i class="fas fa-envelope"></i>
-        </span>
-        <input 
-          type="email" 
-          id="email" 
-          placeholder="E-mail" 
-          required
-          class="w-full bg-[#07162b] text-white placeholder-gray-500 pl-11 pr-4 py-3.5 rounded-xl border border-white/10 focus:outline-none focus:border-[#d8a84e] focus:ring-2 focus:ring-[#d8a84e]/20 transition-all text-base"
-        >
-      </div>
+  <input
+    type="email"
+    id="email"
+    placeholder="Email"
+  >
 
-      <div class="relative text-left">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-          <i class="fas fa-lock"></i>
-        </span>
-        <input 
-          type="password" 
-          id="senha" 
-          placeholder="Senha" 
-          required
-          class="w-full bg-[#07162b] text-white placeholder-gray-500 pl-11 pr-4 py-3.5 rounded-xl border border-white/10 focus:outline-none focus:border-[#d8a84e] focus:ring-2 focus:ring-[#d8a84e]/20 transition-all text-base"
-        >
-      </div>
+  <input
+    type="password"
+    id="senha"
+    placeholder="Senha"
+  >
 
-      <button 
-        type="button" 
-        onclick="window.login()" 
-        class="w-full gradient-btn text-[#07162b] font-bold text-base py-3.5 rounded-xl shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-2 mt-2"
-      >
-        <i class="fas fa-sign-in-alt"></i> Entrar
-      </button>
+  <button onclick="login()">
+    Entrar
+  </button>
 
-    </div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema",
+  storageBucket: "courvan-sistema.firebasestorage.app",
+  messagingSenderId: "729755072978",
+  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+/* LOGIN */
+window.login = async function(){
+
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  if(!email || !senha){
+    alert("Preencha email e senha");
+    return;
+  }
+
+  try{
+
+    // 🔥 garante persistência da sessão
+    await setPersistence(auth, browserLocalPersistence);
+
+    const cred = await signInWithEmailAndPassword(
+      auth,
+      email,
+      senha
+    );
+
+    const user = cred.user;
+
+    /* 🔥 ADMIN */
+    if(user.email === "comercial.courvanlicitacoes@gmail.com"){
+      window.location.href = "clientes.html";
+    }
+
+    /* 🔥 CLIENTE */
+    else{
+      window.location.href = "cliente.html";
+    }
+
+  }
+
+  catch(error){
+
+    alert("Erro ao fazer login");
+    console.log(error);
+
+  }
+
+}
+  
+</script>
+
+</body>
+</html>
