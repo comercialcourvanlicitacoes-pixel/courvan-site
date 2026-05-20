@@ -557,7 +557,9 @@ function iniciarNotificacoes() {
         }
       });
 
-      atualizarBadge("badgeChat", naoLidas);
+      if (!notificacoesVisualizadas.chat) {
+  atualizarBadge("badgeChat", naoLidas);
+}
     }
   );
 
