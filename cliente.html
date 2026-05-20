@@ -487,41 +487,6 @@ const notificacoesVisualizadas = {
    SISTEMA DE NOTIFICAÇÕES
 ========================= */
 
-function iniciarNotificacoes() {
-
-  /* =========================
-     DEMANDAS
-  ========================= */
-
-  onSnapshot(
-    query(
-      collection(db, "demandas"),
-      where("clienteId", "==", clienteIdGlobal)
-    ),
-    (snap) => {
-      if (!notificacoesVisualizadas.demandas) {
-  const ultima =
-  dadosClienteGlobal?.ultimaVisualizacao_demandas || 0;
-
-let novas = 0;
-
-snap.forEach(docItem => {
-
-  const d = docItem.data();
-
-  const criado =
-    d.dataCriacao?.seconds
-      ? d.dataCriacao.seconds * 1000
-      : Date.now();
-
-  if (criado > ultima) {
-    novas++;
-  }
-});
-
-}
-    }
-  );
 
   /* =========================
      DOCUMENTOS
