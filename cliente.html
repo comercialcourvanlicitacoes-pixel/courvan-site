@@ -757,9 +757,11 @@ window.mostrarAba = function (id) {
   ========================= */
 
   if (id === "demandas") {
-    notificacoesVisualizadas.demandas = true;
-    atualizarBadge("badgeDemandas", 0);
-  }
+
+  atualizarBadge("badgeDemandas", 0);
+
+  registrarVisualizacao("demandas");
+}
 
   if (id === "documentos") {
     notificacoesVisualizadas.documentos = true;
