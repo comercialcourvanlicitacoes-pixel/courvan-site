@@ -856,10 +856,20 @@ window.mostrarAba = function (id) {
      SALVAR ÚLTIMA VISUALIZAÇÃO
   ========================= */
 
-  localStorage.setItem(
-    `ultima_visualizacao_${clienteIdGlobal}_${id}`,
-    Date.now()
-  );
+  const agora = Date.now();
+
+localStorage.setItem(
+  `ultima_visualizacao_${clienteIdGlobal}_${id}`,
+  agora
+);
+
+/* força atualização imediata */
+
+atualizarBadgePersistente(
+  id,
+  0,
+  agora - 1
+);
 };
 
 function atualizarBadgePersistente(
