@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Courvan</title>
 
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -49,7 +50,7 @@
       height: 80px;
       width: auto;
       filter: brightness(1.1);
-      drop-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: inline-block;
     }
 
     h2 {
@@ -62,7 +63,6 @@
       background-clip: text;
     }
 
-    /* CONTAINER DOS INPUTS COM ÍCONE */
     .input-group {
       position: relative;
       margin-bottom: 18px;
@@ -100,7 +100,6 @@
       color: var(--secondary);
     }
 
-    /* BOTÃO PRINCIPAL */
     button {
       width: 100%;
       padding: 15px;
@@ -114,6 +113,10 @@
       color: var(--dark);
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(216, 168, 78, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
     }
 
     button:hover {
@@ -122,11 +125,6 @@
       filter: brightness(1.05);
     }
 
-    button:active {
-      transform: translateY(0);
-    }
-
-    /* LINK DE RETORNO */
     .back-link {
       display: inline-flex;
       align-items: center;
@@ -164,8 +162,8 @@
     <i class="fas fa-lock"></i>
   </div>
 
-  <button onclick="login()">
-    <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+  <button type="button" onclick="window.login()">
+    <i class="fas fa-sign-in-alt"></i> Entrar
   </button>
 
   <a href="index.html" class="back-link">
@@ -181,3 +179,55 @@ import {
   signInWithEmailAndPassword,
   setPersistence,
   browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema",
+  storageBucket: "courvan-sistema.firebasestorage.app",
+  messagingSenderId: "729755072978",
+  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* LOGIN COM ESCOPO GLOBAL GARANTIDO */
+window.login = async function(){
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  if(!email || !senha){
+    alert("Preencha email e senha");
+    return;
+  }
+
+  try{
+    await setPersistence(auth, browserLocalPersistence);
+
+    const cred = await signInWithEmailAndPassword(
+      auth,
+      email,
+      senha
+    );
+
+    const user = cred.user;
+
+    /* RE DIRECIONAMENTO COM BASE NO PERFIL */
+    if(user.email === "comercial.courvanlicitacoes@gmail.com"){
+      window.location.href = "clientes.html";
+    }
+    else{
+      window.location.href = "cliente.html";
+    }
+  }
+  catch(error){
+    alert("Erro ao fazer login");
+    console.log(error);
+  }
+}
+</script>
+
+</body>
+</html>
