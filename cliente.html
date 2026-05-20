@@ -473,6 +473,113 @@ let emailClienteGlobal = "";
 let dadosClienteGlobal = null;
 
 /* =========================
+   SISTEMA DE NOTIFICAÇÕES
+========================= */
+
+function atualizarBadge(id, total) {
+  const badge = document.getElementById(id);
+
+  if (!badge) return;
+
+  if (total > 0) {
+    badge.style.display = "flex";
+    badge.innerText = total > 99 ? "99+" : total;
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+function iniciarNotificacoes() {
+
+  /* =========================
+     DEMANDAS
+  ========================= */
+
+  onSnapshot(
+    query(
+      collection(db, "demandas"),
+      where("clienteId", "==", clienteIdGlobal)
+    ),
+    (snap) => {
+      atualizarBadge("badgeDemandas", snap.size);
+    }
+  );
+
+  /* =========================
+     DOCUMENTOS
+  ========================= */
+
+  onSnapshot(
+    query(
+      collection(db, "documentos"),
+      where("clienteId", "==", clienteIdGlobal)
+    ),
+    (snap) => {
+      atualizarBadge("badgeDocumentos", snap.size);
+    }
+  );
+
+  /* =========================
+     CHAT
+  ========================= */
+
+  onSnapshot(
+    query(
+      collection(db, "chats", clienteIdGlobal, "mensagens")
+    ),
+    (snap) => {
+
+      let naoLidas = 0;
+
+      snap.forEach(doc => {
+        const msg = doc.data();
+
+        const isAdmin =
+          auth.currentUser.email ===
+          "comercial.courvanlicitacoes@gmail.com";
+
+        if (
+          !isAdmin &&
+          msg.autor === "admin"
+        ) {
+          naoLidas++;
+        }
+      });
+
+      atualizarBadge("badgeChat", naoLidas);
+    }
+  );
+
+  /* =========================
+     LICITAÇÕES
+  ========================= */
+
+  onSnapshot(
+    query(
+      collection(db, "licitacoes"),
+      where("clienteId", "==", clienteIdGlobal)
+    ),
+    (snap) => {
+
+      let avisos = 0;
+
+      snap.forEach(doc => {
+        const l = doc.data();
+
+        if (
+          l.status === "aviso" ||
+          l.status === "andamento"
+        ) {
+          avisos++;
+        }
+      });
+
+      atualizarBadge("badgeLicitacoes", avisos);
+    }
+  );
+}
+  
+/* =========================
    LÓGICA DO RADAR INTEGRADO
 ========================= */
 async function carregarRadarPersonalizado() {
