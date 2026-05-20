@@ -487,38 +487,6 @@ const notificacoesVisualizadas = {
    SISTEMA DE NOTIFICAÇÕES
 ========================= */
 
-function atualizarBadge(id, total) {
-  async function registrarVisualizacao(tipo) {
-
-  if (!clienteIdGlobal) return;
-
-  const campo = `ultimaVisualizacao_${tipo}`;
-
-  await updateDoc(
-    doc(db, "clientes", clienteIdGlobal),
-    {
-      [campo]: Date.now()
-    }
-  );
-
-  if (dadosClienteGlobal) {
-    dadosClienteGlobal[campo] = Date.now();
-  }
-}
-
-  
-  const badge = document.getElementById(id);
-
-  if (!badge) return;
-
-  if (total > 0) {
-    badge.style.display = "flex";
-    badge.innerText = total > 99 ? "99+" : total;
-  } else {
-    badge.style.display = "none";
-  }
-}
-
 function iniciarNotificacoes() {
 
   /* =========================
