@@ -11,11 +11,11 @@
       margin:0;
       padding:0;
       box-sizing:border-box;
-      font-family:Arial,sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif; /* Fonte atualizada para um visual mais moderno */
     }
 
     body{
-      background:#07162b;
+      background: linear-gradient(135deg, #07162b 0%, #05101f 100%); /* Fundo em gradiente suave */
       color:white;
       display:flex;
       min-height:100vh;
@@ -24,80 +24,141 @@
     .sidebar{
       width:260px;
       background:#0c2748;
-      padding:30px;
+      padding:35px 25px;
       display:flex;
       flex-direction:column;
       gap:15px;
+      border-right: 1px solid rgba(255, 255, 255, 0.05); /* Divisão sutil lateral */
     }
 
     .sidebar h2{
       color:#d8a84e;
-      margin-bottom:20px;
+      margin-bottom:25px;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
     }
 
     .sidebar a{
-      color:white;
+      color:#e2e8f0;
       text-decoration:none;
       background:#16385f;
       padding:14px;
       border-radius:10px;
       transition:0.3s;
+      font-size: 15px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.03);
     }
 
     .sidebar a:hover{
       background:#1d4b7d;
+      color: white;
+      transform: translateX(3px); /* Efeito de deslocamento suave */
     }
 
     .content{
       flex:1;
-      padding:40px;
+      padding:50px 40px;
+    }
+
+    .content h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
     }
 
     input{
-      padding:14px;
-      border:none;
+      padding:14px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius:10px;
       width:250px;
+      transition: 0.3s ease;
+    }
+
+    /* Feedback visual ao clicar no campo de pesquisa */
+    input:focus {
+      outline: none;
+      border-color: #d8a84e !important;
+      box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.15);
     }
 
     .clientes{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:20px;
+      grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+      gap:25px;
     }
 
     .card{
       background:#0c2748;
-      padding:25px;
+      padding:30px;
       border-radius:18px;
-      transition:0.3s;
+      transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
     .card:hover{
       transform:translateY(-5px);
-      box-shadow:0 10px 25px rgba(0,0,0,0.3);
+      box-shadow:0 15px 35px rgba(0,0,0,0.35);
+      border-color: rgba(216, 168, 78, 0.2);
     }
 
     .card h2{
       color:#d8a84e;
-      margin-bottom:15px;
+      margin-bottom:18px;
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    .card p {
+      color: #cbd5e1;
+      font-size: 14.5px;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .card p strong {
+      color: white;
     }
 
     .btn-abrir{
       width:100%;
-      margin-top:15px;
+      margin-top:20px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #d8a84e 0%, #f0d080 100%); /* Botão dourado premium */
+      color: #07162b;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-abrir:hover {
+      filter: brightness(1.05);
+      box-shadow: 0 4px 15px rgba(216, 168, 78, 0.2);
     }
 
     .logout{
       margin-top:auto;
-      background:#a83232 !important;
-      color:white !important;
+      background:#7a2222 !important;
+      color:#f8fafc !important;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .sidebar a.logout:hover {
+      background:#992d2d !important;
+      transform: none;
     }
 
     @media(max-width:900px){
       body{flex-direction:column;}
-      .sidebar{width:100%;}
-      .content{padding:25px;}
+      .sidebar{width:100%; padding: 25px;}
+      .sidebar h2 { margin-bottom: 15px; }
+      .content{padding:30px 20px;}
       input{width:100%;}
     }
 
