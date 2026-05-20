@@ -668,11 +668,17 @@ function atualizarBadgePersistente(nomeAba, registros) {
 
   if (!badge) return;
 
-  const ultimaVisualizacao = Number(
-    localStorage.getItem(
-      `ultima_visualizacao_${clienteIdGlobal}_${nomeAba}`
-    ) || 0
-  );
+  const tipoUsuario =
+  auth.currentUser.email ===
+  "comercial.courvanlicitacoes@gmail.com"
+    ? "admin"
+    : "cliente";
+
+const ultimaVisualizacao = Number(
+  localStorage.getItem(
+    `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_${nomeAba}`
+  ) || 0
+);
 
   let naoLidos = 0;
 
