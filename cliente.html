@@ -667,7 +667,32 @@ atualizarBadge("badgeChat", novas);
       });
 
       if (!notificacoesVisualizadas.licitacoes) {
-  atualizarBadge("badgeLicitacoes", avisos);
+  const ultima =
+  dadosClienteGlobal?.ultimaVisualizacao_licitacoes || 0;
+
+let novas = 0;
+
+snap.forEach(docItem => {
+
+  const l = docItem.data();
+
+  const criado =
+    l.dataCriacao?.seconds
+      ? l.dataCriacao.seconds * 1000
+      : Date.now();
+
+  if (
+    criado > ultima &&
+    (
+      l.status === "aviso" ||
+      l.status === "andamento"
+    )
+  ) {
+    novas++;
+  }
+});
+
+atualizarBadge("badgeLicitacoes", novas);
 }
     }
   );
