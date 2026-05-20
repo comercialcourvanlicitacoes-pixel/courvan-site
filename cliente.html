@@ -718,9 +718,40 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 window.mostrarAba = function (id) {
-  document.querySelectorAll(".aba").forEach(a => a.style.display = "none");
+
+  document.querySelectorAll(".aba").forEach(a => {
+    a.style.display = "none";
+  });
+
   document.getElementById(id).style.display = "block";
-  if (id === "radar") carregarRadarPersonalizado();
+
+  /* =========================
+     REMOVE BADGE AO ABRIR
+  ========================= */
+
+  if (id === "demandas") {
+    notificacoesVisualizadas.demandas = true;
+    atualizarBadge("badgeDemandas", 0);
+  }
+
+  if (id === "documentos") {
+    notificacoesVisualizadas.documentos = true;
+    atualizarBadge("badgeDocumentos", 0);
+  }
+
+  if (id === "chat") {
+    notificacoesVisualizadas.chat = true;
+    atualizarBadge("badgeChat", 0);
+  }
+
+  if (id === "licitacoes") {
+    notificacoesVisualizadas.licitacoes = true;
+    atualizarBadge("badgeLicitacoes", 0);
+  }
+
+  if (id === "radar") {
+    carregarRadarPersonalizado();
+  }
 };
 
 window.salvarConfiguracoes = async function () {
