@@ -764,9 +764,11 @@ window.mostrarAba = function (id) {
 }
 
   if (id === "documentos") {
-    notificacoesVisualizadas.documentos = true;
-    atualizarBadge("badgeDocumentos", 0);
-  }
+
+  atualizarBadge("badgeDocumentos", 0);
+
+  registrarVisualizacao("documentos");
+}
 
   if (id === "chat") {
     notificacoesVisualizadas.chat = true;
