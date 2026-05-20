@@ -902,23 +902,6 @@ function atualizarBadgePersistente(
   if (ultimoRegistro > ultimaVisualizacao) {
 
     badge.style.display = "flex";
-
-    badge.innerText =
-      quantidade > 99
-        ? "99+"
-        : quantidade;
-
-  } else {
-
-    badge.style.display = "none";
-    badge.innerText = "0";
-
-  }
-}
-
-  if (ultimoRegistro > ultimaVisualizacao) {
-
-    badge.style.display = "flex";
     badge.innerText = quantidade > 99 ? "99+" : quantidade;
 
   } else {
