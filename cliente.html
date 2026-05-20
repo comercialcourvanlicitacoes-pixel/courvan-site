@@ -642,8 +642,14 @@ window.mostrarAba = function (id) {
 
   const agora = Date.now();
 
+const tipoUsuario =
+  auth.currentUser.email ===
+  "comercial.courvanlicitacoes@gmail.com"
+    ? "admin"
+    : "cliente";
+
 localStorage.setItem(
-  `ultima_visualizacao_${clienteIdGlobal}_${id}`,
+  `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_${id}`,
   agora
 );
 
