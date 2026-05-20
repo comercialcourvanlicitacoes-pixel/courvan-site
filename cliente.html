@@ -922,6 +922,22 @@ function listarLicitacoes() {
     const docs = snapshot.docs.map(d => ({id: d.id, ...d.data()}))
                  .sort((a, b) => (b.dataCriacao?.seconds || 0) - (a.dataCriacao?.seconds || 0));
 
+    const ultimoRegistro = docs[0];
+
+if (ultimoRegistro) {
+
+  const dataUltima =
+    ultimoRegistro.dataCriacao?.seconds
+      ? ultimoRegistro.dataCriacao.seconds * 1000
+      : Date.now();
+
+  atualizarBadgePersistente(
+    "licitacoes",
+    docs.length,
+    dataUltima
+  );
+}
+
     docs.forEach((l) => {
       const status = (l.status || "aviso").trim().toLowerCase();
       const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
@@ -969,6 +985,19 @@ async function listarDemandas() {
   const snap = await getDocs(query(collection(db, "demandas"), where("clienteId", "==", clienteIdGlobal)));
   const div = document.getElementById("listaDemandas");
   div.innerHTML = "";
+  const ultimoRegistro = snap.docs[snap.docs.length - 1];
+
+if (ultimoRegistro) {
+
+  const dataUltima =
+    Date.now();
+
+  atualizarBadgePersistente(
+    "demandas",
+    snap.size,
+    dataUltima
+  );
+}
   snap.forEach(docItem => {
     const d = docItem.data();
     div.innerHTML += `
@@ -1089,6 +1118,21 @@ function iniciarDocumentos() {
   const div = document.getElementById("listaDocumentos");
   onSnapshot(query(collection(db, "documentos"), where("clienteId", "==", clienteIdGlobal)), snap => {
     div.innerHTML = "";
+    const ultimoRegistro = snap.docs[snap.docs.length - 1];
+
+if (ultimoRegistro) {
+
+  const dataUltima =
+    ultimoRegistro.data()?.data?.seconds
+      ? ultimoRegistro.data().data.seconds * 1000
+      : Date.now();
+
+  atualizarBadgePersistente(
+    "documentos",
+    snap.size,
+    dataUltima
+  );
+}
     snap.forEach(docItem => {
       const d = docItem.data();
       div.innerHTML += `
