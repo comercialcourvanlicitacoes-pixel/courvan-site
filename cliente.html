@@ -902,12 +902,17 @@ function listarLicitacoes() {
       <h2 style="margin:30px 0 15px;color:#94a3b8;">⚫ Descartadas</h2><div id="grupo-descartada"></div>
     `;
 
-    const docs = snapshot.docs.map(d => ({id: d.id, ...d.data()}))
-      atualizarBadgePersistente(
+    const docs = snapshot.docs
+  .map(d => ({ id: d.id, ...d.data() }))
+  .sort((a, b) =>
+    (b.dataCriacao?.seconds || 0) -
+    (a.dataCriacao?.seconds || 0)
+  );
+
+atualizarBadgePersistente(
   "licitacoes",
   docs
 );
-                 .sort((a, b) => (b.dataCriacao?.seconds || 0) - (a.dataCriacao?.seconds || 0));
 
     const ultimoRegistro = docs[0];
 
