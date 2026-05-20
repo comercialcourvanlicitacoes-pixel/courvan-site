@@ -524,7 +524,9 @@ function iniciarNotificacoes() {
       where("clienteId", "==", clienteIdGlobal)
     ),
     (snap) => {
-      atualizarBadge("badgeDocumentos", snap.size);
+      if (!notificacoesVisualizadas.documentos) {
+  atualizarBadge("badgeDocumentos", snap.size);
+}
     }
   );
 
