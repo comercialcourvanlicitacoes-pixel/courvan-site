@@ -26,7 +26,7 @@
       background:#0c2748;
       padding:40px 30px;
       border-radius:16px;
-      width:360px; /* Ajustado de 320px para 360px para dar espaço total ao texto do email */
+      width:360px; /* Mantida a largura confortável para desktops e mobile */
       box-shadow:0 20px 40px rgba(0,0,0,0.4);
       border: 1px solid rgba(255, 255, 255, 0.05);
       box-sizing: border-box;
@@ -58,22 +58,23 @@
 
     .input-field i {
       position: absolute;
-      left: 15px;
+      left: 14px; /* Ajustado sutilmente para o canto */
       top: 50%;
       transform: translateY(-50%);
       color: #718096;
+      font-size: 14px; /* Ícone levemente menor para liberar espaço horizontal */
       transition: color 0.3s;
     }
 
     input{
       width:100%;
-      padding:14px 14px 14px 38px; /* Ajustado o padding esquerdo de 42px para 38px para ganhar mais área de texto */
+      padding:14px 12px 14px 35px; /* Reduzido o padding esquerdo de 38px para 35px */
       background: #07162b;
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
       box-sizing:border-box;
       color: white;
-      font-size: 15px;
+      font-size: 13.5px; /* Fonte ajustada de 15px para 13.5px para o e-mail longo caber perfeitamente */
       transition: all 0.3s;
     }
 
