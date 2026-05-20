@@ -837,41 +837,29 @@ window.mostrarAba = function (id) {
 
   document.getElementById(id).style.display = "block";
 
-  /* =========================
-     REMOVE BADGE AO ABRIR
-  ========================= */
-
-  if (id === "demandas") {
-
-  atualizarBadge("badgeDemandas", 0);
-
-  registrarVisualizacao("demandas");
-}
-
-  if (id === "documentos") {
-
-  atualizarBadge("badgeDocumentos", 0);
-
-  registrarVisualizacao("documentos");
-}
-
-  if (id === "chat") {
-
-  atualizarBadge("badgeChat", 0);
-
-  registrarVisualizacao("chat");
-}
-
-  if (id === "licitacoes") {
-
-  atualizarBadge("badgeLicitacoes", 0);
-
-  registrarVisualizacao("licitacoes");
-}
-
   if (id === "radar") {
     carregarRadarPersonalizado();
   }
+
+  /* =========================
+     LIMPAR BADGE AO ABRIR ABA
+  ========================= */
+
+  const badge = document.getElementById(`badge-${id}`);
+
+  if (badge) {
+    badge.style.display = "none";
+    badge.innerText = "0";
+  }
+
+  /* =========================
+     SALVAR ÚLTIMA VISUALIZAÇÃO
+  ========================= */
+
+  localStorage.setItem(
+    `ultima_visualizacao_${clienteIdGlobal}_${id}`,
+    Date.now()
+  );
 };
 
 window.salvarConfiguracoes = async function () {
