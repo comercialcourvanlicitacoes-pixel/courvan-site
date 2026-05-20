@@ -943,7 +943,9 @@ div.innerHTML += `
   </div>
 `;
     });
-    div.scrollTop = div.scrollHeight;
+    setTimeout(() => {
+  div.scrollTop = div.scrollHeight;
+}, 50);
     const mensagens = snap.docs.map(d => d.data());
 
 atualizarBadgePersistente(
