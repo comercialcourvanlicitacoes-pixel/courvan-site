@@ -961,19 +961,7 @@ async function listarDemandas() {
   const snap = await getDocs(query(collection(db, "demandas"), where("clienteId", "==", clienteIdGlobal)));
   const div = document.getElementById("listaDemandas");
   div.innerHTML = "";
-  const ultimoRegistro = snap.docs[snap.docs.length - 1];
-
-if (ultimoRegistro) {
-
-  const dataUltima =
-    Date.now();
-
-  atualizarBadgePersistente(
-    "demandas",
-    snap.size,
-    dataUltima
-  );
-}
+  
   const demandasBadge = [];
   snap.forEach(docItem => {
     const d = docItem.data();
