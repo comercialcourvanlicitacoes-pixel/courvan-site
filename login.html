@@ -5,60 +5,142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Courvan</title>
 
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
-
-    body{
-      background:#07162b;
-      color:white;
-      font-family:Arial;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      margin:0;
+    :root {
+      --primary: #2c5282;
+      --secondary: #d8a84e;
+      --dark: #07162b;
+      --card-bg: #0c2748;
     }
 
-    .box{
-      background:#0c2748;
-      padding:40px;
-      border-radius:16px;
-      width:320px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    body {
+      background: linear-gradient(135deg, var(--dark) 0%, #05101f 100%);
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
-    h2{
-      margin-bottom:20px;
-      color:#d8a84e;
-      text-align:center;
+    .box {
+      background: var(--card-bg);
+      padding: 40px 30px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
     }
 
-    input{
-      width:100%;
-      padding:14px;
-      margin-top:10px;
-      border:none;
-      border-radius:10px;
-      box-sizing:border-box;
+    .logo-container {
+      margin-bottom: 25px;
     }
 
-    button{
-      width:100%;
-      padding:14px;
-      margin-top:20px;
-      background:#d8a84e;
-      border:none;
-      border-radius:10px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.3s;
-      color:#07162b;
-      font-size:15px;
+    .logo-container img {
+      height: 80px;
+      width: auto;
+      filter: brightness(1.1);
+      drop-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
-    button:hover{
-      transform:translateY(-2px);
+    h2 {
+      margin: 0 0 30px 0;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--secondary) 0%, #f0d080 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
+    /* CONTAINER DOS INPUTS COM ÍCONE */
+    .input-group {
+      position: relative;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0aec0;
+      transition: color 0.3s ease;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 14px 14px 45px;
+      background: #07162b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      box-sizing: border-box;
+      color: white;
+      font-size: 15px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.15);
+    }
+
+    input:focus + i {
+      color: var(--secondary);
+    }
+
+    /* BOTÃO PRINCIPAL */
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+      background: var(--secondary);
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--dark);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(216, 168, 78, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(216, 168, 78, 0.3);
+      filter: brightness(1.05);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* LINK DE RETORNO */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 25px;
+      color: #a0aec0;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: var(--secondary);
+    }
   </style>
 </head>
 
@@ -66,96 +148,36 @@
 
 <div class="box">
 
+  <div class="logo-container">
+    <img src="assets/logo.png" alt="Courvan Logo">
+  </div>
+
   <h2>Área do Cliente</h2>
 
-  <input
-    type="email"
-    id="email"
-    placeholder="Email"
-  >
+  <div class="input-group">
+    <input type="email" id="email" placeholder="Seu e-mail" required>
+    <i class="fas fa-envelope"></i>
+  </div>
 
-  <input
-    type="password"
-    id="senha"
-    placeholder="Senha"
-  >
+  <div class="input-group">
+    <input type="password" id="senha" placeholder="Sua senha" required>
+    <i class="fas fa-lock"></i>
+  </div>
 
   <button onclick="login()">
-    Entrar
+    <i class="fas fa-sign-in-alt mr-2"></i> Entrar
   </button>
+
+  <a href="index.html" class="back-link">
+    <i class="fas fa-arrow-left"></i> Voltar para o site
+  </a>
 
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
   getAuth,
   signInWithEmailAndPassword,
   setPersistence,
   browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
-  authDomain: "courvan-sistema.firebaseapp.com",
-  projectId: "courvan-sistema",
-  storageBucket: "courvan-sistema.firebasestorage.app",
-  messagingSenderId: "729755072978",
-  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-/* LOGIN */
-window.login = async function(){
-
-  const email = document.getElementById("email").value;
-  const senha = document.getElementById("senha").value;
-
-  if(!email || !senha){
-    alert("Preencha email e senha");
-    return;
-  }
-
-  try{
-
-    // 🔥 garante persistência da sessão
-    await setPersistence(auth, browserLocalPersistence);
-
-    const cred = await signInWithEmailAndPassword(
-      auth,
-      email,
-      senha
-    );
-
-    const user = cred.user;
-
-    /* 🔥 ADMIN */
-    if(user.email === "comercial.courvanlicitacoes@gmail.com"){
-      window.location.href = "clientes.html";
-    }
-
-    /* 🔥 CLIENTE */
-    else{
-      window.location.href = "cliente.html";
-    }
-
-  }
-
-  catch(error){
-
-    alert("Erro ao fazer login");
-    console.log(error);
-
-  }
-
-}
-  
-</script>
-
-</body>
-</html>
