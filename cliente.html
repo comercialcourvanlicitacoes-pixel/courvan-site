@@ -587,7 +587,9 @@ function iniciarNotificacoes() {
         }
       });
 
-      atualizarBadge("badgeLicitacoes", avisos);
+      if (!notificacoesVisualizadas.licitacoes) {
+  atualizarBadge("badgeLicitacoes", avisos);
+}
     }
   );
 }
