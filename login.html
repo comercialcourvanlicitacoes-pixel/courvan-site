@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Courvan</title>
 
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
 
     body{
-      background:#07162b;
+      background: linear-gradient(135deg, #07162b 0%, #05101f 100%);
       color:white;
-      font-family:Arial;
+      font-family: 'Segoe UI', Arial, sans-serif;
       display:flex;
+      flex-direction: column;
       justify-content:center;
       align-items:center;
       height:100vh;
@@ -20,43 +24,107 @@
 
     .box{
       background:#0c2748;
-      padding:40px;
+      padding:40px 30px;
       border-radius:16px;
-      width:320px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+      width:340px;
+      box-shadow:0 20px 40px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .logo-login {
+      height: 75px;
+      width: auto;
+      margin-bottom: 20px;
+      filter: brightness(1.1);
     }
 
     h2{
-      margin-bottom:20px;
+      margin: 0 0 25px 0;
       color:#d8a84e;
       text-align:center;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    /* Container para alinhar os ícones dentro dos inputs de forma elegante */
+    .input-field {
+      position: relative;
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    .input-field i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #718096;
+      transition: color 0.3s;
     }
 
     input{
       width:100%;
-      padding:14px;
-      margin-top:10px;
-      border:none;
-      border-radius:10px;
+      padding:14px 14px 14px 42px;
+      background: #07162b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
       box-sizing:border-box;
+      color: white;
+      font-size: 15px;
+      transition: all 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #d8a84e;
+      box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.15);
+    }
+
+    input:focus + i {
+      color: #d8a84e;
     }
 
     button{
       width:100%;
       padding:14px;
-      margin-top:20px;
-      background:#d8a84e;
+      margin-top:24px;
+      background: linear-gradient(135deg, #d8a84e 0%, #f0d080 100%);
       border:none;
       border-radius:10px;
       font-weight:bold;
       cursor:pointer;
-      transition:0.3s;
+      transition: 0.3s;
       color:#07162b;
-      font-size:15px;
+      font-size:16px;
+      box-shadow: 0 4px 15px rgba(216, 168, 78, 0.2);
     }
 
     button:hover{
       transform:translateY(-2px);
+      box-shadow: 0 6px 20px rgba(216, 168, 78, 0.3);
+      filter: brightness(1.05);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .back-site {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 25px;
+      color: #a0aec0;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+
+    .back-site:hover {
+      color: #d8a84e;
     }
 
   </style>
@@ -66,23 +134,35 @@
 
 <div class="box">
 
+  <img src="assets/logo.png" alt="Courvan" class="logo-login">
+
   <h2>Área do Cliente</h2>
 
-  <input
-    type="email"
-    id="email"
-    placeholder="Email"
-  >
+  <div class="input-field">
+    <input
+      type="email"
+      id="email"
+      placeholder="Email"
+    >
+    <i class="fas fa-envelope"></i>
+  </div>
 
-  <input
-    type="password"
-    id="senha"
-    placeholder="Senha"
-  >
+  <div class="input-field">
+    <input
+      type="password"
+      id="senha"
+      placeholder="Senha"
+    >
+    <i class="fas fa-lock"></i>
+  </div>
 
   <button onclick="login()">
     Entrar
   </button>
+
+  <a href="index.html" class="back-site">
+    <i class="fas fa-arrow-left"></i> Voltar para o site
+  </a>
 
 </div>
 
