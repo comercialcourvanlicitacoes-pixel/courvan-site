@@ -771,9 +771,11 @@ window.mostrarAba = function (id) {
 }
 
   if (id === "chat") {
-    notificacoesVisualizadas.chat = true;
-    atualizarBadge("badgeChat", 0);
-  }
+
+  atualizarBadge("badgeChat", 0);
+
+  registrarVisualizacao("chat");
+}
 
   if (id === "licitacoes") {
     notificacoesVisualizadas.licitacoes = true;
