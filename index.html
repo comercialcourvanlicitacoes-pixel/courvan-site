@@ -3,369 +3,425 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <meta name="google-site-verification" content="tNEwtBvrkwrCSx0vSrD5pjySbxHF34J1PBx63RAcQKI" />
+  <title>Courvan Assessoria em Licitações | Vença Licitações com Estratégia</title>
+  <meta name="description" content="Assessoria especializada em licitações. Venda para o governo com segurança, estratégia e baixo custo — sem mensalidade e sem risco.">
   
-  <title>Courvan Assessoria em Licitações</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-    body{background:#07162b;color:#fff;line-height:1.6}
-
-    header{
-      background:#2c5282;
-      padding:20px 8%;
+    :root {
+      --primary: #2c5282;
+      --secondary: #d8a84e;
+      --dark: #07162b;
+      --card-bg: #0c2748;
+      --accent: #7dffae;
     }
-
-    nav{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      flex-wrap:wrap;
-      gap:10px;
-    }
-
-    .logo{
-      display:flex;
-      align-items:center;
-    }
-
-    .logo img{
-      height:160px;
-      width:auto;
-    }
-
-    .menu a{
-      color:#fff;
-      text-decoration:none;
-      margin:0 10px;
-      font-weight:500;
-    }
-
-    .hero{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      align-items:center;
-      gap:40px;
-      padding:60px 8%;
-    }
-
-    .hero h1{font-size:48px}
-    .gold{color:#d8a84e}
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      background:#d8a84e;
-      color:#07162b;
-      padding:12px 22px;
-      border-radius:8px;
-      text-decoration:none;
-      font-weight:bold;
-      margin-top:15px;
-      margin-right:10px;
-    }
-
-    .btn:hover{
-      opacity:0.9;
-    }
-
-    .btn.whatsapp{
-      background:#25D366;
-      color:#fff;
-    }
-
-    section{padding:70px 8%}
-
-    h2{margin-bottom:20px}
-
-    .cards{
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:25px;
-    }
-
-    .card{
-      background:#0c2748;
-      padding:28px;
-      border-radius:16px;
-      min-height:180px;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-start;
-      transition:0.3s;
-    }
-
-    .card:hover{
-      transform:translateY(-5px);
-      box-shadow:0 10px 25px rgba(0,0,0,0.3);
-    }
-
-    .card h3{
-      margin-bottom:10px;
-      font-size:18px;
-    }
-
-    .card p{
-      font-size:14px;
-      opacity:0.9;
-    }
-
-    @media(max-width:900px){
-      .cards{
-        grid-template-columns:1fr 1fr;
-      }
-    }
-
-    @media(max-width:600px){
-      .cards{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .highlight{
-      background:#d8a84e;
-      color:#07162b;
-      padding:30px;
-      border-radius:16px;
-      margin-top:30px;
-    }
-
-    .contact{
-      background:#d8a84e;
-      color:#07162b;
-      text-align:center;
-    }
-
-    form{
-      max-width:600px;
-      margin:30px auto;
-      display:grid;
-      gap:15px;
-    }
-
-    input,textarea{
-      padding:14px;
-      border:none;
-      border-radius:8px;
-      width:100%;
-    }
-
-    footer{
-      padding:25px;
-      text-align:center;
-      background:#05101f;
-    }
-
-    html {
+    
+    * {
       scroll-behavior: smooth;
     }
-
-    section {
-      scroll-margin-top: 140px;
+    
+    body {
+      background: var(--dark);
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
-    /* MOBILE */
-    @media(max-width:768px){
-.video-hero{
-  width:100%;
-  max-width:200px;
-  height:auto;
-  border-radius:20px;
-  display:block;
-  margin:0 auto;
-}
-      nav{
-        flex-direction:column;
-        align-items:flex-start;
-      }
-
-      .logo img{
-        height:90px;
-      }
-
-      .menu{
-        display:flex;
-        flex-wrap:wrap;
-        gap:10px;
-      }
-
-      .menu a{
-        font-size:14px;
-      }
-
-      .hero{
-        grid-template-columns:1fr;
-        padding:40px 5%;
-      }
-
-      .hero h1{
-        font-size:28px;
-      }
-
-      .hero p{
-        font-size:15px;
-      }
-
-      .btn{
-        width:100%;
-        justify-content:center;
-      }
-
-      section{
-        padding:50px 5%;
-      }
-
-      input, textarea{
-        font-size:16px;
+    
+    .gradient-text {
+      background: linear-gradient(135deg, var(--secondary) 0%, #f0d080 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .btn-primary {
+      background: var(--secondary);
+      color: var(--dark);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(216, 168, 78, 0.3);
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid var(--secondary);
+      color: var(--secondary);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--secondary);
+      color: var(--dark);
+    }
+    
+    .card-hover {
+      transition: all 0.3s ease;
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(216, 168, 78, 0.15);
+      border-color: var(--secondary);
+    }
+    
+    .section-title {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: var(--secondary);
+      border-radius: 2px;
+    }
+    
+    .hero-video {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(216, 168, 78, 0.2);
+    }
+    
+    .service-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .section-title::after {
+        width: 40px;
       }
     }
-.video-box{
-  max-width:280px;
-  width:100%;
-  margin:0 auto;
-}
-
-.video-box video{
-  width:100%;
-  height:auto;
-  border-radius:20px;
-}
   </style>
 </head>
 
 <body>
-
-<header>
-  <nav>
-    <div class="logo">
-      <a href="#inicio">
-        <img src="assets/logo.png" alt="Courvan Licitações">
-      </a>
-    </div>
-
-    <div class="menu">
-      <a href="#inicio">Início</a>
-      <a href="#servicos">Serviços</a>
-      <a href="#sobre">Sobre</a>
-      <a href="blog/index.html">Blog</a>
-      <a href="#contato">Contato</a>
-      <a href="https://www.courvanlicitacoes.com.br/login" target="_blank">Área do Cliente</a>
+  <!-- HEADER/NAV -->
+  <header class="sticky top-0 z-50 bg-gradient-to-r from-[#1a3a52] to-[#2c5282] shadow-lg">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center flex-wrap gap-4">
+        <div class="flex items-center">
+          <a href="#inicio" class="flex items-center gap-2">
+            <img src="assets/logo.png" alt="Courvan" class="h-16 w-auto">
+          </a>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#inicio" class="text-white hover:text-[var(--secondary)] transition">Início</a>
+          <a href="#servicos" class="text-white hover:text-[var(--secondary)] transition">Serviços</a>
+          <a href="#sobre" class="text-white hover:text-[var(--secondary)] transition">Sobre</a>
+          <a href="blog/index.html" class="text-white hover:text-[var(--secondary)] transition">Blog</a>
+          <a href="#contato" class="text-white hover:text-[var(--secondary)] transition">Contato</a>
+          <a href="https://www.courvanlicitacoes.com.br/login" target="_blank" class="btn-primary px-6 py-2 rounded-lg font-semibold">
+            Área do Cliente
+          </a>
+        </div>
+        
+        <!-- Mobile Menu Button -->
+        <button class="md:hidden text-white" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
       
+      <!-- Mobile Menu -->
+      <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4 border-t border-white/10">
+        <a href="#inicio" class="block py-2 text-white hover:text-[var(--secondary)]">Início</a>
+        <a href="#servicos" class="block py-2 text-white hover:text-[var(--secondary)]">Serviços</a>
+        <a href="#sobre" class="block py-2 text-white hover:text-[var(--secondary)]">Sobre</a>
+        <a href="blog/index.html" class="block py-2 text-white hover:text-[var(--secondary)]">Blog</a>
+        <a href="#contato" class="block py-2 text-white hover:text-[var(--secondary)]">Contato</a>
+        <a href="https://www.courvanlicitacoes.com.br/login" target="_blank" class="block py-2 text-white hover:text-[var(--secondary)]">Área do Cliente</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section id="inicio" class="relative overflow-hidden pt-20 pb-20 bg-gradient-to-br from-[#07162b] via-[#0c2748] to-[#07162b]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-8">
+          <div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+              A forma mais <span class="gradient-text">inteligente</span> de vencer licitações
+            </h1>
+            <p class="text-lg text-gray-300 leading-relaxed">
+              Venda para o governo com <strong>segurança</strong>, <strong>estratégia</strong> e <strong>baixo custo</strong> — sem mensalidade e sem risco.
+            </p>
+          </div>
+          
+          <div class="flex flex-wrap gap-4">
+            <a href="https://wa.me/5531983213540" target="_blank" class="btn-primary px-8 py-3 rounded-lg font-semibold flex items-center gap-2 hover:shadow-lg">
+              <i class="fab fa-whatsapp"></i> Fale Conosco
+            </a>
+            <a href="https://www.instagram.com/courvan_licitacoes" target="_blank" class="btn-secondary px-8 py-3 rounded-lg font-semibold flex items-center gap-2">
+              <i class="fab fa-instagram"></i> Instagram
+            </a>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-4 pt-8 border-t border-white/10">
+            <div>
+              <div class="text-2xl font-bold text-[var(--secondary)]">500+</div>
+              <div class="text-sm text-gray-400">Licitações Ganhas</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-[var(--secondary)]">150+</div>
+              <div class="text-sm text-gray-400">Clientes Ativos</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-[var(--secondary)]">5+</div>
+              <div class="text-sm text-gray-400">Anos de Experiência</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="hero-video">
+          <video autoplay muted loop playsinline controls class="w-full h-auto">
+            <source src="assets/video.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
     </div>
-  </nav>
+  </section>
 
-  <div class="hero" id="inicio">
-    <div>
-      <h1>A forma mais inteligente de <span class="gold">vencer licitações</span></h1>
-
-      <p>Venda para o governo com segurança, estratégia e baixo custo — sem mensalidade e sem risco.</p>
-
-     <a href="https://wa.me/5531983213540" target="_blank" class="btn whatsapp">
-  <i class="fab fa-whatsapp"></i>
-</a>
-
-<a href="https://www.instagram.com/courvan_licitacoes" target="_blank" class="btn">
-  <i class="fab fa-instagram"></i>
-</a>
-    </div>
-
-    <div>
-    <div class="video-box">
-  <video autoplay muted loop playsinline controls>
-    <source src="assets/video.mp4" type="video/mp4">
-  </video>
-</div>
-    </div>
-  </div>
-</header>
-
-<section id="servicos">
-  <h2>Nossos serviços</h2>
-
-  <div class="cards">
-    <div class="card"><h3>📡 Oportunidades</h3><p>Triagem e envio gratuito de licitações alinhadas ao seu negócio.</p></div>
-    <div class="card"><h3>📊 Análise de Editais</h3><p>Identificação de riscos, exigências e viabilidade de participação.</p></div>
-    <div class="card"><h3>📁 Preparação</h3><p>Checklist, documentação, cadastro em portais e envio de propostas.</p></div>
-    <div class="card"><h3>⚙ Execução</h3><p>Acompanhamento do processo, chat e julgamento com orientação estratégica.</p></div>
-    <div class="card"><h3>⚖ Recursos</h3><p>Elaboração de recursos, impugnações e defesas administrativas.</p></div>
-    <div class="card"><h3>📑 Gestão Contratual</h3><p>Suporte na execução, reequilíbrio econômico e gestão administrativa.</p></div>
-  </div>
-
-  <div class="highlight">
-    <h2>🔥 Análise de Edital por R$100</h2>
-    <p><strong>Valide rapidamente se vale a pena participar de uma licitação.</strong></p>
-
-    <ul>
-      <li>✔ Análise completa do edital</li>
-      <li>✔ Checklist de documentos</li>
-      <li>✔ Cadastro de proposta</li>
-      <li>✔ Orientação sobre etapas</li>
-      <li>✔ Esclarecimento de 1 dúvida</li>
-    </ul>
-
-    <p><strong>⚠ Não inclui participação na fase de lances.</strong></p>
-  </div>
-</section>
-
- <section id="sobre">
-  <h2>Sobre a Courvan</h2>
-
-  <p>
-    A Courvan Assessoria em Licitações atua de forma estratégica na captação, análise e execução de processos licitatórios, apoiando empresas que desejam vender para o poder público com segurança, organização e clareza.
-  </p>
-
-  <p>
-    Nosso trabalho vai além da simples análise de editais. Estruturamos a participação do cliente desde a identificação da oportunidade até a execução contratual, reduzindo riscos e aumentando a previsibilidade de resultados.
-  </p>
-
-  <p>
-    Com uma abordagem objetiva e orientada à decisão, ajudamos empresas a entenderem exatamente quando participar, como participar e quais são os pontos críticos de cada licitação.
-  </p>
-
-  <p>
-    A Courvan foi criada com o propósito de simplificar o acesso ao mercado público, tornando o processo mais acessível, eficiente e estratégico para empresas de todos os portes.
-  </p>
-
-  <p>
-    Nosso objetivo é simplificar o processo e aumentar suas chances de contratação com o poder público.
-  </p>
+  <!-- SERVIÇOS -->
+  <section id="servicos" class="py-20 bg-[#07162b]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-16">
+        <h2 class="section-title text-4xl font-bold mb-4">Nossos Serviços</h2>
+        <p class="text-gray-400 text-lg max-w-2xl">Soluções completas para sua jornada no mercado público, do início ao fim.</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
   
-</section>
-<section id="blog">
-  <h2>Conteúdos e Estratégias</h2>
-
-  <div class="cards">
-    <div class="card">
-      <h3>Como vencer licitações</h3>
-      <p>Estratégias práticas para aumentar suas chances no mercado público.</p>
-      <a href="blog/index.html" class="btn">Acessar Blog</a>
+  <div class="card-hover p-8 rounded-xl bg-white shadow-lg">
+    <div class="service-icon mb-5">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22" stroke="#4F46E5" stroke-width="2" stroke-linecap="round"/>
+        <path d="M24 10V24L31 31" stroke="#4F46E5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="24" cy="24" r="5" fill="#4F46E5" fill-opacity="0.2" stroke="#4F46E5" stroke-width="2"/>
+        <path d="M36 12L40 8M12 36L8 40M36 36L40 40M12 12L8 8" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/>
+      </svg>
     </div>
+    <h3 class="text-xl font-bold mb-3 text-gray-900">Oportunidades</h3>
+    <p class="text-gray-600">Triagem e envio gratuito de licitações alinhadas ao seu negócio.</p>
   </div>
-</section>
-<section id="contato" class="contact">
-  <h2>Entre em contato</h2>
 
-  <form action="https://formspree.io/f/mqenkele" method="POST">
-    <input type="text" name="nome" placeholder="Seu nome" required>
-    <input type="email" name="email" placeholder="Seu e-mail" required>
-    <input type="text" name="telefone" placeholder="Seu telefone">
-    <textarea name="mensagem" rows="5" placeholder="Digite sua mensagem"></textarea>
-    <input type="hidden" name="_subject" value="Novo lead do site Courvan">
-    <button class="btn" type="submit">Enviar</button>
-  </form>
+  <div class="card-hover p-8 rounded-xl bg-white shadow-lg">
+    <div class="service-icon mb-5">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="10" width="36" height="30" rx="4" stroke="#4F46E5" stroke-width="2"/>
+        <path d="M12 20H16V34H12V20ZM22 16H26V34H22V16ZM32 24H36V34H32V24Z" fill="#4F46E5" fill-opacity="0.3" stroke="#4F46E5" stroke-width="2"/>
+        <circle cx="34" cy="18" r="7" fill="white" stroke="#818CF8" stroke-width="2"/>
+        <path d="M37 21L41 25" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold mb-3 text-gray-900">Análise de Editais</h3>
+    <p class="text-gray-600">Identificação de riscos, exigências e viabilidade de participação.</p>
+  </div>
 
-  <p>WhatsApp: (31) 98321-3540</p>
-  <p>comercial.courvanlicitacoes@gmail.com</p>
-  <p>CNPJ 62.140.400/0001-50</p>
-</section>
+  <div class="card-hover p-8 rounded-xl bg-white shadow-lg">
+    <div class="service-icon mb-5">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 10V38C6 40.2091 7.79086 42 10 42H38C40.2091 42 42 40.2091 42 38V14C42 11.7909 40.2091 10 38 10H22L18 6H10C7.79086 6 6 7.79086 6 10Z" stroke="#4F46E5" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M16 22L20 26L28 18M16 32H32" stroke="#818CF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold mb-3 text-gray-900">Preparação</h3>
+    <p class="text-gray-600">Checklist, documentação, cadastro em portais e envio de propostas.</p>
+  </div>
 
-<footer>
-  © 2026 Courvan Assessoria em Licitações
-</footer>
+  <div class="card-hover p-8 rounded-xl bg-white shadow-lg">
+    <div class="service-icon mb-5">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="10" stroke="#4F46E5" stroke-width="3"/>
+        <path d="M24 6V10M24 38V42M6 24H10M38 24H42M11.5 11.5L14.5 14.5M33.5 33.5L36.5 36.5M11.5 33.5L14.5 30.5M33.5 11.5L36.5 14.5" stroke="#4F46E5" stroke-width="2" stroke-linecap="round"/>
+        <path d="M24 18V24L28 28" stroke="#818CF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold mb-3 text-gray-900">Execução</h3>
+    <p class="text-gray-600">Acompanhamento do processo, chat e julgamento com orientação estratégica.</p>
+  </div>
 
+  <div class="card-hover p-8 rounded-xl bg-white shadow-lg">
+    <div class="service-icon mb-5">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 8V40M10 16H38M8 18V26M40 18V26M10 26C10 28.2091 11.7909 30 14 30H34C36.2091 30 38 28.2091 38 26M18 16V10C18 8.89543 18.8954 8 20 8H28C29.1046 8 30 8.89543 30 10V16" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="14" cy="34" r="3" fill="#818CF8" fill-opacity="0.3" stroke="#818CF8" stroke-width="2"/>
+        <circle cx="34" cy="34" r="3" fill="#818CF8" fill-opacity="0.3" stroke="#818CF8" stroke-width="2"/>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold mb-3 text-gray-900">Recursos</h3>
+    <p class="text-gray-600">Elaboração de recursos, impugnações e defesas administrativas.</p>
+  </div>
+
+  <div class="card-hover p-8 rounded-xl bg-white shadow-lg">
+    <div class="service-icon mb-5">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="8" width="28" height="36" rx="2" stroke="#4F46E5" stroke-width="2"/>
+        <rect x="18" y="4" width="12" height="6" rx="1" fill="#4F46E5" fill-opacity="0.2" stroke="#4F46E5" stroke-width="2"/>
+        <path d="M16 18H32M16 26H32M16 34H26" stroke="#818CF8" stroke-width="2" stroke-linecap="round"/>
+        <path d="M32 34L36 38L42 32" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold mb-3 text-gray-900">Gestão Contratual</h3>
+    <p class="text-gray-600">Suporte na execução, reequilíbrio econômico e gestão administrativa.</p>
+  </div>
+
+</div>
+      
+      <!-- DESTAQUE -->
+      <div class="mt-16 bg-gradient-to-r from-[var(--secondary)] to-[#f0d080] rounded-xl p-12 text-[var(--dark)]">
+        <h3 class="text-3xl font-bold mb-4">🔥 Análise de Edital por R$100</h3>
+        <p class="text-lg mb-6"><strong>Valide rapidamente se vale a pena participar de uma licitação.</strong></p>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <ul class="space-y-3">
+            <li class="flex items-center gap-2">
+              <i class="fas fa-check text-green-600 font-bold"></i>
+              <span>Análise completa do edital</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i class="fas fa-check text-green-600 font-bold"></i>
+              <span>Checklist de documentos</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i class="fas fa-check text-green-600 font-bold"></i>
+              <span>Cadastro de proposta</span>
+            </li>
+          </ul>
+          <ul class="space-y-3">
+            <li class="flex items-center gap-2">
+              <i class="fas fa-check text-green-600 font-bold"></i>
+              <span>Orientação sobre etapas</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i class="fas fa-check text-green-600 font-bold"></i>
+              <span>Esclarecimento de 1 dúvida</span>
+            </li>
+          </ul>
+        </div>
+        
+        <p class="text-sm font-semibold">⚠️ Não inclui participação na fase de lances.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section id="sobre" class="py-20 bg-[#0c2748]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-16">
+        <h2 class="section-title text-4xl font-bold mb-4">Sobre a Courvan</h2>
+        <p class="text-gray-400 text-lg">Conheca nossa história e missão</p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6 text-gray-300 leading-relaxed">
+          <p>
+            A <strong>Courvan Assessoria em Licitações</strong> atua de forma estratégica na captação, análise e execução de processos licitatórios, apoiando empresas que desejam vender para o poder público com segurança, organização e clareza.
+          </p>
+          
+          <p>
+            Nosso trabalho vai além da simples análise de editais. Estruturamos a participação do cliente desde a identificação da oportunidade até a execução contratual, reduzindo riscos e aumentando a previsibilidade de resultados.
+          </p>
+          
+          <p>
+            Com uma abordagem objetiva e orientada à decisão, ajudamos empresas a entenderem exatamente quando participar, como participar e quais são os pontos críticos de cada licitação.
+          </p>
+          
+          <p>
+            A Courvan foi criada com o propósito de <strong>simplificar o acesso ao mercado público</strong>, tornando o processo mais acessível, eficiente e estratégico para empresas de todos os portes.
+          </p>
+        </div>
+        
+        <div class="bg-gradient-to-br from-[var(--secondary)] to-[#f0d080] rounded-xl p-12 text-[var(--dark)]">
+          <h3 class="text-2xl font-bold mb-6">Nossa Missão</h3>
+          <p class="text-lg leading-relaxed font-semibold">
+            Simplificar o processo licitatório e aumentar suas chances de contratação com o poder público, fornecendo estratégia, segurança e clareza em cada etapa.
+          </p>
+          
+          <div class="mt-8 pt-8 border-t-2 border-[var(--dark)]/20">
+            <p class="text-sm font-semibold mb-4">Valores:</p>
+            <ul class="space-y-2 text-sm">
+              <li>✓ Transparência</li>
+              <li>✓ Excelência</li>
+              <li>✓ Inovação</li>
+              <li>✓ Confiabilidade</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section id="contato" class="py-20 bg-gradient-to-r from-[var(--secondary)] to-[#f0d080] text-[var(--dark)]">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-4">Entre em Contato</h2>
+        <p class="text-lg opacity-90">Estamos prontos para ajudar sua empresa a vencer licitações</p>
+      </div>
+      
+      <form action="https://formspree.io/f/mqenkele" method="POST" class="space-y-6 mb-12">
+        <div class="grid md:grid-cols-2 gap-6">
+          <input type="text" name="nome" placeholder="Seu nome" required class="w-full px-6 py-3 rounded-lg bg-white/90 text-[var(--dark)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--dark)]">
+          <input type="email" name="email" placeholder="Seu e-mail" required class="w-full px-6 py-3 rounded-lg bg-white/90 text-[var(--dark)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--dark)]">
+        </div>
+        
+        <input type="text" name="telefone" placeholder="Seu telefone" class="w-full px-6 py-3 rounded-lg bg-white/90 text-[var(--dark)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--dark)]">
+        
+        <textarea name="mensagem" rows="5" placeholder="Digite sua mensagem" required class="w-full px-6 py-3 rounded-lg bg-white/90 text-[var(--dark)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--dark)] resize-none"></textarea>
+        
+        <input type="hidden" name="_subject" value="Novo lead do site Courvan">
+        
+        <button type="submit" class="w-full bg-[var(--dark)] text-[var(--secondary)] py-3 rounded-lg font-bold text-lg hover:bg-[var(--dark)]/90 transition">
+          Enviar Mensagem
+        </button>
+      </form>
+      
+      <div class="grid md:grid-cols-3 gap-8 pt-8 border-t-2 border-[var(--dark)]/20">
+        <div class="text-center">
+          <p class="font-bold text-lg mb-2">📱 WhatsApp</p>
+          <a href="https://wa.me/5531983213540" class="hover:opacity-80 transition">(31) 98321-3540</a>
+        </div>
+        <div class="text-center">
+          <p class="font-bold text-lg mb-2">✉️ Email</p>
+          <a href="mailto:comercial.courvanlicitacoes@gmail.com" class="hover:opacity-80 transition">comercial.courvanlicitacoes@gmail.com</a>
+        </div>
+        <div class="text-center">
+          <p class="font-bold text-lg mb-2">🏢 CNPJ</p>
+          <p>62.140.400/0001-50</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#05101f] text-center py-8 text-gray-400">
+    <p>© 2026 Courvan Assessoria em Licitações. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+    
+    // Fechar menu ao clicar em um link
+    document.querySelectorAll('#mobileMenu a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('mobileMenu').classList.add('hidden');
+      });
+    });
+  </script>
 </body>
 </html>
