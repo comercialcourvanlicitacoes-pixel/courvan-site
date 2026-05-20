@@ -615,7 +615,29 @@ atualizarBadge("badgeDocumentos", novas);
       });
 
       if (!notificacoesVisualizadas.chat) {
-  atualizarBadge("badgeChat", naoLidas);
+  const ultima =
+  dadosClienteGlobal?.ultimaVisualizacao_chat || 0;
+
+let novas = 0;
+
+snap.forEach(docItem => {
+
+  const msg = docItem.data();
+
+  const criado =
+    msg.data?.seconds
+      ? msg.data.seconds * 1000
+      : Date.now();
+
+  if (
+    criado > ultima &&
+    msg.autor === "admin"
+  ) {
+    novas++;
+  }
+});
+
+atualizarBadge("badgeChat", novas);
 }
     }
   );
