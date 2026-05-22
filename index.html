@@ -9,8 +9,7 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="icon" type="image/png" href="assets/logo.png">
   
   <style>
     :root {
@@ -90,11 +89,11 @@
     }
     
     .hero-video {
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(216, 168, 78, 0.2);
-  transform: scale(0.92);
-}
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(216, 168, 78, 0.2);
+      transform: scale(0.92);
+    }
     
     .service-icon {
       color: var(--secondary);
@@ -153,6 +152,7 @@
     </nav>
   </header>
 
+  <!-- HERO -->
   <section id="inicio" class="relative overflow-hidden pt-16 pb-16 bg-gradient-to-br from-[#07162b] via-[#0c2748] to-[#07162b]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-12 gap-8 items-center">
@@ -203,10 +203,6 @@
       </div>
     </div>
   </section>
-        
-      </div>
-    </div>
-  </section>
 
   <!-- SERVIÇOS -->
   <section id="servicos" class="py-20 bg-[#07162b]">
@@ -216,66 +212,51 @@
         <p class="text-gray-400 text-lg max-w-2xl">Soluções completas para sua jornada no mercado público, do início ao fim.</p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         
         <div class="card-hover p-8 rounded-xl">
-          <div class="service-icon">
-            <i class="fas fa-satellite-dish fa-fw"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Oportunidades</h3>
-          <p class="text-gray-300">Triagem e envio gratuito de licitações alinhadas ao seu negócio.</p>
+          <div class="service-icon"><i class="fas fa-satellite-dish"></i></div>
+          <h3 class="text-xl font-bold mb-3">Oportunidades</h3>
+          <p class="text-gray-400">Triagem e envio gratuito de licitações alinhadas ao seu negócio.</p>
         </div>
-
-        <div class="card-hover p-8 rounded-xl">
-          <div class="service-icon">
-            <i class="fas fa-chart-pie fa-fw"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Análise de Editais</h3>
-          <p class="text-gray-300">Identificação de riscos, exigências e viabilidade de participação.</p>
-        </div>
-
-        <div class="card-hover p-8 rounded-xl">
-          <div class="service-icon">
-            <i class="fas fa-folder-open fa-fw"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Preparação</h3>
-          <p class="text-gray-300">Checklist, documentação, cadastro em portais e envio de propostas.</p>
-        </div>
-
-        <div class="card-hover p-8 rounded-xl">
-          <div class="service-icon">
-            <i class="fas fa-cogs fa-fw"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Execução</h3>
-          <p class="text-gray-300">Acompanhamento do processo, chat e julgamento com orientação estratégica.</p>
-        </div>
-
-        <div class="card-hover p-8 rounded-xl">
-          <div class="service-icon">
-            <i class="fas fa-gavel fa-fw"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Recursos</h3>
-          <p class="text-gray-300">Elaboração de recursos, impugnações e defesas administrativas.</p>
-        </div>
-
-        <div class="card-hover p-8 rounded-xl">
-          <div class="service-icon">
-            <i class="fas fa-file-signature fa-fw"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Gestão Contratual</h3>
-          <p class="text-gray-300">Suporte na execução, reequilíbrio econômico e gestão administrativa.</p>
-        </div>
-
-      </div> <div class="mt-16 bg-gradient-to-r from-[var(--secondary)] to-[#f0d080] rounded-xl p-12 text-[var(--dark)] relative overflow-hidden">
-        <div class="absolute top-0 right-0 p-4 opacity-10 text-9xl pointer-events-none">
-          <i class="fas fa-fire"></i>
-        </div>
-        <h3 class="text-3xl font-bold mb-4 flex items-center gap-2">
-          <i class="fas fa-fire text-red-700"></i> Análise de Edital por R$100
-        </h3>
-        <p class="text-lg mb-6"><strong>Valide rapidamente se vale a pena participar de uma licitação.</strong></p>
         
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="card-hover p-8 rounded-xl">
+          <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+          <h3 class="text-xl font-bold mb-3">Análise de Editais</h3>
+          <p class="text-gray-400">Identificação de riscos, exigências e viabilidade de participação.</p>
+        </div>
+        
+        <div class="card-hover p-8 rounded-xl">
+          <div class="service-icon"><i class="fas fa-folder-open"></i></div>
+          <h3 class="text-xl font-bold mb-3">Preparação</h3>
+          <p class="text-gray-400">Checklist, documentação, cadastro em portais e envio de propostas.</p>
+        </div>
+        
+        <div class="card-hover p-8 rounded-xl">
+          <div class="service-icon"><i class="fas fa-cogs"></i></div>
+          <h3 class="text-xl font-bold mb-3">Execução</h3>
+          <p class="text-gray-400">Acompanhamento do processo, chat e julgamento com orientação estratégica.</p>
+        </div>
+        
+        <div class="card-hover p-8 rounded-xl">
+          <div class="service-icon"><i class="fas fa-balance-scale"></i></div>
+          <h3 class="text-xl font-bold mb-3">Recursos</h3>
+          <p class="text-gray-400">Elaboração de recursos, impugnações e defesas administrativas.</p>
+        </div>
+        
+        <div class="card-hover p-8 rounded-xl">
+          <div class="service-icon"><i class="fas fa-file-contract"></i></div>
+          <h3 class="text-xl font-bold mb-3">Gestão Contratual</h3>
+          <p class="text-gray-400">Suporte na execução, reequilíbrio econômico e gestão administrativa.</p>
+        </div>
+        
+      </div>
+
+      <div class="bg-gradient-to-r from-[var(--secondary)] to-[#f0d080] text-[var(--dark)] p-8 rounded-2xl shadow-lg">
+        <h3 class="text-3xl font-bold mb-4">🔥 Análise de Edital por R$100</h3>
+        <p class="text-lg font-semibold mb-6">Valide rapidamente se vale a pena participar de uma licitação.</p>
+        
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
           <ul class="space-y-3">
             <li class="flex items-center gap-3">
               <i class="fas fa-check-circle text-emerald-800 font-bold text-lg"></i>
@@ -353,6 +334,33 @@
               <div class="flex items-center gap-2"><i class="fas fa-star-of-life text-xs opacity-70"></i> Inovação</div>
               <div class="flex items-center gap-2"><i class="fas fa-star-of-life text-xs opacity-70"></i> Confiabilidade</div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEEDBACK -->
+  <section id="feedback" class="py-20 bg-[#07162b]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10 text-center">
+        <h2 class="section-title text-4xl font-bold mb-4">Feedback de Cliente</h2>
+        <p class="text-gray-400 text-lg">Resultados reais de quem confia na Courvan</p>
+      </div>
+
+      <div class="bg-[#0c2748] border border-white/10 rounded-2xl p-8 md:p-10 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center gap-8">
+          <div class="w-full md:w-44 flex justify-center">
+            <img src="assets/logoexpressosousa.png" alt="Logo Expresso Sousa" class="w-32 h-32 md:w-40 md:h-40 object-contain rounded-xl bg-white/5 p-2">
+          </div>
+
+          <div class="flex-1">
+            <p class="text-xl md:text-2xl text-gray-100 leading-relaxed font-medium italic">
+              “Nossa experiência com a Courvan foi sensacional, muita agilidade e dedicação no processo. Equipe nota 10.”
+            </p>
+            <p class="mt-5 text-[var(--secondary)] font-bold tracking-wide">
+              Cliente: Expresso Sousa
+            </p>
           </div>
         </div>
       </div>
