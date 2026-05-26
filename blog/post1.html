@@ -258,3 +258,402 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(216, 168, 78, 0.3);
       opacity: 0.95;
+    }
+
+    .mini-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mini-lista div {
+      background: #071930;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .conclusao {
+      background: linear-gradient(135deg, #0d2748 0%, #071930 100%);
+      border: 1px solid rgba(216, 168, 78, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .conclusao::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: #d8a84e;
+    }
+
+    .conclusao h2 {
+      color: #d8a84e;
+    }
+
+    .conclusao p {
+      color: #cbd5e1;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 40px 8%;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    @media(max-width: 980px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .sidebar {
+        position: relative;
+        top: 0;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+    }
+
+    @media(max-width: 768px) {
+      header {
+        padding: 15px 5%;
+      }
+      
+      .hero {
+        padding: 40px 5% 30px;
+      }
+
+      .container {
+        padding: 20px 5% 60px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .subtitulo {
+        font-size: 16px;
+      }
+
+      .card {
+        padding: 25px;
+      }
+
+      .card h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <a class="voltar" href="../index.html">
+    &larr; Voltar ao site
+  </a>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="badge">
+      BLOG &bull; ESTRATÉGIA &bull; LICITAÇÕES PÚBLICAS
+    </div>
+
+    <h1>
+      Como pequenas empresas podem vencer licitações sem equipe interna especializada
+    </h1>
+
+    <p class="subtitulo">
+      Organização, gestão operacional e tecnologia estão mudando a forma como pequenas empresas competem no mercado público.
+    </p>
+
+    <div class="meta">
+      <span>Courvan Assessoria em Licitações</span>
+      <span>&bull;</span>
+      <span>Conteúdo estratégico</span>
+      <span>&bull;</span>
+      <span>Mercado público</span>
+    </div>
+
+    <div class="hero-image">
+      <img
+        src="../assets/imagepost1.png"
+        alt="Pequenas empresas vencendo licitações públicas"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="content-grid">
+    
+    <div class="article">
+      
+      <div class="card">
+        <h2>
+          Empresas pequenas também podem vencer licitações
+        </h2>
+        <p>
+          Empresas de pequeno e médio porte costumam acreditar que participar de licitações públicas exige uma estrutura enorme, uma equipe jurídica completa e um investimento alto logo no início.
+        </p>
+        <p>
+          Na prática, isso não é verdade.
+        </p>
+        <p>
+          Todos os dias, milhares de oportunidades públicas são abertas para empresas comuns &mdash; inclusive empresas pequenas, regionais e até negócios familiares.
+        </p>
+        <p>
+          O problema é que a maioria perde dinheiro e tempo porque entra no processo sem organização.
+        </p>
+        <p>
+          A boa notícia é que isso pode ser resolvido com método, gestão e acompanhamento estratégico.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>
+          O maior erro das empresas nas licitações
+        </h2>
+        <p>
+          Muitas empresas acreditam que licitação é apenas &ldquo;enviar documentos&rdquo;.
+        </p>
+        <p>
+          Mas a realidade do mercado público é muito mais operacional e estratégica.
+        </p>
+        <p>
+          O verdadeiro desafio está em:
+        </p>
+
+        <ul class="lista">
+          <li>Encontrar oportunidades realmente compatíveis</li>
+          <li>Organizar documentos corretamente</li>
+          <li>Controlar prazos críticos</li>
+          <li>Acompanhar processos simultaneamente</li>
+          <li>Responder exigências rapidamente</li>
+          <li>Estruturar uma rotina operacional eficiente</li>
+        </ul>
+
+        <p style="margin-top:22px;">
+          Sem gestão, a empresa perde produtividade, esquece prazos e acaba desistindo do mercado público antes mesmo de gerar resultados.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>
+          O mercado público movimenta bilhões todos os anos
+        </h2>
+        <p>
+          O setor público compra praticamente tudo:
+        </p>
+
+        <ul class="lista">
+          <li>Materiais</li>
+          <li>Serviços</li>
+          <li>Tecnologia</li>
+          <li>Manutenção</li>
+          <li>Alimentação</li>
+          <li>Equipamentos</li>
+          <li>Terceirização</li>
+          <li>Consultoria</li>
+          <li>Transporte</li>
+          <li>Construção</li>
+          <li>Softwares</li>
+        </ul>
+
+        <p style="margin-top:22px;">
+          Isso cria oportunidades constantes para empresas de diferentes segmentos.
+        </p>
+        <p>
+          E o mais importante:
+        </p>
+        <p class="destaque">
+          Muitas licitações possuem baixa concorrência ou são mal exploradas por empresas despreparadas.
+        </p>
+        <p>
+          Quem possui organização sai na frente.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>
+          Por que pequenas empresas possuem vantagem competitiva
+        </h2>
+        <p>
+          Empresas menores costumam ser mais rápidas e flexíveis.
+        </p>
+        <p>
+          Enquanto grandes estruturas sofrem com burocracia interna, pequenas empresas conseguem:
+        </p>
+
+        <ul class="lista">
+          <li>Ajustar preços rapidamente</li>
+          <li>Responder exigências com agilidade</li>
+          <li>Adaptar propostas</li>
+          <li>Tomar decisões mais rápidas</li>
+          <li>Atender nichos específicos</li>
+        </ul>
+
+        <p style="margin-top:22px;">
+          Além disso, a Nova Lei de Licitações fortaleceu mecanismos de incentivo para micro e pequenas empresas em diversos cenários.
+        </p>
+        <p class="destaque">
+          O mercado público não é exclusivo para grandes empresas.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>
+          Gestão operacional virou diferencial competitivo
+        </h2>
+        <p>
+          Hoje, não basta apenas participar de licitações.
+        </p>
+        <p>
+          As empresas que conseguem escalar resultados possuem controle operacional.
+        </p>
+        <p>
+          Por isso, cada vez mais assessorias especializadas estão utilizando sistemas internos para:
+        </p>
+
+        <ul class="lista">
+          <li>Controle de demandas</li>
+          <li>Acompanhamento de processos</li>
+          <li>Gestão documental</li>
+          <li>Comunicação com clientes</li>
+          <li>Organização de oportunidades</li>
+          <li>Monitoramento de status</li>
+          <li>Histórico de licitações</li>
+          <li>Fluxo operacional interno</li>
+        </ul>
+
+        <p style="margin-top:22px;">
+          A tecnologia deixou de ser luxo.
+        </p>
+        <p class="destaque">
+          Ela virou parte da estratégia.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>
+          O futuro da assessoria em licitações
+        </h2>
+        <p>
+          O mercado de assessoria está mudando.
+        </p>
+        <p>
+          Antes, o foco era apenas operacional.
+        </p>
+        <p>
+          Hoje, empresas buscam parceiros que entreguem:
+        </p>
+
+        <ul class="lista">
+          <li>Gestão</li>
+          <li>Organização</li>
+          <li>Previsibilidade</li>
+          <li>Acompanhamento contínuo</li>
+          <li>Inteligência operacional</li>
+          <li>Suporte consultivo</li>
+        </ul>
+
+        <p style="margin-top:22px;">
+          A tendência é clara:
+        </p>
+        <p class="destaque">
+          As assessorias que combinarem atendimento humano com tecnologia terão vantagem competitiva nos próximos anos.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>
+          Como começar da forma correta
+        </h2>
+        <p>
+          Se sua empresa deseja entrar no mercado público, o ideal é começar com estrutura.
+        </p>
+        <p>
+          Isso significa:
+        </p>
+
+        <ul class="lista">
+          <li>Mapear oportunidades corretas</li>
+          <li>Organizar documentação</li>
+          <li>Criar processos internos</li>
+          <li>Acompanhar prazos</li>
+          <li>Centralizar informações</li>
+          <li>Utilizar ferramentas de gestão</li>
+        </ul>
+
+        <p style="margin-top:22px;">
+          Quando existe método, a participação em licitações deixa de ser um processo caótico e passa a se tornar uma operation estratégica.
+        </p>
+      </div>
+
+      <div class="card conclusao">
+        <h2>Conclusão</h2>
+        <p>
+          Participar de licitações não precisa ser complicado.
+        </p>
+        <p>
+          O que realmente diferencia empresas que conseguem resultado é organização, consistência e gestão eficiente.
+        </p>
+        <p>
+          O mercado público continua crescendo &mdash; e empresas preparadas conseguem transformar oportunidades em contratos recorrentes.
+        </p>
+        <p style="margin-top:20px; font-weight:600; color: #d8a84e;">
+          A questão não é mais se vale a pena entrar nesse mercado.
+        </p>
+        <p style="font-size:20px; font-weight:700; color: #ffffff; margin-top: 10px; line-height: 1.4;">
+          Sua empresa está estruturada para aproveitar as oportunidades antes dos concorrentes?
+        </p>
+      </div>
+
+    </div>
+
+    <aside class="sidebar">
+      
+      <div class="sidebar-card">
+        <h3>Estratégia + Gestão + Tecnologia</h3>
+        <p>
+          O mercado público está se tornando cada vez mais competitivo. Empresas organizadas possuem vantagem operacional.
+        </p>
+        <a class="btn" href="https://wa.me/5531998864001" target="_blank">
+          Falar no WhatsApp
+        </a>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>O que empresas vencedoras fazem</h3>
+        <div class="mini-lista">
+          <div>✔ Organizam documentos antes das disputas</div>
+          <div>✔ Controlam prazos estrategicamente</div>
+          <div>✔ Utilizam tecnologia operacional</div>
+          <div>✔ Possuem acompanhamento contínuo</div>
+          <div>✔ Estruturam processos internos</div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 Courvan Assessoria em Licitações &bull; Todos os direitos reservados
+</footer>
+
+</body>
+</html>
