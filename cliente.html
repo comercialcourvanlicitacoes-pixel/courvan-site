@@ -736,6 +736,18 @@ window.salvarConfiguracoes = async function () {
   carregarRadarPersonalizado();
 };
 
+function obterLinkLicitacao(licitacao) {
+  const link = (licitacao?.linkEdital || licitacao?.link || "").trim();
+  if (!link) return "";
+  if (link.startsWith("http://") || link.startsWith("https://")) return link;
+  return `https://${link}`;
+}
+
+window.definirInteresseLicitacao = async function(id, interesse) {
+  await updateDoc(doc(db, "licitacoes", id), { interesseCliente: interesse });
+};
+
+  
 function listarLicitacoes() {
   const div = document.getElementById("listaLicitacoes");
   const q = query(collection(db, "licitacoes"), where("clienteId", "==", clienteIdGlobal));
@@ -765,12 +777,28 @@ atualizarBadgePersistente(
       const status = (l.status || "aviso").trim().toLowerCase();
       const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
 
+      const linkLicitacao = obterLinkLicitacao(l);
+      const interesse = l.interesseCliente || "nao_avaliado";
+
       grupo.innerHTML += `
         <div style="background:#0d2748;padding:24px;border-radius:16px;margin-bottom:15px; border: 1px solid rgba(255,255,255,0.04);">
           <h3 style="color:#d8a84e; font-size: 18px; margin-bottom: 12px;">${l.orgao}</h3>
           <p style="color: #cbd5e1;"><strong>Objeto:</strong> ${l.objeto}</p>
           <p style="color: #cbd5e1;"><strong>Valor:</strong> R$ ${Number(l.valor || 0).toLocaleString("pt-BR")}</p>
-          <p style="color: #cbd5e1;"><strong>Sessão:</strong> ${l.dataSessao}</p>
+          <p style="color: #cbd5e1;"><strong>Sessão:</strong> ${l.dataSessao || "Não informado"}</p>
+
+          <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;">
+            <a href="${linkLicitacao || "#"}" target="_blank" class="radar-btn" style="margin:0; padding:10px 16px; background:${linkLicitacao ? "#1e3a5f" : "#334155"}; opacity:${linkLicitacao ? "1" : "0.6"}; pointer-events:${linkLicitacao ? "auto" : "none"};">
+              🔗 ${linkLicitacao ? "Abrir Link da Licitação" : "Link indisponível"}
+            </a>
+
+            <button onclick="definirInteresseLicitacao('${l.id}','tenho_interesse')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(52,211,153,.4); background:${interesse === "tenho_interesse" ? "#065f46" : "rgba(6,95,70,.25)"}; color:#bbf7d0; font-weight:600; cursor:pointer;">
+              ✅ Tenho interesse
+            </button>
+            <button onclick="definirInteresseLicitacao('${l.id}','sem_interesse')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(248,113,113,.4); background:${interesse === "sem_interesse" ? "#7f1d1d" : "rgba(127,29,29,.25)"}; color:#fecaca; font-weight:600; cursor:pointer;">
+              ❌ Sem interesse
+            </button>
+          </div>
           <div style="display:flex; gap: 12px; margin-top: 20px; align-items: center;">
             <select onchange="alterarStatusLicitacao('${l.id}', this.value)" class="inputPadrao" style="padding: 10px; flex: 2; background: #071930;">
               <option value="aviso" ${status === "aviso" ? "selected" : ""}>📢 Aviso</option>
