@@ -1,97 +1,473 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Courvan Blog - Post 2</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>
+    Erros mais comuns que fazem empresas perderem licitações públicas - Courvan
+  </title>
+
+  <meta
+    name="description"
+    content="Descubra as principais falhas operacionais e de documentação que fazem empresas perderem contratos e saiba como evitá-las."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    body{
-      margin:0;
-      font-family: Arial, sans-serif;
-      background:#07162b;
-      color:#fff;
-      line-height:1.7;
-      padding:40px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    h1{
-      color:#d8a84e;
-      font-size:34px;
+    body {
+      background: #051020;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.8;
+      overflow-x: hidden;
     }
 
-    .box{
-      background:#0c2748;
-      padding:25px;
-      border-radius:12px;
-      margin-top:20px;
-      box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    a {
+      text-decoration: none;
     }
 
-    p{
-      margin-bottom:15px;
-      font-size:17px;
+    header {
+      width: 100%;
+      padding: 20px 8%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(5, 16, 32, 0.85);
+      z-index: 100;
     }
 
-    a{
-      color:#d8a84e;
-      text-decoration:none;
-      font-weight:bold;
+    .voltar {
+      color: #d8a84e;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .btn{
-      display:inline-block;
-      margin-top:20px;
-      background:#d8a84e;
-      color:#07162b;
-      padding:10px 16px;
-      border-radius:8px;
-      font-weight:bold;
+    .voltar:hover {
+      color: #ffffff;
+      transform: translateX(-2px);
     }
 
-    .highlight{
-      color:#d8a84e;
-      font-weight:bold;
+    .hero {
+      width: 100%;
+      padding: 60px 8% 40px;
+      background: radial-gradient(circle at top right, #0a2240 0%, #051020 100%);
+    }
+
+    .hero-content {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(216, 168, 78, 0.1);
+      color: #d8a84e;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      border: 1px solid rgba(216, 168, 78, 0.2);
+      letter-spacing: 0.5px;
+    }
+
+    h1 {
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 24px;
+      color: #ffffff;
+      max-width: 900px;
+      letter-spacing: -1px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .hero-image {
+      margin-top: 45px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-image img {
+      width: 100%;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    
+    .hero-image:hover img {
+      transform: scale(1.02);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 8% 80px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .article {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .card {
+      background: rgba(12, 39, 72, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h2 {
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 22px;
+      line-height: 1.3;
+      letter-spacing: -0.5px;
+    }
+
+    .card p {
+      font-size: 16px;
+      color: #cbd5e1;
+      margin-bottom: 20px;
+    }
+
+    .card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .lista {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .lista li {
+      list-style: none;
+      background: #0d2748;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border-left: 4px solid #d8a84e;
+      font-size: 15px;
+      color: #e2e8f0;
+      border-top: 1px solid rgba(255, 255, 255, 0.02);
+      border-right: 1px solid rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 110px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-card {
+      background: #0d2748;
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-card h3 {
+      color: #d8a84e;
+      margin-bottom: 16px;
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .sidebar-card p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
+      color: #051020;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(216, 168, 78, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(216, 168, 78, 0.3);
+      opacity: 0.95;
+    }
+
+    .mini-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mini-lista div {
+      background: #071930;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .conclusao {
+      background: linear-gradient(135deg, #0d2748 0%, #071930 100%);
+      border: 1px solid rgba(216, 168, 78, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .conclusao::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: #d8a84e;
+    }
+
+    .conclusao h2 {
+      color: #d8a84e;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 40px 8%;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Responsividade */
+    @media(max-width: 980px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .sidebar {
+        position: relative;
+        top: 0;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+    }
+
+    @media(max-width: 768px) {
+      header {
+        padding: 15px 5%;
+      }
+      
+      .hero {
+        padding: 40px 5% 30px;
+      }
+
+      .container {
+        padding: 20px 5% 60px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .card {
+        padding: 25px;
+      }
+
+      .card h2 {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <a href="./index.html">← Voltar ao Blog</a>
+<header>
+  <a class="voltar" href="./index.html">
+    &larr; Voltar ao Blog
+  </a>
+</header>
 
-  <h1>Erros mais comuns em licitações públicas</h1>
+<section class="hero">
+  <div class="hero-content">
+    <div class="badge">
+      BLOG &bull; ANÁLISE OPERACIONAL &bull; ERROS FREQUENTES
+    </div>
 
-  <div class="box">
+    <h1>
+      Erros mais comuns que fazem empresas perderem licitações públicas
+    </h1>
 
-    <p>
-      Muitos empresários perdem licitações por erros simples que poderiam ser evitados com uma análise mais estratégica.
-    </p>
+    <div class="meta">
+      <span>Courvan Assessoria em Licitações</span>
+      <span>&bull;</span>
+      <span>Conteúdo estratégico</span>
+      <span>&bull;</span>
+      <span>Gestão de riscos</span>
+    </div>
 
-    <p>
-      Entre os principais erros estão:
-    </p>
+    <div class="hero-image">
+      <img
+        src="../assets/imagepost2.png"
+        alt="Erros mais comuns que fazem empresas perderem licitações públicas"
+      />
+    </div>
+  </div>
+</section>
 
-    <p class="highlight">
-      • Falta de leitura completa do edital<br>
-      • Documentação incompleta<br>
-      • Não cumprir prazos<br>
-      • Não entender critérios de julgamento
-    </p>
+<section class="container">
+  <div class="content-grid">
+    
+    <div class="article">
+      
+      <div class="card">
+        <p>
+          Muitas empresas acreditam que perdem licitações apenas por preço.
+        </p>
+        <p>
+          Na prática, os maiores prejuízos normalmente acontecem por falhas operacionais, falta de estratégia e erros simples que poderiam ser evitados com organização adequada.
+        </p>
+        <p>
+          O mercado público exige atenção, controle e leitura técnica. Pequenos detalhes podem desclassificar uma empresa mesmo quando ela possui capacidade total para executar o contrato.
+        </p>
+      </div>
 
-    <p>
-      A maioria desses problemas não é técnica, mas sim falta de organização e orientação especializada.
-    </p>
+      <div class="card">
+        <h2>Entre os erros mais comuns estão:</h2>
+        <ul class="lista">
+          <li>Não realizar uma leitura completa e estratégica do edital</li>
+          <li>Enviar documentação incompleta ou desatualizada</li>
+          <li>Perder prazos importantes durante o processo</li>
+          <li>Não compreender corretamente os critérios de julgamento</li>
+          <li>Participar de oportunidades incompatíveis com a realidade da empresa</li>
+          <li>Falta de acompanhamento contínuo das movimentações da licitação</li>
+        </ul>
+      </div>
 
-    <p>
-      Na Courvan, trabalhamos justamente para eliminar esses riscos e aumentar a taxa de sucesso das empresas.
-    </p>
+      <div class="card">
+        <p>
+          O problema é que a maioria das empresas entra no mercado público sem estrutura operacional.
+        </p>
+        <p>
+          Sem gestão, a participação em licitações se torna um processo confuso, desgastante e com baixa previsibilidade de resultado.
+        </p>
+      </div>
 
-    <a class="btn" href="https://wa.me/5531998864001" target="_blank">
-      Falar com especialista
-    </a>
+      <div class="card">
+        <h2>Empresas que conseguem gerar contratos recorrentes normalmente possuem:</h2>
+        <ul class="lista">
+          <li>Organização documental</li>
+          <li>Acompanhamento estratégico</li>
+          <li>Controle operacional</li>
+          <li>Análise técnica do edital</li>
+          <li>Gestão eficiente dos processos</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <p>
+          Hoje, vencer licitações deixou de depender apenas de preço.
+        </p>
+        <p style="font-weight: 600; color: #d8a84e;">
+          Organização e inteligência operacional se tornaram diferenciais competitivos.
+        </p>
+        <p>
+          Na Courvan, trabalhamos justamente para reduzir riscos, estruturar operações e aumentar a capacidade competitiva das empresas no mercado público.
+        </p>
+      </div>
+
+      <div class="card conclusao">
+        <h2>Sua empresa está preparada para competir de forma estratégica?</h2>
+        <p style="margin-top: 15px;">
+          Fale com um especialista da Courvan e entenda como estruturar sua participação em licitações com mais segurança, organização e previsibilidade.
+        </p>
+      </div>
+
+    </div>
+
+    <aside class="sidebar">
+      
+      <div class="sidebar-card">
+        <h3>Evite falhas operacionais hoje mesmo</h3>
+        <p>
+          Garanta conformidade total em seus processos públicos com apoio analítico experiente.
+        </p>
+        <a class="btn" href="https://wa.me/5531998864001" target="_blank">
+          Falar com especialista
+        </a>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Foco na Qualificação</h3>
+        <div class="mini-lista">
+          <div>✔ Análise milimétrica de editais</div>
+          <div>✔ Saneamento preventivo de documentos</div>
+          <div>✔ Monitoramento rigoroso de prazos</div>
+          <div>✔ Mapeamento estratégico de nicho</div>
+        </div>
+      </div>
+
+    </aside>
 
   </div>
+</section>
+
+<footer>
+  &copy; 2026 Courvan Assessoria em Licitações &bull; Todos os direitos reservados
+</footer>
 
 </body>
 </html>
