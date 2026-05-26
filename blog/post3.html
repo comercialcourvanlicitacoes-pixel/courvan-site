@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>
+    Vender para o Governo é Seguro? Mitos e Verdades sobre o Mercado Público - Courvan
+  </title>
+
+  <meta
+    name="description"
+    content="Descubra se vender para o governo é seguro para o caixa da sua empresa. Conheça as regras e garantias jurídicas da Nova Lei de Licitações."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #051020;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    header {
+      width: 100%;
+      padding: 20px 8%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(5, 16, 32, 0.85);
+      z-index: 100;
+    }
+
+    .voltar {
+      color: #d8a84e;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .voltar:hover {
+      color: #ffffff;
+      transform: translateX(-2px);
+    }
+
+    .hero {
+      width: 100%;
+      padding: 60px 8% 40px;
+      background: radial-gradient(circle at top right, #0a2240 0%, #051020 100%);
+    }
+
+    .hero-content {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(216, 168, 78, 0.1);
+      color: #d8a84e;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      border: 1px solid rgba(216, 168, 78, 0.2);
+      letter-spacing: 0.5px;
+    }
+
+    h1 {
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 24px;
+      color: #ffffff;
+      max-width: 900px;
+      letter-spacing: -1px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .hero-image {
+      margin-top: 45px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-image img {
+      width: 100%;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    
+    .hero-image:hover img {
+      transform: scale(1.02);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 8% 80px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .article {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .card {
+      background: rgba(12, 39, 72, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h2 {
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 22px;
+      line-height: 1.3;
+      letter-spacing: -0.5px;
+    }
+
+    .card p {
+      font-size: 16px;
+      color: #cbd5e1;
+      margin-bottom: 20px;
+    }
+
+    .card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .lista {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .lista li {
+      list-style: none;
+      background: #0d2748;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border-left: 4px solid #d8a84e;
+      font-size: 15px;
+      color: #e2e8f0;
+      border-top: 1px solid rgba(255, 255, 255, 0.02);
+      border-right: 1px solid rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .destaque {
+      color: #d8a84e;
+      font-weight: 600;
+      background: rgba(216, 168, 78, 0.05);
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px dashed rgba(216, 168, 78, 0.2);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 110px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-card {
+      background: #0d2748;
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-card h3 {
+      color: #d8a84e;
+      margin-bottom: 16px;
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .sidebar-card p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
+      color: #051020;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(216, 168, 78, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(216, 168, 78, 0.3);
+      opacity: 0.95;
+    }
+
+    .mini-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mini-lista div {
+      background: #071930;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .conclusao {
+      background: linear-gradient(135deg, #0d2748 0%, #071930 100%);
+      border: 1px solid rgba(216, 168, 78, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .conclusao::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: #d8a84e;
+    }
+
+    .conclusao h2 {
+      color: #d8a84e;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 40px 8%;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    @media(max-width: 980px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .sidebar {
+        position: relative;
+        top: 0;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+    }
+
+    @media(max-width: 768px) {
+      header {
+        padding: 15px 5%;
+      }
+      
+      .hero {
+        padding: 40px 5% 30px;
+      }
+
+      .container {
+        padding: 20px 5% 60px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .card {
+        padding: 25px;
+      }
+
+      .card h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <a class="voltar" href="./index.html">
+    &larr; Voltar ao Blog
+  </a>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="badge">
+      BLOG &bull; PLANEJAMENTO FINANCEIRO &bull; SEGURANÇA JURÍDICA
+    </div>
+
+    <h1>
+      Vender para o Governo é Seguro? Mitos e Verdades sobre o Mercado Público
+    </h1>
+
+    <div class="meta">
+      <span>Courvan Assessoria em Licitações</span>
+      <span>&bull;</span>
+      <span>Previsibilidade de Caixa</span>
+      <span>&bull;</span>
+      <span>Nova Lei de Licitações</span>
+    </div>
+
+    <div class="hero-image">
+      <img
+        src="../assets/imagepost3.png"
+        alt="Segurança jurídica e financeira ao vender para o governo"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="content-grid">
+    
+    <div class="article">
+      
+      <div class="card">
+        <p>
+          Muitos empresários evitam o mercado de compras públicas por causa de uma história antiga: o mito de que <em>"o governo não paga"</em> ou de que o processo é uma grande cilada financeira para o caixa do negócio.
+        </p>
+        <p>
+          Se essa também é a sua dúvida, saiba que o cenário atual é muito diferente do que se imagina. 
+        </p>
+        <p>
+          Com a consolidação da <strong>Nova Lei de Licitações (Lei nº 14.133)</strong> e a digitalização dos processos operacionais, vender para órgãos públicos tornou-se uma das estratégias de faturamento mais previsíveis e seguras para empresas privadas.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Afinal, quais são as verdadeiras garantias de recebimento?</h2>
+        <p>
+          Diferente do mercado privado, onde uma crise pode fazer seu maior cliente quebrar da noite para o dia, o Estado não fecha as portas. Além disso, existem mecanismos legais rígidos que blindam o fornecedor:
+        </p>
+
+        <ul class="lista">
+          <li><strong>Orçamento Prévio Obrigatório:</strong> Um órgão público não pode sequer abrir uma licitação se não tiver a verba previamente carimbada e reservada para aquele contrato.</li>
+          <li><strong>Ordem Rigorosa de Pagamento:</strong> A legislação exige que o governo pague os fornecedores por estrita ordem cronológica de entrega. Furar essa fila ilegalmente é considerado crime de responsabilidade.</li>
+          <li><strong>Direito à Suspensão do Contrato:</strong> Se o atraso no pagamento superar o prazo legal estabelecido, a empresa tem o direito garantido por lei de paralisar os serviços ou entregas sem sofrer punições.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Mitos vs. Realidade nas Licitações Públicas</h2>
+        <p>
+          Para entender o mercado de forma realista, precisamos separar os boatos da prática jurídica:
+        </p>
+        <p>
+          <strong>Mito:</strong> É preciso ter uma estrutura gigante para começar.<br>
+          <span class="destaque"><strong>Realidade:</strong> Micro e pequenas empresas têm preferências exclusivas por lei em certas disputas de até R$ 80 mil e critérios de desempate vantajosos.</span>
+        </p>
+        <p style="margin-top: 15px;">
+          <strong>Mito:</strong> O governo demora meses para pagar.<br>
+          <span class="destaque"><strong>Realidade:</strong> Modalidades eletrônicas e compras diretas costumam liquidar faturas em prazos muito similares aos de grandes corporações privadas.</span>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Como mitigar riscos e garantir contratos lucrativos?</h2>
+        <p>
+          Embora o mercado seja altamente seguro do ponto de vista jurídico, os riscos existentes não são de inadimplência, mas sim <strong>operacionais</strong>. 
+        </p>
+        <p>
+          As empresas perdem dinheiro quando não sabem calcular a margem de lucro com precisão ou não gerenciam os fluxos de entrega e os prazos internos.
+        </p>
+        <p>
+          É por isso que ter um processo automatizado, mapeamento técnico de editais e uma assessoria inteligente faz toda a diferença para transformar o Governo no seu maior comprador recorrente.
+        </p>
+      </div>
+
+      <div class="card conclusao">
+        <h2>Quer transformar o Estado no maior cliente da sua empresa?</h2>
+        <p style="margin-top: 15px;">
+          Não deixe que antigos mitos bloqueiem a maior fonte de receita previsível do país. Fale com um consultor da Courvan e descubra como estruturar sua entrada no mercado público de forma estratégica e sem riscos operacionais.
+        </p>
+      </div>
+
+    </div>
+
+    <aside class="sidebar">
+      
+      <div class="sidebar-card">
+        <h3>Aumente o faturamento com estabilidade</h3>
+        <p>
+          Descubra como grandes e pequenas empresas utilizam editais para garantir receita previsível durante o ano todo.
+        </p>
+        <a class="btn" href="https://wa.me/5531998864001" target="_blank">
+          Falar com Especialista
+        </a>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Vantagens do Mercado</h3>
+        <div class="mini-lista">
+          <div>✔ Orçamento 100% garantido por lei</div>
+          <div>✔ Maior volume de compras do país</div>
+          <div>✔ Processos de disputa 100% digitais</div>
+          <div>✔ Blindagem contra crises comerciais</div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 Courvan Assessoria em Licitações &bull; Todos os direitos reservados
+</footer>
+
+</body>
+</html>
