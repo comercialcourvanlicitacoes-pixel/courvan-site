@@ -3,69 +3,236 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog - Courvan</title>
+  <title>Blog - Courvan Assessoria em Licitações</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    body{
-      margin:0;
-      font-family: Arial, sans-serif;
-      background:#07162b;
-      color:#fff;
-      padding:40px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    h1{
-      color:#d8a84e;
-      margin-bottom:20px;
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top right, #0a2240 0%, #051020 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    a{
-      color:#d8a84e;
-      text-decoration:none;
-      font-weight:bold;
+    header {
+      width: 100%;
+      padding: 20px 8%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(5, 16, 32, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
-    .card{
-      background:#0c2748;
-      padding:20px;
-      border-radius:12px;
-      margin-top:20px;
+    .voltar-site {
+      color: #d8a84e;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
     }
 
-    .btn{
-      display:inline-block;
-      margin-top:15px;
-      background:#d8a84e;
-      color:#07162b;
-      padding:10px 16px;
-      border-radius:8px;
-      font-weight:bold;
+    .voltar-site:hover {
+      color: #ffffff;
+      transform: translateX(-2px);
+    }
+
+    .main-container {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 60px 8% 80px;
+      flex: 1;
+    }
+
+    .blog-header {
+      margin-bottom: 45px;
+      text-align: left;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(216, 168, 78, 0.1);
+      color: #d8a84e;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      border: 1px solid rgba(216, 168, 78, 0.2);
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -1px;
+    }
+
+    /* Grid Moderno de Conteúdo */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+
+    .card {
+      background: rgba(12, 39, 72, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 35px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(216, 168, 78, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      background: rgba(12, 39, 72, 0.45);
+    }
+
+    .card-content h2 {
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+      transition: color 0.2s ease;
+    }
+
+    .card:hover .card-content h2 {
+      color: #d8a84e;
+    }
+
+    .card-content p {
+      font-size: 15px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      background: #0d2748;
+      color: #d8a84e;
+      border: 1px solid rgba(216, 168, 78, 0.3);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .card:hover .btn {
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
+      color: #051020;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(216, 168, 78, 0.2);
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 30px 8%;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+      background: rgba(5, 16, 32, 0.4);
+    }
+
+    /* Responsividade */
+    @media(max-width: 860px) {
+      .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    @media(max-width: 768px) {
+      header {
+        padding: 15px 5%;
+      }
+
+      .main-container {
+        padding: 40px 5% 60px;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      .card {
+        padding: 25px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <h1>Blog Courvan</h1>
+  <header>
+    <a class="voltar-site" href="../index.html">
+      &larr; Voltar ao site principal
+    </a>
+  </header>
 
-  <div class="card">
-    <h2>Como pequenas empresas podem vencer licitações sem equipe interna especializada</h2>
-    <p>Estratégias para vencer licitações públicas.</p>
+  <main class="main-container">
+    
+    <div class="blog-header">
+      <div class="badge">CONTEÚDO ESTRATÉGICO</div>
+      <h1>Blog Courvan</h1>
+    </div>
 
-    <!-- 🔥 CORREÇÃO IMPORTANTE -->
-    <a class="btn" href="./post1.html">Ler post</a>
-  </div>
+    <div class="blog-grid">
+      
+      <div class="card">
+        <div class="card-content">
+          <h2>Como pequenas empresas podem vencer licitações sem equipe interna especializada</h2>
+          <p>Organização, gestão operacional e tecnologia estão mudando a forma como pequenas empresas competem e ganham contratos no mercado público.</p>
+        </div>
+        <a class="btn" href="./post1.html">Ler artigo</a>
+      </div>
 
-<div class="card">
-  <h2>Erros mais comuns em licitações</h2>
-  <p>Veja os principais erros que fazem empresas perderem contratos.</p>
+      <div class="card">
+        <div class="card-content">
+          <h2>Erros mais comuns em licitações públicas</h2>
+          <p>Descubra as principais falhas operacionais e de documentação que fazem empresas perderem contratos bilionários e saiba como evitá-las.</p>
+        </div>
+        <a class="btn" href="./post2.html">Ler artigo</a>
+      </div>
 
-  <a class="btn" href="./post2.html">Ler post</a>
-</div>
-  
-  <br>
+    </div>
 
-  <a href="../index.html">← Voltar para o site</a>
+  </main>
+
+  <footer>
+    &copy; 2026 Courvan Assessoria em Licitações &bull; Todos os direitos reservados
+  </footer>
 
 </body>
 </html>
