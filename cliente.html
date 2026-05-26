@@ -1130,6 +1130,68 @@ window.logout = async () => {
   if(confirm("Sair?")) { await signOut(auth); window.location.href = "login.html"; }
 };
 
+function moedaBRL(v) {
+  return `R$ ${Number(v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function atualizarKpisDashboard(licitacoes = []) {
+  const total = licitacoes.length;
+
+  const porStatus = {
+    aviso: 0,
+    andamento: 0,
+    vencida: 0,
+    perdida: 0,
+    descartada: 0
+  };
+
+  let interesseSim = 0;
+  let interesseNao = 0;
+  let interesseNeutro = 0;
+
+  let valorGanho = 0;
+  let totalConcluidas = 0; // vencida + perdida + descartada
+
+  licitacoes.forEach(l => {
+    const status = (l.status || "aviso").trim().toLowerCase();
+    if (porStatus[status] !== undefined) porStatus[status]++;
+
+    const interesse = (l.interesseCliente || "nao_avaliado").trim().toLowerCase();
+    if (interesse === "tenho_interesse") interesseSim++;
+    else if (interesse === "sem_interesse") interesseNao++;
+    else interesseNeutro++;
+
+    if (status === "vencida") {
+      valorGanho += Number(l.valor || 0);
+    }
+
+    if (status === "vencida" || status === "perdida" || status === "descartada") {
+      totalConcluidas++;
+    }
+  });
+
+  const ganhas = porStatus.vencida;
+  const ticketMedio = ganhas > 0 ? valorGanho / ganhas : 0;
+  const taxaVitoria = totalConcluidas > 0 ? (ganhas / totalConcluidas) * 100 : 0;
+  const pipelineAtivo = porStatus.aviso + porStatus.andamento;
+
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+  };
+
+  setText("kpiTotalLicitacoes", String(total));
+  setText("kpiLicitacoesGanhas", String(ganhas));
+  setText("kpiValorGanho", moedaBRL(valorGanho));
+  setText("kpiTaxaVitoria", `${taxaVitoria.toFixed(1)}%`);
+  setText("kpiTicketMedio", moedaBRL(ticketMedio));
+  setText("kpiPipelineAtivo", String(pipelineAtivo));
+
+  setText("kpiInteresseSim", String(interesseSim));
+  setText("kpiInteresseNao", String(interesseNao));
+  setText("kpiInteresseNeutro", String(interesseNeutro));
+}
+  
 </script>
 
 </body>
