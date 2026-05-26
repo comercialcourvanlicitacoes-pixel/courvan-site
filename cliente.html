@@ -826,6 +826,8 @@ atualizarBadgePersistente(
   "licitacoes",
   docs
 );
+atualizarKpisDashboard(docs);
+
     
     docs.forEach((l) => {
       const status = (l.status || "aviso").trim().toLowerCase();
