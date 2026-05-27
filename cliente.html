@@ -1044,6 +1044,26 @@ div.innerHTML += `
 });
     const mensagens = snap.docs.map(d => d.data());
 
+/* se o chat estiver aberto,
+marca tudo como visualizado automaticamente */
+
+const chatAberto =
+  document.getElementById("chat").style.display === "block";
+
+if (chatAberto) {
+
+  const tipoUsuario =
+    auth.currentUser.email ===
+    "comercial.courvanlicitacoes@gmail.com"
+      ? "admin"
+      : "cliente";
+
+  localStorage.setItem(
+    `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_chat`,
+    Date.now()
+  );
+}
+
 atualizarBadgePersistente(
   "chat",
   mensagens
