@@ -797,8 +797,18 @@ function obterLinkLicitacao(licitacao) {
   return `https://${link}`;
 }
 
-window.definirInteresseLicitacao = async function(id, interesse) {
-  await updateDoc(doc(db, "licitacoes", id), { interesseCliente: interesse });
+window.definirInteresseLicitacao = async function(id, interesseAtual) {
+
+  const licitacaoRef = doc(db, "licitacoes", id);
+
+  const novoValor =
+    interesseAtual === "remover"
+      ? ""
+      : interesseAtual;
+
+  await updateDoc(licitacaoRef, {
+    interesseCliente: novoValor
+  });
 };
 
   
