@@ -861,7 +861,7 @@ atualizarKpisDashboard(docs);
             <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(52,211,153,.4); background:${interesse === "tenho_interesse" ? "#065f46" : "rgba(6,95,70,.25)"}; color:#bbf7d0; font-weight:600; cursor:pointer;">
               ✅ Tenho interesse
             </button>
-            <button onclick="definirInteresseLicitacao('${l.id}','sem_interesse')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(248,113,113,.4); background:${interesse === "sem_interesse" ? "#7f1d1d" : "rgba(127,29,29,.25)"}; color:#fecaca; font-weight:600; cursor:pointer;">
+            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "sem_interesse" ? "remover" : "sem_interesse"}')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(248,113,113,.4); background:${interesse === "sem_interesse" ? "#7f1d1d" : "rgba(127,29,29,.25)"}; color:#fecaca; font-weight:600; cursor:pointer;">
               ❌ Sem interesse
             </button>
           </div>
