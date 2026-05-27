@@ -1070,6 +1070,17 @@ window.enviarMensagem = async () => {
   input.value = "";
 };
 
+document
+  .getElementById("mensagemInput")
+  .addEventListener("keydown", function(e) {
+
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      enviarMensagem();
+    }
+
+});
+  
 function iniciarDocumentos() {
 
   const div = document.getElementById("listaDocumentos");
