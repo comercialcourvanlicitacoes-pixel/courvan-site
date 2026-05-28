@@ -1017,12 +1017,15 @@ div.innerHTML += `
       </div>
 
       <div style="
-        font-size:14px;
-        line-height:1.4;
-        margin-bottom:8px;
-      ">
-        ${m.texto}
-      </div>
+  font-size:14px;
+  line-height:1.4;
+  margin-bottom:8px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+">
+  ${m.texto}
+</div>
 
       <div style="
         font-size:11px;
