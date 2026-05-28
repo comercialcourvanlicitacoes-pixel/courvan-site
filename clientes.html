@@ -218,10 +218,7 @@ import {
   collection,
   onSnapshot,
   deleteDoc,
-  doc,
-  addDoc,
-  getDoc,
-  updateDoc
+  doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -302,18 +299,6 @@ function iniciarListenerClientes(){
             </button>
 
             <button
-  class="btn-abrir"
-  style="
-    margin-top:10px;
-    background:#2563eb;
-    color:white;
-  "
-  onclick="editarCliente('${docItem.id}')"
->
-  ✏️ Editar Cliente
-</button>
-
-            <button
               onclick="excluirCliente('${docItem.id}', '${nome}')"
               style="
                 width:100%;
@@ -346,10 +331,6 @@ window.abrirCliente = function(id){
   window.location.href = `cliente.html?id=${id}`;
 };
 
-window.editarCliente = function(id){
-  window.location.href = `admin.html?id=${id}`;
-};
-  
 /* 🔍 FILTRO */
 window.filtrarClientes = function(){
 
