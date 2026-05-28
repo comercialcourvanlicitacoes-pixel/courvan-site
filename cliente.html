@@ -818,7 +818,7 @@ function listarLicitacoes() {
   
   onSnapshot(q, (snapshot) => {
     div.innerHTML = `
-      <h2 style="margin-bottom:15px;color:#d8a84e;">📢 Avisos</h2><div id="grupo-aviso" style="display-grid; gap: 15px;"></div>
+      <h2 style="margin-bottom:15px;color:#d8a84e;">📢 Avisos</h2><div id="grupo-aviso" style="display:grid; gap:15px;"></div>
       <h2 style="margin:30px 0 15px;color:#fcd34d;">🟡 Em Andamento</h2><div id="grupo-andamento"></div>
       <h2 style="margin:30px 0 15px;color:#34d399;">🟢 Vencidas</h2><div id="grupo-vencida"></div>
       <h2 style="margin:30px 0 15px;color:#f87171;">🔴 Perdidas</h2><div id="grupo-perdida"></div>
