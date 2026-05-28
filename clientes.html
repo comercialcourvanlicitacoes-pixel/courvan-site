@@ -302,6 +302,18 @@ function iniciarListenerClientes(){
             </button>
 
             <button
+  class="btn-abrir"
+  style="
+    margin-top:10px;
+    background:#2563eb;
+    color:white;
+  "
+  onclick="editarCliente('${docItem.id}')"
+>
+  ✏️ Editar Cliente
+</button>
+
+            <button
               onclick="excluirCliente('${docItem.id}', '${nome}')"
               style="
                 width:100%;
