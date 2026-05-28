@@ -85,7 +85,7 @@
 
 <div class="box">
 
-  <h2>➕ Criar Cliente</h2>
+  <h2 id="tituloPagina">➕ Criar Cliente</h2>
 
   <input id="nome" placeholder="Nome">
 
@@ -95,7 +95,7 @@
 
   <input id="empresa" placeholder="Empresa">
 
-  <button onclick="salvarCliente()">
+  <button id="btnSalvar" onclick="salvarCliente()">
     Criar Cliente
   </button>
 
@@ -126,8 +126,6 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   getFirestore,
-  collection,
-  addDoc,
   doc,
   setDoc,
   getDoc,
@@ -135,25 +133,44 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* =========================
+   FIREBASE CONFIG
+========================= */
+
 const firebaseConfig = {
 
-  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+  apiKey: "SUA_API_KEY",
 
-  authDomain: "courvan-sistema.firebaseapp.com",
+  authDomain: "SEU_AUTH_DOMAIN",
 
-  projectId: "courvan-sistema",
+  projectId: "SEU_PROJECT_ID",
 
-  storageBucket: "courvan-sistema.appspot.com",
+  storageBucket: "SEU_STORAGE_BUCKET",
 
-  messagingSenderId: "729755072978",
+  messagingSenderId: "SEU_MESSAGING_ID",
 
-  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+  appId: "SEU_APP_ID"
 
 };
 
+/* =========================
+   INICIALIZA FIREBASE
+========================= */
+
 const app = initializeApp(firebaseConfig);
 
+const db = getFirestore(app);
+
+/* =========================
+   AUTH PRINCIPAL
+========================= */
+
 const auth = getAuth(app);
+
+/* =========================
+   AUTH SECUNDÁRIO
+   (para não deslogar admin)
+========================= */
 
 const secondaryApp = initializeApp(
   firebaseConfig,
@@ -161,10 +178,22 @@ const secondaryApp = initializeApp(
 );
 
 const secondaryAuth = getAuth(secondaryApp);
-  
-const db = getFirestore(app);
 
-  async function carregarCliente(){
+/* =========================
+   URL PARAMS
+========================= */
+
+const urlParams = new URLSearchParams(window.location.search);
+
+const clienteId = urlParams.get("id");
+
+let modoEdicao = false;
+
+/* =========================
+   CARREGAR CLIENTE
+========================= */
+
+async function carregarCliente(){
 
   if(!clienteId) return;
 
@@ -175,161 +204,113 @@ const db = getFirestore(app);
   const clienteSnap = await getDoc(clienteRef);
 
   if(!clienteSnap.exists()){
+
     alert("Cliente não encontrado");
+
     return;
+
   }
 
   const cliente = clienteSnap.data();
 
   document.getElementById("nome").value = cliente.nome || "";
+
   document.getElementById("empresa").value = cliente.empresa || "";
+
   document.getElementById("email").value = cliente.email || "";
-  document.getElementById("status").value = cliente.status || "";
 
-  const titulo = document.getElementById("tituloPagina");
+  document.getElementById("tituloPagina").innerText = "✏️ Editar Cliente";
 
-  if(titulo){
-    titulo.innerText = "Editar Cliente";
-  }
+  document.getElementById("btnSalvar").innerText = "Salvar Alterações";
 
-  const botao = document.getElementById("btnSalvar");
-
-  if(botao){
-    botao.innerText = "Salvar Alterações";
-  }
+  /* senha opcional em edição */
+  document.getElementById("senha").placeholder =
+    "Nova senha (opcional)";
 
 }
 
-const urlParams = new URLSearchParams(window.location.search);
-
-const clienteId = urlParams.get("id");
-
-let modoEdicao = false;
-  
 /* =========================
-   CRIAR USUÁRIO + CLIENTE
+   SALVAR CLIENTE
 ========================= */
+
 window.salvarCliente = async function () {
 
-try {
+  try {
 
-```
-const nome = document.getElementById("nome").value;
+    const nome = document.getElementById("nome").value.trim();
 
-const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
 
-const senha = document.getElementById("senha").value;
+    const senha = document.getElementById("senha").value;
 
-const empresa = document.getElementById("empresa").value;
+    const empresa = document.getElementById("empresa").value.trim();
 
-if (!nome || !email || !empresa) {
+    if (!nome || !email || !empresa) {
 
-  alert("Preencha os campos");
+      alert("Preencha todos os campos");
 
-  return;
+      return;
 
-}
+    }
 
-/* ====================================
-   MODO EDIÇÃO
-==================================== */
-if (modoEdicao) {
+    /* ====================================
+       MODO EDIÇÃO
+    ==================================== */
 
-  const clienteRef = doc(db, "clientes", clienteId);
+    if (modoEdicao) {
 
-  await updateDoc(clienteRef, {
+      const clienteRef = doc(db, "clientes", clienteId);
 
-    nome,
-    email,
-    empresa
+      await updateDoc(clienteRef, {
 
-  });
+        nome,
+        email,
+        empresa
 
-  alert("Cliente atualizado com sucesso!");
+      });
 
-  return;
+      alert("Cliente atualizado com sucesso!");
 
-}
+      return;
 
-/* ====================================
-   NOVO CLIENTE
-==================================== */
+    }
 
-if (!senha) {
+    /* ====================================
+       NOVO CLIENTE
+    ==================================== */
 
-  alert("Digite uma senha");
+    if (!senha) {
 
-  return;
+      alert("Digite uma senha");
 
-}
+      return;
 
-const cred = await createUserWithEmailAndPassword(
-  secondaryAuth,
-  email,
-  senha
-);
+    }
 
-const uid = cred.user.uid;
+    /* =========================
+       CRIA LOGIN FIREBASE
+    ========================= */
 
-/* mantém admin logado */
-await secondaryAuth.signOut();
-
-await setDoc(
-  doc(db, "clientes", uid),
-  {
-
-    nome,
-    email,
-    empresa,
-    uid,
-    status: "ativo"
-
-  }
-);
-
-await setDoc(
-  doc(db, "chats", uid),
-  {
-
-    clienteId: uid,
-
-    criadoEm: new Date()
-
-  }
-);
-
-document.getElementById("nome").value = "";
-
-document.getElementById("email").value = "";
-
-document.getElementById("senha").value = "";
-
-document.getElementById("empresa").value = "";
-
-alert("Cliente criado com sucesso!");
-```
-
-}
-
-catch (error) {
-
-```
-console.error(error);
-
-alert("Erro: " + error.message);
-```
-
-}
-
-};
-
+    const cred = await createUserWithEmailAndPassword(
+      secondaryAuth,
+      email,
+      senha
+    );
 
     const uid = cred.user.uid;
 
     /* =========================
-       CRIA CLIENTE
+       MANTÉM ADMIN LOGADO
     ========================= */
-    const clienteRef = await setDoc(doc(db, "clientes", uid))
+
+    await secondaryAuth.signOut();
+
+    /* =========================
+       CRIA CLIENTE FIRESTORE
+    ========================= */
+
+    await setDoc(
+      doc(db, "clientes", uid),
       {
 
         nome,
@@ -344,11 +325,12 @@ alert("Erro: " + error.message);
     /* =========================
        CRIA CHAT AUTOMÁTICO
     ========================= */
+
     await setDoc(
-      doc(db, "chats", clienteRef.id),
+      doc(db, "chats", uid),
       {
 
-        clienteId: clienteRef.id,
+        clienteId: uid,
 
         criadoEm: new Date()
 
@@ -356,8 +338,9 @@ alert("Erro: " + error.message);
     );
 
     /* =========================
-       LIMPAR CAMPOS
+       LIMPA CAMPOS
     ========================= */
+
     document.getElementById("nome").value = "";
 
     document.getElementById("email").value = "";
@@ -368,7 +351,9 @@ alert("Erro: " + error.message);
 
     alert("Cliente criado com sucesso!");
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(error);
 
@@ -378,8 +363,12 @@ alert("Erro: " + error.message);
 
 };
 
+/* =========================
+   INIT
+========================= */
+
 carregarCliente();
-  
+
 </script>
 
 </body>
