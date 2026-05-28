@@ -1169,20 +1169,6 @@ window.enviarMovimentacaoLicitacao = async function(id) {
 
   input.value = "";
 };
-
-  
-const div = document.getElementById(`movimentacoes-${id}`);
-
-div.style.display =
-div.style.display === "none"
-? "block"
-: "none";
-
-if (div.style.display === "block") {
-iniciarMovimentacoesLicitacao(id);
-}
-};
-
   
 window.enviarComentario = async (id) => {
   const input = document.getElementById(`input-comentario-${id}`);
