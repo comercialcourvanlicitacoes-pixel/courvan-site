@@ -875,6 +875,70 @@ atualizarKpisDashboard(docs);
             </select>
             <button onclick="excluirLicitacao('${l.id}')" style="flex: 1; padding:11px; border-radius:12px; background:rgba(168, 50, 50, 0.15); color:#f87171; border: 1px solid rgba(168, 50, 50, 0.2); font-weight:600; cursor:pointer; transition: 0.2s;" onmouseover="this.style.background='#a83232'; this.style.color='white'">🗑 Excluir</button>
           </div>
+          <div style="margin-top:20px;">
+
+<button
+class="botaoPadrao"
+style="
+background:#1e3a5f;
+color:white;
+width:100%;
+box-shadow:none;
+"
+onclick="abrirMovimentacoesLicitacao('${l.id}')"
+
+>
+
+```
+📝 Movimentações da Licitação
+```
+
+  </button>
+
+  <div
+    id="movimentacoes-${l.id}"
+    style="
+      display:none;
+      margin-top:16px;
+      background:#071930;
+      border-radius:14px;
+      padding:18px;
+      border:1px solid rgba(255,255,255,.05);
+    "
+  >
+
+```
+<div
+  id="lista-movimentacoes-${l.id}"
+  style="
+    max-height:300px;
+    overflow-y:auto;
+    margin-bottom:15px;
+  "
+></div>
+
+<div style="display:flex; gap:10px;">
+  <textarea
+    id="input-movimentacao-${l.id}"
+    class="inputPadrao"
+    placeholder="Registrar atualização da licitação..."
+    style="height:80px; resize:none;"
+  ></textarea>
+
+  <button
+    class="botaoPadrao"
+    style="padding:12px 20px;"
+    onclick="enviarMovimentacaoLicitacao('${l.id}')"
+  >
+    ➤
+  </button>
+</div>
+```
+
+  </div>
+
+</div>
+          
         </div>
       `;
     });
