@@ -164,6 +164,42 @@ const secondaryAuth = getAuth(secondaryApp);
   
 const db = getFirestore(app);
 
+  async function carregarCliente(){
+
+  if(!clienteId) return;
+
+  modoEdicao = true;
+
+  const clienteRef = doc(db, "clientes", clienteId);
+
+  const clienteSnap = await getDoc(clienteRef);
+
+  if(!clienteSnap.exists()){
+    alert("Cliente não encontrado");
+    return;
+  }
+
+  const cliente = clienteSnap.data();
+
+  document.getElementById("nome").value = cliente.nome || "";
+  document.getElementById("empresa").value = cliente.empresa || "";
+  document.getElementById("email").value = cliente.email || "";
+  document.getElementById("status").value = cliente.status || "";
+
+  const titulo = document.getElementById("tituloPagina");
+
+  if(titulo){
+    titulo.innerText = "Editar Cliente";
+  }
+
+  const botao = document.getElementById("btnSalvar");
+
+  if(botao){
+    botao.innerText = "Salvar Alterações";
+  }
+
+}
+
 const urlParams = new URLSearchParams(window.location.search);
 
 const clienteId = urlParams.get("id");
