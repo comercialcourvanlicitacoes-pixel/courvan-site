@@ -209,34 +209,120 @@ let modoEdicao = false;
 /* =========================
    CRIAR USUÁRIO + CLIENTE
 ========================= */
-window.criarUsuario = async function () {
+window.salvarCliente = async function () {
 
-  try {
+try {
 
-    const nome = document.getElementById("nome").value;
+```
+const nome = document.getElementById("nome").value;
 
-    const email = document.getElementById("email").value;
+const email = document.getElementById("email").value;
 
-    const senha = document.getElementById("senha").value;
+const senha = document.getElementById("senha").value;
 
-    const empresa = document.getElementById("empresa").value;
+const empresa = document.getElementById("empresa").value;
 
-    if (!nome || !email || !senha || !empresa) {
+if (!nome || !email || !empresa) {
 
-      alert("Preencha todos os campos");
+  alert("Preencha os campos");
 
-      return;
+  return;
 
-    }
+}
 
-    /* =========================
-       CRIA LOGIN FIREBASE
-    ========================= */
-    const cred = await createUserWithEmailAndPassword(
-      secondaryAuth,
-      email,
-      senha
-    );
+/* ====================================
+   MODO EDIÇÃO
+==================================== */
+if (modoEdicao) {
+
+  const clienteRef = doc(db, "clientes", clienteId);
+
+  await updateDoc(clienteRef, {
+
+    nome,
+    email,
+    empresa
+
+  });
+
+  alert("Cliente atualizado com sucesso!");
+
+  return;
+
+}
+
+/* ====================================
+   NOVO CLIENTE
+==================================== */
+
+if (!senha) {
+
+  alert("Digite uma senha");
+
+  return;
+
+}
+
+const cred = await createUserWithEmailAndPassword(
+  secondaryAuth,
+  email,
+  senha
+);
+
+const uid = cred.user.uid;
+
+/* mantém admin logado */
+await secondaryAuth.signOut();
+
+await setDoc(
+  doc(db, "clientes", uid),
+  {
+
+    nome,
+    email,
+    empresa,
+    uid,
+    status: "ativo"
+
+  }
+);
+
+await setDoc(
+  doc(db, "chats", uid),
+  {
+
+    clienteId: uid,
+
+    criadoEm: new Date()
+
+  }
+);
+
+document.getElementById("nome").value = "";
+
+document.getElementById("email").value = "";
+
+document.getElementById("senha").value = "";
+
+document.getElementById("empresa").value = "";
+
+alert("Cliente criado com sucesso!");
+```
+
+}
+
+catch (error) {
+
+```
+console.error(error);
+
+alert("Erro: " + error.message);
+```
+
+}
+
+};
+
 
     const uid = cred.user.uid;
 
