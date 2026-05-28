@@ -1016,6 +1016,46 @@ window.abrirComentarios = function(id) {
 
 window.abrirMovimentacoesLicitacao = function(id) {
 
+window.enviarMovimentacaoLicitacao = async function(id) {
+
+const input =
+document.getElementById(`input-movimentacao-${id}`);
+
+if (!input.value.trim()) return;
+
+const isAdmin =
+auth.currentUser.email ===
+"[comercial.courvanlicitacoes@gmail.com](mailto:comercial.courvanlicitacoes@gmail.com)";
+
+await addDoc(
+collection(
+db,
+"licitacoes",
+id,
+"movimentacoes"
+),
+{
+texto: input.value,
+autor: isAdmin ? "admin" : "cliente",
+nome: isAdmin
+? "Equipe Courvan"
+: document.getElementById("nome").innerText,
+
+```
+  empresa: isAdmin
+    ? "Courvan"
+    : document.getElementById("empresa").innerText,
+
+  data: serverTimestamp()
+}
+```
+
+);
+
+input.value = "";
+};
+
+  
 const div = document.getElementById(`movimentacoes-${id}`);
 
 div.style.display =
