@@ -1018,6 +1018,115 @@ window.abrirMovimentacoesLicitacao = function(id) {
 
 window.enviarMovimentacaoLicitacao = async function(id) {
 
+function iniciarMovimentacoesLicitacao(id) {
+
+  const div =
+    document.getElementById(
+      `lista-movimentacoes-${id}`
+    );
+
+  onSnapshot(
+    query(
+      collection(
+        db,
+        "licitacoes",
+        id,
+        "movimentacoes"
+      ),
+      orderBy("data")
+    ),
+
+    snap => {
+
+      div.innerHTML = "";
+
+      snap.forEach(docItem => {
+
+        const m = docItem.data();
+
+        const isMe =
+          m.autor ===
+          (
+            auth.currentUser.email ===
+            "comercial.courvanlicitacoes@gmail.com"
+              ? "admin"
+              : "cliente"
+          );
+
+        const dataMensagem =
+          m.data?.seconds
+            ? new Date(m.data.seconds * 1000)
+            : new Date();
+
+        const dataFormatada =
+          dataMensagem.toLocaleDateString("pt-BR") +
+          " às " +
+          dataMensagem.toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit"
+          });
+
+        div.innerHTML += `
+          <div style="
+            margin-bottom:14px;
+            display:flex;
+            justify-content:${isMe ? "flex-end" : "flex-start"};
+          ">
+
+            <div style="
+              max-width:80%;
+
+              background:${
+                isMe
+                  ? "linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%)"
+                  : "#16385f"
+              };
+
+              color:${isMe ? "#051020" : "white"};
+
+              padding:14px;
+              border-radius:14px;
+              border-bottom-${isMe ? "right" : "left"}-radius:4px;
+            ">
+
+              <div style="
+                font-size:11px;
+                opacity:.7;
+                font-weight:700;
+                margin-bottom:6px;
+              ">
+                ${m.nome}
+              </div>
+
+              <div style="
+                font-size:14px;
+                line-height:1.5;
+                white-space:pre-wrap;
+                overflow-wrap:anywhere;
+              ">
+                ${m.texto}
+              </div>
+
+              <div style="
+                margin-top:8px;
+                font-size:11px;
+                opacity:.6;
+                text-align:right;
+              ">
+                ${dataFormatada}
+              </div>
+
+            </div>
+
+          </div>
+        `;
+      });
+
+      div.scrollTop = div.scrollHeight;
+    }
+  );
+}
+  
 const input =
 document.getElementById(`input-movimentacao-${id}`);
 
