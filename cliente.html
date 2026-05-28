@@ -1016,7 +1016,17 @@ window.abrirComentarios = function(id) {
 
 window.abrirMovimentacoesLicitacao = function(id) {
 
-window.enviarMovimentacaoLicitacao = async function(id) {
+  const div = document.getElementById(`movimentacoes-${id}`);
+
+  div.style.display =
+    div.style.display === "none"
+      ? "block"
+      : "none";
+
+  if (div.style.display === "block") {
+    iniciarMovimentacoesLicitacao(id);
+  }
+};
 
 function iniciarMovimentacoesLicitacao(id) {
 
@@ -1126,42 +1136,45 @@ function iniciarMovimentacoesLicitacao(id) {
     }
   );
 }
-  
-const input =
-document.getElementById(`input-movimentacao-${id}`);
 
-if (!input.value.trim()) return;
+window.enviarMovimentacaoLicitacao = async function(id) {
 
-const isAdmin =
-auth.currentUser.email ===
-"[comercial.courvanlicitacoes@gmail.com](mailto:comercial.courvanlicitacoes@gmail.com)";
+  const input =
+    document.getElementById(`input-movimentacao-${id}`);
 
-await addDoc(
-collection(
-db,
-"licitacoes",
-id,
-"movimentacoes"
-),
-{
-texto: input.value,
-autor: isAdmin ? "admin" : "cliente",
-nome: isAdmin
-? "Equipe Courvan"
-: document.getElementById("nome").innerText,
+  if (!input.value.trim()) return;
 
-```
-  empresa: isAdmin
-    ? "Courvan"
-    : document.getElementById("empresa").innerText,
+  const isAdmin =
+    auth.currentUser.email ===
+    "comercial.courvanlicitacoes@gmail.com";
 
-  data: serverTimestamp()
-}
-```
+  await addDoc(
+    collection(
+      db,
+      "licitacoes",
+      id,
+      "movimentacoes"
+    ),
+    {
+      texto: input.value,
 
-);
+      autor: isAdmin
+        ? "admin"
+        : "cliente",
 
-input.value = "";
+      nome: isAdmin
+        ? "Equipe Courvan"
+        : document.getElementById("nome").innerText,
+
+      empresa: isAdmin
+        ? "Courvan"
+        : document.getElementById("empresa").innerText,
+
+      data: serverTimestamp()
+    }
+  );
+
+  input.value = "";
 };
 
   
