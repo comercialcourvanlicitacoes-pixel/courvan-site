@@ -329,8 +329,7 @@ alert("Erro: " + error.message);
     /* =========================
        CRIA CLIENTE
     ========================= */
-    const clienteRef = await addDoc(
-      collection(db, "clientes"),
+    const clienteRef = await setDoc(doc(db, "clientes", uid))
       {
 
         nome,
