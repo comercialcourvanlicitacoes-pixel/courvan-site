@@ -1014,6 +1014,21 @@ window.abrirComentarios = function(id) {
   if(div.style.display === "block") iniciarComentarios(id);
 };
 
+window.abrirMovimentacoesLicitacao = function(id) {
+
+const div = document.getElementById(`movimentacoes-${id}`);
+
+div.style.display =
+div.style.display === "none"
+? "block"
+: "none";
+
+if (div.style.display === "block") {
+iniciarMovimentacoesLicitacao(id);
+}
+};
+
+  
 window.enviarComentario = async (id) => {
   const input = document.getElementById(`input-comentario-${id}`);
   if(!input.value) return;
