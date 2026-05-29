@@ -1521,6 +1521,8 @@ function atualizarKpisDashboard(licitacoes = []) {
 
     const data = await response.json();
 
+    console.log("RESPOSTA SUPABASE:", data);
+
     if (!response.ok) {
 
       alert(
@@ -1538,13 +1540,13 @@ function atualizarKpisDashboard(licitacoes = []) {
 
   } catch (err) {
 
-    console.error(err);
+  console.error("ERRO COMPLETO:", err);
 
-    alert(
-      "Erro ao gerar pagamento."
-    );
+  alert(
+    err.message || "Erro ao gerar pagamento."
+  );
 
-  }
+}
 
 };
   
