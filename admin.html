@@ -6,7 +6,6 @@
   <title>Admin - Courvan</title>
 
   <style>
-
     *{
       margin:0;
       padding:0;
@@ -88,12 +87,12 @@
   <h2>➕ Criar Cliente</h2>
 
   <input id="nome" placeholder="Nome">
-
   <input id="email" type="email" placeholder="Email">
-
   <input id="senha" type="password" placeholder="Senha">
-
   <input id="empresa" placeholder="Empresa">
+
+  <!-- ✅ NOVO CAMPO CNPJ -->
+  <input id="cnpj" placeholder="CNPJ (somente números ou formatado)">
 
   <button onclick="criarUsuario()">
     Criar Cliente
@@ -115,14 +114,12 @@
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getAuth,
   createUserWithEmailAndPassword
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   getFirestore,
@@ -130,36 +127,23 @@ import {
   addDoc,
   doc,
   setDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-
   apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
-
   authDomain: "courvan-sistema.firebaseapp.com",
-
   projectId: "courvan-sistema",
-
   storageBucket: "courvan-sistema.appspot.com",
-
   messagingSenderId: "729755072978",
-
   appId: "1:729755072978:web:e76e98fd704c10da34f00b"
-
 };
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
 
-const secondaryApp = initializeApp(
-  firebaseConfig,
-  "Secondary"
-);
-
+const secondaryApp = initializeApp(firebaseConfig, "Secondary");
 const secondaryAuth = getAuth(secondaryApp);
-  
+
 const db = getFirestore(app);
 
 /* =========================
@@ -170,19 +154,14 @@ window.criarUsuario = async function () {
   try {
 
     const nome = document.getElementById("nome").value;
-
     const email = document.getElementById("email").value;
-
     const senha = document.getElementById("senha").value;
-
     const empresa = document.getElementById("empresa").value;
+    const cnpj = document.getElementById("cnpj").value;
 
-    if (!nome || !email || !senha || !empresa) {
-
-      alert("Preencha todos os campos");
-
+    if (!nome || !email || !senha || !empresa || !cnpj) {
+      alert("Preencha todos os campos (incluindo CNPJ)");
       return;
-
     }
 
     /* =========================
@@ -197,54 +176,39 @@ window.criarUsuario = async function () {
     const uid = cred.user.uid;
 
     /* =========================
-       CRIA CLIENTE
+       CRIA CLIENTE NO FIRESTORE
     ========================= */
-    const clienteRef = await addDoc(
-      collection(db, "clientes"),
-      {
-
-        nome,
-        email,
-        empresa,
-        uid,
-        status: "ativo"
-
-      }
-    );
+    const clienteRef = await addDoc(collection(db, "clientes"), {
+      nome,
+      email,
+      empresa,
+      cnpj,        // ✅ AGORA PADRÃO ÚNICO
+      uid,
+      status: "ativo"
+    });
 
     /* =========================
        CRIA CHAT AUTOMÁTICO
     ========================= */
-    await setDoc(
-      doc(db, "chats", clienteRef.id),
-      {
-
-        clienteId: clienteRef.id,
-
-        criadoEm: new Date()
-
-      }
-    );
+    await setDoc(doc(db, "chats", clienteRef.id), {
+      clienteId: clienteRef.id,
+      criadoEm: new Date()
+    });
 
     /* =========================
        LIMPAR CAMPOS
     ========================= */
     document.getElementById("nome").value = "";
-
     document.getElementById("email").value = "";
-
     document.getElementById("senha").value = "";
-
     document.getElementById("empresa").value = "";
+    document.getElementById("cnpj").value = "";
 
     alert("Cliente criado com sucesso!");
 
   } catch (error) {
-
     console.error(error);
-
     alert("Erro: " + error.message);
-
   }
 
 };
