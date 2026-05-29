@@ -1539,10 +1539,41 @@ function atualizarKpisDashboard(licitacoes = []) {
 
     if (data.invoiceUrl) {
 
-      window.open(
-        data.invoiceUrl,
-        "_blank"
-      );
+      if (data.pixQrCode) {
+
+  const novaJanela = window.open("", "_blank");
+
+  novaJanela.document.write(`
+    <html>
+      <head>
+        <title>Pagamento PIX</title>
+      </head>
+
+      <body style="
+        font-family:Arial;
+        padding:40px;
+        text-align:center;
+      ">
+
+        <h2>Pagamento PIX</h2>
+
+        <img
+          src="${data.pixQrCode}"
+          style="width:300px;"
+        />
+
+        <p style="
+          margin-top:20px;
+          word-break:break-all;
+        ">
+          ${data.pixCode}
+        </p>
+
+      </body>
+    </html>
+  `);
+
+}
 
     } else {
 
