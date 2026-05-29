@@ -1478,6 +1478,71 @@ function atualizarKpisDashboard(licitacoes = []) {
   setText("kpiInteresseNao", String(interesseNao));
   setText("kpiInteresseNeutro", String(interesseNeutro));
 }
+
+  window.gerarPagamentoLicitacao = async function (
+  licitacaoId,
+  orgao,
+  valor
+) {
+
+  try {
+
+    const response = await fetch(
+      `${SUPABASE_URL}/functions/v1/gerar-pagamento`,
+      {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+        },
+
+        body: JSON.stringify({
+
+          nome: dadosClienteGlobal.nome,
+
+          email: dadosClienteGlobal.email,
+
+          valor: valor,
+
+          descricao: `Licitação - ${orgao}`,
+
+          licitacaoId: licitacaoId
+
+        })
+
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+
+      alert(
+        data.error ||
+        "Erro ao gerar cobrança"
+      );
+
+      return;
+    }
+
+    window.open(
+      data.invoiceUrl,
+      "_blank"
+    );
+
+  } catch (err) {
+
+    console.error(err);
+
+    alert(
+      "Erro ao gerar pagamento."
+    );
+
+  }
+
+};
   
 </script>
 
