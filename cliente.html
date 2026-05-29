@@ -1491,9 +1491,7 @@ function atualizarKpisDashboard(licitacoes = []) {
 
   try {
 
-    const response = await fetch(
-      `${SUPABASE_URL}/functions/v1/gerar-pagamento`,
-      {
+    const response = await fetch("https://ruquejiboirzagcjddmp.supabase.co/functions/v1/clever-endpoint", {
 
         method: "POST",
 
