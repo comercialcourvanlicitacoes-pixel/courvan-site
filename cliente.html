@@ -1499,6 +1499,9 @@ function atualizarKpisDashboard(licitacoes = []) {
 
         headers: {
           "Content-Type": "application/json",
+
+          "apikey": SUPABASE_ANON_KEY,
+
           "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
         },
 
@@ -1527,26 +1530,33 @@ function atualizarKpisDashboard(licitacoes = []) {
 
       alert(
         data.error ||
+        data.message ||
         "Erro ao gerar cobrança"
       );
 
       return;
     }
 
-    window.open(
-      data.invoiceUrl,
-      "_blank"
-    );
+    if (data.invoiceUrl) {
+
+      window.open(
+        data.invoiceUrl,
+        "_blank"
+      );
+
+    } else {
+
+      alert("Cobrança criada mas sem link.");
+
+    }
 
   } catch (err) {
 
-  console.error("ERRO COMPLETO:", err);
+    console.error(err);
 
-  alert(
-    err.message || "Erro ao gerar pagamento."
-  );
+    alert("Erro ao gerar pagamento.");
 
-}
+  }
 
 };
   
