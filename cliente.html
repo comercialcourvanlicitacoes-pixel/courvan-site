@@ -1503,20 +1503,14 @@ function atualizarKpisDashboard(licitacoes = []) {
           "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
         },
 
-        body: JSON.stringify({
-
-          nome: dadosClienteGlobal.nome,
-
-          email: dadosClienteGlobal.email,
-
-          valor: valor,
-
-          descricao: `Licitação - ${orgao}`,
-
-          licitacaoId: licitacaoId
-
-        })
-
+        
+body: JSON.stringify({
+  nome: dadosClienteGlobal.nome,
+  email: dadosClienteGlobal.email,
+  value: 100, // 👈 valor FIXO da cobrança
+  descricao: `Licitação - ${orgao}`,
+  licitacaoId: licitacaoId
+})
       }
     );
 
