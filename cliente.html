@@ -858,6 +858,26 @@ atualizarKpisDashboard(docs);
               🔗 ${linkLicitacao ? "Abrir Link da Licitação" : "Link indisponível"}
             </a>
 
+            <button
+  onclick="gerarPagamentoLicitacao(
+    '${l.id}',
+    '${l.orgao}',
+    ${Number(l.valor || 0)}
+  )"
+
+  style="
+    padding:10px 14px;
+    border-radius:10px;
+    border:none;
+    background:linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%);
+    color:#051020;
+    font-weight:700;
+    cursor:pointer;
+  "
+>
+  💳 Gerar PIX
+</button>
+
             <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(52,211,153,.4); background:${interesse === "tenho_interesse" ? "#065f46" : "rgba(6,95,70,.25)"}; color:#bbf7d0; font-weight:600; cursor:pointer;">
               ✅ Tenho interesse
             </button>
