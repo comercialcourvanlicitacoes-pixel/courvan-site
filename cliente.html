@@ -1502,6 +1502,12 @@ function atualizarKpisDashboard(licitacoes = []) {
   orgao,
   valor
 ) {
+
+   if (!dadosClienteGlobal.cpfCnpj) {
+  alert("CPF/CNPJ não cadastrado no cliente.");
+  return;
+}
+   
   try {
     const response = await fetch(
       "https://ruquejiboirzagcjddmp.supabase.co/functions/v1/clever-endpoint",
