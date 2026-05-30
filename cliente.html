@@ -1502,10 +1502,9 @@ function atualizarKpisDashboard(licitacoes = []) {
         body: JSON.stringify({
           nome: dadosClienteGlobal.nome,
           email: dadosClienteGlobal.email,
-
+          cpfCnpj: dadosClienteGlobal.cpfCnpj,        
           // 🔥 PADRONIZADO COM BACKEND
           valor: 100,
-
           descricao: `Licitação - ${orgao}`,
           licitacaoId: licitacaoId,
         }),
