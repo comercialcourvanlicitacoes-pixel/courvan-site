@@ -793,14 +793,14 @@ window.salvarConfiguracoes = async function () {
   empresa,
   telefone,
   city,
-  cpfCnpj, // 👈 AGORA SALVA CPF/CNPJ
+  cpfCnpj,
   segmentos,
   cidadesFiltro,
   estadosFiltro,
   orgaosFiltro
-});await updateDoc(doc(db, "clientes", clienteIdGlobal), {
-    nome, empresa, telefone, city, segmentos, cidadesFiltro, estadosFiltro, orgaosFiltro
-  });
+});
+
+  dadosClienteGlobal.cpfCnpj = cpfCnpj;
 
   dadosClienteGlobal = { ...dadosClienteGlobal, nome, empresa, telefone, cidade: city, segmentos, cidadesFiltro, estadosFiltro, orgaosFiltro };
   
