@@ -659,6 +659,8 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("configTelefone").value = dadosClienteGlobal.telefone || "";
   document.getElementById("configCidade").value = dadosClienteGlobal.cidade || "";
   document.getElementById("configSegmentos").value = dadosClienteGlobal.segmentos || "";
+  document.getElementById("configCpfCnpj").value =
+  dadosClienteGlobal.cpfCnpj || "";
   document.getElementById("configCidades").value = (dadosClienteGlobal.cidadesFiltro || []).join(", ");
   document.getElementById("configEstados").value = (dadosClienteGlobal.estadosFiltro || []).join(", ");
   document.getElementById("configOrgaos").value = (dadosClienteGlobal.orgaosFiltro || []).join(", ");
@@ -780,12 +782,23 @@ window.salvarConfiguracoes = async function () {
   const empresa = document.getElementById("configEmpresa").value;
   const telefone = document.getElementById("configTelefone").value;
   const city = document.getElementById("configCidade").value;
+  const cpfCnpj = document.getElementById("configCpfCnpj").value;
   const segmentos = document.getElementById("configSegmentos").value.toLowerCase().trim();
   const cidadesFiltro = document.getElementById("configCidades").value.split(",").map(v => v.trim()).filter(v => v);
   const estadosFiltro = document.getElementById("configEstados").value.split(",").map(v => v.trim().toUpperCase()).filter(v => v);
   const orgaosFiltro = document.getElementById("configOrgaos").value.split(",").map(v => v.trim()).filter(v => v);
 
   await updateDoc(doc(db, "clientes", clienteIdGlobal), {
+  nome,
+  empresa,
+  telefone,
+  city,
+  cpfCnpj, // 👈 AGORA SALVA CPF/CNPJ
+  segmentos,
+  cidadesFiltro,
+  estadosFiltro,
+  orgaosFiltro
+});await updateDoc(doc(db, "clientes", clienteIdGlobal), {
     nome, empresa, telefone, city, segmentos, cidadesFiltro, estadosFiltro, orgaosFiltro
   });
 
