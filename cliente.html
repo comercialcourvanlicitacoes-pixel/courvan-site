@@ -448,13 +448,56 @@
     </div>
 
     <div id="chat" class="aba" style="display:none;">
-      <h1>Chat</h1>
-      <div id="mensagens" style="background:#071930; height:400px; overflow-y:auto; overflow-x:hidden; padding:20px; border-radius:16px; margin-bottom:20px; border: 1px solid rgba(255,255,255,0.02);"></div>
-      <div style="display:flex;gap:10px;">
-        <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." class="inputPadrao">
-        <button class="botaoPadrao" onclick="enviarMensagem()">Enviar</button>
-      </div>
-    </div>
+  <h1>Chat</h1>
+
+  <div id="mensagens"
+       style="background:#071930; height:400px; overflow-y:auto; overflow-x:hidden; padding:20px; border-radius:16px; margin-bottom:20px; border: 1px solid rgba(255,255,255,0.02);">
+  </div>
+
+  <!-- PREVIEW DA RESPOSTA -->
+  <div
+    id="previewResposta"
+    style="
+      display:none;
+      background:#0d2748;
+      padding:10px;
+      border-left:4px solid #d8a84e;
+      margin-bottom:10px;
+      border-radius:8px;
+    "
+  >
+    <div id="textoResposta"></div>
+
+    <button
+      onclick="cancelarResposta()"
+      style="
+        margin-top:5px;
+        background:none;
+        border:none;
+        color:#f87171;
+        cursor:pointer;
+      "
+    >
+      Cancelar
+    </button>
+  </div>
+
+  <div style="display:flex;gap:10px;">
+    <input
+      type="text"
+      id="mensagemInput"
+      placeholder="Digite sua mensagem..."
+      class="inputPadrao"
+    >
+
+    <button
+      class="botaoPadrao"
+      onclick="enviarMensagem()"
+    >
+      Enviar
+    </button>
+  </div>
+</div>
 
     <div id="licitacoes" class="aba" style="display:none;">
       <h1>Minhas Licitações</h1>
