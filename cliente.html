@@ -579,6 +579,27 @@ let emailClienteGlobal = "";
 let dadosClienteGlobal = null;
 
 let respostaMensagem = null;
+
+window.responderMensagem = function(id, texto, autor){
+
+  respostaMensagem = {
+    id,
+    texto,
+    autor
+  };
+
+  document.getElementById("previewResposta").style.display = "block";
+
+  document.getElementById("textoResposta").innerHTML =
+    `<strong>${autor}</strong><br>${texto}`;
+};
+
+window.cancelarResposta = function(){
+
+  respostaMensagem = null;
+
+  document.getElementById("previewResposta").style.display = "none";
+};
   
 const notificacoesVisualizadas = {
   demandas: false,
