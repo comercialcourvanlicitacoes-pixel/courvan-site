@@ -1301,9 +1301,18 @@ function iniciarChat() {
   const div = document.getElementById("mensagens");
   onSnapshot(query(collection(db, "chats", clienteIdGlobal, "mensagens"), orderBy("data")), snap => {
     div.innerHTML = "";
-    snap.forEach(d => {
-      const m = d.data();
-      const isMe = m.autor === (auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "admin" : "cliente");
+    snap.forEach(docSnap => {
+
+  const mensagemId = docSnap.id;
+
+  const m = docSnap.data();
+
+  const isMe = m.autor === (
+    auth.currentUser.email ===
+    "comercial.courvanlicitacoes@gmail.com"
+      ? "admin"
+      : "cliente"
+  );
       const dataMensagem = m.data?.seconds
   ? new Date(m.data.seconds * 1000)
   : new Date();
@@ -1317,7 +1326,9 @@ const dataFormatada =
   });
 
 div.innerHTML += `
-  <div style="text-align:${isMe ? 'right' : 'left'}; margin-bottom:12px;">
+  <div
+    style="text-align:${isMe ? 'right' : 'left'}; margin-bottom:12px;"
+  >
 
     <div style="
       display:inline-block;
@@ -1341,16 +1352,57 @@ div.innerHTML += `
         ${m.nome}
       </div>
 
-      <div style="
-  font-size:14px;
-  line-height:1.4;
-  margin-bottom:8px;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-">
+      ${
+  m.resposta
+    ? `
+      <div
+        style="
+          background:rgba(255,255,255,.08);
+          border-left:3px solid #d8a84e;
+          padding:8px;
+          border-radius:8px;
+          margin-bottom:8px;
+          font-size:12px;
+          opacity:.85;
+        "
+      >
+        <strong>${m.resposta.autor}</strong><br>
+        ${m.resposta.texto}
+      </div>
+    `
+    : ""
+}
+
+<div
+  style="
+    font-size:14px;
+    line-height:1.4;
+    margin-bottom:8px;
+    word-break:break-word;
+    overflow-wrap:anywhere;
+    white-space:pre-wrap;
+  "
+>
   ${m.texto}
 </div>
+
+<button
+  onclick="responderMensagem(
+    '${mensagemId}',
+    \`${(m.texto || "").replace(/`/g,"\\`")}\`,
+    '${m.nome}'
+  )"
+  style="
+    margin-top:6px;
+    background:none;
+    border:none;
+    color:#d8a84e;
+    cursor:pointer;
+    font-size:12px;
+  "
+>
+  ↩ Responder
+</button>
 
       <div style="
         font-size:11px;
