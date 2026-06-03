@@ -1618,11 +1618,55 @@ function iniciarDocumentos() {
 }
 
 window.adicionarDocumento = async () => {
-  const n = document.getElementById("nomeDocumento").value;
-  const l = document.getElementById("linkDocumento").value;
-  if(!n || !l) return alert("Preencha tudo");
-  await addDoc(collection(db, "documentos"), { clienteId: clienteIdGlobal, nome: n, link: l, data: serverTimestamp() });
-  document.getElementById("nomeDocumento").value = ""; document.getElementById("linkDocumento").value = "";
+
+  const nome =
+    document.getElementById("nomeDocumento").value;
+
+  const arquivo =
+    document.getElementById("arquivoDocumento")
+    .files[0];
+
+  if (!nome || !arquivo) {
+    alert("Selecione um arquivo.");
+    return;
+  }
+
+  const caminho =
+    `${clienteIdGlobal}/${Date.now()}_${arquivo.name}`;
+
+  const { error } =
+    await supabase.storage
+      .from("documentos-clientes")
+      .upload(caminho, arquivo);
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao enviar arquivo.");
+    return;
+  }
+
+  const { data } =
+    supabase.storage
+      .from("documentos-clientes")
+      .getPublicUrl(caminho);
+
+  await addDoc(
+    collection(db, "documentos"),
+    {
+      clienteId: clienteIdGlobal,
+      nome,
+      link: data.publicUrl,
+      arquivo: caminho,
+      tipo: arquivo.type,
+      tamanho: arquivo.size,
+      data: serverTimestamp()
+    }
+  );
+
+  document.getElementById("nomeDocumento").value = "";
+  document.getElementById("arquivoDocumento").value = "";
+
+  alert("Documento enviado com sucesso.");
 };
 
 window.alterarSenha = async () => {
