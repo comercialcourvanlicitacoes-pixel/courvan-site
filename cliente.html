@@ -1353,7 +1353,8 @@ div.innerHTML += `
       </div>
 
       ${
-  m.resposta
+  ${
+  m.respostaTexto
     ? `
       <div
         style="
@@ -1364,10 +1365,12 @@ div.innerHTML += `
           margin-bottom:8px;
           font-size:12px;
           opacity:.85;
+          overflow:hidden;
+          text-overflow:ellipsis;
         "
       >
-        <strong>${m.resposta.autor}</strong><br>
-        ${m.resposta.texto}
+        <strong>${m.respostaAutor}</strong><br>
+        ${m.respostaTexto}
       </div>
     `
     : ""
