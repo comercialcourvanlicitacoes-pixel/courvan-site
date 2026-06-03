@@ -1713,19 +1713,35 @@ const caminho =
       .getPublicUrl(caminho);
 
   await addDoc(
-    collection(db, "documentos"),
-    {
-      clienteId: clienteIdGlobal,
-      nome,
-      link: data.publicUrl,
-      arquivo: caminho,
-      tipo: arquivo.type,
-      tamanho: arquivo.size,
-      data: serverTimestamp()
-    }
-  );
+  collection(db, "documentos"),
+  {
+    clienteId: clienteIdGlobal,
+
+    nome,
+    categoria,
+
+    vencimento,
+
+    statusDocumento,
+
+    link: data.publicUrl,
+
+    arquivo: caminho,
+
+    tipo: arquivo.type,
+
+    tamanho: arquivo.size,
+
+    data: serverTimestamp()
+  }
+);
 
   document.getElementById("nomeDocumento").value = "";
+
+  document.getElementById("vencimentoDocumento").value = "";
+
+  document.getElementById("statusDocumento").value = "";
+
   document.getElementById("arquivoDocumento").value = "";
 
   alert("Documento enviado com sucesso.");
