@@ -1452,22 +1452,93 @@ atualizarBadgePersistente(
 }
 
 window.enviarMensagem = async () => {
-  const input = document.getElementById("mensagemInput");
-  if(!input.value) return;
-  const isAdmin = auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com";
-  await addDoc(collection(db, "chats", clienteIdGlobal, "mensagens"), {
-    texto: input.value, autor: isAdmin ? "admin" : "cliente",
-    nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
-    empresa: isAdmin ? "Courvan" : document.getElementById("empresa").innerText, data: serverTimestamp()
-  });
-  try {
-    await emailjs.send("service_p5ln9fw", "template_2qckj0y", {
-      nome: document.getElementById("nome").innerText,
-      mensagem: "Nova mensagem no chat Courvan",
-      to_email: isAdmin ? emailClienteGlobal : "comercial.courvanlicitacoes@gmail.com"
-    });
-  } catch(e) {}
+
+  const input =
+    document.getElementById("mensagemInput");
+
+  const texto = input.value.trim();
+
+  if (!texto) return;
+
+  const isAdmin =
+    auth.currentUser.email ===
+    "comercial.courvanlicitacoes@gmail.com";
+
+  /* limpa imediatamente */
   input.value = "";
+
+  try {
+
+    await addDoc(
+      collection(
+        db,
+        "chats",
+        clienteIdGlobal,
+        "mensagens"
+      ),
+      {
+        texto,
+
+        autor: isAdmin
+          ? "admin"
+          : "cliente",
+
+        nome: isAdmin
+          ? "Equipe Courvan"
+          : document.getElementById("nome").innerText,
+
+        empresa: isAdmin
+          ? "Courvan"
+          : document.getElementById("empresa").innerText,
+
+        respostaId:
+          respostaMensagem?.id || null,
+
+        respostaTexto:
+          respostaMensagem?.texto || null,
+
+        respostaAutor:
+          respostaMensagem?.autor || null,
+
+        data: serverTimestamp()
+      }
+    );
+
+    try {
+
+      await emailjs.send(
+        "service_p5ln9fw",
+        "template_2qckj0y",
+        {
+          nome:
+            document.getElementById("nome").innerText,
+
+          mensagem:
+            "Nova mensagem no chat Courvan",
+
+          to_email: isAdmin
+            ? emailClienteGlobal
+            : "comercial.courvanlicitacoes@gmail.com"
+        }
+      );
+
+    } catch (e) {
+      console.log(e);
+    }
+
+    cancelarResposta();
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    alert(
+      "Erro ao enviar mensagem."
+    );
+
+    /* devolve o texto caso falhe */
+    input.value = texto;
+  }
 };
 
 document
