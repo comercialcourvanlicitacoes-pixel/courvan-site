@@ -1997,5 +1997,76 @@ function atualizarKpisDashboard(licitacoes = []) {
   
 </script>
 
+<div
+  id="modalCertidao"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    z-index:9999;
+  "
+>
+
+  <div
+    style="
+      background:#081a33;
+      width:500px;
+      max-width:90%;
+      margin:80px auto;
+      padding:25px;
+      border-radius:16px;
+    "
+  >
+
+    <h2>Nova Certidão</h2>
+
+    <input
+      id="nomeCertidao"
+      class="inputPadrao"
+      placeholder="Nome da certidão"
+    >
+
+    <input
+      type="date"
+      id="vencimentoCertidao"
+      class="inputPadrao"
+    >
+
+    <select
+      id="statusCertidao"
+      class="inputPadrao"
+    >
+
+      <option value="negativa">
+        Negativa
+      </option>
+
+      <option value="positiva_com_efeitos_de_negativa">
+        Positiva com efeitos de negativa
+      </option>
+
+      <option value="positiva">
+        Positiva
+      </option>
+
+    </select>
+
+    <input
+      type="file"
+      id="arquivoCertidao"
+    >
+
+    <button
+      class="radar-btn"
+      onclick="salvarCertidao()"
+    >
+      Salvar
+    </button>
+
+  </div>
+
+</div>
+  
 </body>
 </html>
