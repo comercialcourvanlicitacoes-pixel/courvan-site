@@ -1622,8 +1622,7 @@ function iniciarDocumentos() {
   "
 >
 
-  <h2
-    onclick="togglePasta('certidoes')"
+  <h2 onclick="abrirTelaDocumentos('certidoes')"
     style="
       cursor:pointer;
       margin:0;
@@ -1651,7 +1650,7 @@ function iniciarDocumentos() {
 <div style="margin-bottom:30px;">
 
   <h2
-    onclick="togglePasta('contratos')"
+    onclick="abrirTelaDocumentos('contratos')"
     style="
       cursor:pointer;
       padding:10px;
@@ -1671,7 +1670,7 @@ function iniciarDocumentos() {
 <div style="margin-bottom:30px;">
 
   <h2
-    onclick="togglePasta('editais')"
+    onclick="abrirTelaDocumentos('editais')"
     style="
       cursor:pointer;
       padding:10px;
@@ -1874,6 +1873,102 @@ window.salvarCertidao = async () => {
   document.getElementById(
     "modalCertidao"
   ).style.display = "none";
+
+};
+
+window.abrirTelaDocumentos = function(tipo){
+
+  const div =
+    document.getElementById(
+      "listaDocumentos"
+    );
+
+  let titulo = "";
+  let botao = "";
+
+  if(tipo === "certidoes"){
+
+    titulo =
+      "Controle de Certidões";
+
+    botao =
+      `
+      <button
+        class="botaoPadrao"
+        onclick="abrirModalDocumento('certidoes')"
+      >
+        + Nova Certidão
+      </button>
+      `;
+
+  }
+
+  else if(tipo === "contratos"){
+
+    titulo = "Contratos";
+
+    botao =
+      `
+      <button
+        class="botaoPadrao"
+        onclick="abrirModalDocumento('contratos')"
+      >
+        + Novo Contrato
+      </button>
+      `;
+
+  }
+
+  else {
+
+    titulo = "Editais";
+
+    botao =
+      `
+      <button
+        class="botaoPadrao"
+        onclick="abrirModalDocumento('editais')"
+      >
+        + Novo Edital
+      </button>
+      `;
+
+  }
+
+  div.innerHTML = `
+    <button
+      class="botaoPadrao"
+      onclick="iniciarDocumentos()"
+      style="margin-bottom:20px;"
+    >
+      ← Voltar
+    </button>
+
+    <h1>${titulo}</h1>
+
+    ${botao}
+
+    <div
+      id="listaCategoria"
+      style="margin-top:25px;"
+    ></div>
+  `;
+
+  carregarCategoria(tipo);
+
+};
+
+  window.carregarCategoria = function(tipo){
+
+  console.log("Categoria aberta:", tipo);
+
+};
+
+  window.abrirTelaDocumentos = function(tipo){
+
+  console.log("Abrindo tela:", tipo);
+
+  carregarCategoria(tipo);
 
 };
   
