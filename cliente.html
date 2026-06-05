@@ -1960,7 +1960,24 @@ window.abrirTelaDocumentos = function(tipo){
 
   window.carregarCategoria = function(tipo){
 
-  console.log("Categoria aberta:", tipo);
+  const lista =
+    document.getElementById(
+      "listaCategoria"
+    );
+
+  lista.innerHTML = `
+    <div
+      style="
+        background:#0d2748;
+        padding:20px;
+        border-radius:12px;
+        margin-top:20px;
+      "
+    >
+      Categoria aberta:
+      <strong>${tipo}</strong>
+    </div>
+  `;
 
 };
 
