@@ -2013,6 +2013,7 @@ window.abrirTelaDocumentos = function(tipo){
             style="
               opacity:.7;
               padding:20px;
+              text-align:center;
             "
           >
             Nenhum documento encontrado.
@@ -2025,59 +2026,141 @@ window.abrirTelaDocumentos = function(tipo){
 
       snap.forEach(docItem=>{
 
-        const d =
-          docItem.data();
+        const d = docItem.data();
+
+        let icone = "📄";
+
+        if(tipo === "certidoes"){
+
+          if(d.status === "negativa"){
+
+            icone = "🟢";
+
+          }
+
+          else if(
+            d.status ===
+            "positiva_com_efeitos_de_negativa"
+          ){
+
+            icone = "🟡";
+
+          }
+
+          else if(d.status === "positiva"){
+
+            icone = "🔴";
+
+          }
+
+        }
 
         lista.innerHTML += `
+
           <div
             style="
               background:#0d2748;
-              padding:15px;
+              padding:18px;
               border-radius:12px;
               margin-top:15px;
             "
           >
 
-            <strong>
-
-              ${
-                tipo === "certidoes"
-                ? (
-                    d.status === "negativa"
-                    ? "🟢"
-                    : d.status === "positiva"
-                    ? "🔴"
-                    : "🟡"
-                  )
-                : "📄"
-              }
-
-              ${d.nome}
-
-            </strong>
-
-            <br><br>
-
-            <a
-              href="${d.link}"
-              target="_blank"
-              class="radar-btn"
-            >
-              Abrir
-            </a>
-
-            <button
-              class="radar-btn"
-              onclick="excluirDocumento('${docItem.id}')"
+            <div
               style="
-                margin-left:10px;
-                background:#b02a37;
+                display:flex;
+                justify-content:space-between;
+                align-items:flex-start;
+                gap:15px;
               "
             >
-              Excluir
-            </button>
+
+              <div>
+
+                <strong
+                  style="
+                    font-size:16px;
+                  "
+                >
+                  ${icone}
+                  ${d.nome || "Sem nome"}
+                </strong>
+
+                ${
+                  tipo === "certidoes"
+                  ? `
+                    <br>
+
+                    <small
+                      style="
+                        opacity:.85;
+                      "
+                    >
+                      Status:
+                      ${
+                        d.status === "negativa"
+                        ? "Negativa"
+                        : d.status === "positiva"
+                        ? "Positiva"
+                        : d.status === "positiva_com_efeitos_de_negativa"
+                        ? "Positiva com efeitos de negativa"
+                        : "Não informado"
+                      }
+                    </small>
+
+                    <br>
+
+                    <small
+                      style="
+                        opacity:.85;
+                      "
+                    >
+                      Vencimento:
+                      ${
+                        d.vencimento
+                        ? d.vencimento
+                        : "Não informado"
+                      }
+                    </small>
+                  `
+                  : ""
+                }
+
+              </div>
+
+            </div>
+
+            <div
+              style="
+                margin-top:15px;
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+              "
+            >
+
+              <a
+                href="${d.link}"
+                target="_blank"
+                class="radar-btn"
+              >
+                Abrir
+              </a>
+
+              <button
+                class="radar-btn"
+                onclick="excluirDocumento('${docItem.id}')"
+                style="
+                  background:#b02a37;
+                "
+              >
+                Excluir
+              </button>
+
+            </div>
 
           </div>
+
         `;
 
       });
