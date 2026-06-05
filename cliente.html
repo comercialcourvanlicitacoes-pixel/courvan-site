@@ -1913,6 +1913,158 @@ const link =
 
 };
 
+window.salvarContrato = async () => {
+
+  const nome =
+    document.getElementById(
+      "nomeContrato"
+    ).value;
+
+  const arquivo =
+    document.getElementById(
+      "arquivoContrato"
+    ).files[0];
+
+  if (!arquivo) {
+
+    alert("Selecione um arquivo");
+
+    return;
+
+  }
+
+  const caminho =
+    `${clienteIdGlobal}/${Date.now()}_${arquivo.name}`;
+
+  const { error } =
+    await supabase.storage
+      .from("documentos-clientes")
+      .upload(caminho, arquivo);
+
+  if (error) {
+
+    console.error(error);
+
+    alert("Erro ao enviar arquivo");
+
+    return;
+
+  }
+
+  const { data } =
+    supabase.storage
+      .from("documentos-clientes")
+      .getPublicUrl(caminho);
+
+  const link =
+    data.publicUrl;
+
+  await addDoc(
+    collection(db, "documentos"),
+    {
+
+      clienteId:
+        clienteIdGlobal,
+
+      nome,
+
+      categoria:
+        "contratos",
+
+      link,
+
+      dataCriacao:
+        serverTimestamp()
+
+    }
+  );
+
+  document.getElementById(
+    "modalContrato"
+  ).style.display = "none";
+
+  alert(
+    "Contrato enviado com sucesso!"
+  );
+
+};
+
+window.salvarEdital = async () => {
+
+  const nome =
+    document.getElementById(
+      "nomeEdital"
+    ).value;
+
+  const arquivo =
+    document.getElementById(
+      "arquivoEdital"
+    ).files[0];
+
+  if (!arquivo) {
+
+    alert("Selecione um arquivo");
+
+    return;
+
+  }
+
+  const caminho =
+    `${clienteIdGlobal}/${Date.now()}_${arquivo.name}`;
+
+  const { error } =
+    await supabase.storage
+      .from("documentos-clientes")
+      .upload(caminho, arquivo);
+
+  if (error) {
+
+    console.error(error);
+
+    alert("Erro ao enviar arquivo");
+
+    return;
+
+  }
+
+  const { data } =
+    supabase.storage
+      .from("documentos-clientes")
+      .getPublicUrl(caminho);
+
+  const link =
+    data.publicUrl;
+
+  await addDoc(
+    collection(db, "documentos"),
+    {
+
+      clienteId:
+        clienteIdGlobal,
+
+      nome,
+
+      categoria:
+        "editais",
+
+      link,
+
+      dataCriacao:
+        serverTimestamp()
+
+    }
+  );
+
+  document.getElementById(
+    "modalEdital"
+  ).style.display = "none";
+
+  alert(
+    "Edital enviado com sucesso!"
+  );
+
+};
+  
 window.abrirTelaDocumentos = function(tipo){
 
   const div =
