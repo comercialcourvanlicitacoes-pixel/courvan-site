@@ -1785,6 +1785,71 @@ window.abrirModalCertidao = function(){
   ).style.display = "block";
 
 };
+
+window.salvarCertidao = async () => {
+
+  const nome =
+    document.getElementById(
+      "nomeCertidao"
+    ).value;
+
+  const vencimento =
+    document.getElementById(
+      "vencimentoCertidao"
+    ).value;
+
+  const status =
+    document.getElementById(
+      "statusCertidao"
+    ).value;
+
+  const arquivo =
+    document.getElementById(
+      "arquivoCertidao"
+    ).files[0];
+
+  if (!arquivo) {
+
+    alert("Selecione um arquivo");
+
+    return;
+
+  }
+
+  const link =
+    await enviarArquivoParaStorage(
+      arquivo
+    );
+
+  await addDoc(
+    collection(db, "documentos"),
+    {
+
+      clienteId:
+        clienteIdGlobal,
+
+      nome,
+
+      categoria:
+        "certidoes",
+
+      status,
+
+      vencimento,
+
+      link,
+
+      dataCriacao:
+        serverTimestamp()
+
+    }
+  );
+
+  document.getElementById(
+    "modalCertidao"
+  ).style.display = "none";
+
+};
   
 window.adicionarDocumento = async () => {
 
