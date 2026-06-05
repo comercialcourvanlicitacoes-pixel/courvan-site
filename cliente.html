@@ -442,15 +442,7 @@
 
   <div id="formDocumentos"
        style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:30px;">
-
-    <select id="categoriaDocumento"
-            class="inputPadrao"
-            style="flex:1;">
-      <option value="certidoes">Controle de Certidões</option>
-      <option value="contratos">Contratos</option>
-      <option value="editais">Editais</option>
-    </select>
-
+    
     <input
       type="text"
       id="nomeDocumento"
@@ -1623,17 +1615,44 @@ function iniciarDocumentos() {
 
         <div id="pasta-certidoes"
              style="margin-bottom:30px;">
-          <h2>📁 Controle de Certidões</h2>
+          <h2
+  onclick="selecionarPasta('certidoes')"
+  style="
+    cursor:pointer;
+    padding:10px;
+    border-radius:10px;
+  "
+>
+📁 Controle de Certidões
+</h2>
         </div>
 
         <div id="pasta-contratos"
              style="margin-bottom:30px;">
-          <h2>📁 Contratos</h2>
+          <h2
+  onclick="selecionarPasta('contratos')"
+  style="
+    cursor:pointer;
+    padding:10px;
+    border-radius:10px;
+  "
+>
+📁 Contratos
+</h2>
         </div>
 
         <div id="pasta-editais"
              style="margin-bottom:30px;">
-          <h2>📁 Editais</h2>
+          <h2
+  onclick="selecionarPasta('editais')"
+  style="
+    cursor:pointer;
+    padding:10px;
+    border-radius:10px;
+  "
+>
+📁 Editais
+</h2>
         </div>
 
       `;
@@ -1707,13 +1726,25 @@ function iniciarDocumentos() {
 
 }
 
+let categoriaSelecionada = "certidoes";
+
+  window.selecionarPasta = function(categoria){
+
+  categoriaSelecionada = categoria;
+
+  alert(
+    "Pasta selecionada: " +
+    categoria
+  );
+
+};
+  
 window.adicionarDocumento = async () => {
 
   const nome =
     document.getElementById("nomeDocumento").value;
 
-  const categoria =
-document.getElementById("categoriaDocumento").value;
+  const categoria = categoriaSelecionada;
 
 const vencimento =
 document.getElementById("vencimentoDocumento").value;
