@@ -1958,13 +1958,115 @@ window.abrirTelaDocumentos = function(tipo){
 
 };
 
-  window.carregarCategoria = function(tipo){
+ window.carregarCategoria = function(tipo){
 
   const lista =
     document.getElementById(
       "listaCategoria"
     );
 
+  onSnapshot(
+
+    query(
+      collection(db, "documentos"),
+      where(
+        "clienteId",
+        "==",
+        clienteIdGlobal
+      ),
+      where(
+        "categoria",
+        "==",
+        tipo
+      )
+    ),
+
+    (snap)=>{
+
+      lista.innerHTML = "";
+
+      if(snap.empty){
+
+        lista.innerHTML = `
+          <div
+            style="
+              opacity:.7;
+              padding:20px;
+            "
+          >
+            Nenhum documento encontrado.
+          </div>
+        `;
+
+        return;
+
+      }
+
+      snap.forEach(docItem=>{
+
+        const d =
+          docItem.data();
+
+        lista.innerHTML += `
+          <div
+            style="
+              background:#0d2748;
+              padding:15px;
+              border-radius:12px;
+              margin-top:15px;
+            "
+          >
+
+            <strong>
+
+              ${
+                tipo === "certidoes"
+                ? (
+                    d.status === "negativa"
+                    ? "🟢"
+                    : d.status === "positiva"
+                    ? "🔴"
+                    : "🟡"
+                  )
+                : "📄"
+              }
+
+              ${d.nome}
+
+            </strong>
+
+            <br><br>
+
+            <a
+              href="${d.link}"
+              target="_blank"
+              class="radar-btn"
+            >
+              Abrir
+            </a>
+
+            <button
+              class="radar-btn"
+              onclick="excluirDocumento('${docItem.id}')"
+              style="
+                margin-left:10px;
+                background:#b02a37;
+              "
+            >
+              Excluir
+            </button>
+
+          </div>
+        `;
+
+      });
+
+    }
+
+  );
+
+};
+  
   lista.innerHTML = `
     <div
       style="
@@ -2014,11 +2116,64 @@ window.abrirTelaDocumentos = function(tipo){
 
     <h1>${titulo}</h1>
 
-    <div id="listaCategoria"></div>
+    ${
+  tipo === "certidoes"
+  ? `
+    <button
+      class="radar-btn"
+      onclick="abrirModalCertidao()"
+    >
+      + Nova Certidão
+    </button>
+  `
+  : tipo === "contratos"
+  ? `
+    <button
+      class="radar-btn"
+      onclick="abrirModalContrato()"
+    >
+      + Novo Contrato
+    </button>
+  `
+  : `
+    <button
+      class="radar-btn"
+      onclick="abrirModalEdital()"
+    >
+      + Novo Edital
+    </button>
+  `
+}
+
+<div
+  id="listaCategoria"
+  style="margin-top:20px;"
+></div>
 
   `;
 
   carregarCategoria(tipo);
+
+};
+
+window.excluirDocumento =
+async function(id){
+
+  if(
+    !confirm(
+      "Excluir documento?"
+    )
+  ){
+    return;
+  }
+
+  await deleteDoc(
+    doc(
+      db,
+      "documentos",
+      id
+    )
+  );
 
 };
   
