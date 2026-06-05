@@ -1614,16 +1614,32 @@ function iniciarDocumentos() {
 
         <div style="margin-bottom:30px;">
 
+  <div
+  style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  "
+>
+
   <h2
     onclick="togglePasta('certidoes')"
     style="
       cursor:pointer;
-      padding:10px;
-      border-radius:10px;
+      margin:0;
     "
   >
     📁 Controle de Certidões
   </h2>
+
+  <button
+    class="radar-btn"
+    onclick="abrirModalCertidao()"
+  >
+    + Certidão
+  </button>
+
+</div>
 
   <div
     id="conteudo-certidoes"
