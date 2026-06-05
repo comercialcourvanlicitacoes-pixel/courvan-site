@@ -1857,8 +1857,13 @@ window.salvarCertidao = async () => {
 
   }
 
-  const caminho =
-  `${clienteIdGlobal}/${Date.now()}_${arquivo.name}`;
+  const nomeSeguro = arquivo.name
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+const caminho =
+  `${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
 
 const { error } =
   await supabase.storage
