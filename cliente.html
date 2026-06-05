@@ -2224,18 +2224,19 @@ window.abrirTelaDocumentos = function(tipo){
 
   documentos.forEach(d => {
 
-    const processo =
-      d.processo || "Sem Processo";
+    const agrupados = {};
 
-    if(!processos[processo]){
+documentos.forEach(d => {
 
-      processos[processo] = [];
+  const edital = d.processo || "Sem Edital";
 
-    }
+  if (!agrupados[edital]) {
+    agrupados[edital] = [];
+  }
 
-    processos[processo].push(d);
+  agrupados[edital].push(d);
 
-  });
+});
 
   Object.keys(processos).forEach(processo => {
 
