@@ -1619,48 +1619,92 @@ function iniciarDocumentos() {
     ),
     snap => {
 
-      div.innerHTML = "";
+      div.innerHTML = `
 
-      const documentos = [];
+        <div id="pasta-certidoes"
+             style="margin-bottom:30px;">
+          <h2>📁 Controle de Certidões</h2>
+        </div>
+
+        <div id="pasta-contratos"
+             style="margin-bottom:30px;">
+          <h2>📁 Contratos</h2>
+        </div>
+
+        <div id="pasta-editais"
+             style="margin-bottom:30px;">
+          <h2>📁 Editais</h2>
+        </div>
+
+      `;
+
+      const pastaCertidoes =
+        document.getElementById("pasta-certidoes");
+
+      const pastaContratos =
+        document.getElementById("pasta-contratos");
+
+      const pastaEditais =
+        document.getElementById("pasta-editais");
 
       snap.forEach(docItem => {
 
         const d = docItem.data();
 
-        documentos.push(d);
+        const card = `
+          <div
+            style="
+              background:#0d2748;
+              padding:15px;
+              border-radius:12px;
+              margin-top:10px;
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+            "
+          >
 
-        div.innerHTML += `
-          <div style="background:#0d2748; padding:20px; border-radius:16px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
-            <div>
-              <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
-
-              <small style="opacity:0.5; font-size: 12px;">
-                ${
-                  d.data
-                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
-                    : ""
-                }
-              </small>
-            </div>
+            <span>📄 ${d.nome}</span>
 
             <a
               href="${d.link}"
               target="_blank"
               class="radar-btn"
-              style="margin:0; padding:10px 20px; background: #d8a84e; color: #051020; border: none;"
+              style="
+                margin:0;
+                background:#d8a84e;
+                color:#051020;
+              "
             >
               Abrir
             </a>
+
           </div>
         `;
+
+        if (d.categoria === "certidoes") {
+
+          pastaCertidoes.innerHTML += card;
+
+        }
+
+        else if (d.categoria === "contratos") {
+
+          pastaContratos.innerHTML += card;
+
+        }
+
+        else if (d.categoria === "editais") {
+
+          pastaEditais.innerHTML += card;
+
+        }
+
       });
 
-      atualizarBadgePersistente(
-        "documentos",
-        documentos
-      );
     }
   );
+
 }
 
 window.adicionarDocumento = async () => {
