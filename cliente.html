@@ -1676,13 +1676,13 @@ function iniciarDocumentos() {
       `;
 
       const pastaCertidoes =
-        document.getElementById("pasta-certidoes");
+        document.getElementById("conteudo-certidoes");
 
       const pastaContratos =
-        document.getElementById("pasta-contratos");
+        document.getElementById("conteudo-contratos");
 
       const pastaEditais =
-        document.getElementById("pasta-editais");
+        document.getElementById("conteudo-editais");
 
       snap.forEach(docItem => {
 
@@ -1755,6 +1755,19 @@ let categoriaSelecionada = "certidoes";
     categoria
   );
 
+};
+
+window.togglePasta = function(nome){
+
+  const pasta =
+    document.getElementById(`conteudo-${nome}`);
+
+  if (!pasta) return;
+
+  pasta.style.display =
+    pasta.style.display === "none"
+      ? "block"
+      : "none";
 };
   
 window.adicionarDocumento = async () => {
