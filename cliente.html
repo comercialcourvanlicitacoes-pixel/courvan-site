@@ -2238,68 +2238,82 @@ documentos.forEach(d => {
 
 });
 
-  Object.keys(agrupados).forEach(edital => {
+  Object.keys(processos).forEach(processo => {
 
-  lista.innerHTML += `
-    <div
-      style="
-        background:#102b52;
-        padding:20px;
-        border-radius:12px;
-        margin-top:20px;
-      "
-    >
-
-      <h3>📁 ${edital}</h3>
-
-      <div id="edital-${edital.replaceAll(' ','-')}"></div>
-
-    </div>
-  `;
-
-  const container =
-    document.getElementById(
-      `edital-${edital.replaceAll(' ','-')}`
-    );
-
-  agrupados[edital].forEach(d => {
-
-    container.innerHTML += `
+    lista.innerHTML += `
       <div
         style="
-          background:#0d2748;
-          padding:12px;
-          border-radius:10px;
-          margin-top:10px;
+          background:#102b52;
+          padding:20px;
+          border-radius:12px;
+          margin-top:20px;
         "
       >
 
-        <strong>📂 ${d.subpasta || "Sem pasta"}</strong>
+        <h3>
+          📁 ${processo}
+        </h3>
 
-        <br>
-
-        📄 ${d.nome}
-
-        <br><br>
-
-        <a href="${d.link}" target="_blank" class="radar-btn">
-          Abrir
-        </a>
-
-        <button
-          class="radar-btn"
-          onclick="excluirDocumento('${d.id}')"
-          style="background:#b02a37;margin-left:10px;"
-        >
-          Excluir
-        </button>
+        <div
+          id="processo-${processo.replaceAll(' ','-')}"
+        ></div>
 
       </div>
     `;
 
-  });
+    const container =
+      document.getElementById(
+        `processo-${processo.replaceAll(' ','-')}`
+      );
 
-});
+    processos[processo]
+      .forEach(d => {
+
+        container.innerHTML += `
+          <div
+            style="
+              background:#0d2748;
+              padding:12px;
+              border-radius:10px;
+              margin-top:10px;
+            "
+          >
+
+            <strong>
+              📂 ${d.subpasta || "Sem pasta"}
+            </strong>
+
+            <br>
+
+            📄 ${d.nome}
+
+            <br><br>
+
+            <a
+              href="${d.link}"
+              target="_blank"
+              class="radar-btn"
+            >
+              Abrir
+            </a>
+
+            <button
+              class="radar-btn"
+              onclick="excluirDocumento('${d.id}')"
+              style="
+                background:#b02a37;
+                margin-left:10px;
+              "
+            >
+              Excluir
+            </button>
+
+          </div>
+        `;
+
+      });
+
+  });
 
   return;
 
