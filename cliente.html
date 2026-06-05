@@ -2001,6 +2001,16 @@ window.salvarEdital = async () => {
       "arquivoEdital"
     ).files[0];
 
+  const processo =
+  document.getElementById(
+    "processoEdital"
+  ).value;
+
+const subpasta =
+  document.getElementById(
+    "subpastaEdital"
+  ).value;
+
   if (!arquivo) {
 
     alert("Selecione um arquivo");
