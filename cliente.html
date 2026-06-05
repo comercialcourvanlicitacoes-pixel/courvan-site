@@ -1966,7 +1966,40 @@ window.abrirTelaDocumentos = function(tipo){
 
   window.abrirTelaDocumentos = function(tipo){
 
-  console.log("Abrindo tela:", tipo);
+  const div =
+    document.getElementById(
+      "listaDocumentos"
+    );
+
+  let titulo = "";
+
+  if(tipo === "certidoes"){
+    titulo = "Controle de Certidões";
+  }
+
+  else if(tipo === "contratos"){
+    titulo = "Contratos";
+  }
+
+  else{
+    titulo = "Editais";
+  }
+
+  div.innerHTML = `
+
+    <button
+      class="radar-btn"
+      onclick="iniciarDocumentos()"
+      style="margin-bottom:20px;"
+    >
+      ← Voltar
+    </button>
+
+    <h1>${titulo}</h1>
+
+    <div id="listaCategoria"></div>
+
+  `;
 
   carregarCategoria(tipo);
 
