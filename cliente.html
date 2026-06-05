@@ -2048,21 +2048,21 @@ const subpasta =
   await addDoc(
     collection(db, "documentos"),
     {
+  clienteId: clienteIdGlobal,
 
-      clienteId:
-        clienteIdGlobal,
+  nome,
 
-      nome,
+  categoria: "editais",
 
-      categoria:
-        "editais",
+  processo,
 
-      link,
+  subpasta,
 
-      dataCriacao:
-        serverTimestamp()
+  link,
 
-    }
+  dataCriacao:
+    serverTimestamp()
+}
   );
 
   document.getElementById(
