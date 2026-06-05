@@ -1716,7 +1716,33 @@ function iniciarDocumentos() {
             "
           >
 
-            <span>📄 ${d.nome}</span>
+            <div>
+
+  <strong>
+
+    ${
+      d.status === "negativa"
+        ? "🟢"
+        : d.status === "positiva"
+        ? "🔴"
+        : "🟡"
+    }
+
+    ${d.nome}
+
+  </strong>
+
+  <br>
+
+  <small>
+
+    ${
+      d.status || ""
+    }
+
+  </small>
+
+</div>
 
             <a
               href="${d.link}"
