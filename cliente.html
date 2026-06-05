@@ -2798,6 +2798,35 @@ function atualizarKpisDashboard(licitacoes = []) {
     <h2>Novo Edital</h2>
 
     <input
+  id="processoEdital"
+  class="inputPadrao"
+  placeholder="Ex.: Pregão 015/2026"
+>
+
+<select
+  id="subpastaEdital"
+  class="inputPadrao"
+>
+
+  <option value="Edital e Anexos">
+    Edital e Anexos
+  </option>
+
+  <option value="Habilitacao">
+    Habilitação
+  </option>
+
+  <option value="Proposta Comercial">
+    Proposta Comercial
+  </option>
+
+  <option value="Recursos">
+    Recursos
+  </option>
+
+</select>
+
+    <input
       id="nomeEdital"
       class="inputPadrao"
       placeholder="Nome do edital"
