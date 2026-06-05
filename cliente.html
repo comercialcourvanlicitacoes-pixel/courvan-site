@@ -1613,47 +1613,65 @@ function iniciarDocumentos() {
 
       div.innerHTML = `
 
-        <div id="pasta-certidoes"
-             style="margin-bottom:30px;">
-          <h2
-  onclick="selecionarPasta('certidoes')"
-  style="
-    cursor:pointer;
-    padding:10px;
-    border-radius:10px;
-  "
->
-📁 Controle de Certidões
-</h2>
-        </div>
+        <div style="margin-bottom:30px;">
 
-        <div id="pasta-contratos"
-             style="margin-bottom:30px;">
-          <h2
-  onclick="selecionarPasta('contratos')"
-  style="
-    cursor:pointer;
-    padding:10px;
-    border-radius:10px;
-  "
->
-📁 Contratos
-</h2>
-        </div>
+  <h2
+    onclick="togglePasta('certidoes')"
+    style="
+      cursor:pointer;
+      padding:10px;
+      border-radius:10px;
+    "
+  >
+    📁 Controle de Certidões
+  </h2>
 
-        <div id="pasta-editais"
-             style="margin-bottom:30px;">
-          <h2
-  onclick="selecionarPasta('editais')"
-  style="
-    cursor:pointer;
-    padding:10px;
-    border-radius:10px;
-  "
->
-📁 Editais
-</h2>
-        </div>
+  <div
+    id="conteudo-certidoes"
+    style="display:none;"
+  ></div>
+
+</div>
+
+<div style="margin-bottom:30px;">
+
+  <h2
+    onclick="togglePasta('contratos')"
+    style="
+      cursor:pointer;
+      padding:10px;
+      border-radius:10px;
+    "
+  >
+    📁 Contratos
+  </h2>
+
+  <div
+    id="conteudo-contratos"
+    style="display:none;"
+  ></div>
+
+</div>
+
+<div style="margin-bottom:30px;">
+
+  <h2
+    onclick="togglePasta('editais')"
+    style="
+      cursor:pointer;
+      padding:10px;
+      border-radius:10px;
+    "
+  >
+    📁 Editais
+  </h2>
+
+  <div
+    id="conteudo-editais"
+    style="display:none;"
+  ></div>
+
+</div>
 
       `;
 
