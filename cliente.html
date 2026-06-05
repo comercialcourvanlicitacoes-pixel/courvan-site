@@ -2570,6 +2570,106 @@ function atualizarKpisDashboard(licitacoes = []) {
   </div>
 
 </div>
+
+<div
+  id="modalContrato"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    z-index:9999;
+  "
+>
+
+  <div
+    style="
+      background:#081a33;
+      width:500px;
+      max-width:90%;
+      margin:80px auto;
+      padding:25px;
+      border-radius:16px;
+    "
+  >
+
+    <h2>Novo Contrato</h2>
+
+    <input
+      id="nomeContrato"
+      class="inputPadrao"
+      placeholder="Nome do contrato"
+    >
+
+    <br><br>
+
+    <input
+      type="file"
+      id="arquivoContrato"
+    >
+
+    <br><br>
+
+    <button
+      class="radar-btn"
+      onclick="salvarContrato()"
+    >
+      Salvar
+    </button>
+
+  </div>
+
+</div>
+
+<div
+  id="modalEdital"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    z-index:9999;
+  "
+>
+
+  <div
+    style="
+      background:#081a33;
+      width:500px;
+      max-width:90%;
+      margin:80px auto;
+      padding:25px;
+      border-radius:16px;
+    "
+  >
+
+    <h2>Novo Edital</h2>
+
+    <input
+      id="nomeEdital"
+      class="inputPadrao"
+      placeholder="Nome do edital"
+    >
+
+    <br><br>
+
+    <input
+      type="file"
+      id="arquivoEdital"
+    >
+
+    <br><br>
+
+    <button
+      class="radar-btn"
+      onclick="salvarEdital()"
+    >
+      Salvar
+    </button>
+
+  </div>
+
+</div>
   
 </body>
 </html>
