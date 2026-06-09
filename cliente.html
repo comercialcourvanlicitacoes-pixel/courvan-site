@@ -1628,6 +1628,162 @@ function iniciarDocumentos() {
   `;
 
 }
+
+window.abrirTelaDocumentos = function(categoria){
+
+  const div =
+    document.getElementById(
+      "listaDocumentos"
+    );
+
+  let titulo = "";
+
+  if(categoria === "certidoes"){
+    titulo = "📁 Controle de Certidões e Prazos";
+  }
+
+  if(categoria === "editais"){
+    titulo = "📁 Editais";
+  }
+
+  if(categoria === "contratos"){
+    titulo = "📁 Contratos";
+  }
+
+  if(categoria === "demais"){
+    titulo = "📁 Demais Documentos";
+  }
+
+  div.innerHTML = `
+
+    <button
+      class="botaoPadrao"
+      onclick="iniciarDocumentos()"
+      style="margin-bottom:20px;"
+    >
+      ← Voltar
+    </button>
+
+    <h2
+      style="
+        color:#d8a84e;
+        margin-bottom:20px;
+      "
+    >
+      ${titulo}
+    </h2>
+
+    <div
+      id="listaArquivosCategoria"
+    >
+      Carregando documentos...
+    </div>
+
+  `;
+
+  carregarDocumentosCategoria(
+    categoria
+  );
+
+};
+
+  function carregarDocumentosCategoria(
+  categoria
+){
+
+  const div =
+    document.getElementById(
+      "listaArquivosCategoria"
+    );
+
+  onSnapshot(
+
+    query(
+      collection(
+        db,
+        "documentos"
+      ),
+      where(
+        "clienteId",
+        "==",
+        clienteIdGlobal
+      ),
+      where(
+        "categoria",
+        "==",
+        categoria
+      )
+    ),
+
+    (snapshot)=>{
+
+      div.innerHTML = "";
+
+      if(snapshot.empty){
+
+        div.innerHTML = `
+          <p>
+            Nenhum documento encontrado.
+          </p>
+        `;
+
+        return;
+      }
+
+      snapshot.forEach(docItem=>{
+
+        const d =
+          docItem.data();
+
+        div.innerHTML += `
+
+          <div
+            style="
+              background:#0d2748;
+              padding:20px;
+              border-radius:14px;
+              margin-bottom:15px;
+            "
+          >
+
+            <h3
+              style="
+                color:#fff;
+                margin-bottom:10px;
+              "
+            >
+              ${d.nome}
+            </h3>
+
+            <p>
+              Status:
+              ${d.statusDocumento || "-"}
+            </p>
+
+            <p>
+              Vencimento:
+              ${d.vencimento || "-"}
+            </p>
+
+            <a
+              href="${d.link}"
+              target="_blank"
+              class="radar-btn"
+            >
+              Abrir Documento
+            </a>
+
+          </div>
+
+        `;
+
+      });
+
+    }
+
+  );
+
+}
   
 window.adicionarDocumento = async () => {
 
