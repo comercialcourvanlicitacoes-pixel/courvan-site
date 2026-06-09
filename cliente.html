@@ -287,36 +287,6 @@
     box-shadow: 0 0 0 0 rgba(239,68,68,0);
   }
 }
-
-.cardPasta{
-
-  background:#0d2748;
-
-  padding:25px;
-
-  border-radius:16px;
-
-  margin-bottom:15px;
-
-  cursor:pointer;
-
-  font-size:18px;
-
-  font-weight:600;
-
-  transition:.2s;
-
-  border:1px solid rgba(255,255,255,.05);
-
-}
-
-.cardPasta:hover{
-
-  transform:translateY(-2px);
-
-  background:#16385f;
-
-}
     
   </style>
 </head>
@@ -469,7 +439,57 @@
 
     <div id="documentos" class="aba" style="display:none;">
   <h1>Documentos</h1>
-  
+
+  <div id="formDocumentos"
+       style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:30px;">
+
+    <select id="categoriaDocumento"
+            class="inputPadrao"
+            style="flex:1;">
+      <option value="certidoes">Controle de Certidões</option>
+      <option value="contratos">Contratos</option>
+      <option value="editais">Editais</option>
+    </select>
+
+    <input
+      type="text"
+      id="nomeDocumento"
+      placeholder="Nome do documento"
+      class="inputPadrao"
+      style="flex:1;"
+    >
+
+    <input
+      type="date"
+      id="vencimentoDocumento"
+      class="inputPadrao"
+      style="flex:1;"
+    >
+
+    <input
+      type="text"
+      id="statusDocumento"
+      placeholder="Status (Negativa, Positiva, Positiva com efeito de negativa...)"
+      class="inputPadrao"
+      style="flex:1;"
+    >
+
+    <input
+      type="file"
+      id="arquivoDocumento"
+      class="inputPadrao"
+      style="flex:1;"
+    >
+
+    <button
+      class="botaoPadrao"
+      onclick="adicionarDocumento()"
+    >
+      Adicionar
+    </button>
+
+  </div>
+
   <div id="listaDocumentos"></div>
 </div>
 
@@ -1590,201 +1610,59 @@ document
   
 function iniciarDocumentos() {
 
-  const div =
-    document.getElementById(
-      "listaDocumentos"
-    );
-
-  div.innerHTML = `
-
-    <div
-      class="cardPasta"
-      onclick="abrirTelaDocumentos('certidoes')"
-    >
-      📁 Controle de Certidões e Prazos
-    </div>
-
-    <div
-      class="cardPasta"
-      onclick="abrirTelaDocumentos('editais')"
-    >
-      📁 Editais
-    </div>
-
-    <div
-      class="cardPasta"
-      onclick="abrirTelaDocumentos('contratos')"
-    >
-      📁 Contratos
-    </div>
-
-    <div
-      class="cardPasta"
-      onclick="abrirTelaDocumentos('demais')"
-    >
-      📁 Demais Documentos
-    </div>
-
-  `;
-
-}
-
-window.abrirTelaDocumentos = function(categoria){
-
-  const div =
-    document.getElementById(
-      "listaDocumentos"
-    );
-
-  let titulo = "";
-
-  if(categoria === "certidoes"){
-    titulo = "📁 Controle de Certidões e Prazos";
-  }
-
-  if(categoria === "editais"){
-    titulo = "📁 Editais";
-  }
-
-  if(categoria === "contratos"){
-    titulo = "📁 Contratos";
-  }
-
-  if(categoria === "demais"){
-    titulo = "📁 Demais Documentos";
-  }
-
-  div.innerHTML = `
-
-    <button
-      class="botaoPadrao"
-      onclick="iniciarDocumentos()"
-      style="margin-bottom:20px;"
-    >
-      ← Voltar
-    </button>
-
-    <h2
-      style="
-        color:#d8a84e;
-        margin-bottom:20px;
-      "
-    >
-      ${titulo}
-    </h2>
-
-    <div
-      id="listaArquivosCategoria"
-    >
-      Carregando documentos...
-    </div>
-
-  `;
-
-  carregarDocumentosCategoria(
-    categoria
-  );
-
-};
-
-  function carregarDocumentosCategoria(
-  categoria
-){
-
-  const div =
-    document.getElementById(
-      "listaArquivosCategoria"
-    );
+  const div = document.getElementById("listaDocumentos");
 
   onSnapshot(
-
     query(
-      collection(
-        db,
-        "documentos"
-      ),
-      where(
-        "clienteId",
-        "==",
-        clienteIdGlobal
-      ),
-      where(
-        "categoria",
-        "==",
-        categoria
-      )
+      collection(db, "documentos"),
+      where("clienteId", "==", clienteIdGlobal)
     ),
-
-    (snapshot)=>{
+    snap => {
 
       div.innerHTML = "";
 
-      if(snapshot.empty){
+      const documentos = [];
 
-        div.innerHTML = `
-          <p>
-            Nenhum documento encontrado.
-          </p>
-        `;
+      snap.forEach(docItem => {
 
-        return;
-      }
+        const d = docItem.data();
 
-      snapshot.forEach(docItem=>{
-
-        const d =
-          docItem.data();
+        documentos.push(d);
 
         div.innerHTML += `
+          <div style="background:#0d2748; padding:20px; border-radius:16px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
+            <div>
+              <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
 
-          <div
-            style="
-              background:#0d2748;
-              padding:20px;
-              border-radius:14px;
-              margin-bottom:15px;
-            "
-          >
-
-            <h3
-              style="
-                color:#fff;
-                margin-bottom:10px;
-              "
-            >
-              ${d.nome}
-            </h3>
-
-            <p>
-              Status:
-              ${d.statusDocumento || "-"}
-            </p>
-
-            <p>
-              Vencimento:
-              ${d.vencimento || "-"}
-            </p>
+              <small style="opacity:0.5; font-size: 12px;">
+                ${
+                  d.data
+                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
+                    : ""
+                }
+              </small>
+            </div>
 
             <a
               href="${d.link}"
               target="_blank"
               class="radar-btn"
+              style="margin:0; padding:10px 20px; background: #d8a84e; color: #051020; border: none;"
             >
-              Abrir Documento
+              Abrir
             </a>
-
           </div>
-
         `;
-
       });
 
+      atualizarBadgePersistente(
+        "documentos",
+        documentos
+      );
     }
-
   );
-
 }
-  
+
 window.adicionarDocumento = async () => {
 
   const nome =
