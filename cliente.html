@@ -1560,59 +1560,45 @@ document
   
 function iniciarDocumentos() {
 
-  const div = document.getElementById("listaDocumentos");
+  const div =
+    document.getElementById(
+      "listaDocumentos"
+    );
 
-  onSnapshot(
-    query(
-      collection(db, "documentos"),
-      where("clienteId", "==", clienteIdGlobal)
-    ),
-    snap => {
+  div.innerHTML = `
 
-      div.innerHTML = "";
+    <div
+      class="cardPasta"
+      onclick="abrirTelaDocumentos('certidoes')"
+    >
+      📁 Controle de Certidões e Prazos
+    </div>
 
-      const documentos = [];
+    <div
+      class="cardPasta"
+      onclick="abrirTelaDocumentos('editais')"
+    >
+      📁 Editais
+    </div>
 
-      snap.forEach(docItem => {
+    <div
+      class="cardPasta"
+      onclick="abrirTelaDocumentos('contratos')"
+    >
+      📁 Contratos
+    </div>
 
-        const d = docItem.data();
+    <div
+      class="cardPasta"
+      onclick="abrirTelaDocumentos('demais')"
+    >
+      📁 Demais Documentos
+    </div>
 
-        documentos.push(d);
+  `;
 
-        div.innerHTML += `
-          <div style="background:#0d2748; padding:20px; border-radius:16px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
-            <div>
-              <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
-
-              <small style="opacity:0.5; font-size: 12px;">
-                ${
-                  d.data
-                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
-                    : ""
-                }
-              </small>
-            </div>
-
-            <a
-              href="${d.link}"
-              target="_blank"
-              class="radar-btn"
-              style="margin:0; padding:10px 20px; background: #d8a84e; color: #051020; border: none;"
-            >
-              Abrir
-            </a>
-          </div>
-        `;
-      });
-
-      atualizarBadgePersistente(
-        "documentos",
-        documentos
-      );
-    }
-  );
 }
-
+  
 window.adicionarDocumento = async () => {
 
   const nome =
