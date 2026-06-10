@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposta Comercial - Courvan Assessoria em Licitações</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2=family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top right, #0a2240 0%, #051020 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+    }
+
+    header {
+      width: 100%;
+      padding: 20px 8%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(5, 16, 32, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .voltar-site {
+      color: #d8a84e;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .voltar-site:hover {
+      color: #ffffff;
+      transform: translateX(-2px);
+    }
+
+    .main-container {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 60px 8% 80px;
+      flex: 1;
+    }
+
+    .page-header {
+      margin-bottom: 45px;
+      text-align: left;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(216, 168, 78, 0.1);
+      color: #d8a84e;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      border: 1px solid rgba(216, 168, 78, 0.2);
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -1px;
+      margin-bottom: 15px;
+    }
+
+    .intro-text {
+      font-size: 16px;
+      color: #94a3b8;
+      max-width: 900px;
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 50px 0 25px;
+      border-left: 4px solid #d8a84e;
+      padding-left: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Imagens de Assets */
+    .asset-image {
+      width: 100%;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: block;
+    }
+
+    /* Grid de Propostas */
+    .proposta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+
+    .card {
+      background: rgba(12, 39, 72, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 35px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(216, 168, 78, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      background: rgba(12, 39, 72, 0.45);
+    }
+
+    .card-content h2 {
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .price-tag {
+      color: #d8a84e;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    .card-content p {
+      font-size: 15px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .card-list {
+      list-style: none;
+      margin-bottom: 15px;
+    }
+
+    .card-list li {
+      font-size: 14px;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .card-list li.include::before {
+      content: "✓";
+      color: #d8a84e;
+      font-weight: bold;
+    }
+
+    .card-list li.exclude {
+      color: #64748b;
+    }
+
+    .card-list li.exclude::before {
+      content: "✕";
+      color: #64748b;
+      font-weight: bold;
+    }
+
+    /* Caixa de Destaque / Programa */
+    .program-box {
+      background: rgba(12, 39, 72, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 35px;
+      margin-top: 25px;
+    }
+
+    .program-box h2 {
+      color: #ffffff;
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+
+    .program-box p {
+      font-size: 15px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .partner-tiers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .tier-card {
+      background: rgba(5, 16, 32, 0.4);
+      border: 1px solid rgba(216, 168, 78, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+    }
+
+    .tier-card h3 {
+      color: #ffffff;
+      font-size: 18px;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    .tier-card .range {
+      color: #d8a84e;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .tier-card ul {
+      list-style: none;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .tier-card ul li {
+      margin-bottom: 8px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .tier-card ul li::before {
+      content: "•";
+      color: #d8a84e;
+      font-weight: bold;
+    }
+
+    .cta-footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 40px;
+      background: rgba(216, 168, 78, 0.05);
+      border: 1px dashed rgba(216, 168, 78, 0.2);
+      border-radius: 20px;
+    }
+
+    .cta-footer p {
+      font-size: 16px;
+      color: #e2e8f0;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
+      color: #051020;
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(216, 168, 78, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(216, 168, 78, 0.3);
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 30px 8%;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+      background: rgba(5, 16, 32, 0.4);
+      margin-top: auto;
+    }
+
+    @media(max-width: 960px) {
+      .partner-tiers { grid-template-columns: 1fr; }
+    }
+
+    @media(max-width: 860px) {
+      .proposta-grid { grid-template-columns: 1fr; gap: 20px; }
+    }
+
+    @media(max-width: 768px) {
+      header { padding: 15px 5%; }
+      .main-container { padding: 40px 5% 60px; }
+      h1 { font-size: 32px; }
+      .card { padding: 25px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a class="voltar-site" href="../index.html">
+      &larr; Voltar ao site principal
+    </a>
+  </header>
+
+  <main class="main-container">
+    
+    <div class="page-header">
+      <div class="badge">ECOSSISTEMA MODULAR INTEGRADO</div>
+      <h1>Proposta Comercial</h1>
+      <p class="intro-text">
+        Participe do mercado de compras públicas com o suporte da engenharia de licitações da Courvan. Um ecossistema de soluções modulares desenhado para quem busca eficiência operacional sem o peso de mensalidades fixas ou contratos engessados de taxa de êxito.
+      </p>
+    </div>
+
+    <img src="../assets/proposta1.png" alt="Courvan Estratégia e Performance" class="asset-image">
+
+    <div class="section-title">A Porta de Entrada</div>
+    <div class="proposta-grid">
+      
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-content">
+          <h2>Módulo 1: Diagnóstico Estratégico de Licitação</h2>
+          <div class="price-tag">Valor: R$ 100,00 por licitação</div>
+          <p>O ponto inicial obrigatório de nossa metodologia. Analisamos detalhadamente a viabilidade do certame escolhido para que sua empresa entre na disputa com riscos mitigados e estratégia definida.</p>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 15px;">
+            <div>
+              <strong style="color: #ffffff; display:block; margin-bottom: 10px; font-size: 14px;">O que está incluso:</strong>
+              <ul class="card-list">
+                <li class="include">Análise minuciosa e técnica do Edital</li>
+                <li class="include">Montagem de Checklist documental personalizado</li>
+                <li class="include">Inserção e cadastro da proposta no portal eletrônico</li>
+                <li class="include">Envio do Manual Estratégico Operacional da oportunidade</li>
+              </ul>
+            </div>
+            <div>
+              <strong style="color: #64748b; display:block; margin-bottom: 10px; font-size: 14px;">O que NÃO está incluso:</strong>
+              <ul class="card-list">
+                <li class="exclude">Participação ou lances na sala de disputa virtual</li>
+                <li class="exclude">Redação de impugnações, recursos ou contrarrazões</li>
+                <li class="exclude">Gestão e acompanhamento do contrato pós-homologação</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <img src="../assets/proposta2.png" alt="Módulos Sob Demanda" class="asset-image" style="margin-top: 40px;">
+
+    <div class="section-title">Módulos Complementares Sob Demanda</div>
+    <div class="proposta-grid">
+      
+      <div class="card">
+        <div class="card-content">
+          <h2>Cadastro em Portais de Compras</h2>
+          <div class="price-tag">Valor: de R$ 50,00 a R$ 120,00</div>
+          <p>Estruturação e validação do perfil da sua empresa em plataformas de contratação pública.</p>
+          <ul class="card-list">
+            <li class="include">Inclusão ou atualização cadastral</li>
+            <li class="include">Auditoria de consistência de dados</li>
+            <li class="exclude">Solicitação ou pagamento de certidões externas</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <h2>Participação na Fase de Lances</h2>
+          <div class="price-tag">Valor: de R$ 150,00 a R$ 400,00</div>
+          <p>Atuação técnica na janela de lances em tempo real, monitorando concorrentes e defendendo margens.</p>
+          <ul class="card-list">
+            <li class="include">Operação direta na sala virtual de disputa</li>
+            <li class="include">Monitoramento estratégico ativo de concorrentes</li>
+            <li class="exclude">Elaboração de peças de recursos administrativos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <h2>Recursos, Impugnações e Defesas</h2>
+          <div class="price-tag">Valor: de R$ 200,00 a R$ 600,00</div>
+          <p>Ações institucionais de alta complexidade para combater direcionamentos ou desclassificar concorrentes ilegais.</p>
+          <ul class="card-list">
+            <li class="include">Auditoria jurídica das ilegalidades identificadas</li>
+            <li class="include">Desenvolvimento completo da peça com base na lei</li>
+            <li class="include">Instruções para o protocolo oficial no sistema</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <h2>Reequilíbrio Econômico / Reajuste</h2>
+          <div class="price-tag">Valor: de R$ 200,00 a R$ 1.000,00</div>
+          <p>Proteção financeira de contratos em andamento para readequar margens de lucro corroídas pela inflação.</p>
+          <ul class="card-list">
+            <li class="include">Cálculo de índices e verificação técnica do direito</li>
+            <li class="include">Elaboração de requerimento administrativo fundamentado</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <img src="../assets/proposta3.png" alt="Programa de Fidelidade Courvan" class="asset-image" style="margin-top: 40px;">
+
+    <div class="section-title">Programa de Fidelidade e Relacionamento</div>
+    
+    <div class="program-box">
+      <h2>Mecânica do Programa de Créditos Courvan</h2>
+      <p>Valorizamos parcerias de longo prazo. A cada <strong>R$ 100,00 investidos</strong> em qualquer um dos nossos módulos, sua empresa acumula automaticamente <strong>20 Créditos Courvan</strong>. Ao totalizar blocos de 100 créditos, eles se convertem em R$ 50,00 de desconto real para utilização em demandas futuras.</p>
+      
+      <div class="partner-tiers">
+        <div class="tier-card">
+          <h3>Parceiro Courvan</h3>
+          <div class="range">Até R$ 1.000,00 investidos nos últimos 90 dias</div>
+          <ul>
+            <li>Inclusão automática no acúmulo regular do Programa de Créditos</li>
+            <li>Suporte e atendimento consultivo via canais padrão</li>
+          </ul>
+        </div>
+        
+        <div class="tier-card" style="border-color: rgba(216, 168, 78, 0.4); background: rgba(12, 39, 72, 0.15);">
+          <h3>Parceiro Frequente</h3>
+          <div class="range">De R$ 1.001,00 a R$ 3.000,00 nos últimos 90 dias</div>
+          <ul>
+            <li>Bônus de multiplicador de +10% em novos créditos gerados</li>
+            <li>Prioridade moderada na fila de análise da agenda interna</li>
+            <li>Acesso exclusivo a campanhas e condições promocionais</li>
+          </ul>
+        </div>
+        
+        <div class="tier-card" style="background: rgba(216, 168, 78, 0.05); border-color: #d8a84e;">
+          <h3>Parceiro Estratégico</h3>
+          <div class="range">Acima de R$ 3.000,00 investidos nos últimos 90 dias</div>
+          <ul>
+            <li>Bônus de multiplicador de +20% em novos créditos gerados</li>
+            <li>Prioridade máxima e atendimento ágil na distribuição de pautas</li>
+            <li>Condições comerciais flexibilizadas em projetos e demandas de alta complexidade</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-footer">
+      <p>Quer submeter uma oportunidade para análise ou iniciar um Diagnóstico Estratégico imediatamente?</p>
+      <a href="https://wa.me/5531983213540" class="btn-cta" target="_blank">Enviar Oportunidade via WhatsApp</a>
+    </div>
+
+  </main>
+
+  <footer>
+    &copy; 2026 Courvan Assessoria em Licitações &bull; Todos os direitos reservados
+  </footer>
+
+</body>
+</html>
