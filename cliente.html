@@ -633,7 +633,8 @@ let emailClienteGlobal = "";
 let dadosClienteGlobal = null;
 
 let respostaMensagem = null;
-
+let pastaAberta = null;
+  
 window.responderMensagem = function(id, texto, autor){
 
   respostaMensagem = {
@@ -1680,79 +1681,92 @@ function iniciarDocumentos() {
 
   );
 
-  function renderGrupo(
-    titulo,
-    lista
-  ) {
+  function renderGrupo(titulo, lista) {
+
+  const idGrupo =
+    titulo.replace(/\s/g, '_');
+
+  const aberta =
+    pastaAberta === idGrupo;
+
+  div.innerHTML += `
+
+    <div
+      onclick="toggleGrupo('${idGrupo}')"
+      style="
+        cursor:pointer;
+        margin-top:20px;
+        padding:12px;
+        background:#0d2748;
+        border-radius:12px;
+        border:1px solid rgba(255,255,255,.05);
+      "
+    >
+
+      <h2 style="
+        color:#d8a84e;
+        margin:0;
+      ">
+        ${aberta ? '📂' : '📁'}
+        ${titulo}
+      </h2>
+
+    </div>
+
+  `;
+
+  if (!aberta) return;
+
+  if (lista.length === 0) {
 
     div.innerHTML += `
       <div style="
-        margin-top:30px;
-        margin-bottom:15px;
+        padding:15px;
+        opacity:.6;
       ">
-        <h2 style="
-          color:#d8a84e;
-          font-size:20px;
-          border-bottom:1px solid rgba(255,255,255,.08);
-          padding-bottom:10px;
-        ">
-          ${titulo}
-        </h2>
+        Nenhum documento.
       </div>
     `;
 
-    if (lista.length === 0) {
+    return;
+  }
 
-      div.innerHTML += `
-        <div style="
-          opacity:.5;
-          margin-bottom:20px;
-        ">
-          Nenhum documento.
-        </div>
-      `;
+  lista.forEach(d => {
 
-      return;
-    }
+    div.innerHTML += `
 
-    lista.forEach(d => {
-
-      div.innerHTML += `
-
-      <div style="
-        background:#0d2748;
-        padding:20px;
-        border-radius:16px;
-        margin-bottom:15px;
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-      ">
+      <div
+        style="
+          background:#0d2748;
+          padding:20px;
+          margin-top:10px;
+          margin-left:20px;
+          border-radius:12px;
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        "
+      >
 
         <div>
 
-          <h3 style="
-            color:white;
-            margin-bottom:6px;
-          ">
+          <strong>
             📄 ${d.nome}
-          </h3>
+          </strong>
 
-          <div style="
-            font-size:12px;
-            opacity:.7;
-          ">
+          <br>
+
+          <small>
             Status:
             ${d.statusDocumento || "-"}
-          </div>
+          </small>
 
-          <div style="
-            font-size:12px;
-            opacity:.7;
-          ">
+          <br>
+
+          <small>
             Vencimento:
             ${d.vencimento || "-"}
-          </div>
+          </small>
 
         </div>
 
@@ -1760,23 +1774,27 @@ function iniciarDocumentos() {
           href="${d.link}"
           target="_blank"
           class="radar-btn"
-          style="
-            background:#d8a84e;
-            color:#051020;
-            padding:10px 18px;
-          "
         >
           Abrir
         </a>
 
       </div>
 
-      `;
+    `;
 
-    });
+  });
 
+}
+
+window.toggleGrupo = function(idGrupo){
+
+  if(pastaAberta === idGrupo){
+    pastaAberta = null;
+  }else{
+    pastaAberta = idGrupo;
   }
 
+  iniciarDocumentos();
 }
 
 window.adicionarDocumento = async () => {
