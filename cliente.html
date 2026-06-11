@@ -792,7 +792,7 @@ onAuthStateChanged(auth, async (user) => {
 
   let docCliente;
   if (clienteIdUrl) {
-    document.getElementById("formDocumentos").style.display = "flex";
+    document.getElementById("formDocumentos").style.display = "grid";
     const snap = await getDocs(query(collection(db, "clientes")));
     docCliente = snap.docs.find(d => d.id === clienteIdUrl);
   } else {
