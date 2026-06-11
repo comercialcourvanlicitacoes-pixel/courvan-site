@@ -437,101 +437,60 @@
       <div id="listaDemandas"></div>
     </div>
 
-<div id="documentos" class="aba" style="display:none;">
-    
-<div class="documentos-header">
-        <div>
-          <h1>📁 Gestão de Documentos</h1>
-          <p>Controle certidões, contratos, editais, vencimentos, responsáveis e links de acesso em um único painel.</p>
-        </div>
-      </div>
+    <div id="documentos" class="aba" style="display:none;">
+  <h1>Documentos</h1>
 
-      <div class="documentos-kpis">
-        <div class="documento-kpi">
-          <span>Total cadastrados</span>
-          <strong id="docKpiTotal">0</strong>
-        </div>
-        <div class="documento-kpi">
-          <span>Em dia</span>
-          <strong id="docKpiEmDia" style="color:#34d399;">0</strong>
-        </div>
-        <div class="documento-kpi">
-          <span>Vencem em 30 dias</span>
-          <strong id="docKpiVencendo" style="color:#fcd34d;">0</strong>
-        </div>
-        <div class="documento-kpi">
-          <span>Vencidos</span>
-          <strong id="docKpiVencidos" style="color:#f87171;">0</strong>
-        </div>
-        <div class="documento-kpi">
-          <span>Pendentes</span>
-          <strong id="docKpiPendentes" style="color:#60a5fa;">0</strong>
-        </div>
-      </div>
+  <div id="formDocumentos"
+       style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:30px;">
 
-      <div id="formDocumentos" class="documentos-form">
-        <select id="categoriaDocumento" class="inputPadrao span-3">
-          <option value="certidoes">Controle de Certidões</option>
-          <option value="contratos">Contratos</option>
-          <option value="editais">Editais</option>
-          <option value="habilitacao">Habilitação Jurídica</option>
-          <option value="fiscal">Regularidade Fiscal/Trabalhista</option>
-          <option value="tecnica">Qualificação Técnica</option>
-          <option value="financeira">Qualificação Econômico-Financeira</option>
-          <option value="outros">Outros Documentos</option>
-        </select>
+    <select id="categoriaDocumento"
+            class="inputPadrao"
+            style="flex:1;">
+      <option value="certidoes">Controle de Certidões</option>
+      <option value="contratos">Contratos</option>
+      <option value="editais">Editais</option>
+    </select>
 
-        <input type="text" id="nomeDocumento" placeholder="Nome do documento ou certidão" class="inputPadrao span-4">
-        <input type="date" id="vencimentoDocumento" class="inputPadrao span-2" title="Data de vencimento">
+    <input
+      type="text"
+      id="nomeDocumento"
+      placeholder="Nome do documento"
+      class="inputPadrao"
+      style="flex:1;"
+    >
 
-        <select id="statusDocumento" class="inputPadrao span-3">
-          <option value="em_dia">Em dia / Negativa</option>
-          <option value="pendente">Pendente de emissão</option>
-          <option value="protocolado">Protocolado / Em análise</option>
-          <option value="positiva_efeito_negativa">Positiva com efeito de negativa</option>
-          <option value="vencido">Vencido</option>
-          <option value="dispensado">Dispensado / Não se aplica</option>
-        </select>
+    <input
+      type="date"
+      id="vencimentoDocumento"
+      class="inputPadrao"
+      style="flex:1;"
+    >
 
-        <input type="text" id="responsavelDocumento" placeholder="Responsável interno" class="inputPadrao span-3">
-        <input type="text" id="orgaoDocumento" placeholder="Órgão emissor / portal" class="inputPadrao span-3">
-        <input type="text" id="linkDocumento" placeholder="Link do documento, Drive, portal ou pasta" class="inputPadrao span-6">
-        <textarea id="observacaoDocumento" placeholder="Observações, pendências ou instruções para renovação" class="inputPadrao span-12" style="height:90px; resize:vertical;"></textarea>
+    <input
+      type="text"
+      id="statusDocumento"
+      placeholder="Status (Negativa, Positiva, Positiva com efeito de negativa...)"
+      class="inputPadrao"
+      style="flex:1;"
+    >
 
-        <button class="botaoPadrao span-3" onclick="adicionarDocumento()">Adicionar Documento</button>
-      </div>
+    <input
+      type="file"
+      id="arquivoDocumento"
+      class="inputPadrao"
+      style="flex:1;"
+    >
 
-      <div class="documentos-toolbar">
-        <input type="text" id="buscaDocumento" placeholder="Buscar por nome, órgão, responsável ou observação..." class="inputPadrao" oninput="renderizarDocumentos()">
-        <select id="filtroCategoriaDocumento" class="inputPadrao" onchange="renderizarDocumentos()">
-          <option value="todos">Todas as categorias</option>
-          <option value="certidoes">Certidões</option>
-          <option value="contratos">Contratos</option>
-          <option value="editais">Editais</option>
-          <option value="habilitacao">Habilitação Jurídica</option>
-          <option value="fiscal">Regularidade Fiscal/Trabalhista</option>
-          <option value="tecnica">Qualificação Técnica</option>
-          <option value="financeira">Qualificação Econômico-Financeira</option>
-          <option value="outros">Outros</option>
-        </select>
-        <select id="filtroSituacaoDocumento" class="inputPadrao" onchange="renderizarDocumentos()">
-          <option value="todos">Todas as situações</option>
-          <option value="em-dia">Em dia</option>
-          <option value="vencendo">Vencem em 30 dias</option>
-          <option value="vencido">Vencidos</option>
-          <option value="pendente">Pendentes</option>
-          <option value="sem-validade">Sem validade</option>
-        </select>
-        <select id="ordenarDocumentos" class="inputPadrao" onchange="renderizarDocumentos()">
-          <option value="validade_asc">Vencimento mais próximo</option>
-          <option value="validade_desc">Vencimento mais distante</option>
-          <option value="nome_asc">Nome A-Z</option>
-          <option value="criado_desc">Mais recentes</option>
-        </select>
-    
+    <button
+      class="botaoPadrao"
+      onclick="adicionarDocumento()"
+    >
+      Adicionar
+    </button>
+
   </div>
 
-  <div id="listaDocumentos" class="documentos-grid"></div>
+  <div id="listaDocumentos"></div>
 </div>
 
     <div id="chat" class="aba" style="display:none;">
@@ -672,7 +631,7 @@ emailjs.init("yg2qGBBvZjUbHwU_y");
 let clienteIdGlobal = null;
 let emailClienteGlobal = "";
 let dadosClienteGlobal = null;
-let documentosCache = [];
+
 let respostaMensagem = null;
 
 window.responderMensagem = function(id, texto, autor){
@@ -792,7 +751,7 @@ onAuthStateChanged(auth, async (user) => {
 
   let docCliente;
   if (clienteIdUrl) {
-    document.getElementById("formDocumentos").style.display = "grid";
+    document.getElementById("formDocumentos").style.display = "flex";
     const snap = await getDocs(query(collection(db, "clientes")));
     docCliente = snap.docs.find(d => d.id === clienteIdUrl);
   } else {
