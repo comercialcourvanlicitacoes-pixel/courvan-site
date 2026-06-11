@@ -1681,21 +1681,91 @@ else if (d.categoria === "contratos") {
 
       });
 
-      renderGrupo(
+      renderPastas(
         "📜 Controle de Certidões e Prazos",
         certidoes
       );
 
-      renderGrupo(
-        "📂 Editais",
-        editais
-      );
+      renderPastas(
+  "📂 Editais",
+  editais
+);
 
-      renderGrupo(
-        "📑 Contratos",
-        contratos
-      );
+renderPastas(
+  "📑 Contratos",
+  contratos
+);
 
+function renderPastas(
+  titulo,
+  objetoPastas
+){
+
+  div.innerHTML += `
+    <h2 style="
+      margin-top:25px;
+      color:#d8a84e;
+    ">
+      ${titulo}
+    </h2>
+  `;
+
+  Object.keys(objetoPastas).forEach(nomePasta => {
+
+    div.innerHTML += `
+      <div style="
+        background:#102d52;
+        padding:12px;
+        margin-top:10px;
+        border-radius:10px;
+      ">
+        <strong>
+          📁 ${nomePasta}
+        </strong>
+      </div>
+    `;
+
+    objetoPastas[nomePasta].forEach(d => {
+
+      div.innerHTML += `
+
+        <div style="
+          margin-left:30px;
+          background:#0d2748;
+          padding:15px;
+          margin-top:8px;
+          border-radius:10px;
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        ">
+
+          <div>
+
+            <strong>
+              📄 ${d.nome}
+            </strong>
+
+          </div>
+
+          <a
+            href="${d.link}"
+            target="_blank"
+            class="radar-btn"
+          >
+            Abrir
+          </a>
+
+        </div>
+
+      `;
+
+    });
+
+  });
+
+}
+      
       atualizarBadgePersistente(
         "documentos",
         documentos
