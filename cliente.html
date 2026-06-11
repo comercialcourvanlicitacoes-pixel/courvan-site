@@ -436,6 +436,98 @@
       <br><br><br>
       <div id="listaDemandas"></div>
     </div>
+
+<div id="documentos" class="aba" style="display:none;">
+    
+<div class="documentos-header">
+        <div>
+          <h1>📁 Gestão de Documentos</h1>
+          <p>Controle certidões, contratos, editais, vencimentos, responsáveis e links de acesso em um único painel.</p>
+        </div>
+      </div>
+
+      <div class="documentos-kpis">
+        <div class="documento-kpi">
+          <span>Total cadastrados</span>
+          <strong id="docKpiTotal">0</strong>
+        </div>
+        <div class="documento-kpi">
+          <span>Em dia</span>
+          <strong id="docKpiEmDia" style="color:#34d399;">0</strong>
+        </div>
+        <div class="documento-kpi">
+          <span>Vencem em 30 dias</span>
+          <strong id="docKpiVencendo" style="color:#fcd34d;">0</strong>
+        </div>
+        <div class="documento-kpi">
+          <span>Vencidos</span>
+          <strong id="docKpiVencidos" style="color:#f87171;">0</strong>
+        </div>
+        <div class="documento-kpi">
+          <span>Pendentes</span>
+          <strong id="docKpiPendentes" style="color:#60a5fa;">0</strong>
+        </div>
+      </div>
+
+      <div id="formDocumentos" class="documentos-form">
+        <select id="categoriaDocumento" class="inputPadrao span-3">
+          <option value="certidoes">Controle de Certidões</option>
+          <option value="contratos">Contratos</option>
+          <option value="editais">Editais</option>
+          <option value="habilitacao">Habilitação Jurídica</option>
+          <option value="fiscal">Regularidade Fiscal/Trabalhista</option>
+          <option value="tecnica">Qualificação Técnica</option>
+          <option value="financeira">Qualificação Econômico-Financeira</option>
+          <option value="outros">Outros Documentos</option>
+        </select>
+
+        <input type="text" id="nomeDocumento" placeholder="Nome do documento ou certidão" class="inputPadrao span-4">
+        <input type="date" id="vencimentoDocumento" class="inputPadrao span-2" title="Data de vencimento">
+
+        <select id="statusDocumento" class="inputPadrao span-3">
+          <option value="em_dia">Em dia / Negativa</option>
+          <option value="pendente">Pendente de emissão</option>
+          <option value="protocolado">Protocolado / Em análise</option>
+          <option value="positiva_efeito_negativa">Positiva com efeito de negativa</option>
+          <option value="vencido">Vencido</option>
+          <option value="dispensado">Dispensado / Não se aplica</option>
+        </select>
+
+        <input type="text" id="responsavelDocumento" placeholder="Responsável interno" class="inputPadrao span-3">
+        <input type="text" id="orgaoDocumento" placeholder="Órgão emissor / portal" class="inputPadrao span-3">
+        <input type="text" id="linkDocumento" placeholder="Link do documento, Drive, portal ou pasta" class="inputPadrao span-6">
+        <textarea id="observacaoDocumento" placeholder="Observações, pendências ou instruções para renovação" class="inputPadrao span-12" style="height:90px; resize:vertical;"></textarea>
+
+        <button class="botaoPadrao span-3" onclick="adicionarDocumento()">Adicionar Documento</button>
+      </div>
+
+      <div class="documentos-toolbar">
+        <input type="text" id="buscaDocumento" placeholder="Buscar por nome, órgão, responsável ou observação..." class="inputPadrao" oninput="renderizarDocumentos()">
+        <select id="filtroCategoriaDocumento" class="inputPadrao" onchange="renderizarDocumentos()">
+          <option value="todos">Todas as categorias</option>
+          <option value="certidoes">Certidões</option>
+          <option value="contratos">Contratos</option>
+          <option value="editais">Editais</option>
+          <option value="habilitacao">Habilitação Jurídica</option>
+          <option value="fiscal">Regularidade Fiscal/Trabalhista</option>
+          <option value="tecnica">Qualificação Técnica</option>
+          <option value="financeira">Qualificação Econômico-Financeira</option>
+          <option value="outros">Outros</option>
+        </select>
+        <select id="filtroSituacaoDocumento" class="inputPadrao" onchange="renderizarDocumentos()">
+          <option value="todos">Todas as situações</option>
+          <option value="em-dia">Em dia</option>
+          <option value="vencendo">Vencem em 30 dias</option>
+          <option value="vencido">Vencidos</option>
+          <option value="pendente">Pendentes</option>
+          <option value="sem-validade">Sem validade</option>
+        </select>
+        <select id="ordenarDocumentos" class="inputPadrao" onchange="renderizarDocumentos()">
+          <option value="validade_asc">Vencimento mais próximo</option>
+          <option value="validade_desc">Vencimento mais distante</option>
+          <option value="nome_asc">Nome A-Z</option>
+          <option value="criado_desc">Mais recentes</option>
+        </select>
     
   </div>
 
