@@ -1610,18 +1610,31 @@ document
   
 function iniciarDocumentos() {
 
-  const div = document.getElementById("listaDocumentos");
+  const div =
+    document.getElementById(
+      "listaDocumentos"
+    );
 
   onSnapshot(
+
     query(
       collection(db, "documentos"),
-      where("clienteId", "==", clienteIdGlobal)
+      where(
+        "clienteId",
+        "==",
+        clienteIdGlobal
+      )
     ),
+
     snap => {
 
       div.innerHTML = "";
 
       const documentos = [];
+
+      const certidoes = [];
+      const editais = [];
+      const contratos = [];
 
       snap.forEach(docItem => {
 
@@ -1629,38 +1642,141 @@ function iniciarDocumentos() {
 
         documentos.push(d);
 
-        div.innerHTML += `
-          <div style="background:#0d2748; padding:20px; border-radius:16px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
-            <div>
-              <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
+        if (d.categoria === "certidoes") {
+          certidoes.push(d);
+        }
 
-              <small style="opacity:0.5; font-size: 12px;">
-                ${
-                  d.data
-                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
-                    : ""
-                }
-              </small>
-            </div>
+        else if (d.categoria === "editais") {
+          editais.push(d);
+        }
 
-            <a
-              href="${d.link}"
-              target="_blank"
-              class="radar-btn"
-              style="margin:0; padding:10px 20px; background: #d8a84e; color: #051020; border: none;"
-            >
-              Abrir
-            </a>
-          </div>
-        `;
+        else if (d.categoria === "contratos") {
+          contratos.push(d);
+        }
+
       });
+
+      renderGrupo(
+        "📜 Controle de Certidões e Prazos",
+        certidoes
+      );
+
+      renderGrupo(
+        "📂 Editais",
+        editais
+      );
+
+      renderGrupo(
+        "📑 Contratos",
+        contratos
+      );
 
       atualizarBadgePersistente(
         "documentos",
         documentos
       );
+
     }
+
   );
+
+  function renderGrupo(
+    titulo,
+    lista
+  ) {
+
+    div.innerHTML += `
+      <div style="
+        margin-top:30px;
+        margin-bottom:15px;
+      ">
+        <h2 style="
+          color:#d8a84e;
+          font-size:20px;
+          border-bottom:1px solid rgba(255,255,255,.08);
+          padding-bottom:10px;
+        ">
+          ${titulo}
+        </h2>
+      </div>
+    `;
+
+    if (lista.length === 0) {
+
+      div.innerHTML += `
+        <div style="
+          opacity:.5;
+          margin-bottom:20px;
+        ">
+          Nenhum documento.
+        </div>
+      `;
+
+      return;
+    }
+
+    lista.forEach(d => {
+
+      div.innerHTML += `
+
+      <div style="
+        background:#0d2748;
+        padding:20px;
+        border-radius:16px;
+        margin-bottom:15px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      ">
+
+        <div>
+
+          <h3 style="
+            color:white;
+            margin-bottom:6px;
+          ">
+            📄 ${d.nome}
+          </h3>
+
+          <div style="
+            font-size:12px;
+            opacity:.7;
+          ">
+            Status:
+            ${d.statusDocumento || "-"}
+          </div>
+
+          <div style="
+            font-size:12px;
+            opacity:.7;
+          ">
+            Vencimento:
+            ${d.vencimento || "-"}
+          </div>
+
+        </div>
+
+        <a
+          href="${d.link}"
+          target="_blank"
+          class="radar-btn"
+          style="
+            background:#d8a84e;
+            color:#051020;
+            padding:10px 18px;
+          "
+        >
+          Abrir
+        </a>
+
+      </div>
+
+      `;
+
+    });
+
+  }
+
 }
 
 window.adicionarDocumento = async () => {
