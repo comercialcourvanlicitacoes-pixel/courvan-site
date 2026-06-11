@@ -452,14 +452,6 @@
     </select>
 
     <input
-  type="text"
-  id="subpastaDocumento"
-  placeholder="Nome da pasta (opcional)"
-  class="inputPadrao"
-  style="flex:1;"
->
-
-    <input
       type="text"
       id="nomeDocumento"
       placeholder="Nome do documento"
@@ -641,8 +633,7 @@ let emailClienteGlobal = "";
 let dadosClienteGlobal = null;
 
 let respostaMensagem = null;
-let pastaAberta = null;
-  
+
 window.responderMensagem = function(id, texto, autor){
 
   respostaMensagem = {
@@ -1619,31 +1610,18 @@ document
   
 function iniciarDocumentos() {
 
-  const div =
-    document.getElementById(
-      "listaDocumentos"
-    );
+  const div = document.getElementById("listaDocumentos");
 
   onSnapshot(
-
     query(
       collection(db, "documentos"),
-      where(
-        "clienteId",
-        "==",
-        clienteIdGlobal
-      )
+      where("clienteId", "==", clienteIdGlobal)
     ),
-
     snap => {
 
       div.innerHTML = "";
 
       const documentos = [];
-
-      const certidoes = [];
-      const editais = {};
-      const contratos = {};
 
       snap.forEach(docItem => {
 
@@ -1651,253 +1629,42 @@ function iniciarDocumentos() {
 
         documentos.push(d);
 
-        if (d.categoria === "certidoes") {
-          certidoes.push(d);
-        }
+        div.innerHTML += `
+          <div style="background:#0d2748; padding:20px; border-radius:16px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
+            <div>
+              <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
 
-        else if (d.categoria === "editais") {
+              <small style="opacity:0.5; font-size: 12px;">
+                ${
+                  d.data
+                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
+                    : ""
+                }
+              </small>
+            </div>
 
-  const pasta =
-    d.subpasta || "Sem Pasta";
-
-  if(!editais[pasta])
-    editais[pasta] = [];
-
-  editais[pasta].push(d);
-
-}
-
-else if (d.categoria === "contratos") {
-
-  const pasta =
-    d.subpasta || "Sem Pasta";
-
-  if(!contratos[pasta])
-    contratos[pasta] = [];
-
-  contratos[pasta].push(d);
-
-}
-
+            <a
+              href="${d.link}"
+              target="_blank"
+              class="radar-btn"
+              style="margin:0; padding:10px 20px; background: #d8a84e; color: #051020; border: none;"
+            >
+              Abrir
+            </a>
+          </div>
+        `;
       });
 
-      renderPastas(
-        "📜 Controle de Certidões e Prazos",
-        certidoes
-      );
-
-      renderPastas(
-  "📂 Editais",
-  editais
-);
-
-renderPastas(
-  "📑 Contratos",
-  contratos
-);
-
-function renderPastas(
-  titulo,
-  objetoPastas
-){
-
-  div.innerHTML += `
-    <h2 style="
-      margin-top:25px;
-      color:#d8a84e;
-    ">
-      ${titulo}
-    </h2>
-  `;
-
-  Object.keys(objetoPastas).forEach(nomePasta => {
-
-    div.innerHTML += `
-      <div style="
-        background:#102d52;
-        padding:12px;
-        margin-top:10px;
-        border-radius:10px;
-      ">
-        <strong>
-          📁 ${nomePasta}
-        </strong>
-      </div>
-    `;
-
-    objetoPastas[nomePasta].documentos.forEach(doc => {
-
-      div.innerHTML += `
-
-        <div style="
-          margin-left:30px;
-          background:#0d2748;
-          padding:15px;
-          margin-top:8px;
-          border-radius:10px;
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-        ">
-
-          <div>
-
-            <strong>
-              📄 ${d.nome}
-            </strong>
-
-          </div>
-
-          <a
-            href="${d.link}"
-            target="_blank"
-            class="radar-btn"
-          >
-            Abrir
-          </a>
-
-        </div>
-
-      `;
-
-    });
-
-  });
-
-}
-      
       atualizarBadgePersistente(
         "documentos",
         documentos
       );
-
     }
-
   );
-
-  function renderGrupo(titulo, lista) {
-
-  const idGrupo =
-    titulo.replace(/\s/g, '_');
-
-  const aberta =
-    pastaAberta === idGrupo;
-
-  div.innerHTML += `
-
-    <div
-      onclick="toggleGrupo('${idGrupo}')"
-      style="
-        cursor:pointer;
-        margin-top:20px;
-        padding:12px;
-        background:#0d2748;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,.05);
-      "
-    >
-
-      <h2 style="
-        color:#d8a84e;
-        margin:0;
-      ">
-        ${aberta ? '📂' : '📁'}
-        ${titulo}
-      </h2>
-
-    </div>
-
-  `;
-
-  if (!aberta) return;
-
-  if (lista.length === 0) {
-
-    div.innerHTML += `
-      <div style="
-        padding:15px;
-        opacity:.6;
-      ">
-        Nenhum documento.
-      </div>
-    `;
-
-    return;
-  }
-
-  lista.forEach(d => {
-
-    div.innerHTML += `
-
-      <div
-        style="
-          background:#0d2748;
-          padding:20px;
-          margin-top:10px;
-          margin-left:20px;
-          border-radius:12px;
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-        "
-      >
-
-        <div>
-
-          <strong>
-            📄 ${d.nome}
-          </strong>
-
-          <br>
-
-          <small>
-            Status:
-            ${d.statusDocumento || "-"}
-          </small>
-
-          <br>
-
-          <small>
-            Vencimento:
-            ${d.vencimento || "-"}
-          </small>
-
-        </div>
-
-        <a
-          href="${d.link}"
-          target="_blank"
-          class="radar-btn"
-        >
-          Abrir
-        </a>
-
-      </div>
-
-    `;
-
-  });
-
-}
-
-}
-  
-window.toggleGrupo = function(idGrupo){
-
-  if(pastaAberta === idGrupo){
-    pastaAberta = null;
-  }else{
-    pastaAberta = idGrupo;
-  }
-
-  iniciarDocumentos();
 }
 
 window.adicionarDocumento = async () => {
 
-  const subpasta =
-    document.getElementById("subpastaDocumento").value.trim();
-  
   const nome =
     document.getElementById("nomeDocumento").value;
 
@@ -1952,9 +1719,6 @@ const caminho =
 
     nome,
     categoria,
-
-    pastaPai,  
-    subpasta,  
 
     vencimento,
 
