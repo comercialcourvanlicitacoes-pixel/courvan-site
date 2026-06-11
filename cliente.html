@@ -452,6 +452,14 @@
     </select>
 
     <input
+  type="text"
+  id="subpastaDocumento"
+  placeholder="Nome da pasta (opcional)"
+  class="inputPadrao"
+  style="flex:1;"
+>
+
+    <input
       type="text"
       id="nomeDocumento"
       placeholder="Nome do documento"
@@ -1801,6 +1809,9 @@ window.toggleGrupo = function(idGrupo){
 
 window.adicionarDocumento = async () => {
 
+  const subpasta =
+    document.getElementById("subpastaDocumento").value.trim();
+  
   const nome =
     document.getElementById("nomeDocumento").value;
 
