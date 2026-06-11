@@ -1656,12 +1656,28 @@ function iniciarDocumentos() {
         }
 
         else if (d.categoria === "editais") {
-          editais.push(d);
-        }
 
-        else if (d.categoria === "contratos") {
-          contratos.push(d);
-        }
+  const pasta =
+    d.subpasta || "Sem Pasta";
+
+  if(!editais[pasta])
+    editais[pasta] = [];
+
+  editais[pasta].push(d);
+
+}
+
+else if (d.categoria === "contratos") {
+
+  const pasta =
+    d.subpasta || "Sem Pasta";
+
+  if(!contratos[pasta])
+    contratos[pasta] = [];
+
+  contratos[pasta].push(d);
+
+}
 
       });
 
