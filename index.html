@@ -7,16 +7,22 @@
   <title>Courvan Licitações | Assessoria Especializada em Licitações Públicas</title>
   <meta name="description" content="Assessoria especializada em licitações. Venda para o governo com segurança, estratégia e baixo custo — sem mensalidade e sem risco.">
   
+  <!-- Tailwind & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="assets/logo.png">
   
+  <!-- Google Fonts - Inter para um visual extremamente profissional -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --primary: #2c5282;
+      --primary: #3182ce;
       --secondary: #d8a84e;
-      --dark: #07162b;
-      --card-bg: #0c2748;
+      --dark: #06101e;
+      --card-bg: #0b1e36;
       --accent: #7dffae;
     }
     
@@ -25,51 +31,58 @@
     }
     
     body {
-      background: var(--dark);
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--dark);
+      color: #f3f4f6;
+      font-family: 'Inter', sans-serif;
     }
     
     .gradient-text {
-      background: linear-gradient(135deg, var(--secondary) 0%, #f0d080 100%);
+      background: linear-gradient(135deg, #f3d082 0%, #d8a84e 50%, #b3842c 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
+    .gradient-bg-hero {
+      background: radial-gradient(circle at top right, rgba(44, 82, 130, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at bottom left, rgba(12, 39, 72, 0.3) 0%, transparent 50%);
+    }
     
     .btn-primary {
-      background: var(--secondary);
-      color: var(--dark);
-      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
+      color: #06101e;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(216, 168, 78, 0.3);
+      box-shadow: 0 10px 25px rgba(216, 168, 78, 0.35);
+      filter: brightness(1.05);
     }
     
     .btn-secondary {
-      background: transparent;
-      border: 2px solid var(--secondary);
-      color: var(--secondary);
-      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(216, 168, 78, 0.4);
+      color: #f3d082;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .btn-secondary:hover {
-      background: var(--secondary);
-      color: var(--dark);
+      background: rgba(216, 168, 78, 0.1);
+      border-color: var(--secondary);
+      transform: translateY(-2px);
     }
     
     .card-hover {
-      transition: all 0.3s ease;
-      background: var(--card-bg);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(145deg, #0d233f 0%, #081729 100%);
+      border: 1px solid rgba(255, 255, 255, 0.03);
     }
     
     .card-hover:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 40px rgba(216, 168, 78, 0.15);
-      border-color: var(--secondary);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(216, 168, 78, 0.05);
+      border-color: rgba(216, 168, 78, 0.3);
     }
     
     .section-title {
@@ -80,109 +93,119 @@
     .section-title::after {
       content: '';
       position: absolute;
-      bottom: -10px;
+      bottom: -8px;
       left: 0;
-      width: 60px;
-      height: 4px;
-      background: var(--secondary);
+      width: 45px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--secondary), #f0d080);
       border-radius: 2px;
     }
     
-    .hero-video {
-      border-radius: 20px;
+    .hero-video-container {
+      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(216, 168, 78, 0.2);
-      transform: scale(0.92);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(216, 168, 78, 0.1);
+      border: 1px solid rgba(216, 168, 78, 0.15);
     }
     
     .service-icon {
-      color: var(--secondary);
-      font-size: 2.25rem;
-      margin-bottom: 1.25rem;
-      display: inline-block;
-      background: rgba(216, 168, 78, 0.1);
-      padding: 1rem;
-      border-radius: 12px;
-      border: 1px solid rgba(216, 168, 78, 0.2);
+      color: #f3d082;
+      font-size: 1.75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(216, 168, 78, 0.15) 0%, rgba(216, 168, 78, 0.03) 100%);
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 16px;
+      border: 1px solid rgba(216, 168, 78, 0.25);
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
     }
-    
-    @media (max-width: 768px) {
-      .section-title::after {
-        width: 40px;
-      }
+
+    .card-hover:hover .service-icon {
+      background: linear-gradient(135deg, rgba(216, 168, 78, 0.25) 0%, rgba(216, 168, 78, 0.05) 100%);
+      border-color: var(--secondary);
+      transform: scale(1.05);
     }
   </style>
 </head>
 
-<body>
+<body class="antialiased selection:bg-[#d8a84e] selection:text-[#06101e]">
+  
   <!-- HEADER/NAV -->
-  <header class="sticky top-0 z-50 bg-gradient-to-r from-[#1a3a52] to-[#2c5282] shadow-lg">
+  <header class="sticky top-0 z-50 bg-[#06101e]/80 backdrop-blur-md border-b border-white/5 transition-all">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <div class="flex justify-between items-center flex-wrap gap-4">
+      <div class="flex justify-between items-center">
         <div class="flex items-center">
           <a href="#inicio" class="flex items-center gap-2">
-            <img src="assets/logo.png" alt="Courvan" class="h-20 w-auto filter brightness-110 drop-shadow-md">
+            <img src="assets/logo.png" alt="Courvan" class="h-14 w-auto object-contain filter brightness-110 drop-shadow-md">
           </a>
         </div>
         
         <div class="hidden md:flex items-center gap-8">
-          <a href="#inicio" class="text-white hover:text-[var(--secondary)] transition font-medium">Início</a>
-          <a href="#servicos" class="text-white hover:text-[var(--secondary)] transition font-medium">Serviços</a>
-          <a href="#sobre" class="text-white hover:text-[var(--secondary)] transition font-medium">Sobre</a>
-          <a href="blog/index.html" class="text-white hover:text-[var(--secondary)] transition font-medium">Blog</a>
-          <a href="#contato" class="text-white hover:text-[var(--secondary)] transition font-medium">Contato</a>
-          <a href="login.html" class="btn-primary px-6 py-2 rounded-lg font-semibold">
+          <a href="#inicio" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Início</a>
+          <a href="#servicos" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Serviços</a>
+          <a href="#sobre" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Sobre</a>
+          <a href="blog/index.html" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Blog</a>
+          <a href="#contato" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Contato</a>
+          <a href="login.html" class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-sm tracking-wide shadow-sm">
             Área do Cliente
           </a>
         </div>
         
-        <button class="md:hidden text-white" onclick="toggleMobileMenu()">
-          <i class="fas fa-bars text-2xl"></i>
+        <button class="md:hidden text-gray-300 p-2 focus:outline-none" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars text-xl"></i>
         </button>
       </div>
       
-      <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4 border-t border-white/10">
-        <a href="#inicio" class="block py-2 text-white hover:text-[var(--secondary)]">Início</a>
-        <a href="#servicos" class="block py-2 text-white hover:text-[var(--secondary)]">Serviços</a>
-        <a href="#sobre" class="block py-2 text-white hover:text-[var(--secondary)]">Sobre</a>
-        <a href="blog/index.html" class="block py-2 text-white hover:text-[var(--secondary)]">Blog</a>
-        <a href="#contato" class="block py-2 text-white hover:text-[var(--secondary)]">Contato</a>
-        <a href="login.html" class="block py-2 text-white hover:text-[var(--secondary)]">Área do Cliente</a>
+      <!-- Mobile Menu -->
+      <div id="mobileMenu" class="hidden md:hidden mt-3 pb-4 space-y-2 border-t border-white/5 pt-3">
+        <a href="#inicio" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Início</a>
+        <a href="#servicos" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Serviços</a>
+        <a href="#sobre" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Sobre</a>
+        <a href="blog/index.html" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Blog</a>
+        <a href="#contato" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Contato</a>
+        <a href="login.html" class="block text-center mt-4 btn-primary py-3 rounded-xl font-semibold">Área do Cliente</a>
       </div>
     </nav>
   </header>
 
   <!-- HERO -->
-  <section id="inicio" class="relative overflow-hidden pt-16 pb-16 bg-gradient-to-br from-[#07162b] via-[#0c2748] to-[#07162b]">
+  <section id="inicio" class="relative overflow-hidden pt-20 pb-24 gradient-bg-hero">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-12 gap-8 items-center">
+      <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         
-        <div class="md:col-span-7 space-y-6">
-          <div>
-            <h1 class="text-4xl md:text-5xl lg:text-5.5xl font-bold leading-tight mb-4">
+        <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
+          <div class="space-y-4">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-semibold uppercase tracking-wider text-[var(--secondary)]">
+              <i class="fas fa-shield-halved text-xs"></i> Assessoria Especializada
+            </span>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
               A forma mais <span class="gradient-text">inteligente</span> de vencer licitações
             </h1>
-            <p class="text-lg text-gray-300 leading-relaxed">
-              Venda para o governo com <strong>segurança</strong>, <strong>estratégia</strong> e <strong>baixo custo</strong> — sem mensalidade e sem risco.
+            <p class="text-lg sm:text-xl text-gray-400 font-light max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              Venda para o governo com <strong class="text-white font-semibold">segurança</strong>, <strong class="text-white font-semibold">estratégia</strong> e <strong class="text-white font-semibold">baixo custo</strong> — sem mensalidade e sem risco.
             </p>
           </div>
           
-          <div class="flex flex-wrap gap-4">
-            <a href="https://wa.me/5531983213540" target="_blank" class="btn-primary px-8 py-3 rounded-lg font-semibold flex items-center gap-2 hover:shadow-lg">
-              <i class="fab fa-whatsapp"></i> Fale Conosco
+          <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+            <a href="https://wa.me/5531983213540" target="_blank" class="btn-primary px-8 py-4 rounded-xl font-bold flex items-center gap-3 text-base shadow-lg">
+              <i class="fab fa-whatsapp text-lg"></i> Fale Conosco
             </a>
-            <a href="https://www.instagram.com/courvan_licitacoes" target="_blank" class="btn-secondary px-8 py-3 rounded-lg font-semibold flex items-center gap-2">
-              <i class="fab fa-instagram"></i> Instagram
+            <a href="https://www.instagram.com/courvan_licitacoes" target="_blank" class="btn-secondary px-8 py-4 rounded-xl font-semibold flex items-center gap-3 text-base">
+              <i class="fab fa-instagram text-lg"></i> Instagram
             </a>
           </div>
-                  
         </div>
         
-        <div class="md:col-span-5 flex justify-center md:justify-end items-center w-full">
-          <div class="hero-video w-full max-w-sm md:max-w-md shadow-2xl bg-black/20">
-            <video autoplay muted loop playsinline controls class="w-full h-auto object-contain aspect-video rounded-xl">
-              <source src="assets/video.mp4" type="video/mp4">
-            </video>
+        <div class="lg:col-span-5 flex justify-center lg:justify-end items-center w-full">
+          <div class="w-full max-w-md lg:max-w-full px-4 lg:px-0">
+            <div class="hero-video-container bg-black/40">
+              <video autoplay muted loop playsinline controls class="w-full h-auto object-cover aspect-video block">
+                <source src="assets/video.mp4" type="video/mp4">
+              </video>
+            </div>
           </div>
         </div>
 
@@ -191,134 +214,152 @@
   </section>
 
   <!-- SERVIÇOS -->
-  <section id="servicos" class="py-20 bg-[#07162b]">
+  <section id="servicos" class="py-24 bg-[#040c17] relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="mb-16">
-        <h2 class="section-title text-4xl font-bold mb-4">Nossos Serviços</h2>
-        <p class="text-gray-400 text-lg max-w-2xl">Soluções completas para sua jornada no mercado público, do início ao fim.</p>
+      <div class="mb-16 text-center md:text-left">
+        <h2 class="section-title text-4xl font-extrabold text-white tracking-tight mb-4">Nuestros Serviços</h2>
+        <p class="text-gray-400 text-lg max-w-2xl font-light">Soluções de ponta a ponta estruturadas para garantir o sucesso da sua empresa no mercado público.</p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
         
-        <div class="card-hover p-8 rounded-xl">
+        <div class="card-hover p-8 rounded-2xl">
           <div class="service-icon"><i class="fas fa-satellite-dish"></i></div>
-          <h3 class="text-xl font-bold mb-3">Oportunidades</h3>
-          <p class="text-gray-400">Triagem e envio gratuito de licitações alinhadas ao seu negócio.</p>
+          <h3 class="text-xl font-bold text-white mb-3">Oportunidades</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Triagem analítica e envio direcionado e gratuito de licitações altamente alinhadas ao core business do seu negócio.</p>
         </div>
         
-        <div class="card-hover p-8 rounded-xl">
+        <div class="card-hover p-8 rounded-2xl">
           <div class="service-icon"><i class="fas fa-chart-line"></i></div>
-          <h3 class="text-xl font-bold mb-3">Análise de Editais</h3>
-          <p class="text-gray-400">Identificação de riscos, exigências e viabilidade de participação.</p>
+          <h3 class="text-xl font-bold text-white mb-3">Análise de Editais</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Mapeamento minucioso de riscos ocultos, exigências complexas e estudo prévio de viabilidade comercial e técnica.</p>
         </div>
         
-        <div class="card-hover p-8 rounded-xl">
+        <div class="card-hover p-8 rounded-2xl">
           <div class="service-icon"><i class="fas fa-folder-open"></i></div>
-          <h3 class="text-xl font-bold mb-3">Preparação</h3>
-          <p class="text-gray-400">Checklist, documentação, cadastro em portais e envio de propostas.</p>
+          <h3 class="text-xl font-bold text-white mb-3">Preparação</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Montagem rigorosa de checklists, organização documental, cadastros em portais governamentais e envio seguro de propostas.</p>
         </div>
         
-        <div class="card-hover p-8 rounded-xl">
+        <div class="card-hover p-8 rounded-2xl">
           <div class="service-icon"><i class="fas fa-cogs"></i></div>
-          <h3 class="text-xl font-bold mb-3">Execução</h3>
-          <p class="text-gray-400">Acompanhamento do processo, chat e julgamento com orientação estratégica.</p>
+          <h3 class="text-xl font-bold text-white mb-3">Execução</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Monitoramento em tempo real de lances, suporte estratégico via chat e defesas imediatas durante o julgamento da sessão pública.</p>
         </div>
         
-        <div class="card-hover p-8 rounded-xl">
+        <div class="card-hover p-8 rounded-2xl">
           <div class="service-icon"><i class="fas fa-balance-scale"></i></div>
-          <h3 class="text-xl font-bold mb-3">Recursos</h3>
-          <p class="text-gray-400">Elaboração de recursos, impugnações e defesas administrativas.</p>
+          <h3 class="text-xl font-bold text-white mb-3">Recursos</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Segurança jurídica com elaboração cirúrgica de recursos administrativos, contra-razões e impugnações a editais restritivos.</p>
         </div>
         
-        <div class="card-hover p-8 rounded-xl">
+        <div class="card-hover p-8 rounded-2xl">
           <div class="service-icon"><i class="fas fa-file-contract"></i></div>
-          <h3 class="text-xl font-bold mb-3">Gestão Contratual</h3>
-          <p class="text-gray-400">Suporte na execução, reequilíbrio econômico e gestão administrativa.</p>
+          <h3 class="text-xl font-bold text-white mb-3">Gestão Contratual</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Assessoria contínua pós-certame: pedidos de reequilíbrio econômico-financeiro, prorrogações e gestão de penalidades.</p>
         </div>
         
       </div>
 
-      <div class="bg-gradient-to-r from-[var(--secondary)] to-[#f0d080] text-[var(--dark)] p-8 rounded-2xl shadow-lg">
-        <h3 class="text-3xl font-bold mb-4">🔥 Análise de Edital por R$100</h3>
-        <p class="text-lg font-semibold mb-6">Valide rapidamente se vale a pena participar de uma licitação.</p>
+      <!-- OFERTA PREMIUM (ANÁLISE DE EDITAL) -->
+      <div class="relative overflow-hidden bg-gradient-to-br from-[#0c233f] to-[#06101e] border border-amber-500/30 p-8 md:p-12 rounded-3xl shadow-2xl">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
         
-        <div class="grid md:grid-cols-2 gap-4 mb-4">
-          <ul class="space-y-3">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div class="max-w-2xl space-y-4">
+            <span class="inline-block bg-amber-500 text-[#06101e] text-xs font-black px-3 py-1 rounded-md uppercase tracking-wider">Oportunidade de Entrada</span>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-white">Análise Pragmática de Edital por <span class="text-[var(--secondary)]">R$ 100</span></h3>
+            <p class="text-gray-400 font-light leading-relaxed">Valide com precisão técnica e jurídica se vale a pena investir tempo e documentação para disputar determinada licitação.</p>
+          </div>
+          
+          <div class="flex-shrink-0">
+            <a href="https://wa.me/5531983213540" target="_blank" class="btn-primary inline-flex px-8 py-4 rounded-xl font-bold text-center justify-center items-center gap-3 w-full lg:w-auto shadow-md">
+              Contratar Análise <i class="fas fa-arrow-right text-sm"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6 mt-10 pt-8 border-t border-white/10">
+          <ul class="space-y-3.5 text-gray-300 text-sm">
             <li class="flex items-center gap-3">
-              <i class="fas fa-check-circle text-emerald-800 font-bold text-lg"></i>
-              <span class="font-medium">Análise completa do edital</span>
+              <i class="fas fa-check text-amber-500 text-xs"></i>
+              <span>Análise completa das cláusulas restritivas do edital</span>
             </li>
             <li class="flex items-center gap-3">
-              <i class="fas fa-check-circle text-emerald-800 font-bold text-lg"></i>
-              <span class="font-medium">Checklist de documentos</span>
+              <i class="fas fa-check text-amber-500 text-xs"></i>
+              <span>Checklist estruturado de documentos de habilitação</span>
             </li>
             <li class="flex items-center gap-3">
-              <i class="fas fa-check-circle text-emerald-800 font-bold text-lg"></i>
-              <span class="font-medium">Cadastro de proposta</span>
+              <i class="fas fa-check text-amber-500 text-xs"></i>
+              <span>Parametrização e cadastro da proposta inicial no portal</span>
             </li>
           </ul>
-          <ul class="space-y-3">
+          <ul class="space-y-3.5 text-gray-300 text-sm">
             <li class="flex items-center gap-3">
-              <i class="fas fa-check-circle text-emerald-800 font-bold text-lg"></i>
-              <span class="font-medium">Orientação sobre etapas</span>
+              <i class="fas fa-check text-amber-500 text-xs"></i>
+              <span>Orientação executiva sobre as fases do certame</span>
             </li>
             <li class="flex items-center gap-3">
-              <i class="fas fa-check-circle text-emerald-800 font-bold text-lg"></i>
-              <span class="font-medium">Esclarecimento de 1 dúvida</span>
+              <i class="fas fa-check text-amber-500 text-xs"></i>
+              <span>Esclarecimento técnico focado em 1 dúvida crítica</span>
             </li>
           </ul>
         </div>
         
-        <p class="text-sm font-bold mt-4 flex items-center gap-2 bg-black/10 inline-block px-3 py-1 rounded">
-          <i class="fas fa-exclamation-triangle text-amber-900"></i> Não inclui participação na fase de lances.
-        </p>
+        <div class="mt-8 flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium px-4 py-2.5 rounded-xl max-w-max">
+          <i class="fas fa-circle-info text-sm"></i> <span>Atenção: Esta modalidade de entrada não inclui a operacionalização e lances em tempo real na fase de disputa.</span>
+        </div>
       </div>
 
     </div>
   </section>
 
   <!-- SOBRE -->
-  <section id="sobre" class="py-20 bg-[#0c2748]">
+  <section id="sobre" class="py-24 bg-[#06101e] border-y border-white/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="mb-16">
-        <h2 class="section-title text-4xl font-bold mb-4">Sobre a Courvan</h2>
-        <p class="text-gray-400 text-lg">Conheça nossa história e missão</p>
+      <div class="mb-16 text-center md:text-left">
+        <h2 class="section-title text-4xl font-extrabold text-white tracking-tight mb-4">Sobre a Courvan</h2>
+        <p class="text-gray-400 text-lg font-light">Sua estrutura estratégica corporativa frente ao mercado governamental.</p>
       </div>
       
-      <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div class="space-y-6 text-gray-300 leading-relaxed">
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 space-y-6 text-gray-400 font-light leading-relaxed text-base">
           <p>
-            A <strong>Courvan Assessoria em Licitações</strong> atua de forma estratégica na captação, análise e execução de processos licitatórios, apoiando empresas que desejam vender para o poder público com segurança, organização e clareza.
+            A <strong class="text-white font-semibold">Courvan Assessoria em Licitações</strong> opera como um braço de inteligência focado na captação de negócios públicos, análise técnica detalhada e excelência na execução de processos licitatórios de ponta a ponta.
           </p>
           
           <p>
-            Nosso trabalho vai além da simples análise de editais. Estruturamos a participação do cliente desde a identificação da oportunidade até a execução contratual, reduzindo riscos e aumentando a previsibilidade de resultados.
+            Apoiamos empresas de múltiplos segmentos corporativos que almejam transacionar com o poder público sob o pilar de máxima segurança jurídica, conformidade e clareza processual. Nosso trabalho remove a burocracia complexa para o empresário.
           </p>
           
           <p>
-            Com uma abordagem objetiva e orientada à decisão, ajudamos empresas a entenderem exatamente quando participar, como participar e quais são os pontos críticos de cada licitação.
+            Estruturamos a participação do cliente desde a triagem inicial até o acompanhamento estrito das obrigações contratuais, mitigando riscos operacionais e maximizando de forma agressiva e limpa a previsibilidade de resultados comerciais lucrativos.
           </p>
           
           <p>
-            A Courvan foi criada com o propósito de <strong>simplificar o acesso ao mercado público</strong>, tornando o processo mais acessível, eficiente e estratégico para empresas de todos os portes.
+            Nascemos com a sólida missão de <strong class="text-white font-semibold">desmistificar o acesso aos contratos públicos</strong>, convertendo o ecossistema de compras governamentais em um canal escalável, seguro e altamente lucrativo.
           </p>
         </div>
         
-        <div class="bg-gradient-to-br from-[var(--secondary)] to-[#f0d080] rounded-xl p-12 text-[var(--dark)] shadow-xl">
-          <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-            <i class="fas fa-bullseye"></i> Nossa Missão
+        <div class="lg:col-span-5 bg-gradient-to-br from-[#0d233f] to-[#081729] rounded-2xl p-8 md:p-10 text-gray-300 shadow-2xl border border-white/5 relative overflow-hidden">
+          <div class="absolute -bottom-10 -right-10 text-white/5 text-9xl font-black pointer-events-none select-none">
+            <i class="fas fa-bullseye"></i>
+          </div>
+          
+          <h3 class="text-2xl font-bold text-white mb-5 flex items-center gap-3">
+            <i class="fas fa-bullseye text-[var(--secondary)]"></i> Nossa Missão
           </h3>
-          <p class="text-lg leading-relaxed font-semibold">
-            Simplificar o processo licitatório e aumentar suas chances de contratação com o poder público, fornecendo estratégia, segurança e clareza em cada etapa.
+          <p class="text-base leading-relaxed text-gray-300 font-medium">
+            Simplificar e profissionalizar o processo licitatório nacional, alavancando a taxa de conversão em contratações públicas através de absoluto rigor estratégico e transparência comercial.
           </p>
           
-          <div class="mt-8 pt-8 border-t-2 border-[var(--dark)]/20">
-            <p class="text-sm font-bold mb-4 uppercase tracking-wider">Valores:</p>
-            <div class="grid grid-cols-2 gap-3 font-semibold">
-              <div class="flex items-center gap-2"><i class="fas fa-star-of-life text-xs opacity-70"></i> Transparência</div>
-              <div class="flex items-center gap-2"><i class="fas fa-star-of-life text-xs opacity-70"></i> Excelência</div>
-              <div class="flex items-center gap-2"><i class="fas fa-star-of-life text-xs opacity-70"></i> Inovação</div>
-              <div class="flex items-center gap-2"><i class="fas fa-star-of-life text-xs opacity-70"></i> Confiabilidade</div>
+          <div class="mt-8 pt-8 border-t border-white/10">
+            <p class="text-xs font-bold text-[var(--secondary)] mb-4 uppercase tracking-wider">Pilares Corporativos</p>
+            <div class="grid grid-cols-2 gap-y-4 gap-x-2 font-semibold text-white text-sm">
+              <div class="flex items-center gap-2.5"><i class="fas fa-shield text-amber-500 text-xs"></i> Transparência</div>
+              <div class="flex items-center gap-2.5"><i class="fas fa-gavel text-amber-500 text-xs"></i> Excelência</div>
+              <div class="flex items-center gap-2.5"><i class="fas fa-lightbulb text-amber-500 text-xs"></i> Inovação</div>
+              <div class="flex items-center gap-2.5"><i class="fas fa-handshake text-amber-500 text-xs"></i> Confiabilidade</div>
             </div>
           </div>
         </div>
@@ -327,117 +368,121 @@
   </section>
 
   <!-- FEEDBACK -->
-<section id="feedback" class="py-20 bg-[#07162b]">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+  <section id="feedback" class="py-24 bg-[#040c17]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <div class="mb-10 text-center">
-      <h2 class="section-title text-4xl font-bold mb-4">Feedback de Clientes</h2>
-      <p class="text-gray-400 text-lg">
-        Resultados reais de quem confia na Courvan
-      </p>
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-8">
-
-      <!-- Cliente 1 -->
-      <div class="bg-[#0c2748] border border-white/10 rounded-2xl p-8 shadow-xl">
-        <div class="flex flex-col items-center text-center">
-          <img
-            src="assets/logoexpressosousa.png"
-            alt="Logo Expresso Sousa"
-            class="w-28 h-28 object-contain rounded-xl bg-white/5 p-2 mb-6"
-          >
-
-          <p class="text-xl text-gray-100 leading-relaxed font-medium italic">
-            “Nossa experiência com a Courvan foi sensacional,
-            muita agilidade e dedicação no processo.
-            Equipe nota 10.”
-          </p>
-
-          <p class="mt-6 text-[var(--secondary)] font-bold tracking-wide">
-            Expresso Sousa
-          </p>
-        </div>
+      <div class="mb-16 text-center">
+        <h2 class="section-title text-4xl font-extrabold text-white tracking-tight mb-4">Feedback de Clientes</h2>
+        <p class="text-gray-400 text-lg font-light">
+          Resultados reais e parcerias consolidadas com quem confia na Courvan
+        </p>
       </div>
 
-      <!-- Cliente 2 -->
-      <div class="bg-[#0c2748] border border-white/10 rounded-2xl p-8 shadow-xl">
-        <div class="flex flex-col items-center text-center">
+      <div class="grid md:grid-cols-2 gap-8">
 
-          <img
-            src="assets/logocpa.png"
-            alt="CPA Poços Artesianos"
-            class="w-28 h-28 object-contain rounded-xl bg-white/5 p-2 mb-6"
-          >
+        <!-- Cliente 1 -->
+        <div class="bg-[#0d233f]/60 border border-white/5 rounded-2xl p-8 shadow-xl flex flex-col justify-between backdrop-blur-sm">
+          <div class="flex flex-col items-center text-center">
+            <div class="w-24 h-24 rounded-2xl bg-white p-3 mb-6 shadow-md flex items-center justify-center">
+              <img src="assets/logoexpressosousa.png" alt="Logo Expresso Sousa" class="w-full h-full object-contain">
+            </div>
 
-          <p class="text-xl text-gray-100 leading-relaxed font-medium italic">
-            “Atendimento extremamente profissional e suporte rápido em todas as etapas.
-            Empresa séria, organizada e comprometida com resultados.
-            A Courvan trouxe mais segurança e organização para os processos da nossa empresa.”
-          </p>
-
-          <p class="mt-6 text-[var(--secondary)] font-bold tracking-wide">
-            CPA Poços Artesianos
-          </p>
+            <p class="text-lg text-gray-300 leading-relaxed font-light italic">
+              “Nossa experiência com a Courvan foi sensacional, muita agilidade e dedicação no processo. Equipe nota 10.”
+            </p>
+          </div>
+          <div class="text-center mt-6">
+            <div class="h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full mb-4"></div>
+            <p class="text-[var(--secondary)] font-bold tracking-wide text-sm uppercase">Expresso Sousa</p>
+          </div>
         </div>
+
+        <!-- Cliente 2 -->
+        <div class="bg-[#0d233f]/60 border border-white/5 rounded-2xl p-8 shadow-xl flex flex-col justify-between backdrop-blur-sm">
+          <div class="flex flex-col items-center text-center">
+            <div class="w-24 h-24 rounded-2xl bg-white p-3 mb-6 shadow-md flex items-center justify-center">
+              <img src="assets/logocpa.png" alt="CPA Poços Artesianos" class="w-full h-full object-contain">
+            </div>
+
+            <p class="text-lg text-gray-300 leading-relaxed font-light italic">
+              “Atendimento extremamente profissional e suporte rápido em todas as etapas. Empresa séria, organizada e comprometida com resultados. A Courvan trouxe mais segurança e organização para os processos da nossa empresa.”
+            </p>
+          </div>
+          <div class="text-center mt-6">
+            <div class="h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full mb-4"></div>
+            <p class="text-[var(--secondary)] font-bold tracking-wide text-sm uppercase">CPA Poços Artesianos</p>
+          </div>
+        </div>
+
       </div>
 
     </div>
-
-  </div>
-</section>
+  </section>
 
   <!-- CONTATO -->
-  <section id="contato" class="py-20 bg-gradient-to-r from-[var(--secondary)] to-[#f0d080] text-[var(--dark)]">
+  <section id="contato" class="py-24 bg-gradient-to-b from-[#06101e] to-[#0c233f] border-t border-white/5">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Entre em Contato</h2>
-        <p class="text-lg opacity-90">Estamos prontos para ajudar sua empresa a vencer licitações</p>
+      <div class="text-center mb-16">
+        <span class="text-xs font-bold text-[var(--secondary)] uppercase tracking-wider block mb-2">Canais de Atendimento</span>
+        <h2 class="text-4xl font-extrabold text-white tracking-tight mb-4">Inicie sua Jornada Conosco</h2>
+        <p class="text-gray-400 font-light text-lg">Estamos de prontidão para desenhar a melhor engenharia de lances para a sua empresa.</p>
       </div>
       
-      <form action="https://formspree.io/f/mqenkele" method="POST" class="space-y-6 mb-12">
-        <div class="grid md:grid-cols-2 gap-6">
-          <input type="text" name="nome" placeholder="Seu nome" required class="w-full px-6 py-3 rounded-lg bg-white/90 text-[var(--dark)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--dark)] shadow-sm">
-          <input type="email" name="email" placeholder="Seu e-mail" required class="w-full px-6 py-3 rounded-lg bg-white/90 text-[var(--dark)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--dark)] shadow-sm">
+      <form action="https://formspree.io/f/mqenkele" method="POST" class="space-y-5 bg-black/20 p-6 md:p-10 rounded-2xl border border-white/5 shadow-2xl mb-16">
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-1">Nome Completo</label>
+            <input type="text" name="nome" placeholder="Ex: João Silva" required class="w-full px-5 py-3.5 rounded-xl bg-[#06101e] border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-1 focus:ring-[var(--secondary)] transition shadow-sm">
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-1">E-mail Corporativo</label>
+            <input type="email" name="email" placeholder="Ex: joao@empresa.com" required class="w-full px-5 py-3.5 rounded-xl bg-[#06101e] border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-1 focus:ring-[var(--secondary)] transition shadow-sm">
+          </div>
         </div>
         
-        <input type="text" name="telefone" placeholder="Seu telefone" class="w-full px-6 py-3 rounded-lg bg-white/90 text-[var(--dark)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--dark)] shadow-sm">
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-1">Telefone / WhatsApp</label>
+          <input type="text" name="telefone" placeholder="Ex: (31) 99999-9999" class="w-full px-5 py-3.5 rounded-xl bg-[#06101e] border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-1 focus:ring-[var(--secondary)] transition shadow-sm">
+        </div>
         
-        <textarea name="mensagem" rows="5" placeholder="Digite sua mensagem" required class="w-full px-6 py-3 rounded-lg bg-white/90 text-[var(--dark)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--dark)] resize-none shadow-sm"></textarea>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-1">Mensagem ou Detalhes da Demanda</label>
+          <textarea name="mensagem" rows="4" placeholder="Descreva brevemente seu segmento de atuação ou anexe informações relevantes..." required class="w-full px-5 py-3.5 rounded-xl bg-[#06101e] border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-1 focus:ring-[var(--secondary)] resize-none transition shadow-sm"></textarea>
+        </div>
         
         <input type="hidden" name="_subject" value="Novo lead do site Courvan">
         
-        <button type="submit" class="w-full bg-[var(--dark)] text-[var(--secondary)] py-4 rounded-lg font-bold text-lg hover:bg-opacity-90 transition shadow-md">
-          Enviar Mensagem
+        <button type="submit" class="w-full btn-primary py-4 rounded-xl font-bold text-base transition shadow-md mt-2">
+          Enviar Mensagem Estratégica
         </button>
       </form>
       
-      <div class="grid md:grid-cols-3 gap-8 pt-8 border-t-2 border-[var(--dark)]/20">
-        <div class="text-center">
-          <p class="font-bold text-lg mb-2 flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> WhatsApp
+      <div class="grid md:grid-cols-3 gap-8 pt-10 border-t border-white/10 text-gray-300">
+        <div class="text-center md:text-left space-y-1">
+          <p class="font-bold text-white text-sm flex items-center justify-center md:justify-start gap-2">
+            <i class="fab fa-whatsapp text-[var(--secondary)]"></i> WhatsApp
           </p>
-          <a href="https://wa.me/5531983213540" class="hover:underline transition font-semibold">(31) 98321-3540</a>
+          <a href="https://wa.me/5531983213540" class="hover:text-[var(--secondary)] text-sm transition font-medium block">(31) 98321-3540</a>
         </div>
-        <div class="text-center">
-          <p class="font-bold text-lg mb-2 flex items-center justify-center gap-2">
-            <i class="fas fa-envelope"></i> Email
+        <div class="text-center md:text-left space-y-1">
+          <p class="font-bold text-white text-sm flex items-center justify-center md:justify-start gap-2">
+            <i class="fas fa-envelope text-[var(--secondary)]"></i> Email Institucional
           </p>
-          <a href="mailto:contato@courvanlicitacoes.com.br" class="hover:underline transition font-semibold break-all text-sm block md:inline">contato@courvanlicitacoes.com.br</a>
+          <a href="mailto:contato@courvanlicitacoes.com.br" class="hover:text-[var(--secondary)] text-sm transition font-medium block break-all">contato@courvanlicitacoes.com.br</a>
         </div>
-        <div class="text-center">
-          <p class="font-bold text-lg mb-2 flex items-center justify-center gap-2">
-            <i class="fas fa-id-card"></i> CNPJ
+        <div class="text-center md:text-left space-y-1">
+          <p class="font-bold text-white text-sm flex items-center justify-center md:justify-start gap-2">
+            <i class="fas fa-id-card text-[var(--secondary)]"></i> Registro CNPJ
           </p>
-          <p class="font-semibold">62.140.400/0001-50</p>
+          <p class="text-sm font-medium text-gray-400">62.140.400/0001-50</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-[#05101f] text-center py-8 text-gray-400 border-t border-white/5">
-    <p>© 2026 Courvan Assessoria em Licitações. Todos os direitos reservados.</p>
+  <footer class="bg-[#040c17] text-center py-10 text-gray-500 text-xs border-t border-white/5 tracking-wide">
+    <p>© 2026 Courvan Assessoria em Licitações. Todos os direitos reservados. Design Corporativo Otimizado.</p>
   </footer>
 
   <script>
@@ -446,7 +491,6 @@
       menu.classList.toggle('hidden');
     }
     
-    // Fechar menu ao clicar em um link
     document.querySelectorAll('#mobileMenu a').forEach(link => {
       link.addEventListener('click', () => {
         document.getElementById('mobileMenu').classList.add('hidden');
