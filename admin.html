@@ -209,14 +209,13 @@ window.criarUsuario = async function () {
     const clienteRef = await addDoc(
       collection(db, "clientes"),
       {
-        nome,
-        email,
-        empresa,
-        cnpj,
-        cpf: cpf || null,
-        uid,
-        status: "ativo"
-      }
+  empresa,
+  cnpj,
+  cpf: cpf || null,
+  emailPrincipal: email,
+  status: "ativo",
+  criadoEm: new Date()
+}
     );
 
     await addDoc(
