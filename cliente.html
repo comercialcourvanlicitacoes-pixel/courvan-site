@@ -771,6 +771,13 @@ if (usuarioSnap.empty) {
 
 const usuario = usuarioSnap.docs[0].data();
 
+usuarioLogado = {
+  uid: user.uid,
+  nome: usuario.nome,
+  perfil: usuario.perfil,
+  empresaId: usuario.empresaId
+};
+    
 const empresaId = usuario.empresaId;
 
 const docCliente = await getDoc(
