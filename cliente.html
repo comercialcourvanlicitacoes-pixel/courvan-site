@@ -811,6 +811,15 @@ const docCliente = await getDoc(
   setInterval(carregarRadarPersonalizado, 30000); 
 });
 
+let usuarioLogado = null;
+
+usuarioLogado = {
+  uid: user.uid,
+  nome: usuario.nome,
+  perfil: usuario.perfil,
+  empresaId: usuario.empresaId
+};
+  
 window.mostrarAba = function (id) {
 
   document.querySelectorAll(".aba").forEach(a => {
