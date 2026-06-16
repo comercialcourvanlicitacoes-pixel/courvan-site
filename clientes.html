@@ -5,214 +5,258 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clientes - Courvan</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family: 'Segoe UI', Arial, sans-serif; /* Fonte atualizada para um visual mais moderno */
+    :root {
+      --primary: #3182ce;
+      --secondary: #d8a84e;
+      --dark: #06101e;
+      --card-bg: #0b1e36;
+      --sidebar-bg: #0d233f;
     }
 
-    body{
-      background: linear-gradient(135deg, #07162b 0%, #05101f 100%); /* Fundo em gradiente suave */
-      color:white;
-      display:flex;
-      min-height:100vh;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
     }
 
-    .sidebar{
-      width:260px;
-      background:#0c2748;
-      padding:35px 25px;
-      display:flex;
-      flex-direction:column;
-      gap:15px;
-      border-right: 1px solid rgba(255, 255, 255, 0.05); /* Divisão sutil lateral */
+    body {
+      background: radial-gradient(circle at top right, rgba(44, 82, 130, 0.08) 0%, var(--dark) 60%);
+      color: #f3f4f6;
+      display: flex;
+      min-height: 100vh;
+      letter-spacing: -0.01em;
     }
 
-    .sidebar h2{
-      color:#d8a84e;
-      margin-bottom:25px;
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+    /* SIDEBAR PREMIUM */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, var(--sidebar-bg) 0%, #061526 100%);
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-right: 1px solid rgba(255, 255, 255, 0.03);
     }
 
-    .sidebar a{
-      color:#e2e8f0;
-      text-decoration:none;
-      background:#16385f;
-      padding:14px;
-      border-radius:10px;
-      transition:0.3s;
-      font-size: 15px;
+    .sidebar h2 {
+      background: linear-gradient(135deg, #f3d082 0%, #d8a84e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 35px;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      padding-left: 8px;
+    }
+
+    .sidebar a {
+      color: #94a3b8;
+      text-decoration: none;
+      background: transparent;
+      padding: 14px 18px;
+      border-radius: 12px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid transparent;
+    }
+
+    .sidebar a:hover {
+      background: rgba(216, 168, 78, 0.06);
+      color: #f3d082;
+      border-color: rgba(216, 168, 78, 0.15);
+    }
+
+    /* Item Ativo na Sidebar */
+    .sidebar a[href="clientes.html"] {
+      background: linear-gradient(135deg, rgba(216, 168, 78, 0.15) 0%, rgba(216, 168, 78, 0.03) 100%);
+      color: #f3d082;
+      border-color: rgba(216, 168, 78, 0.25);
       font-weight: 600;
-      border: 1px solid rgba(255, 255, 255, 0.03);
     }
 
-    .sidebar a:hover{
-      background:#1d4b7d;
-      color: white;
-      transform: translateX(3px); /* Efeito de deslocamento suave */
-    }
-
-    .content{
-      flex:1;
-      padding:50px 40px;
+    /* PAINEL DE CONTEÚDO */
+    .content {
+      flex: 1;
+      padding: 50px 60px;
+      max-w: 1400px;
+      margin: 0 auto;
+      width: 100%;
     }
 
     .content h1 {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+      font-size: 32px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
     }
 
-    input{
-      padding:14px 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius:10px;
-      width:250px;
-      transition: 0.3s ease;
+    /* CAMPO DE PESQUISA ESTILIZADO */
+    input {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Feedback visual ao clicar no campo de pesquisa */
     input:focus {
       outline: none;
-      border-color: #d8a84e !important;
-      box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.15);
+      border-color: rgba(216, 168, 78, 0.5) !important;
+      box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.1) !important;
+      background: #0d233f !important;
     }
 
-    .clientes{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
-      gap:25px;
+    /* GRID E CARDS DE CLIENTES */
+    .clientes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
     }
 
-    .card{
-      background:#0c2748;
-      padding:30px;
-      border-radius:18px;
-      transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    .card {
+      background: linear-gradient(145deg, #0d233f 0%, #081729 100%);
+      padding: 32px;
+      border-radius: 20px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .card:hover{
-      transform:translateY(-5px);
-      box-shadow:0 15px 35px rgba(0,0,0,0.35);
-      border-color: rgba(216, 168, 78, 0.2);
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border-color: rgba(216, 168, 78, 0.25);
     }
 
-    .card h2{
-      color:#d8a84e;
-      margin-bottom:18px;
-      font-size: 21px;
+    .card h2 {
+      color: #ffffff;
+      margin-bottom: 20px;
+      font-size: 20px;
       font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    .card-info-group {
+      margin-bottom: 24px;
+      space-y: 10px;
     }
 
     .card p {
-      color: #cbd5e1;
-      font-size: 14.5px;
-      margin-bottom: 8px;
-      line-height: 1.5;
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 10px;
+      line-height: 1.6;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 8px;
     }
 
     .card p strong {
-      color: white;
+      color: #64748b;
+      font-weight: 500;
     }
 
-    .btn-abrir{
-      width:100%;
-      margin-top:20px;
-      padding: 12px;
-      border-radius: 10px;
+    .card p span {
+      color: #e2e8f0;
+      font-weight: 500;
+      text-align: right;
+      max-width: 70%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* BOTÕES DENTRO DOS CARDS */
+    .btn-abrir {
+      width: 100%;
+      margin-top: 12px;
+      padding: 13px;
+      border-radius: 12px;
       border: none;
-      background: linear-gradient(135deg, #d8a84e 0%, #f0d080 100%); /* Botão dourado premium */
-      color: #07162b;
-      font-weight: bold;
-      font-size: 15px;
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
+      color: #06101e;
+      font-weight: 700;
+      font-size: 14px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.2s ease;
     }
 
     .btn-abrir:hover {
       filter: brightness(1.05);
-      box-shadow: 0 4px 15px rgba(216, 168, 78, 0.2);
+      box-shadow: 0 8px 20px rgba(216, 168, 78, 0.2);
     }
 
-    .logout{
-      margin-top:auto;
-      background:#7a2222 !important;
-      color:#f8fafc !important;
+    /* BOTÃO DE LOGOUT E BOTÕES DE EXCLUSÃO */
+    .logout {
+      margin-top: auto;
+      background: rgba(239, 68, 68, 0.05) !important;
+      color: #ef4444 !important;
       font-weight: 600;
-      border: 1px solid rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(239, 68, 68, 0.15) !important;
     }
 
     .sidebar a.logout:hover {
-      background:#992d2d !important;
+      background: #ef4444 !important;
+      color: white !important;
+      border-color: transparent !important;
       transform: none;
     }
 
     @media(max-width:900px){
-      body{flex-direction:column;}
-      .sidebar{width:100%; padding: 25px;}
-      .sidebar h2 { margin-bottom: 15px; }
-      .content{padding:30px 20px;}
-      input{width:100%;}
+      body { flex-direction: column; }
+      .sidebar { width: 100%; padding: 30px 24px; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
+      .sidebar h2 { margin-bottom: 20px; }
+      .content { padding: 40px 24px; }
     }
-
   </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-
   <h2>Courvan</h2>
-
   <a href="clientes.html">👥 Clientes</a>
-
-<a href="admin.html">➕ Novo Cliente</a>
-
-<a href="agenda.html">
-  📅 Agenda Geral
-</a>
-
-<a href="#" id="logoutBtn" class="logout">
-  🚪 Sair
-</a>
-
+  <a href="admin.html">➕ Novo Cliente</a>
+  <a href="agenda.html">📅 Agenda Geral</a>
+  <a href="#" id="logoutBtn" class="logout">🚪 Sair</a>
 </div>
 
 <div class="content">
-
-  <h1 style="margin-bottom:25px;">Clientes</h1>
+  <h1 style="margin-bottom:30px;">Clientes</h1>
 
   <input
     type="text"
     id="pesquisaCliente"
-    placeholder="Pesquisar cliente..."
+    placeholder="Pesquisar cliente por nome..."
     onkeyup="filtrarClientes()"
     style="
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:10px;
-      margin-bottom:25px;
-      background:#16385f;
-      color:white;
+      width: 100%;
+      padding: 16px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      margin-bottom: 35px;
+      background: #0d233f;
+      color: white;
+      font-size: 15px;
     "
   >
 
   <div class="clientes" id="clientes"></div>
-
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
   getFirestore,
   collection,
@@ -220,7 +264,6 @@ import {
   deleteDoc,
   doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 import {
   getAuth,
   onAuthStateChanged,
@@ -241,78 +284,76 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 const clientesDiv = document.getElementById("clientes");
-
 let unsubscribeClientes = null;
 
 /* 🔐 LOGIN ADMIN */
 onAuthStateChanged(auth, (user) => {
-
   if (!user) {
     window.location.href = "login.html";
     return;
   }
-
   if (user.email !== "comercial.courvanlicitacoes@gmail.com") {
     window.location.href = "cliente.html";
     return;
   }
-
   iniciarListenerClientes();
-
 });
 
-/* 🔥 LISTA EM TEMPO REAL */
+/* 🔥 LISTA EM TEMPO REAL INJETANDO ESTRUTURA PREMIUM */
 function iniciarListenerClientes(){
-
   if (unsubscribeClientes) unsubscribeClientes();
 
   unsubscribeClientes = onSnapshot(
     collection(db, "clientes"),
     (snapshot) => {
-
       console.log("CLIENTES CARREGADOS:", snapshot.size);
-
       clientesDiv.innerHTML = "";
 
       snapshot.forEach((docItem) => {
-
         const cliente = docItem.data();
-
         const nome = cliente?.nome || "Sem nome";
         const empresa = cliente?.empresa || "-";
         const email = cliente?.email || "-";
         const status = cliente?.status || "-";
-
         const nomeLower = nome.toLowerCase();
 
+        // Template estrutural limpo, dividindo labels e valores de forma simétrica
         clientesDiv.innerHTML += `
           <div class="card cardCliente" data-nome="${nomeLower}">
+            <div>
+              <h2>${nome}</h2>
+              <div class="card-info-group">
+                <p><strong>Empresa</strong> <span>${empresa}</span></p>
+                <p><strong>Email</strong> <span>${email}</span></p>
+                <p><strong>Status</strong> <span style="color: #f3d082;">${status}</span></p>
+              </div>
+            </div>
 
-            <h2>${nome}</h2>
-
-            <p><strong>Empresa:</strong> ${empresa}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Status:</strong> ${status}</p>
-
-            <button class="btn-abrir" onclick="abrirCliente('${docItem.id}')">
-              Abrir Cliente
-            </button>
-
-            <button
-              onclick="excluirCliente('${docItem.id}', '${nome}')"
-              style="
-                width:100%;
-                margin-top:10px;
-                background:#a83232;
-                color:white;
-                border:none;
-                padding:12px;
-                border-radius:10px;
-              "
-            >
-              🗑 Excluir Cliente
-            </button>
-
+            <div>
+              <button class="btn-abrir" onclick="abrirCliente('${docItem.id}')">
+                Abrir Cliente
+              </button>
+              <button
+                onclick="excluirCliente('${docItem.id}', '${nome}')"
+                style="
+                  width: 100%;
+                  margin-top: 10px;
+                  background: rgba(239, 68, 68, 0.06);
+                  color: #ef4444;
+                  border: 1px solid rgba(239, 68, 68, 0.15);
+                  padding: 12px;
+                  border-radius: 12px;
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: all 0.2s ease;
+                "
+                onmouseover="this.style.background='#ef4444'; this.style.color='white'"
+                onmouseout="this.style.background='rgba(239, 68, 68, 0.06)'; this.style.color='#ef4444'"
+              >
+                🗑️ Excluir Registro
+              </button>
+            </div>
           </div>
         `;
       });
@@ -333,22 +374,15 @@ window.abrirCliente = function(id){
 
 /* 🔍 FILTRO */
 window.filtrarClientes = function(){
-
   const termo = document.getElementById("pesquisaCliente").value.toLowerCase();
-
   document.querySelectorAll(".cardCliente").forEach(card => {
-
     const nome = card.dataset.nome || "";
-
-    card.style.display = nome.includes(termo) ? "block" : "none";
-
+    card.style.display = nome.includes(termo) ? "flex" : "none";
   });
-
 };
 
 /* 🗑 EXCLUIR */
 window.excluirCliente = async function(id, nome){
-
   const confirmar = confirm(`Deseja excluir o cliente "${nome}"?`);
   if(!confirmar) return;
 
@@ -356,11 +390,8 @@ window.excluirCliente = async function(id, nome){
   if(check !== "EXCLUIR") return;
 
   await deleteDoc(doc(db, "clientes", id));
-
   alert("Cliente excluído com sucesso");
-
 };
-
 </script>
 
 </body>
