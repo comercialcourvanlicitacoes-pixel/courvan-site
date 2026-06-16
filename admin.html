@@ -214,6 +214,12 @@ window.criarUsuario = async function () {
 
     const cpf = document.getElementById("cpf").value;
 
+    const empresaExistente =
+  document.getElementById("empresaExistente").checked;
+
+const empresaIdExistente =
+  document.getElementById("empresaIdExistente").value;
+
     if (!nome || !email || !senha || !empresa || !cnpj) {
       alert("Preencha todos os campos obrigatórios (incluindo CNPJ)");
       return;
