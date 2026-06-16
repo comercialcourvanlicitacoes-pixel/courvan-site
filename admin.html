@@ -219,6 +219,19 @@ window.criarUsuario = async function () {
       }
     );
 
+    await addDoc(
+  collection(db, "usuarios"),
+  {
+    uid,
+    empresaId: clienteRef.id,
+    nome,
+    email,
+    perfil: "administrador",
+    status: "ativo",
+    criadoEm: new Date()
+  }
+);
+
     /* =========================
        CRIA CHAT AUTOMÁTICO
     ========================= */
