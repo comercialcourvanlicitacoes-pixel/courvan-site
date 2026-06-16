@@ -155,11 +155,11 @@
     .card p {
       color: #94a3b8;
       font-size: 14px;
-      margin-bottom: 10px;
-      line-height: 1.6;
+      margin-bottom: 12px;
+      line-height: 1.4;
       display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      flex-direction: column; /* Isso coloca o rótulo em cima e o dado embaixo */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       padding-bottom: 8px;
     }
 
@@ -171,14 +171,11 @@
     .card p span {
       color: #e2e8f0;
       font-weight: 500;
-      text-align: right;
-      max-width: 70%;
-      /* REMOVIDO: overflow: hidden; e text-overflow: ellipsis; */
-      
-      /* ADICIONADO: permite quebra de linha em e-mails longos */
-      word-break: break-all;
-      white-space: normal;
-      line-height: 1.4;
+      text-align: left; /* Alinhado à esquerda fica mais legível em e-mails longos */
+      width: 100%;
+      word-break: break-all; /* Quebra o e-mail se for grande demais */
+      margin-top: 4px;
+      font-size: 13px;
     }
 
     /* BOTÕES DENTRO DOS CARDS */
