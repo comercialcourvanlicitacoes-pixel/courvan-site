@@ -780,7 +780,7 @@ usuarioLogado = {
     
 const empresaId = usuario.empresaId;
 
-const docCliente = await getDoc(
+docCliente = await getDoc(
   doc(db, "clientes", empresaId)
 );
   }
