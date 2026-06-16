@@ -1341,7 +1341,7 @@ window.enviarMovimentacaoLicitacao = async function(id) {
 
       nome: isAdmin
         ? "Equipe Courvan"
-        : document.getElementById("nome").innerText,
+        : usuarioLogado.nome,
 
       empresa: isAdmin
         ? "Courvan"
@@ -1567,7 +1567,7 @@ window.enviarMensagem = async () => {
 
         nome: isAdmin
           ? "Equipe Courvan"
-          : document.getElementById("nome").innerText,
+          : usuarioLogado.nome,
 
         empresa: isAdmin
           ? "Courvan"
