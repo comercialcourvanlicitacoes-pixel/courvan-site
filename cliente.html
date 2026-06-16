@@ -794,9 +794,14 @@ docCliente = await getDoc(
   clienteIdGlobal = docCliente.id;
   emailClienteGlobal = dadosClienteGlobal.email;
 
-  document.getElementById("nome").innerText = dadosClienteGlobal.nome;
-  document.getElementById("nomeCliente").innerText = dadosClienteGlobal.nome;
-  document.getElementById("empresa").innerText = dadosClienteGlobal.empresa;
+  document.getElementById("nome").innerText =
+  usuarioLogado?.nome || "";
+
+document.getElementById("nomeCliente").innerText =
+  usuarioLogado?.nome || "";
+
+document.getElementById("email").innerText =
+  user.email || "";
   document.getElementById("email").innerText = dadosClienteGlobal.email;
   document.getElementById("status").innerText = dadosClienteGlobal.status;
 
