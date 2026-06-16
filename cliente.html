@@ -594,7 +594,7 @@
   
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, query, where, getDocs, getDoc, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc
+  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut
@@ -634,8 +634,6 @@ let dadosClienteGlobal = null;
 
 let respostaMensagem = null;
 
-let usuarioLogado = null;
-  
 window.responderMensagem = function(id, texto, autor){
 
   respostaMensagem = {
@@ -757,35 +755,11 @@ onAuthStateChanged(auth, async (user) => {
     const snap = await getDocs(query(collection(db, "clientes")));
     docCliente = snap.docs.find(d => d.id === clienteIdUrl);
   } else {
-    const usuarioSnap = await getDocs(
-  query(
-    collection(db, "usuarios"),
-    where("uid", "==", user.uid)
-  )
-);
-
-if (usuarioSnap.empty) {
-  alert("Usuário não vinculado a nenhuma empresa");
-  return;
-}
-
-const usuario = usuarioSnap.docs[0].data();
-
-usuarioLogado = {
-  uid: user.uid,
-  nome: usuario.nome,
-  perfil: usuario.perfil,
-  empresaId: usuario.empresaId
-};
-    
-const empresaId = usuario.empresaId;
-
-docCliente = await getDoc(
-  doc(db, "clientes", empresaId)
-);
+    const snap = await getDocs(query(collection(db, "clientes"), where("uid", "==", user.uid)));
+    docCliente = snap.docs[0];
   }
 
-  if (!docCliente.exists()) {
+  if (!docCliente) {
     alert("Cliente não encontrado");
     return;
   }
@@ -794,14 +768,9 @@ docCliente = await getDoc(
   clienteIdGlobal = docCliente.id;
   emailClienteGlobal = dadosClienteGlobal.email;
 
-  document.getElementById("nome").innerText =
-  usuarioLogado?.nome || "";
-
-document.getElementById("nomeCliente").innerText =
-  usuarioLogado?.nome || "";
-
-document.getElementById("email").innerText =
-  user.email || "";
+  document.getElementById("nome").innerText = dadosClienteGlobal.nome;
+  document.getElementById("nomeCliente").innerText = dadosClienteGlobal.nome;
+  document.getElementById("empresa").innerText = dadosClienteGlobal.empresa;
   document.getElementById("email").innerText = dadosClienteGlobal.email;
   document.getElementById("status").innerText = dadosClienteGlobal.status;
 
@@ -824,7 +793,7 @@ document.getElementById("email").innerText =
   carregarRadarPersonalizado();
   setInterval(carregarRadarPersonalizado, 30000); 
 });
-  
+
 window.mostrarAba = function (id) {
 
   document.querySelectorAll(".aba").forEach(a => {
@@ -869,7 +838,8 @@ localStorage.setItem(
 
 atualizarBadgePersistente(
   id,
-  []
+  0,
+  agora - 1
 );
 };
 
@@ -1345,7 +1315,7 @@ window.enviarMovimentacaoLicitacao = async function(id) {
 
       nome: isAdmin
         ? "Equipe Courvan"
-        : usuarioLogado.nome,
+        : document.getElementById("nome").innerText,
 
       empresa: isAdmin
         ? "Courvan"
@@ -1362,7 +1332,7 @@ window.enviarComentario = async (id) => {
   const input = document.getElementById(`input-comentario-${id}`);
   if(!input.value) return;
   await addDoc(collection(db, "demandas", id, "comentarios"), {
-    texto: input.value, nome: auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "Equipe Courvan" : usuarioLogado.nome,
+    texto: input.value, nome: auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "Equipe Courvan" : document.getElementById("nome").innerText,
     empresa: auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "Courvan" : document.getElementById("empresa").innerText, data: serverTimestamp()
   });
   input.value = "";
@@ -1571,7 +1541,7 @@ window.enviarMensagem = async () => {
 
         nome: isAdmin
           ? "Equipe Courvan"
-          : usuarioLogado.nome,
+          : document.getElementById("nome").innerText,
 
         empresa: isAdmin
           ? "Courvan"
