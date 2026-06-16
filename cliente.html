@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* ==========================================================================
+       CONFIGURAÇÕES GERAIS E NOVAS DIRETRIZES VISUAIS (GLASSMORPHISM / PREMIUM)
+       ========================================================================== */
     * {
       margin: 0;
       padding: 0;
@@ -18,8 +21,8 @@
     }
 
     body {
-      background: #051020;
-      color: #e2e8f0;
+      background: #060b13; /* Fundo escuro corporativo idêntico ao site oficial */
+      color: #f1f5f9;
       overflow-x: hidden;
     }
 
@@ -28,90 +31,98 @@
       min-height: 100vh;
     }
 
-    /* SIDEBAR MODERNA */
+    /* SIDEBAR PREMIUM */
     .sidebar {
-      width: 280px;
-      background: #091d36;
-      padding: 30px 20px;
+      width: 290px;
+      background: linear-gradient(180deg, #091322 0%, #050b14 100%);
+      padding: 35px 24px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       min-height: 100vh;
-      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      border-right: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .sidebar h2 {
-      color: #d8a84e;
-      font-size: 22px;
+      color: #e5b85c;
+      font-size: 24px;
       font-weight: 700;
-      margin-bottom: 25px;
-      padding-left: 10px;
+      margin-bottom: 30px;
+      padding-left: 8px;
       letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fcd34d 0%, #d8a84e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .sidebar button {
-      padding: 12px 16px;
+      padding: 14px 18px;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       background: transparent;
       color: #94a3b8;
       cursor: pointer;
       text-align: left;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       font-size: 15px;
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .sidebar button:hover {
-      background: rgba(22, 56, 95, 0.6);
-      color: #ffffff;
+      background: rgba(229, 184, 92, 0.08);
+      color: #fcd34d;
+      transform: translateX(4px);
     }
 
-    /* CUSTOMIZAÇÃO DE CONTEÚDO */
+    /* CONTEÚDO PRINCIPAL COM BACKDROP RADIAL DE ALTO PADRÃO */
     .content {
       flex: 1;
-      padding: 40px;
-      background: radial-gradient(circle at top right, #0a2240 0%, #051020 100%);
+      padding: 50px 40px;
+      background: radial-gradient(circle at top right, #0e1e36 0%, #060b13 100%);
     }
 
+    /* COMPONENTE DA ABA - GLASSMORPHISM AVANÇADO */
     .aba {
-      background: rgba(12, 39, 72, 0.6);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 35px;
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      background: rgba(13, 25, 44, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 40px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
 
     h1 {
       color: #ffffff;
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 700;
-      margin-bottom: 24px;
-      letter-spacing: -0.5px;
+      margin-bottom: 28px;
+      letter-spacing: -0.75px;
     }
 
     p {
       color: #94a3b8;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       line-height: 1.6;
       font-size: 15px;
     }
 
+    /* CONTAINER INTERNO DE INFORMAÇÕES */
     .info-box {
       margin-top: 25px;
-      background: #0d2748;
-      padding: 24px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 26px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .info-box p {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       color: #e2e8f0;
     }
     
@@ -120,44 +131,46 @@
       font-weight: 500;
     }
 
-    /* INPUTS E BOTÕES PREMIUM */
+    /* INPUTS TOTALMENTE REESTILIZADOS */
     .inputPadrao {
       width: 100%;
-      padding: 14px 16px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      background: #071930;
-      color: white;
+      padding: 16px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      background: rgba(5, 11, 19, 0.6);
+      color: #ffffff;
       font-size: 15px;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
 
     .inputPadrao:focus {
       outline: none;
-      border-color: #d8a84e;
-      box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.15);
+      border-color: #e5b85c;
+      box-shadow: 0 0 0 3px rgba(229, 184, 92, 0.15);
+      background: rgba(5, 11, 19, 0.9);
     }
 
     .inputPadrao::placeholder {
-      color: #64748b;
+      color: #475569;
     }
 
+    /* BOTÕES COM DEGRADÊ INSTITUCIONAL DA COURVAN */
     .botaoPadrao {
-      padding: 14px 24px;
+      padding: 16px 28px;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
-      color: #051020;
+      color: #060b13;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
       font-size: 15px;
-      box-shadow: 0 4px 12px rgba(216, 168, 78, 0.2);
+      box-shadow: 0 4px 15px rgba(216, 168, 78, 0.2);
     }
 
     .botaoPadrao:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(216, 168, 78, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(216, 168, 78, 0.35);
       opacity: 0.95;
     }
 
@@ -165,129 +178,116 @@
       transform: translateY(0);
     }
 
-    /* ESTILOS DO RADAR INTEGRADO */
+    /* GRID E CARDS DO RADAR */
     .grid-radar {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
+      gap: 28px;
       margin-top: 25px;
     }
 
     .card-radar {
-      background: #0d2748;
-      border-radius: 20px;
-      padding: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 24px;
+      padding: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
 
     .card-radar:hover {
-      transform: translateY(-6px);
-      border-color: rgba(216, 168, 78, 0.3);
-      box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+      transform: translateY(-8px);
+      border-color: rgba(229, 184, 92, 0.3);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     }
 
     .radar-orgao {
-      color: #d8a84e;
+      color: #e5b85c;
       font-weight: 600;
-      font-size: 17px;
+      font-size: 18px;
       margin-bottom: 12px;
       line-height: 1.4;
     }
 
     .radar-valor {
-      font-size: 22px;
-      color: #34d399;
+      font-size: 24px;
+      color: #10b981;
       font-weight: 700;
-      margin: 18px 0;
+      margin: 20px 0;
       letter-spacing: -0.5px;
     }
 
     .radar-btn {
       display: block;
       text-align: center;
-      background: #1e3a5f;
+      background: rgba(255, 255, 255, 0.05);
       color: #ffffff;
-      padding: 12px;
-      border-radius: 12px;
+      padding: 14px;
+      border-radius: 14px;
       text-decoration: none;
       font-weight: 600;
       font-size: 14px;
       margin-top: 15px;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .card-radar:hover .radar-btn {
       background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
-      color: #051020;
+      color: #060b13;
       border: none;
     }
 
     .radar-status {
-      background: rgba(29, 75, 125, 0.4);
-      padding: 14px 18px;
-      border-radius: 12px;
+      background: rgba(229, 184, 92, 0.06);
+      padding: 16px 20px;
+      border-radius: 14px;
       font-size: 14px;
       color: #cbd5e1;
-      margin-bottom: 25px;
-      border-left: 4px solid #d8a84e;
+      margin-bottom: 30px;
+      border-left: 4px solid #e5b85c;
     }
 
-    /* GRUPOS DE LICITAÇÕES REESTILIZADOS */
     h2[id^="grupo"] {
       font-size: 16px;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 30px;
+      letter-spacing: 1.5px;
+      margin-top: 35px;
     }
 
     @media(max-width:900px){
       .layout{flex-direction:column;}
-      .sidebar{width:100%; min-height: auto; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
-      .content{padding:20px;}
+      .sidebar{width:100%; min-height: auto; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.04); padding: 25px 20px;}
+      .content{padding:25px 20px;}
     }
 
-    /* =========================
-   BADGE DE NOTIFICAÇÃO
-========================= */
+    /* BADGE DE NOTIFICAÇÃO ANIMADA */
+    .sidebar button {
+      position: relative;
+    }
 
-.sidebar button {
-  position: relative;
-}
+    .notificacao-badge {
+      margin-left: auto;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #ef4444;
+      color: white;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 0 6px;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+      animation: pulseNotif 1.8s infinite;
+    }
 
-.notificacao-badge {
-  margin-left: auto;
-  min-width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #ef4444;
-  color: white;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 0 6px;
-  box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
-  animation: pulseNotif 1.8s infinite;
-}
-
-@keyframes pulseNotif {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239,68,68,0.5);
-  }
-
-  70% {
-    box-shadow: 0 0 0 10px rgba(239,68,68,0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(239,68,68,0);
-  }
-}
-    
+    @keyframes pulseNotif {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
   </style>
 </head>
 
@@ -302,26 +302,24 @@
     <button onclick="mostrarAba('radar')">📡 Radar Multi-Cliente</button>
 
     <button onclick="mostrarAba('demandas')">
-  📑 Demandas
-  <span class="notificacao-badge" id="badge-demandas">0</span>
-</button>
+      📑 Demandas
+      <span class="notificacao-badge" id="badge-demandas">0</span>
+    </button>
 
-<button onclick="mostrarAba('documentos')">
-  📁 Documentos
-  <span class="notificacao-badge" id="badge-documentos">0</span>
-</button>
+    <button onclick="mostrarAba('documentos')">
+      📁 Documentos
+      <span class="notificacao-badge" id="badge-documentos">0</span>
+    </button>
 
-<button onclick="mostrarAba('chat')">
-  💬 Chat
-  <span class="notificacao-badge" id="badge-chat">0</span>
-</button>
+    <button onclick="mostrarAba('chat')">
+      💬 Chat
+      <span class="notificacao-badge" id="badge-chat">0</span>
+    </button>
 
-<button onclick="mostrarAba('licitacoes')">
-  🏛 Minhas Licitações
-  <span class="notificacao-badge" id="badge-licitacoes">0</span>
-</button>
-
-
+    <button onclick="mostrarAba('licitacoes')">
+      🏛 Minhas Licitações
+      <span class="notificacao-badge" id="badge-licitacoes">0</span>
+    </button>
     
     <button onclick="window.location.href='agenda.html'">📅 Agenda</button>
     <button onclick="mostrarAba('config')">⚙ Configurações</button>
@@ -330,13 +328,13 @@
       <button
         onclick="logout()"
         style="
-          background: rgba(168, 50, 50, 0.15);
+          background: rgba(239, 68, 68, 0.1);
           color: #f87171;
           width:100%;
-          border: 1px solid rgba(168, 50, 50, 0.2);
+          border: 1px solid rgba(239, 68, 68, 0.2);
         "
-        onmouseover="this.style.background='#a83232'; this.style.color='white'"
-        onmouseout="this.style.background='rgba(168, 50, 50, 0.15)'; this.style.color='#f87171'"
+        onmouseover="this.style.background='#ef4444'; this.style.color='white'; this.style.transform='none';"
+        onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'; this.style.color='#f87171'"
       >
         🚪 Sair do Sistema
       </button>
@@ -346,68 +344,68 @@
   <div class="content">
 
     <div id="dashboard" class="aba">
-  <h1>Dashboard do Cliente</h1>
+      <h1>Dashboard do Cliente</h1>
 
-  <div class="info-box">
-    <p><strong>Nome:</strong> <span id="nome"></span></p>
-    <p><strong>Empresa:</strong> <span id="empresa"></span></p>
-    <p><strong>Email:</strong> <span id="email"></span></p>
-    <p><strong>Status:</strong> <span id="status"></span></p>
-  </div>
-
-  <div class="info-box" style="margin-top:20px;">
-    <h2 style="margin-bottom:16px;color:#d8a84e; font-size:18px;">Indicadores de Licitações</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">📚 Total de Licitações</p>
-        <p id="kpiTotalLicitacoes" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#e2e8f0;">0</p>
+      <div class="info-box">
+        <p><strong>Nome:</strong> <span id="nome"></span></p>
+        <p><strong>Empresa:</strong> <span id="empresa"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>Status:</strong> <span id="status"></span></p>
       </div>
 
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">🏆 Licitações Ganhas</p>
-        <p id="kpiLicitacoesGanhas" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#34d399;">0</p>
+      <div class="info-box" style="margin-top:20px;">
+        <h2 style="margin-bottom:16px;color:#e5b85c; font-size:18px;">Indicadores de Licitações</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">📚 Total de Licitações</p>
+            <p id="kpiTotalLicitacoes" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#e2e8f0;">0</p>
+          </div>
+
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">🏆 Licitações Ganhas</p>
+            <p id="kpiLicitacoesGanhas" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#10b981;">0</p>
+          </div>
+
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">💰 Valor Total Ganho</p>
+            <p id="kpiValorGanho" style="margin:6px 0 0; font-size:22px; font-weight:700; color:#e5b85c;">R$ 0,00</p>
+          </div>
+
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">🎯 Taxa de Vitória</p>
+            <p id="kpiTaxaVitoria" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#3b82f6;">0%</p>
+          </div>
+
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">🧾 Ticket Médio (Ganhas)</p>
+            <p id="kpiTicketMedio" style="margin:6px 0 0; font-size:22px; font-weight:700; color:#fcd34d;">R$ 0,00</p>
+          </div>
+
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">🚦 Pipeline Ativo (Aviso + Andamento)</p>
+            <p id="kpiPipelineAtivo" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#f59e0b;">0</p>
+          </div>
+        </div>
       </div>
 
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">💰 Valor Total Ganho</p>
-        <p id="kpiValorGanho" style="margin:6px 0 0; font-size:22px; font-weight:700; color:#d8a84e;">R$ 0,00</p>
-      </div>
-
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">🎯 Taxa de Vitória</p>
-        <p id="kpiTaxaVitoria" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#60a5fa;">0%</p>
-      </div>
-
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">🧾 Ticket Médio (Ganhas)</p>
-        <p id="kpiTicketMedio" style="margin:6px 0 0; font-size:22px; font-weight:700; color:#fcd34d;">R$ 0,00</p>
-      </div>
-
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">🚦 Pipeline Ativo (Aviso + Andamento)</p>
-        <p id="kpiPipelineAtivo" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#f59e0b;">0</p>
+      <div class="info-box" style="margin-top:20px;">
+        <h2 style="margin-bottom:16px;color:#e5b85c; font-size:18px;">Interesse nas Licitações</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">✅ Tenho Interesse</p>
+            <p id="kpiInteresseSim" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#10b981;">0</p>
+          </div>
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">❌ Sem Interesse</p>
+            <p id="kpiInteresseNao" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#ef4444;">0</p>
+          </div>
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
+            <p style="margin:0; opacity:.8; font-size:13px;">🕓 Não Avaliadas</p>
+            <p id="kpiInteresseNeutro" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#94a3b8;">0</p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="info-box" style="margin-top:20px;">
-    <h2 style="margin-bottom:16px;color:#d8a84e; font-size:18px;">Interesse nas Licitações</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">✅ Tenho Interesse</p>
-        <p id="kpiInteresseSim" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#34d399;">0</p>
-      </div>
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">❌ Sem Interesse</p>
-        <p id="kpiInteresseNao" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#f87171;">0</p>
-      </div>
-      <div style="background:#071930; border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px;">
-        <p style="margin:0; opacity:.8; font-size:13px;">🕓 Não Avaliadas</p>
-        <p id="kpiInteresseNeutro" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#94a3b8;">0</p>
-      </div>
-    </div>
-  </div>
-</div>
 
     <div id="radar" class="aba" style="display:none;">
       <h1>📡 Radar Courvan</h1>
@@ -438,112 +436,42 @@
     </div>
 
     <div id="documentos" class="aba" style="display:none;">
-  <h1>Documentos</h1>
+      <h1>Documentos</h1>
 
-  <div id="formDocumentos"
-       style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:30px;">
+      <div id="formDocumentos" style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:30px;">
+        <select id="categoriaDocumento" class="inputPadrao" style="flex:1;">
+          <option value="certidoes">Controle de Certidões</option>
+          <option value="contratos">Contratos</option>
+          <option value="editais">Editais</option>
+        </select>
 
-    <select id="categoriaDocumento"
-            class="inputPadrao"
-            style="flex:1;">
-      <option value="certidoes">Controle de Certidões</option>
-      <option value="contratos">Contratos</option>
-      <option value="editais">Editais</option>
-    </select>
+        <input type="text" id="nomeDocumento" placeholder="Nome do documento" class="inputPadrao" style="flex:1;">
+        <input type="date" id="vencimentoDocumento" class="inputPadrao" style="flex:1;">
+        <input type="text" id="statusDocumento" placeholder="Status (Negativa, Positiva, Positiva com efeito de negativa...)" class="inputPadrao" style="flex:1;">
+        <input type="file" id="arquivoDocumento" class="inputPadrao" style="flex:1;">
 
-    <input
-      type="text"
-      id="nomeDocumento"
-      placeholder="Nome do documento"
-      class="inputPadrao"
-      style="flex:1;"
-    >
+        <button class="botaoPadrao" onclick="adicionarDocumento()">Adicionar</button>
+      </div>
 
-    <input
-      type="date"
-      id="vencimentoDocumento"
-      class="inputPadrao"
-      style="flex:1;"
-    >
-
-    <input
-      type="text"
-      id="statusDocumento"
-      placeholder="Status (Negativa, Positiva, Positiva com efeito de negativa...)"
-      class="inputPadrao"
-      style="flex:1;"
-    >
-
-    <input
-      type="file"
-      id="arquivoDocumento"
-      class="inputPadrao"
-      style="flex:1;"
-    >
-
-    <button
-      class="botaoPadrao"
-      onclick="adicionarDocumento()"
-    >
-      Adicionar
-    </button>
-
-  </div>
-
-  <div id="listaDocumentos"></div>
-</div>
+      <div id="listaDocumentos"></div>
+    </div>
 
     <div id="chat" class="aba" style="display:none;">
-  <h1>Chat</h1>
+      <h1>Chat</h1>
 
-  <div id="mensagens"
-       style="background:#071930; height:400px; overflow-y:auto; overflow-x:hidden; padding:20px; border-radius:16px; margin-bottom:20px; border: 1px solid rgba(255,255,255,0.02);">
-  </div>
+      <div id="mensagens" style="background: rgba(5, 11, 19, 0.6); height:450px; overflow-y:auto; overflow-x:hidden; padding:24px; border-radius:20px; margin-bottom:20px; border: 1px solid rgba(255,255,255,0.03);">
+      </div>
 
-  <!-- PREVIEW DA RESPOSTA -->
-  <div
-    id="previewResposta"
-    style="
-      display:none;
-      background:#0d2748;
-      padding:10px;
-      border-left:4px solid #d8a84e;
-      margin-bottom:10px;
-      border-radius:8px;
-    "
-  >
-    <div id="textoResposta"></div>
+      <div id="previewResposta" style="display:none; background: rgba(229, 184, 92, 0.08); padding:14px; border-left:4px solid #e5b85c; margin-bottom:14px; border-radius:12px;">
+        <div id="textoResposta" style="font-size: 14px; color:#cbd5e1;"></div>
+        <button onclick="cancelarResposta()" style="margin-top:6px; background:none; border:none; color:#f87171; cursor:pointer; font-weight: 500;">Cancelar</button>
+      </div>
 
-    <button
-      onclick="cancelarResposta()"
-      style="
-        margin-top:5px;
-        background:none;
-        border:none;
-        color:#f87171;
-        cursor:pointer;
-      "
-    >
-      Cancelar
-    </button>
-  </div>
-
-  <div style="display:flex;gap:10px;">
-    <input
-      type="text"
-      id="mensagemInput"
-      placeholder="Digite sua mensagem..."
-      class="inputPadrao"
-    >
-
-    <button
-      class="botaoPadrao"
-      onclick="enviarMensagem()"
-    >
-      Enviar
-    </button>
-  </div>
-</div>
+      <div style="display:flex;gap:10px;">
+        <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." class="inputPadrao">
+        <button class="botaoPadrao" onclick="enviarMensagem()">Enviar</button>
+      </div>
+    </div>
 
     <div id="licitacoes" class="aba" style="display:none;">
       <h1>Minhas Licitações</h1>
@@ -561,16 +489,16 @@
     <div id="config" class="aba" style="display:none;">
       <h1>Configurações</h1>
       <div class="info-box">
-        <h2 style="margin-bottom:20px;color:#d8a84e; font-size: 18px;">Dados da Empresa</h2>
+        <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px;">Dados da Empresa</h2>
         <input id="configNome" class="inputPadrao" placeholder="Nome" style="margin-bottom:12px;">
         <input id="configEmpresa" class="inputPadrao" placeholder="Empresa" style="margin-bottom:12px;">
         <input id="configTelefone" class="inputPadrao" placeholder="Telefone" style="margin-bottom:12px;">
         <input id="configCpfCnpj" class="inputPadrao" placeholder="CPF ou CNPJ">
         <input id="configCidade" class="inputPadrao" placeholder="Cidade" style="margin-bottom:20px;">
         
-        <h2 style="margin-bottom:20px;color:#d8a84e; font-size: 18px;">Filtros do Radar</h2>
+        <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px;">Filtros do Radar</h2>
         <p style="font-size: 14px; opacity: 0.8; margin-bottom: 10px;">Palavras-chave para busca (separe por vírgula):</p>
-        <textarea id="configSegmentos" class="inputPadrao" placeholder="Ex: transporte, limpeza, TI, software..." style="margin-bottom:20px; height:100px;"></textarea>
+        <textarea id="configSegmentos" class="inputPadrao" placeholder="Ex: transporte, limpeza, TI, software..." style="margin-bottom:20px; height:100px; resize:none;"></textarea>
         
         <input id="configCidades" class="inputPadrao" placeholder="Filtrar cidades (ex: Belo Horizonte, Contagem)" style="margin-bottom:12px;">
         <input id="configEstados" class="inputPadrao" placeholder="Filtrar estados (ex: MG, SP, RJ)" style="margin-bottom:12px;">
@@ -580,8 +508,8 @@
       </div>
 
       <div class="info-box" style="margin-top:25px;">
-        <h2 style="margin-bottom:20px;color:#d8a84e; font-size: 18px;">Segurança</h2>
-        <button class="botaoPadrao" style="background: transparent; color: #d8a84e; border: 1px solid #d8a84e; box-shadow: none;" onclick="alterarSenha()">Redefinir Senha</button>
+        <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px;">Segurança</h2>
+        <button class="botaoPadrao" style="background: transparent; color: #e5b85c; border: 1px solid #e5b85c; box-shadow: none;" onclick="alterarSenha()">Redefinir Senha</button>
       </div>
     </div>
 
@@ -956,10 +884,10 @@ function listarLicitacoes() {
   
   onSnapshot(q, (snapshot) => {
     div.innerHTML = `
-      <h2 style="margin-bottom:15px;color:#d8a84e;">📢 Avisos</h2><div id="grupo-aviso" style="display:grid; gap:15px;"></div>
+      <h2 style="margin-bottom:15px;color:#e5b85c;">📢 Avisos</h2><div id="grupo-aviso" style="display:grid; gap:15px;"></div>
       <h2 style="margin:30px 0 15px;color:#fcd34d;">🟡 Em Andamento</h2><div id="grupo-andamento"></div>
-      <h2 style="margin:30px 0 15px;color:#34d399;">🟢 Vencidas</h2><div id="grupo-vencida"></div>
-      <h2 style="margin:30px 0 15px;color:#f87171;">🔴 Perdidas</h2><div id="grupo-perdida"></div>
+      <h2 style="margin:30px 0 15px;color:#10b981;">🟢 Vencidas</h2><div id="grupo-vencida"></div>
+      <h2 style="margin:30px 0 15px;color:#ef4444;">🔴 Perdidas</h2><div id="grupo-perdida"></div>
       <h2 style="margin:30px 0 15px;color:#94a3b8;">⚫ Descartadas</h2><div id="grupo-descartada"></div>
     `;
 
@@ -985,14 +913,14 @@ atualizarKpisDashboard(docs);
       const interesse = l.interesseCliente || "nao_avaliado";
 
       grupo.innerHTML += `
-        <div style="background:#0d2748;padding:24px;border-radius:16px;margin-bottom:15px; border: 1px solid rgba(255,255,255,0.04);">
-          <h3 style="color:#d8a84e; font-size: 18px; margin-bottom: 12px;">${l.orgao}</h3>
+        <div style="background: rgba(255, 255, 255, 0.02); padding:26px; border-radius:20px; margin-bottom:18px; border: 1px solid rgba(255,255,255,0.04);">
+          <h3 style="color:#e5b85c; font-size: 18px; margin-bottom: 12px;">${l.orgao}</h3>
           <p style="color: #cbd5e1;"><strong>Objeto:</strong> ${l.objeto}</p>
           <p style="color: #cbd5e1;"><strong>Valor:</strong> R$ ${Number(l.valor || 0).toLocaleString("pt-BR")}</p>
           <p style="color: #cbd5e1;"><strong>Sessão:</strong> ${l.dataSessao || "Não informado"}</p>
 
           <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;">
-            <a href="${linkLicitacao || "#"}" target="_blank" class="radar-btn" style="margin:0; padding:10px 16px; background:${linkLicitacao ? "#1e3a5f" : "#334155"}; opacity:${linkLicitacao ? "1" : "0.6"}; pointer-events:${linkLicitacao ? "auto" : "none"};">
+            <a href="${linkLicitacao || "#"}" target="_blank" class="radar-btn" style="margin:0; padding:10px 16px; background:${linkLicitacao ? "rgba(255,255,255,0.05)" : "#334155"}; opacity:${linkLicitacao ? "1" : "0.6"}; pointer-events:${linkLicitacao ? "auto" : "none"};">
               🔗 ${linkLicitacao ? "Abrir Link da Licitação" : "Link indisponível"}
             </a>
 
@@ -1008,7 +936,7 @@ atualizarKpisDashboard(docs);
     border-radius:10px;
     border:none;
     background:linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%);
-    color:#051020;
+    color:#060b13;
     font-weight:700;
     cursor:pointer;
   "
@@ -1016,32 +944,33 @@ atualizarKpisDashboard(docs);
   💳 Gerar PIX
 </button>
 
-            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(52,211,153,.4); background:${interesse === "tenho_interesse" ? "#065f46" : "rgba(6,95,70,.25)"}; color:#bbf7d0; font-weight:600; cursor:pointer;">
+            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(16,185,129,.4); background:${interesse === "tenho_interesse" ? "#065f46" : "rgba(6,95,70,.15)"}; color:#bbf7d0; font-weight:600; cursor:pointer;">
               ✅ Tenho interesse
             </button>
-            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "sem_interesse" ? "remover" : "sem_interesse"}')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(248,113,113,.4); background:${interesse === "sem_interesse" ? "#7f1d1d" : "rgba(127,29,29,.25)"}; color:#fecaca; font-weight:600; cursor:pointer;">
+            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "sem_interesse" ? "remover" : "sem_interesse"}')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(239,68,68,.4); background:${interesse === "sem_interesse" ? "#7f1d1d" : "rgba(127,29,29,.15)"}; color:#fecaca; font-weight:600; cursor:pointer;">
               ❌ Sem interesse
             </button>
           </div>
           <div style="display:flex; gap: 12px; margin-top: 20px; align-items: center;">
-            <select onchange="alterarStatusLicitacao('${l.id}', this.value)" class="inputPadrao" style="padding: 10px; flex: 2; background: #071930;">
+            <select onchange="alterarStatusLicitacao('${l.id}', this.value)" class="inputPadrao" style="padding: 10px; flex: 2;">
               <option value="aviso" ${status === "aviso" ? "selected" : ""}>📢 Aviso</option>
               <option value="andamento" ${status === "andamento" ? "selected" : ""}>🟡 Em andamento</option>
               <option value="vencida" ${status === "vencida" ? "selected" : ""}>🟢 Vencida</option>
               <option value="perdida" ${status === "perdida" ? "selected" : ""}>🔴 Perdida</option>
               <option value="descartada" ${status === "descartada" ? "selected" : ""}>⚫ Descartada</option>
             </select>
-            <button onclick="excluirLicitacao('${l.id}')" style="flex: 1; padding:11px; border-radius:12px; background:rgba(168, 50, 50, 0.15); color:#f87171; border: 1px solid rgba(168, 50, 50, 0.2); font-weight:600; cursor:pointer; transition: 0.2s;" onmouseover="this.style.background='#a83232'; this.style.color='white'">🗑 Excluir</button>
+            <button onclick="excluirLicitacao('${l.id}')" style="flex: 1; padding:11px; border-radius:12px; background:rgba(239, 68, 68, 0.1); color:#f87171; border: 1px solid rgba(239, 68, 68, 0.2); font-weight:600; cursor:pointer; transition: 0.2s;" onmouseover="this.style.background='#ef4444'; this.style.color='white'">🗑 Excluir</button>
           </div>
           <div style="margin-top:20px;">
 
 <button
   class="botaoPadrao"
   style="
-    background:#1e3a5f;
+    background:rgba(255,255,255,0.04);
     color:white;
     width:100%;
     box-shadow:none;
+    border: 1px solid rgba(255,255,255,0.05);
   "
   onclick="abrirMovimentacoesLicitacao('${l.id}')"
 >
@@ -1053,7 +982,7 @@ atualizarKpisDashboard(docs);
   style="
     display:none;
     margin-top:16px;
-    background:#071930;
+    background:rgba(5, 11, 19, 0.5);
     border-radius:14px;
     padding:18px;
     border:1px solid rgba(255,255,255,.05);
@@ -1123,15 +1052,15 @@ async function listarDemandas() {
     const d = docItem.data();
     demandasBadge.push(d);
     div.innerHTML += `
-      <div style="background:#0d2748;padding:24px;border-radius:16px;margin-bottom:15px; border: 1px solid rgba(255,255,255,0.04);">
-        <h3 style="color:#d8a84e; margin-bottom: 8px; font-size: 18px;">${d.titulo}</h3>
+      <div style="background: rgba(255, 255, 255, 0.02); padding:26px; border-radius:20px; margin-bottom:18px; border: 1px solid rgba(255,255,255,0.04);">
+        <h3 style="color:#e5b85c; margin-bottom: 8px; font-size: 18px;">${d.titulo}</h3>
         <p style="color:#cbd5e1; margin-bottom: 15px;">${d.descricao}</p>
-        <p style="font-size: 13px;"><strong>Prazo:</strong> ${d.prazo} | <strong>Prioridade:</strong> <span style="color: ${d.prioridade==='alta'?'#f87171':d.prioridade==='media'?'#fcd34d':'#34d399'}">${d.prioridade}</span></p>
+        <p style="font-size: 13px;"><strong>Prazo:</strong> ${d.prazo} | <strong>Prioridade:</strong> <span style="color: ${d.prioridade==='alta'?'#ef4444':d.prioridade==='media'?'#fcd34d':'#10b981'}">${d.prioridade}</span></p>
         <div style="display:flex; gap:12px; margin-top:20px;">
-          <button class="botaoPadrao" style="background:#1e3a5f; color:white; flex:1; box-shadow:none;" onclick="abrirComentarios('${docItem.id}')">💬 Comentários</button>
-          <button class="botaoPadrao" style="background:rgba(168, 50, 50, 0.15); color:#f87171; border: 1px solid rgba(168, 50, 50, 0.2); flex:1; box-shadow:none;" onclick="excluirDemanda('${docItem.id}')">🗑 Excluir</button>
+          <button class="botaoPadrao" style="background:rgba(255,255,255,0.04); color:white; flex:1; box-shadow:none; border: 1px solid rgba(255,255,255,0.05);" onclick="abrirComentarios('${docItem.id}')">💬 Comentários</button>
+          <button class="botaoPadrao" style="background:rgba(239, 68, 68, 0.1); color:#f87171; border: 1px solid rgba(239, 68, 68, 0.2); flex:1; box-shadow:none;" onclick="excluirDemanda('${docItem.id}')">🗑 Excluir</button>
         </div>
-        <div id="comentarios-${docItem.id}" style="display:none; margin-top:20px; background:#071930; padding:20px; border-radius:12px;">
+        <div id="comentarios-${docItem.id}" style="display:none; margin-top:20px; background:rgba(5, 11, 19, 0.5); padding:20px; border-radius:12px;">
           <div id="lista-comentarios-${docItem.id}" style="max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
           <div style="display:flex; gap:8px;">
             <input type="text" id="input-comentario-${docItem.id}" placeholder="Comentar..." class="inputPadrao" style="padding:10px;">
@@ -1240,10 +1169,10 @@ function iniciarMovimentacoesLicitacao(id) {
               background:${
                 isMe
                   ? "linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%)"
-                  : "#16385f"
+                  : "rgba(255,255,255,0.04)"
               };
 
-              color:${isMe ? "#051020" : "white"};
+              color:${isMe ? "#060b13" : "white"};
 
               padding:14px;
               border-radius:14px;
@@ -1345,7 +1274,7 @@ function iniciarComentarios(id) {
     snap.forEach(d => {
       const c = d.data();
       div.innerHTML += `<div style="font-size:13px; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px; color: #cbd5e1;">
-        <strong style="color: #d8a84e;">${c.nome}:</strong> ${c.texto}
+        <strong style="color: #e5b85c;">${c.nome}:</strong> ${c.texto}
       </div>`;
     });
   });
@@ -1386,8 +1315,8 @@ div.innerHTML += `
 
     <div style="
       display:inline-block;
-      background:${isMe ? 'linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%)' : '#1d4b7d'};
-      color:${isMe ? '#051020' : 'white'};
+      background:${isMe ? 'linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%)' : 'rgba(255,255,255,0.04)'};
+      color:${isMe ? '#060b13' : 'white'};
       padding:12px 16px;
       border-radius:16px;
       border-bottom-${isMe ? 'right' : 'left'}-radius:4px;
@@ -1395,6 +1324,7 @@ div.innerHTML += `
       overflow:hidden;
       text-align:left;
       box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      border:${isMe?'none':'1px solid rgba(255,255,255,0.05)'};
     ">
 
       <div style="
@@ -1412,7 +1342,7 @@ div.innerHTML += `
       <div
         style="
           background:rgba(255,255,255,.08);
-          border-left:3px solid #d8a84e;
+          border-left:3px solid #e5b85c;
           padding:8px;
           border-radius:8px;
           margin-bottom:8px;
@@ -1452,7 +1382,7 @@ div.innerHTML += `
     margin-top:6px;
     background:none;
     border:none;
-    color:#d8a84e;
+    color:${isMe ? '#060b13' : '#e5b85c'};
     cursor:pointer;
     font-size:12px;
   "
@@ -1630,7 +1560,7 @@ function iniciarDocumentos() {
         documentos.push(d);
 
         div.innerHTML += `
-          <div style="background:#0d2748; padding:20px; border-radius:16px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
+          <div style="background: rgba(255, 255, 255, 0.02); padding:22px; border-radius:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
             <div>
               <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
 
@@ -1647,7 +1577,7 @@ function iniciarDocumentos() {
               href="${d.link}"
               target="_blank"
               class="radar-btn"
-              style="margin:0; padding:10px 20px; background: #d8a84e; color: #051020; border: none;"
+              style="margin:0; padding:10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; border: none; box-shadow: 0 4px 12px rgba(216,168,78,0.15);"
             >
               Abrir
             </a>
