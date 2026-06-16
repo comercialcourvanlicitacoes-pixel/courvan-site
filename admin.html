@@ -99,6 +99,19 @@
 
   <input id="cpf" placeholder="CPF (opcional)">
 
+  <hr style="margin:15px 0">
+
+<label style="display:flex;gap:8px;margin-bottom:10px;">
+  <input type="checkbox" id="empresaExistente">
+  Vincular a empresa já existente
+</label>
+
+<input
+  id="empresaIdExistente"
+  placeholder="ID da empresa existente"
+  style="display:none"
+>
+
   <button onclick="criarUsuario()">
     Criar Cliente
   </button>
