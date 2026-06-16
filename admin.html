@@ -218,8 +218,8 @@ window.criarUsuario = async function () {
 }
     );
 
-    await addDoc(
-  collection(db, "usuarios"),
+    await setDoc(
+  doc(db, "usuarios", uid),
   {
     uid,
     empresaId: clienteRef.id,
