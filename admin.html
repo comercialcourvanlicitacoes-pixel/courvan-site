@@ -181,9 +181,23 @@ const secondaryAuth = getAuth(secondaryApp);
 
 const db = getFirestore(app);
 
+document
+.getElementById("empresaExistente")
+.addEventListener("change", function(){
+
+  document.getElementById(
+    "empresaIdExistente"
+  ).style.display =
+    this.checked
+      ? "block"
+      : "none";
+
+});
+  
 /* =========================
    CRIAR USUÁRIO + CLIENTE
 ========================= */
+ 
 window.criarUsuario = async function () {
 
   try {
