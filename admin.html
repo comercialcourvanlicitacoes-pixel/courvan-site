@@ -239,30 +239,62 @@ const empresaIdExistente =
     /* =========================
        CRIA CLIENTE
     ========================= */
-    const clienteRef = await addDoc(
-      collection(db, "clientes"),
-      {
-  empresa,
-  cnpj,
-  cpf: cpf || null,
-  emailPrincipal: email,
-  status: "ativo",
-  criadoEm: new Date()
-}
-    );
+    let empresaIdFinal;
 
-    await setDoc(
-  doc(db, "usuarios", uid),
-  {
-    uid,
-    empresaId: clienteRef.id,
-    nome,
-    email,
-    perfil: "administrador",
-    status: "ativo",
-    criadoEm: new Date()
-  }
-);
+if (empresaExistente) {
+
+  empresaIdFinal = empresaIdExistente;
+
+  await setDoc(
+    doc(db, "usuarios", uid),
+    {
+      uid,
+      empresaId: empresaIdFinal,
+      nome,
+      email,
+      perfil: "usuario",
+      status: "ativo",
+      criadoEm: new Date()
+    }
+  );
+
+} else {
+
+  const clienteRef = await addDoc(
+    collection(db, "clientes"),
+    {
+      empresa,
+      cnpj,
+      cpf: cpf || null,
+      emailPrincipal: email,
+      status: "ativo",
+      criadoEm: new Date()
+    }
+  );
+
+  empresaIdFinal = clienteRef.id;
+
+  await setDoc(
+    doc(db, "usuarios", uid),
+    {
+      uid,
+      empresaId: empresaIdFinal,
+      nome,
+      email,
+      perfil: "administrador",
+      status: "ativo",
+      criadoEm: new Date()
+    }
+  );
+
+  await setDoc(
+    doc(db, "chats", empresaIdFinal),
+    {
+      clienteId: empresaIdFinal,
+      criadoEm: new Date()
+    }
+  );
+}
 
     /* =========================
        CRIA CHAT AUTOMÁTICO
