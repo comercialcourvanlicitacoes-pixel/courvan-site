@@ -785,7 +785,7 @@ docCliente = await getDoc(
 );
   }
 
-  if (!docCliente) {
+  if (!docCliente.exists()) {
     alert("Cliente não encontrado");
     return;
   }
