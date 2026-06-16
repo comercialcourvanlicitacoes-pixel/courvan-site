@@ -755,8 +755,25 @@ onAuthStateChanged(auth, async (user) => {
     const snap = await getDocs(query(collection(db, "clientes")));
     docCliente = snap.docs.find(d => d.id === clienteIdUrl);
   } else {
-    const snap = await getDocs(query(collection(db, "clientes"), where("uid", "==", user.uid)));
-    docCliente = snap.docs[0];
+    const usuarioSnap = await getDocs(
+  query(
+    collection(db, "usuarios"),
+    where("uid", "==", user.uid)
+  )
+);
+
+if (usuarioSnap.empty) {
+  alert("Usuário não vinculado a nenhuma empresa");
+  return;
+}
+
+const usuario = usuarioSnap.docs[0].data();
+
+const empresaId = usuario.empresaId;
+
+const docCliente = await getDoc(
+  doc(db, "clientes", empresaId)
+);
   }
 
   if (!docCliente) {
