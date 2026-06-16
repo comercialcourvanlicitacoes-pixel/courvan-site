@@ -173,8 +173,12 @@
       font-weight: 500;
       text-align: right;
       max-width: 70%;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      /* REMOVIDO: overflow: hidden; e text-overflow: ellipsis; */
+      
+      /* ADICIONADO: permite quebra de linha em e-mails longos */
+      word-break: break-all;
+      white-space: normal;
+      line-height: 1.4;
     }
 
     /* BOTÕES DENTRO DOS CARDS */
