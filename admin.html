@@ -99,19 +99,6 @@
 
   <input id="cpf" placeholder="CPF (opcional)">
 
-  <hr style="margin:15px 0">
-
-<label style="display:flex;gap:8px;margin-bottom:10px;">
-  <input type="checkbox" id="empresaExistente">
-  Vincular a empresa já existente
-</label>
-
-<input
-  id="empresaIdExistente"
-  placeholder="ID da empresa existente"
-  style="display:none"
->
-
   <button onclick="criarUsuario()">
     Criar Cliente
   </button>
@@ -181,23 +168,9 @@ const secondaryAuth = getAuth(secondaryApp);
 
 const db = getFirestore(app);
 
-document
-.getElementById("empresaExistente")
-.addEventListener("change", function(){
-
-  document.getElementById(
-    "empresaIdExistente"
-  ).style.display =
-    this.checked
-      ? "block"
-      : "none";
-
-});
-  
 /* =========================
    CRIAR USUÁRIO + CLIENTE
 ========================= */
- 
 window.criarUsuario = async function () {
 
   try {
@@ -213,12 +186,6 @@ window.criarUsuario = async function () {
     const cnpj = document.getElementById("cnpj").value;
 
     const cpf = document.getElementById("cpf").value;
-
-    const empresaExistente =
-  document.getElementById("empresaExistente").checked;
-
-const empresaIdExistente =
-  document.getElementById("empresaIdExistente").value;
 
     if (!nome || !email || !senha || !empresa || !cnpj) {
       alert("Preencha todos os campos obrigatórios (incluindo CNPJ)");
@@ -239,62 +206,18 @@ const empresaIdExistente =
     /* =========================
        CRIA CLIENTE
     ========================= */
-    let empresaIdFinal;
-
-if (empresaExistente) {
-
-  empresaIdFinal = empresaIdExistente;
-
-  await setDoc(
-    doc(db, "usuarios", uid),
-    {
-      uid,
-      empresaId: empresaIdFinal,
-      nome,
-      email,
-      perfil: "usuario",
-      status: "ativo",
-      criadoEm: new Date()
-    }
-  );
-
-} else {
-
-  const clienteRef = await addDoc(
-    collection(db, "clientes"),
-    {
-      empresa,
-      cnpj,
-      cpf: cpf || null,
-      emailPrincipal: email,
-      status: "ativo",
-      criadoEm: new Date()
-    }
-  );
-
-  empresaIdFinal = clienteRef.id;
-
-  await setDoc(
-    doc(db, "usuarios", uid),
-    {
-      uid,
-      empresaId: empresaIdFinal,
-      nome,
-      email,
-      perfil: "administrador",
-      status: "ativo",
-      criadoEm: new Date()
-    }
-  );
-
-  await setDoc(
-    doc(db, "chats", empresaIdFinal),
-    {
-      clienteId: empresaIdFinal,
-      criadoEm: new Date()
-    }
-  );
-}
+    const clienteRef = await addDoc(
+      collection(db, "clientes"),
+      {
+        nome,
+        email,
+        empresa,
+        cnpj,
+        cpf: cpf || null,
+        uid,
+        status: "ativo"
+      }
+    );
 
     /* =========================
        CRIA CHAT AUTOMÁTICO
