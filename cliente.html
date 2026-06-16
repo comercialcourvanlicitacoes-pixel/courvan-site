@@ -1358,7 +1358,7 @@ window.enviarComentario = async (id) => {
   const input = document.getElementById(`input-comentario-${id}`);
   if(!input.value) return;
   await addDoc(collection(db, "demandas", id, "comentarios"), {
-    texto: input.value, nome: auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "Equipe Courvan" : document.getElementById("nome").innerText,
+    texto: input.value, nome: auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "Equipe Courvan" : usuarioLogado.nome,
     empresa: auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "Courvan" : document.getElementById("empresa").innerText, data: serverTimestamp()
   });
   input.value = "";
