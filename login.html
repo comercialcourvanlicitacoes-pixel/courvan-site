@@ -5,31 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Courvan</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-    body {
-      background: radial-gradient(circle at top right, rgba(44, 82, 130, 0.08) 0%, #06101e 60%);
-      color: #f3f4f6;
-      display: flex;
+    body{
+      background: linear-gradient(135deg, #07162b 0%, #05101f 100%);
+      color:white;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display:flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
     }
 
-    .box {
-      background: linear-gradient(145deg, #0d233f 0%, #081729 100%);
-      padding: 40px 30px;
-      border-radius: 20px;
-      width: 360px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      border: 1px solid rgba(255, 255, 255, 0.03);
+    .box{
+      background:#0c2748;
+      padding:40px 30px;
+      border-radius:16px;
+      width:360px; /* Mantida a largura confortável para desktops e mobile */
+      box-shadow:0 20px 40px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-sizing: border-box;
       text-align: center;
     }
 
@@ -40,14 +40,16 @@
       filter: brightness(1.1);
     }
 
-    h2 {
-      margin-bottom: 25px;
-      color: #ffffff;
+    h2{
+      margin: 0 0 25px 0;
+      color:#d8a84e;
+      text-align:center;
       font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-weight: bold;
+      letter-spacing: 0.5px;
     }
 
+    /* Container para alinhar os ícones dentro dos inputs de forma elegante */
     .input-field {
       position: relative;
       width: 100%;
@@ -56,53 +58,59 @@
 
     .input-field i {
       position: absolute;
-      left: 16px;
+      left: 14px; /* Ajustado sutilmente para o canto */
       top: 50%;
       transform: translateY(-50%);
-      color: #64748b;
-      font-size: 14px;
+      color: #718096;
+      font-size: 14px; /* Ícone levemente menor para liberar espaço horizontal */
       transition: color 0.3s;
     }
 
-    input {
-      width: 100%;
-      padding: 16px 16px 16px 42px;
-      background: #06101e;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 14px;
+    input{
+      width:100%;
+      padding:14px 12px 14px 35px; /* Reduzido o padding esquerdo de 38px para 35px */
+      background: #07162b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      box-sizing:border-box;
       color: white;
-      font-size: 14px;
+      font-size: 13.5px; /* Fonte ajustada de 15px para 13.5px para o e-mail longo caber perfeitamente */
       transition: all 0.3s;
-      /* Ajuste: permite que o texto role horizontalmente se for longo demais, mantendo o layout intacto */
-      overflow: hidden;
     }
 
     input:focus {
       outline: none;
       border-color: #d8a84e;
-      background: #0d233f;
-      box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.1);
+      box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.15);
     }
 
-    input:focus + i { color: #d8a84e; }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 24px;
-      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: #06101e;
-      font-size: 14px;
+    input:focus + i {
+      color: #d8a84e;
     }
 
-    button:hover {
+    button{
+      width:100%;
+      padding:14px;
+      margin-top:24px;
+      background: linear-gradient(135deg, #d8a84e 0%, #f0d080 100%);
+      border:none;
+      border-radius:10px;
+      font-weight:bold;
+      cursor:pointer;
+      transition: 0.3s;
+      color:#07162b;
+      font-size:16px;
+      box-shadow: 0 4px 15px rgba(216, 168, 78, 0.2);
+    }
+
+    button:hover{
+      transform:translateY(-2px);
+      box-shadow: 0 6px 20px rgba(216, 168, 78, 0.3);
       filter: brightness(1.05);
-      box-shadow: 0 8px 20px rgba(216, 168, 78, 0.2);
+    }
+
+    button:active {
+      transform: translateY(0);
     }
 
     .back-site {
@@ -110,42 +118,65 @@
       align-items: center;
       gap: 8px;
       margin-top: 25px;
-      color: #64748b;
+      color: #a0aec0;
       text-decoration: none;
-      font-size: 13px;
+      font-size: 14px;
       transition: color 0.3s;
     }
 
-    .back-site:hover { color: #f3d082; }
+    .back-site:hover {
+      color: #d8a84e;
+    }
+
   </style>
 </head>
 
 <body>
 
 <div class="box">
+
   <img src="assets/logo.png" alt="Courvan" class="logo-login">
+
   <h2>Área do Cliente</h2>
 
   <div class="input-field">
-    <input type="email" id="email" placeholder="Email">
+    <input
+      type="email"
+      id="email"
+      placeholder="Email"
+    >
     <i class="fas fa-envelope"></i>
   </div>
 
   <div class="input-field">
-    <input type="password" id="senha" placeholder="Senha">
+    <input
+      type="password"
+      id="senha"
+      placeholder="Senha"
+    >
     <i class="fas fa-lock"></i>
   </div>
 
-  <button onclick="login()">Entrar</button>
+  <button onclick="login()">
+    Entrar
+  </button>
 
   <a href="index.html" class="back-site">
     <i class="fas fa-arrow-left"></i> Voltar para o site
   </a>
+
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
@@ -157,9 +188,12 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
 
+/* LOGIN */
 window.login = async function(){
+
   const email = document.getElementById("email").value;
   const senha = document.getElementById("senha").value;
 
@@ -168,14 +202,40 @@ window.login = async function(){
     return;
   }
 
-  try {
+  try{
+
+    // 🔥 garante persistência da sessão
     await setPersistence(auth, browserLocalPersistence);
-    const cred = await signInWithEmailAndPassword(auth, email, senha);
-    window.location.href = (cred.user.email === "comercial.courvanlicitacoes@gmail.com") ? "clientes.html" : "cliente.html";
-  } catch(error) {
-    alert("Email ou senha incorretos.");
+
+    const cred = await signInWithEmailAndPassword(
+      auth,
+      email,
+      senha
+    );
+
+    const user = cred.user;
+
+    /* 🔥 ADMIN */
+    if(user.email === "comercial.courvanlicitacoes@gmail.com"){
+      window.location.href = "clientes.html";
+    }
+
+    /* 🔥 CLIENTE */
+    else{
+      window.location.href = "cliente.html";
+    }
+
   }
+
+  catch(error){
+
+    alert("Erro ao fazer login");
+    console.log(error);
+
+  }
+
 }
+  
 </script>
 
 </body>
