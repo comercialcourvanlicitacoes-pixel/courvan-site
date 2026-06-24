@@ -1747,52 +1747,152 @@ document
 
 });
   
-function iniciarDocumentos() {
+let documentosCache = [];
+
+function calcularStatusDocumento(documento) {
+  if ((documento.statusManual || documento.status) === "analise") {
+    return { chave: "analise", texto: "⏳ Em análise", risco: "medio", dias: null };
+  }
+
+  if (!documento.validade) {
+    return { chave: "analise", texto: "⏳ Sem validade", risco: "medio", dias: null };
+  }
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const validade = new Date(`${documento.validade}T00:00:00`);
+  const dias = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
+
+  if (dias < 0) return { chave: "vencido", texto: "❌ Vencido", risco: "alto", dias };
+  if (dias <= 15) return { chave: "atencao", texto: `⚠️ Vence em ${dias} dia${dias === 1 ? "" : "s"}`, risco: "alto", dias };
+  if (dias <= 30) return { chave: "atencao", texto: `⚠️ Vence em ${dias} dias`, risco: "medio", dias };
+  return { chave: "ok", texto: "✔️ Válido", risco: "baixo", dias };
+}
+
+function formatarDataDocumento(data) {
+  if (!data) return "Não informada";
+  return new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR");
+}
+
+function atualizarResumoConformidade(documentos) {
+  const statusGeral = document.getElementById("statusGeralDocumentos");
+  const resumo = document.getElementById("resumoDocumentos");
+  const proximo = document.getElementById("proximoVencimentoDocumento");
+  const risco = document.getElementById("riscoDocumental");
+  const acao = document.getElementById("acaoRecomendadaDocumentos");
+
+  if (!documentos.length) {
+    statusGeral.innerText = "🟡 Atenção";
+    resumo.innerText = "Nenhum documento cadastrado para auditoria.";
+    proximo.innerText = "—";
+    risco.innerText = "Médio";
+    acao.innerText = "Cadastre certidões fiscais, trabalhistas e jurídicas para iniciar o controle.";
+    return;
+  }
+
+  const documentosComStatus = documentos.map(d => ({ ...d, statusCalculado: calcularStatusDocumento(d) }));
+  const vencidos = documentosComStatus.filter(d => d.statusCalculado.chave === "vencido");
+  const atencao = documentosComStatus.filter(d => d.statusCalculado.chave === "atencao");
+  const validos = documentosComStatus.filter(d => d.statusCalculado.chave === "ok");
+  const proximos = documentosComStatus
+    .filter(d => typeof d.statusCalculado.dias === "number" && d.statusCalculado.dias >= 0)
+    .sort((a, b) => a.statusCalculado.dias - b.statusCalculado.dias);
+
+  if (vencidos.length) {
+    statusGeral.innerText = "🔴 Irregular";
+    risco.innerText = "Alto";
+    acao.innerText = "Reemita imediatamente documentos vencidos antes de participar de novas licitações.";
+  } else if (atencao.length) {
+    statusGeral.innerText = "🟡 Atenção";
+    risco.innerText = atencao.some(d => d.statusCalculado.risco === "alto") ? "Alto" : "Médio";
+    acao.innerText = "Use a ação Reemitir para antecipar a renovação dos documentos críticos.";
+  } else {
+    statusGeral.innerText = "🟢 Regular";
+    risco.innerText = "Baixo";
+    acao.innerText = "Empresa documentalmente apta; mantenha as validades atualizadas.";
+  }
+
+  resumo.innerText = `${validos.length} válidos • ${atencao.length} em atenção • ${vencidos.length} vencidos`;
+  proximo.innerText = proximos.length ? `${proximos[0].nome} (${proximos[0].statusCalculado.dias} dias)` : "Sem vencimentos";
+}
+
+window.renderizarDocumentos = function () {
 
   const div = document.getElementById("listaDocumentos");
 
-  onSnapshot(
-    query(
-      collection(db, "documentos"),
-      where("clienteId", "==", clienteIdGlobal)
-    ),
-    snap => {
+  const termo = (document.getElementById("filtroDocumentoNome")?.value || "").toLowerCase();
+  const tipo = document.getElementById("filtroDocumentoTipo")?.value || "todos";
+  const validade = document.getElementById("filtroDocumentoValidade")?.value || "todos";
+  const risco = document.getElementById("filtroDocumentoRisco")?.value || "todos";
 
-      div.innerHTML = "";
+  atualizarResumoConformidade(documentosCache);
 
-      const documentos = [];
+  const filtrados = documentosCache.filter(d => {
+    const statusCalculado = calcularStatusDocumento(d);
+    const nomeOk = !termo || (d.nome || "").toLowerCase().includes(termo);
+    const tipoOk = tipo === "todos" || (d.tipo || "Fiscal") === tipo;
+    const riscoOk = risco === "todos" || statusCalculado.risco === risco;
+    let validadeOk = true;
 
-      snap.forEach(docItem => {
+    if (validade === "vencidos") validadeOk = statusCalculado.chave === "vencido";
+    if (validade === "30") validadeOk = typeof statusCalculado.dias === "number" && statusCalculado.dias >= 0 && statusCalculado.dias <= 30;
+    if (validade === "60") validadeOk = typeof statusCalculado.dias === "number" && statusCalculado.dias >= 0 && statusCalculado.dias <= 60;
+    if (validade === "semValidade") validadeOk = !d.validade;
 
-        const d = docItem.data();
+    return nomeOk && tipoOk && riscoOk && validadeOk;
+  });
 
-        documentos.push(d);
+  if (!filtrados.length) {
+    div.innerHTML = `<div class="info-box">Nenhum documento encontrado com os filtros atuais.</div>`;
+    return;
+  }
 
-        div.innerHTML += `
-          <div style="background: rgba(255, 255, 255, 0.02); padding:22px; border-radius:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
+  div.innerHTML = filtrados.map(d => {
+    const statusCalculado = calcularStatusDocumento(d);
+    const cliente = dadosClienteGlobal?.empresa || dadosClienteGlobal?.nome || "Cliente";
+    return `
+      <div class="document-card ${statusCalculado.chave}">
+        <div class="document-header">
             <div>
-              <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
+             <h3 style="color:#d8a84e; margin-bottom:8px;">📄 ${d.nome}</h3>
+            <span class="status-pill status-${statusCalculado.chave === "vencido" ? "vencido" : statusCalculado.chave}">${statusCalculado.texto}</span>
 
-              <small style="opacity:0.5; font-size: 12px;">
-                ${
-                  d.data
-                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
-                    : ""
-                }
-              </small>
             </div>
-
-            <a
-              href="${d.link}"
-              target="_blank"
-              class="radar-btn"
-              style="margin:0; padding:10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; border: none; box-shadow: 0 4px 12px rgba(216,168,78,0.15);"
-            >
-              Abrir
-            </a>
+            <span class="status-pill status-${statusCalculado.risco === "alto" ? "vencido" : statusCalculado.risco === "medio" ? "atencao" : "ok"}">Risco ${statusCalculado.risco}</span>
           </div>
-        `;
-      });
+       <div class="document-meta">
+          <div><strong>Tipo:</strong><br>${d.tipo || "Fiscal"}</div>
+          <div><strong>Validade:</strong><br>${formatarDataDocumento(d.validade)}</div>
+          <div><strong>Cliente:</strong><br>${cliente}</div>
+          <div><strong>Cadastrado em:</strong><br>${d.data ? new Date(d.data.seconds * 1000).toLocaleDateString("pt-BR") : "Não informado"}</div>
+        </div>
+        <div class="document-actions">
+          <a href="${d.link}" target="_blank" class="document-action primary">Abrir</a>
+          <a href="${d.link}" target="_blank" class="document-action">Atualizar</a>
+          <button class="document-action" onclick="solicitarReemissaoDocumento('${d.id}', '${d.nome.replace(/'/g, "\\'")}')">Reemitir</button>
+          <a href="${d.link}" target="_blank" class="document-action">Baixar</a>
+        </div>
+      </div>
+    `;
+  }).join("");
+};
+
+function iniciarDocumentos() {
+  const div = document.getElementById("listaDocumentos");
+  div.innerHTML = `<div class="info-box">Carregando centro de conformidade...</div>`;
+
+  onSnapshot(query(collection(db, "documentos"), where("clienteId", "==", clienteIdGlobal)), snap => {
+    documentosCache = snap.docs.map(docItem => ({ id: docItem.id, ...docItem.data() }))
+      .sort((a, b) => (a.validade || "9999-12-31").localeCompare(b.validade || "9999-12-31"));
+    renderizarDocumentos();
+     });
+}
+
+  window.solicitarReemissaoDocumento = async (id, nome) => {
+  if (!confirm(`Solicitar reemissão de ${nome}?`)) return;
+  await updateDoc(doc(db, "documentos", id), { statusManual: "analise", solicitacaoReemissao: serverTimestamp() });
+  alert("Solicitação de reemissão registrada. A equipe Courvan irá acompanhar a atualização.");
+};
 
       atualizarBadgePersistente(
         "documentos",
@@ -1801,7 +1901,7 @@ function iniciarDocumentos() {
     }
   );
 }
-
+  
 window.adicionarDocumento = async () => {
 
   const nome =
