@@ -643,10 +643,21 @@
           <option value="editais">Editais</option>
         </select>
 
-        <input type="text" id="nomeDocumento" placeholder="Nome do documento" class="inputPadrao" style="flex:1;">
-        <input type="date" id="vencimentoDocumento" class="inputPadrao" style="flex:1;">
-        <input type="text" id="statusDocumento" placeholder="Status (Negativa, Positiva, Positiva com efeito de negativa...)" class="inputPadrao" style="flex:1;">
-        <input type="file" id="arquivoDocumento" class="inputPadrao" style="flex:1;">
+        <input type="text" id="nomeDocumento" placeholder="Nome do documento" class="inputPadrao" style="flex:1; min-width:220px;">
+        <select id="tipoDocumento" class="inputPadrao" style="flex:1; min-width:180px;">
+          <option value="Fiscal">Fiscal</option>
+          <option value="Trabalhista">Trabalhista</option>
+          <option value="Jurídico">Jurídico</option>
+          <option value="Técnica">Técnica</option>
+          <option value="Contratos">Contratos</option>
+          <option value="Credenciamento">Credenciamento</option>
+        </select>
+        <input type="date" id="validadeDocumento" class="inputPadrao" style="flex:1; min-width:170px;">
+        <select id="statusManualDocumento" class="inputPadrao" style="flex:1; min-width:170px;">
+          <option value="automatico">Status automático</option>
+          <option value="analise">Em análise</option>
+        </select>
+        <input type="text" id="linkDocumento" placeholder="Link Google Drive" class="inputPadrao" style="flex:2; min-width:260px;">
 
         <button class="botaoPadrao" onclick="adicionarDocumento()">Adicionar</button>
       </div>
