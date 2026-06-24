@@ -576,6 +576,66 @@
     <div id="documentos" class="aba" style="display:none;">
       <h1>Documentos</h1>
 
+      <p>Controle inteligente para evitar bloqueios em licitações por documentação vencida, ausente ou em análise.</p>
+
+      <div class="compliance-hero">
+        <div class="compliance-card">
+          <div class="compliance-label">Status geral da empresa</div>
+          <div class="compliance-value" id="statusGeralDocumentos">⏳ Carregando</div>
+          <div class="compliance-note" id="resumoDocumentos">Avaliando certidões e contratos.</div>
+        </div>
+        <div class="compliance-card">
+          <div class="compliance-label">Próximo vencimento</div>
+          <div class="compliance-value" id="proximoVencimentoDocumento">—</div>
+          <div class="compliance-note">Priorize documentos críticos para habilitação.</div>
+        </div>
+        <div class="compliance-card">
+          <div class="compliance-label">Risco em licitação</div>
+          <div class="compliance-value" id="riscoDocumental">—</div>
+          <div class="compliance-note" id="acaoRecomendadaDocumentos">Cadastre validade e tipo para ativar alertas.</div>
+        </div>
+      </div>
+
+      <div class="compliance-tabs">
+        <span class="compliance-tab">📊 Visão geral</span>
+        <span class="compliance-tab">🧾 Certidões</span>
+        <span class="compliance-tab">📄 Contratos</span>
+        <span class="compliance-tab">⬆️ Upload manual</span>
+        <span class="compliance-tab">⚙️ Automação</span>
+      </div>
+
+      <div class="automation-box">
+        <h3 style="color:#d8a84e; margin-bottom:8px;">🔥 Renovação inteligente</h3>
+        <p>O Courvan identifica documentos próximos do vencimento e destaca a ação “Reemitir” para acelerar a atualização das certidões.</p>
+      </div>
+
+      <div class="filters-grid">
+        <input type="text" id="filtroDocumentoNome" placeholder="Buscar por nome" class="inputPadrao" oninput="renderizarDocumentos()">
+        <select id="filtroDocumentoTipo" class="inputPadrao" onchange="renderizarDocumentos()">
+          <option value="todos">Todos os tipos</option>
+          <option value="Fiscal">Fiscal</option>
+          <option value="Trabalhista">Trabalhista</option>
+          <option value="Jurídico">Jurídico</option>
+          <option value="Técnica">Técnica</option>
+          <option value="Contratos">Contratos</option>
+          <option value="Credenciamento">Credenciamento</option>
+        </select>
+        <select id="filtroDocumentoValidade" class="inputPadrao" onchange="renderizarDocumentos()">
+          <option value="todos">Todas as validades</option>
+          <option value="vencidos">Vencidos</option>
+          <option value="30">Vence em 30 dias</option>
+          <option value="60">Vence em 60 dias</option>
+          <option value="semValidade">Sem validade informada</option>
+        </select>
+        <select id="filtroDocumentoRisco" class="inputPadrao" onchange="renderizarDocumentos()">
+          <option value="todos">Todos os riscos</option>
+          <option value="alto">Alto</option>
+          <option value="medio">Médio</option>
+          <option value="baixo">Baixo</option>
+        </select>
+      </div>
+
+
       <div id="formDocumentos" style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:30px;">
         <select id="categoriaDocumento" class="inputPadrao" style="flex:1;">
           <option value="certidoes">Controle de Certidões</option>
