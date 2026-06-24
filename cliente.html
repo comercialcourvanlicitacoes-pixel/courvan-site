@@ -1984,6 +1984,28 @@ const caminho =
   document.getElementById("arquivoDocumento").value = "";
 
   alert("Documento enviado com sucesso.");
+
+  const tipo = document.getElementById("tipoDocumento").value;
+  const validade = document.getElementById("validadeDocumento").value;
+  const statusManual = document.getElementById("statusManualDocumento").value;
+
+  if(!n || !l) return alert("Preencha nome e link do documento");
+
+  await addDoc(collection(db, "documentos"), {
+    clienteId: clienteIdGlobal,
+    nome: n,
+    link: l,
+    tipo,
+    validade,
+    statusManual: statusManual === "automatico" ? "" : statusManual,
+    data: serverTimestamp()
+  });
+
+  document.getElementById("nomeDocumento").value = "";
+  document.getElementById("linkDocumento").value = "";
+  document.getElementById("validadeDocumento").value = "";
+  document.getElementById("statusManualDocumento").value = "automatico";
+  
 };
 
 window.alterarSenha = async () => {
