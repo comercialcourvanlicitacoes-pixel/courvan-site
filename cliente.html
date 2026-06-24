@@ -255,144 +255,6 @@
       margin-top: 35px;
     }
 
-    
-
-    /* CENTRO DE CONFORMIDADE DOCUMENTAL */
-    .compliance-hero{
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap:16px;
-      margin:20px 0 24px;
-    }
-
-    .compliance-card{
-      background:linear-gradient(135deg, #16385f, #102f52);
-      border:1px solid rgba(216,168,78,0.18);
-      border-radius:16px;
-      padding:18px;
-      min-height:130px;
-      box-shadow:0 10px 25px rgba(0,0,0,0.18);
-    }
-
-    .compliance-label{
-      font-size:13px;
-      opacity:0.75;
-      margin-bottom:10px;
-      text-transform:uppercase;
-      letter-spacing:0.04em;
-    }
-
-    .compliance-value{
-      font-size:24px;
-      font-weight:bold;
-      margin-bottom:8px;
-    }
-
-    .compliance-note{
-      font-size:13px;
-      opacity:0.82;
-      line-height:1.4;
-    }
-
-    .status-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:7px 10px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:bold;
-      white-space:nowrap;
-    }
-
-    .status-ok{background:rgba(125,255,174,0.15); color:#7dffae;}
-    .status-atencao{background:rgba(255,207,87,0.16); color:#ffcf57;}
-    .status-vencido{background:rgba(255,107,107,0.16); color:#ff6b6b;}
-    .status-analise{background:rgba(116,185,255,0.16); color:#74b9ff;}
-
-    .compliance-tabs{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin:18px 0;
-    }
-
-    .compliance-tab{
-      background:#16385f;
-      color:white;
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:999px;
-      padding:10px 14px;
-      font-size:14px;
-    }
-
-    .filters-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
-      gap:10px;
-      margin:20px 0 24px;
-    }
-
-    .document-card{
-      background:#16385f;
-      padding:20px;
-      border-radius:16px;
-      margin-bottom:15px;
-      border-left:5px solid #d8a84e;
-    }
-
-    .document-card.vencido{border-left-color:#ff6b6b;}
-    .document-card.atencao{border-left-color:#ffcf57;}
-    .document-card.ok{border-left-color:#7dffae;}
-    .document-card.analise{border-left-color:#74b9ff;}
-
-    .document-header{
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      align-items:flex-start;
-      margin-bottom:14px;
-    }
-
-    .document-meta{
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
-      gap:10px;
-      margin:14px 0;
-      font-size:14px;
-    }
-
-    .document-actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:14px;
-    }
-
-    .document-action{
-      background:#1d4b7d;
-      color:white;
-      border:none;
-      border-radius:8px;
-      padding:9px 12px;
-      text-decoration:none;
-      font-weight:bold;
-      font-size:13px;
-      cursor:pointer;
-    }
-
-    .document-action.primary{background:#d8a84e; color:#07162b;}
-    .document-action.danger{background:#a83232;}
-
-    .automation-box{
-      background:rgba(216,168,78,0.10);
-      border:1px solid rgba(216,168,78,0.25);
-      padding:18px;
-      border-radius:16px;
-      margin:20px 0;
-    }
-
-
     @media(max-width:900px){
       .layout{flex-direction:column;}
       .sidebar{width:100%; min-height: auto; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.04); padding: 25px 20px;}
@@ -576,66 +438,6 @@
     <div id="documentos" class="aba" style="display:none;">
       <h1>Documentos</h1>
 
-      <p>Controle inteligente para evitar bloqueios em licitações por documentação vencida, ausente ou em análise.</p>
-
-      <div class="compliance-hero">
-        <div class="compliance-card">
-          <div class="compliance-label">Status geral da empresa</div>
-          <div class="compliance-value" id="statusGeralDocumentos">⏳ Carregando</div>
-          <div class="compliance-note" id="resumoDocumentos">Avaliando certidões e contratos.</div>
-        </div>
-        <div class="compliance-card">
-          <div class="compliance-label">Próximo vencimento</div>
-          <div class="compliance-value" id="proximoVencimentoDocumento">—</div>
-          <div class="compliance-note">Priorize documentos críticos para habilitação.</div>
-        </div>
-        <div class="compliance-card">
-          <div class="compliance-label">Risco em licitação</div>
-          <div class="compliance-value" id="riscoDocumental">—</div>
-          <div class="compliance-note" id="acaoRecomendadaDocumentos">Cadastre validade e tipo para ativar alertas.</div>
-        </div>
-      </div>
-
-      <div class="compliance-tabs">
-        <span class="compliance-tab">📊 Visão geral</span>
-        <span class="compliance-tab">🧾 Certidões</span>
-        <span class="compliance-tab">📄 Contratos</span>
-        <span class="compliance-tab">⬆️ Upload manual</span>
-        <span class="compliance-tab">⚙️ Automação</span>
-      </div>
-
-      <div class="automation-box">
-        <h3 style="color:#d8a84e; margin-bottom:8px;">🔥 Renovação inteligente</h3>
-        <p>O Courvan identifica documentos próximos do vencimento e destaca a ação “Reemitir” para acelerar a atualização das certidões.</p>
-      </div>
-
-      <div class="filters-grid">
-        <input type="text" id="filtroDocumentoNome" placeholder="Buscar por nome" class="inputPadrao" oninput="renderizarDocumentos()">
-        <select id="filtroDocumentoTipo" class="inputPadrao" onchange="renderizarDocumentos()">
-          <option value="todos">Todos os tipos</option>
-          <option value="Fiscal">Fiscal</option>
-          <option value="Trabalhista">Trabalhista</option>
-          <option value="Jurídico">Jurídico</option>
-          <option value="Técnica">Técnica</option>
-          <option value="Contratos">Contratos</option>
-          <option value="Credenciamento">Credenciamento</option>
-        </select>
-        <select id="filtroDocumentoValidade" class="inputPadrao" onchange="renderizarDocumentos()">
-          <option value="todos">Todas as validades</option>
-          <option value="vencidos">Vencidos</option>
-          <option value="30">Vence em 30 dias</option>
-          <option value="60">Vence em 60 dias</option>
-          <option value="semValidade">Sem validade informada</option>
-        </select>
-        <select id="filtroDocumentoRisco" class="inputPadrao" onchange="renderizarDocumentos()">
-          <option value="todos">Todos os riscos</option>
-          <option value="alto">Alto</option>
-          <option value="medio">Médio</option>
-          <option value="baixo">Baixo</option>
-        </select>
-      </div>
-
-
       <div id="formDocumentos" style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:30px;">
         <select id="categoriaDocumento" class="inputPadrao" style="flex:1;">
           <option value="certidoes">Controle de Certidões</option>
@@ -643,21 +445,10 @@
           <option value="editais">Editais</option>
         </select>
 
-        <input type="text" id="nomeDocumento" placeholder="Nome do documento" class="inputPadrao" style="flex:1; min-width:220px;">
-        <select id="tipoDocumento" class="inputPadrao" style="flex:1; min-width:180px;">
-          <option value="Fiscal">Fiscal</option>
-          <option value="Trabalhista">Trabalhista</option>
-          <option value="Jurídico">Jurídico</option>
-          <option value="Técnica">Técnica</option>
-          <option value="Contratos">Contratos</option>
-          <option value="Credenciamento">Credenciamento</option>
-        </select>
-        <input type="date" id="validadeDocumento" class="inputPadrao" style="flex:1; min-width:170px;">
-        <select id="statusManualDocumento" class="inputPadrao" style="flex:1; min-width:170px;">
-          <option value="automatico">Status automático</option>
-          <option value="analise">Em análise</option>
-        </select>
-        <input type="text" id="linkDocumento" placeholder="Link Google Drive" class="inputPadrao" style="flex:2; min-width:260px;">
+        <input type="text" id="nomeDocumento" placeholder="Nome do documento" class="inputPadrao" style="flex:1;">
+        <input type="date" id="vencimentoDocumento" class="inputPadrao" style="flex:1;">
+        <input type="text" id="statusDocumento" placeholder="Status (Negativa, Positiva, Positiva com efeito de negativa...)" class="inputPadrao" style="flex:1;">
+        <input type="file" id="arquivoDocumento" class="inputPadrao" style="flex:1;">
 
         <button class="botaoPadrao" onclick="adicionarDocumento()">Adicionar</button>
       </div>
@@ -1747,152 +1538,52 @@ document
 
 });
   
-let documentosCache = [];
-
-function calcularStatusDocumento(documento) {
-  if ((documento.statusManual || documento.status) === "analise") {
-    return { chave: "analise", texto: "⏳ Em análise", risco: "medio", dias: null };
-  }
-
-  if (!documento.validade) {
-    return { chave: "analise", texto: "⏳ Sem validade", risco: "medio", dias: null };
-  }
-
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-  const validade = new Date(`${documento.validade}T00:00:00`);
-  const dias = Math.ceil((validade - hoje) / (1000 * 60 * 60 * 24));
-
-  if (dias < 0) return { chave: "vencido", texto: "❌ Vencido", risco: "alto", dias };
-  if (dias <= 15) return { chave: "atencao", texto: `⚠️ Vence em ${dias} dia${dias === 1 ? "" : "s"}`, risco: "alto", dias };
-  if (dias <= 30) return { chave: "atencao", texto: `⚠️ Vence em ${dias} dias`, risco: "medio", dias };
-  return { chave: "ok", texto: "✔️ Válido", risco: "baixo", dias };
-}
-
-function formatarDataDocumento(data) {
-  if (!data) return "Não informada";
-  return new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR");
-}
-
-function atualizarResumoConformidade(documentos) {
-  const statusGeral = document.getElementById("statusGeralDocumentos");
-  const resumo = document.getElementById("resumoDocumentos");
-  const proximo = document.getElementById("proximoVencimentoDocumento");
-  const risco = document.getElementById("riscoDocumental");
-  const acao = document.getElementById("acaoRecomendadaDocumentos");
-
-  if (!documentos.length) {
-    statusGeral.innerText = "🟡 Atenção";
-    resumo.innerText = "Nenhum documento cadastrado para auditoria.";
-    proximo.innerText = "—";
-    risco.innerText = "Médio";
-    acao.innerText = "Cadastre certidões fiscais, trabalhistas e jurídicas para iniciar o controle.";
-    return;
-  }
-
-  const documentosComStatus = documentos.map(d => ({ ...d, statusCalculado: calcularStatusDocumento(d) }));
-  const vencidos = documentosComStatus.filter(d => d.statusCalculado.chave === "vencido");
-  const atencao = documentosComStatus.filter(d => d.statusCalculado.chave === "atencao");
-  const validos = documentosComStatus.filter(d => d.statusCalculado.chave === "ok");
-  const proximos = documentosComStatus
-    .filter(d => typeof d.statusCalculado.dias === "number" && d.statusCalculado.dias >= 0)
-    .sort((a, b) => a.statusCalculado.dias - b.statusCalculado.dias);
-
-  if (vencidos.length) {
-    statusGeral.innerText = "🔴 Irregular";
-    risco.innerText = "Alto";
-    acao.innerText = "Reemita imediatamente documentos vencidos antes de participar de novas licitações.";
-  } else if (atencao.length) {
-    statusGeral.innerText = "🟡 Atenção";
-    risco.innerText = atencao.some(d => d.statusCalculado.risco === "alto") ? "Alto" : "Médio";
-    acao.innerText = "Use a ação Reemitir para antecipar a renovação dos documentos críticos.";
-  } else {
-    statusGeral.innerText = "🟢 Regular";
-    risco.innerText = "Baixo";
-    acao.innerText = "Empresa documentalmente apta; mantenha as validades atualizadas.";
-  }
-
-  resumo.innerText = `${validos.length} válidos • ${atencao.length} em atenção • ${vencidos.length} vencidos`;
-  proximo.innerText = proximos.length ? `${proximos[0].nome} (${proximos[0].statusCalculado.dias} dias)` : "Sem vencimentos";
-}
-
-window.renderizarDocumentos = function () {
-
-  const div = document.getElementById("listaDocumentos");
-
-  const termo = (document.getElementById("filtroDocumentoNome")?.value || "").toLowerCase();
-  const tipo = document.getElementById("filtroDocumentoTipo")?.value || "todos";
-  const validade = document.getElementById("filtroDocumentoValidade")?.value || "todos";
-  const risco = document.getElementById("filtroDocumentoRisco")?.value || "todos";
-
-  atualizarResumoConformidade(documentosCache);
-
-  const filtrados = documentosCache.filter(d => {
-    const statusCalculado = calcularStatusDocumento(d);
-    const nomeOk = !termo || (d.nome || "").toLowerCase().includes(termo);
-    const tipoOk = tipo === "todos" || (d.tipo || "Fiscal") === tipo;
-    const riscoOk = risco === "todos" || statusCalculado.risco === risco;
-    let validadeOk = true;
-
-    if (validade === "vencidos") validadeOk = statusCalculado.chave === "vencido";
-    if (validade === "30") validadeOk = typeof statusCalculado.dias === "number" && statusCalculado.dias >= 0 && statusCalculado.dias <= 30;
-    if (validade === "60") validadeOk = typeof statusCalculado.dias === "number" && statusCalculado.dias >= 0 && statusCalculado.dias <= 60;
-    if (validade === "semValidade") validadeOk = !d.validade;
-
-    return nomeOk && tipoOk && riscoOk && validadeOk;
-  });
-
-  if (!filtrados.length) {
-    div.innerHTML = `<div class="info-box">Nenhum documento encontrado com os filtros atuais.</div>`;
-    return;
-  }
-
-  div.innerHTML = filtrados.map(d => {
-    const statusCalculado = calcularStatusDocumento(d);
-    const cliente = dadosClienteGlobal?.empresa || dadosClienteGlobal?.nome || "Cliente";
-    return `
-      <div class="document-card ${statusCalculado.chave}">
-        <div class="document-header">
-            <div>
-             <h3 style="color:#d8a84e; margin-bottom:8px;">📄 ${d.nome}</h3>
-            <span class="status-pill status-${statusCalculado.chave === "vencido" ? "vencido" : statusCalculado.chave}">${statusCalculado.texto}</span>
-
-            </div>
-            <span class="status-pill status-${statusCalculado.risco === "alto" ? "vencido" : statusCalculado.risco === "medio" ? "atencao" : "ok"}">Risco ${statusCalculado.risco}</span>
-          </div>
-       <div class="document-meta">
-          <div><strong>Tipo:</strong><br>${d.tipo || "Fiscal"}</div>
-          <div><strong>Validade:</strong><br>${formatarDataDocumento(d.validade)}</div>
-          <div><strong>Cliente:</strong><br>${cliente}</div>
-          <div><strong>Cadastrado em:</strong><br>${d.data ? new Date(d.data.seconds * 1000).toLocaleDateString("pt-BR") : "Não informado"}</div>
-        </div>
-        <div class="document-actions">
-          <a href="${d.link}" target="_blank" class="document-action primary">Abrir</a>
-          <a href="${d.link}" target="_blank" class="document-action">Atualizar</a>
-          <button class="document-action" onclick="solicitarReemissaoDocumento('${d.id}', '${d.nome.replace(/'/g, "\\'")}')">Reemitir</button>
-          <a href="${d.link}" target="_blank" class="document-action">Baixar</a>
-        </div>
-      </div>
-    `;
-  }).join("");
-};
-
 function iniciarDocumentos() {
+
   const div = document.getElementById("listaDocumentos");
-  div.innerHTML = `<div class="info-box">Carregando centro de conformidade...</div>`;
 
-  onSnapshot(query(collection(db, "documentos"), where("clienteId", "==", clienteIdGlobal)), snap => {
-    documentosCache = snap.docs.map(docItem => ({ id: docItem.id, ...docItem.data() }))
-      .sort((a, b) => (a.validade || "9999-12-31").localeCompare(b.validade || "9999-12-31"));
-    renderizarDocumentos();
-     });
-}
+  onSnapshot(
+    query(
+      collection(db, "documentos"),
+      where("clienteId", "==", clienteIdGlobal)
+    ),
+    snap => {
 
-  window.solicitarReemissaoDocumento = async (id, nome) => {
-  if (!confirm(`Solicitar reemissão de ${nome}?`)) return;
-  await updateDoc(doc(db, "documentos", id), { statusManual: "analise", solicitacaoReemissao: serverTimestamp() });
-  alert("Solicitação de reemissão registrada. A equipe Courvan irá acompanhar a atualização.");
-};
+      div.innerHTML = "";
+
+      const documentos = [];
+
+      snap.forEach(docItem => {
+
+        const d = docItem.data();
+
+        documentos.push(d);
+
+        div.innerHTML += `
+          <div style="background: rgba(255, 255, 255, 0.02); padding:22px; border-radius:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
+            <div>
+              <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
+
+              <small style="opacity:0.5; font-size: 12px;">
+                ${
+                  d.data
+                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
+                    : ""
+                }
+              </small>
+            </div>
+
+            <a
+              href="${d.link}"
+              target="_blank"
+              class="radar-btn"
+              style="margin:0; padding:10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; border: none; box-shadow: 0 4px 12px rgba(216,168,78,0.15);"
+            >
+              Abrir
+            </a>
+          </div>
+        `;
+      });
 
       atualizarBadgePersistente(
         "documentos",
@@ -1901,7 +1592,7 @@ function iniciarDocumentos() {
     }
   );
 }
-  
+
 window.adicionarDocumento = async () => {
 
   const nome =
@@ -1984,28 +1675,6 @@ const caminho =
   document.getElementById("arquivoDocumento").value = "";
 
   alert("Documento enviado com sucesso.");
-
-  const tipo = document.getElementById("tipoDocumento").value;
-  const validade = document.getElementById("validadeDocumento").value;
-  const statusManual = document.getElementById("statusManualDocumento").value;
-
-  if(!n || !l) return alert("Preencha nome e link do documento");
-
-  await addDoc(collection(db, "documentos"), {
-    clienteId: clienteIdGlobal,
-    nome: n,
-    link: l,
-    tipo,
-    validade,
-    statusManual: statusManual === "automatico" ? "" : statusManual,
-    data: serverTimestamp()
-  });
-
-  document.getElementById("nomeDocumento").value = "";
-  document.getElementById("linkDocumento").value = "";
-  document.getElementById("validadeDocumento").value = "";
-  document.getElementById("statusManualDocumento").value = "automatico";
-  
 };
 
 window.alterarSenha = async () => {
