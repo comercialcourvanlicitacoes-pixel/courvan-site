@@ -2797,13 +2797,19 @@ window.adicionarDocumento = async () => {
 
     const caminho = `${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
 
-    const { error } = await supabase.storage
-      .from("documentos-clientes")
-      .upload(caminho, arquivo);
+    try {
+      const { error } = await supabase.storage
+        .from("documentos-clientes")
+        .upload(caminho, arquivo);
 
-    if (error) {
-      console.error(error);
-      alert("Erro ao enviar arquivo.");
+      if (error) {
+        console.error("Erro no upload do Supabase:", error);
+        alert("Erro ao enviar arquivo: " + (error.message || JSON.stringify(error)) + "\n\nO servidor do Supabase (armazenamento de arquivos) pode estar inativo ou pausado por inatividade no painel do administrador.");
+        return;
+      }
+    } catch (err) {
+      console.error("Erro de requisição ao Supabase:", err);
+      alert("Erro de conexão ao enviar o arquivo.\n\nMotivo: Não foi possível alcançar o servidor de arquivos (Supabase).\n" + (err.message || "Isso geralmente ocorre se o projeto do Supabase foi pausado por inatividade ou está offline. O administrador do sistema precisa reativar o projeto no console do Supabase."));
       return;
     }
 
