@@ -215,7 +215,8 @@ window.criarUsuario = async function () {
         cnpj,
         cpf: cpf || null,
         uid,
-        status: "ativo"
+        status: "ativo",
+        emailsAutorizados: [email.trim().toLowerCase()]
       }
     );
 
