@@ -519,6 +519,33 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
 <script type="module">
+
+  // ESTADO GLOBAL
+let clienteIdGlobal = null;
+let emailClienteGlobal = "";
+let dadosClienteGlobal = null;
+
+let respostaMensagem = null;
+
+// HELPER PARA EVITAR QUEBRAS DE CARACTERES ESPECIAIS E INJEÇÃO DE HTML NO CHAT
+function escapeHTML(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+const mensagensCarregadas = {};
+
+window.responderMensagemClick = function(id) {
+  const m = mensagensCarregadas[id];
+  if (m) {
+    window.responderMensagem(id, m.texto, m.nome);
+  }
+};
   
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
