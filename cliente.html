@@ -305,6 +305,31 @@
       70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
       100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
+
+    /* DOCUMENT SUB-TABS PREMIUM */
+    .doc-tab-btn {
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .doc-tab-btn:hover {
+      background: rgba(216, 168, 78, 0.05);
+      color: #f3d082;
+      border-color: rgba(216, 168, 78, 0.15);
+    }
+    .doc-tab-btn.active {
+      background: linear-gradient(135deg, rgba(216, 168, 78, 0.15) 0%, rgba(216, 168, 78, 0.03) 100%);
+      color: #f3d082;
+      border-color: rgba(216, 168, 78, 0.25);
+      font-weight: 600;
+    }
   </style>
 </head>
 
@@ -474,21 +499,104 @@
     </div>
 
     <div id="documentos" class="aba" style="display:none;">
-      <h1>Documentos</h1>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+        <h1 style="margin: 0;">Gestão Documental & Prazos</h1>
+        <button id="btnToggleFormDoc" class="botaoPadrao" style="width: auto; background: rgba(229, 184, 92, 0.1); color: #e5b85c; border: 1px solid rgba(229, 184, 92, 0.25);" onclick="window.toggleFormDocumento()">
+          ➕ Adicionar Documento / Link
+        </button>
+      </div>
 
-      <div id="formDocumentos" style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:30px;">
-        <select id="categoriaDocumento" class="inputPadrao" style="flex:1;">
-          <option value="certidoes">Controle de Certidões</option>
-          <option value="contratos">Contratos</option>
-          <option value="editais">Editais</option>
-        </select>
+      <!-- FORMULÁRIO DE CADASTRO EXPANDÍVEL -->
+      <div id="formDocumentos" style="display:none; flex-direction: column; gap:16px; margin-bottom:30px; background: rgba(13, 25, 44, 0.35); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.04);">
+        <h3 style="color: #e5b85c; font-size: 16px; margin-bottom: 5px;">Novo Documento ou Link do Google Drive</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+          <div>
+            <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">CATEGORIA</label>
+            <select id="categoriaDocumento" class="inputPadrao" onchange="window.onChangeCategoriaDoc()" style="margin-bottom:0;">
+              <option value="certidoes">📜 Controle de Certidões</option>
+              <option value="contratos">✍️ Contratos & Aditivos</option>
+              <option value="editais">📢 Editais & Propostas</option>
+              <option value="habilitacao">💼 Habilitação Jurídica & Fiscal</option>
+              <option value="gdrive">🔗 Atalho do Google Drive</option>
+              <option value="outros">📁 Outros Documentos</option>
+            </select>
+          </div>
 
-        <input type="text" id="nomeDocumento" placeholder="Nome do documento" class="inputPadrao" style="flex:1;">
-        <input type="date" id="vencimentoDocumento" class="inputPadrao" style="flex:1;">
-        <input type="text" id="statusDocumento" placeholder="Status (Negativa, Positiva, Positiva com efeito de negativa...)" class="inputPadrao" style="flex:1;">
-        <input type="file" id="arquivoDocumento" class="inputPadrao" style="flex:1;">
+          <div>
+            <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">NOME DO DOCUMENTO / ATALHO</label>
+            <input type="text" id="nomeDocumento" placeholder="Ex: Certidão FGTS, Contrato Social..." class="inputPadrao" style="margin-bottom:0;">
+          </div>
 
-        <button class="botaoPadrao" onclick="adicionarDocumento()">Adicionar</button>
+          <div>
+            <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">PRAZO / VENCIMENTO (OPCIONAL)</label>
+            <input type="date" id="vencimentoDocumento" class="inputPadrao" style="margin-bottom:0;">
+          </div>
+
+          <div>
+            <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">STATUS / OBSERVAÇÃO</label>
+            <input type="text" id="statusDocumento" placeholder="Ex: Regular, Vencida, Em Renovação..." class="inputPadrao" style="margin-bottom:0;">
+          </div>
+        </div>
+
+        <!-- SELEÇÃO DINÂMICA: FILE UPLOAD OU LINK DO DRIVE -->
+        <div id="wrapperFonteDocumento" style="margin-top: 10px;">
+          <div id="campoArquivoFisico">
+            <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">SELECIONE O ARQUIVO (PDF, IMAGEM, ETC.)</label>
+            <input type="file" id="arquivoDocumento" class="inputPadrao" style="margin-bottom:0; padding: 12px;">
+          </div>
+          <div id="campoLinkDrive" style="display:none;">
+            <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">LINK DO GOOGLE DRIVE OU LINK EXTERNO</label>
+            <input type="url" id="linkExternoDocumento" placeholder="https://drive.google.com/drive/folders/..." class="inputPadrao" style="margin-bottom:0;">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 15px;">
+          <button class="botaoPadrao" style="background: transparent; color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); width: auto;" onclick="window.toggleFormDocumento()">Cancelar</button>
+          <button class="botaoPadrao" style="width: auto; padding: 14px 30px;" onclick="adicionarDocumento()">Salvar</button>
+        </div>
+      </div>
+
+      <!-- NAVEGAÇÃO DE SUB-ACESSOS -->
+      <div style="display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; overflow-x: auto;" id="abasSubDocumentos">
+        <button id="subDocTab-todos" onclick="window.filtrarSubDoc('todos')" class="doc-tab-btn active">📂 Todos os Documentos</button>
+        <button id="subDocTab-prazos" onclick="window.filtrarSubDoc('prazos')" class="doc-tab-btn">📅 Controle de Prazos</button>
+        <button id="subDocTab-certidoes" onclick="window.filtrarSubDoc('certidoes')" class="doc-tab-btn">📜 Certidões Regulatórias</button>
+        <button id="subDocTab-contratos" onclick="window.filtrarSubDoc('contratos')" class="doc-tab-btn">✍️ Contratos & Aditivos</button>
+        <button id="subDocTab-editais" onclick="window.filtrarSubDoc('editais')" class="doc-tab-btn">📢 Editais & Propostas</button>
+        <button id="subDocTab-habilitacao" onclick="window.filtrarSubDoc('habilitacao')" class="doc-tab-btn">💼 Habilitação</button>
+        <button id="subDocTab-gdrive" onclick="window.filtrarSubDoc('gdrive')" class="doc-tab-btn">🔗 Google Drive Links</button>
+      </div>
+
+      <!-- PAINEL DE GESTÃO DE PRAZOS (EXIBIDO DINAMICAMENTE) -->
+      <div id="painelPrazos" style="display: none; margin-bottom: 25px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 25px;">
+          
+          <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 16px;">
+            <div style="background: rgba(239, 68, 68, 0.15); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🚨</div>
+            <div>
+              <div style="font-size: 11px; color: #f87171; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Expirados</div>
+              <div id="kpiExpiradosCount" style="font-size: 28px; font-weight: 800; color: #ffffff; margin-top: 2px;">0</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 16px;">
+            <div style="background: rgba(245, 158, 11, 0.15); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">⚠️</div>
+            <div>
+              <div style="font-size: 11px; color: #fbbf24; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Vencem em breve (15d)</div>
+              <div id="kpiVencendoCount" style="font-size: 28px; font-weight: 800; color: #ffffff; margin-top: 2px;">0</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 16px;">
+            <div style="background: rgba(16, 185, 129, 0.15); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🟢</div>
+            <div>
+              <div style="font-size: 11px; color: #34d399; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Ativos & Válidos</div>
+              <div id="kpiValidosCount" style="font-size: 28px; font-weight: 800; color: #ffffff; margin-top: 2px;">0</div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <div id="listaDocumentos"></div>
@@ -697,7 +805,21 @@ let ultimoSnapMensagens = null;
 
 // HELPER PARA FOTO DE PERFIL GERADA DINAMICAMENTE
 function obterFotoPerfil(foto, nome) {
-  if (foto && foto.startsWith("data:image")) return foto;
+  if (foto && foto.startsWith("data:image")) {
+    if (foto.includes("<svg") && !foto.includes(";base64,")) {
+      try {
+        let svgPart = foto;
+        if (foto.includes(",")) {
+          svgPart = foto.substring(foto.indexOf(",") + 1);
+        }
+        svgPart = decodeURIComponent(svgPart);
+        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgPart)));
+      } catch (e) {
+        console.error("Erro ao converter SVG:", e);
+      }
+    }
+    return foto;
+  }
   const inicial = nome ? nome.trim().charAt(0).toUpperCase() : "C";
   const cores = [
     ["#e5b85c", "#b8862d"],
@@ -1976,19 +2098,9 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
     const destinatario = (m.destinatario || "todos").toLowerCase();
 
     // 🔐 REGRA DE PRIVACIDADE / VISIBILIDADE DAS MENSAGENS NO CHAT
-    let visivel = false;
-    
-    if (destinatario === "todos" || destinatario === "geral") {
-      visivel = true;
-    } else if (destinatario === "courvan") {
-      visivel = true; // Visível para todos do grupo e para a Courvan
-    } else {
-      // É uma DM (mensagem direta para e-mail específico)
-      // Visível apenas para o remetente e o destinatário
-      if (emailUsuarioLogado === remetente || emailUsuarioLogado === destinatario) {
-        visivel = true;
-      }
-    }
+    // Como cada cliente possui sua própria sub-coleção segura "chats/clienteId/mensagens",
+    // todos os colaboradores autorizados da empresa têm visibilidade completa de todas as mensagens do grupo e conversas diretas de sua equipe.
+    let visivel = true;
     
     if (!visivel) return; // Se não for elegível para ver, ignora a mensagem
 
@@ -2394,9 +2506,231 @@ document
 
 });
   
-function iniciarDocumentos() {
+let documentosGlobais = [];
+let subDocFiltroAtivo = "todos";
 
+window.toggleFormDocumento = function() {
+  const form = document.getElementById("formDocumentos");
+  const btn = document.getElementById("btnToggleFormDoc");
+  if (!form || !btn) return;
+  if (form.style.display === "none") {
+    form.style.display = "flex";
+    btn.innerText = "✖ Cancelar";
+  } else {
+    form.style.display = "none";
+    btn.innerText = "➕ Adicionar Documento / Link";
+  }
+};
+
+window.onChangeCategoriaDoc = function() {
+  const cat = document.getElementById("categoriaDocumento").value;
+  const wrapperArquivo = document.getElementById("campoArquivoFisico");
+  const wrapperLink = document.getElementById("campoLinkDrive");
+  if (cat === "gdrive") {
+    if (wrapperArquivo) wrapperArquivo.style.display = "none";
+    if (wrapperLink) wrapperLink.style.display = "block";
+  } else {
+    if (wrapperArquivo) wrapperArquivo.style.display = "block";
+    if (wrapperLink) wrapperLink.style.display = "none";
+  }
+};
+
+window.filtrarSubDoc = function(canal) {
+  subDocFiltroAtivo = canal;
+  document.querySelectorAll("#abasSubDocumentos button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  const selectedBtn = document.getElementById(`subDocTab-${canal}`);
+  if (selectedBtn) selectedBtn.classList.add("active");
+
+  const painelPrazos = document.getElementById("painelPrazos");
+  if (painelPrazos) {
+    if (canal === "prazos") {
+      painelPrazos.style.display = "block";
+    } else {
+      painelPrazos.style.display = "none";
+    }
+  }
+
+  window.renderizarDocumentos();
+};
+
+window.renderizarDocumentos = function() {
   const div = document.getElementById("listaDocumentos");
+  if (!div) return;
+  div.innerHTML = "";
+
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+
+  let expirados = 0;
+  let vencendo = 0;
+  let validos = 0;
+
+  // Filtragem e Cálculo dos KPIs
+  const filtrados = documentosGlobais.filter(d => {
+    let statusPrazo = "valido"; // valido, vencendo, expirado
+    let diasRestantes = null;
+
+    if (d.vencimento) {
+      const parts = d.vencimento.split("-");
+      const vencData = new Date(parts[0], parts[1] - 1, parts[2]);
+      vencData.setHours(0,0,0,0);
+
+      const diffTime = vencData.getTime() - hoje.getTime();
+      diasRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diasRestantes < 0) {
+        statusPrazo = "expirado";
+        expirados++;
+      } else if (diasRestantes <= 15) {
+        statusPrazo = "vencendo";
+        vencendo++;
+      } else {
+        statusPrazo = "valido";
+        validos++;
+      }
+    } else {
+      validos++;
+    }
+
+    // Attach computed properties to d temporarily
+    d.statusPrazo = statusPrazo;
+    d.diasRestantes = diasRestantes;
+
+    // Apply filter
+    if (subDocFiltroAtivo === "todos") return true;
+    if (subDocFiltroAtivo === "prazos") {
+      // Show only documents with vencimento
+      return !!d.vencimento;
+    }
+    return d.categoria === subDocFiltroAtivo;
+  });
+
+  // Update KPIs UI
+  const kpiExpirados = document.getElementById("kpiExpiradosCount");
+  const kpiVencendo = document.getElementById("kpiVencendoCount");
+  const kpiValidos = document.getElementById("kpiValidosCount");
+
+  if (kpiExpirados) kpiExpirados.innerText = expirados;
+  if (kpiVencendo) kpiVencendo.innerText = vencendo;
+  if (kpiValidos) kpiValidos.innerText = validos;
+
+  if (filtrados.length === 0) {
+    div.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #64748b; font-style: italic; background: rgba(255,255,255,0.01); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.06);">
+        Nenhum documento encontrado nesta categoria.
+      </div>
+    `;
+    return;
+  }
+
+  // Generate cards
+  filtrados.forEach(d => {
+    let badgePrazoHTML = "";
+    if (d.vencimento) {
+      if (d.statusPrazo === "expirado") {
+        badgePrazoHTML = `
+          <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(239, 68, 68, 0.25);">
+            🚨 Expirado (${Math.abs(d.diasRestantes)}d atrás)
+          </span>
+        `;
+      } else if (d.statusPrazo === "vencendo") {
+        badgePrazoHTML = `
+          <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(245, 158, 11, 0.25);">
+            ⚠️ Vence em ${d.diasRestantes} dias
+          </span>
+        `;
+      } else {
+        badgePrazoHTML = `
+          <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(16, 185, 129, 0.25);">
+            🟢 Válido (${d.diasRestantes}d restantes)
+          </span>
+        `;
+      }
+    }
+
+    // Tradução de categoria
+    const categoriasMapa = {
+      certidoes: "📜 Controle de Certidões",
+      contratos: "✍️ Contratos & Aditivos",
+      editais: "📢 Editais & Propostas",
+      habilitacao: "💼 Habilitação Jurídica & Fiscal",
+      gdrive: "🔗 Google Drive",
+      outros: "📁 Outros Documentos"
+    };
+
+    const catTexto = categoriasMapa[d.categoria] || "📁 Documento";
+
+    // Ícone por tipo de arquivo
+    let fileIcon = "📄";
+    if (d.categoria === "gdrive") {
+      fileIcon = "🔗";
+    } else if (d.tipo && d.tipo.includes("pdf")) {
+      fileIcon = "📕";
+    } else if (d.tipo && d.tipo.includes("image")) {
+      fileIcon = "🖼️";
+    }
+
+    // Data de upload formatada
+    const uploadData = d.data?.seconds ? new Date(d.data.seconds * 1000).toLocaleDateString("pt-BR") : "";
+
+    div.innerHTML += `
+      <div style="background: linear-gradient(145deg, rgba(13, 25, 44, 0.45) 0%, rgba(5, 11, 19, 0.45) 100%); padding:24px; border-radius:20px; margin-bottom:16px; border: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; gap: 14px; align-items: center;">
+            <div style="font-size: 28px; background: rgba(255,255,255,0.03); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05);">${fileIcon}</div>
+            <div>
+              <h3 style="color:#ffffff; font-size: 16px; font-weight: 700; margin: 0;">${escapeHTML(d.nome)}</h3>
+              <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+                <span style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">${catTexto}</span>
+                ${uploadData ? `<span style="font-size: 11px; color: #475569;">• Upload em ${uploadData}</span>` : ""}
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            ${badgePrazoHTML}
+            ${d.statusDocumento ? `<span style="background: rgba(255,255,255,0.04); color: #cbd5e1; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; border: 1px solid rgba(255,255,255,0.06);">${escapeHTML(d.statusDocumento)}</span>` : ""}
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 14px;">
+          <a href="${d.link}" target="_blank" class="doc-tab-btn" style="margin: 0; padding: 10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; font-weight: 700; border: none; display: flex; align-items: center; gap: 6px; text-decoration: none;">
+            ${d.categoria === "gdrive" ? "🔗 Acessar Link" : "📥 Baixar / Abrir"}
+          </a>
+          <button class="doc-tab-btn" style="background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}', '${d.arquivo || ""}')">
+            🗑 Excluir
+          </button>
+        </div>
+      </div>
+    `;
+  });
+};
+
+window.excluirDocumento = async (id, caminhoArquivo) => {
+  if (!confirm("Tem certeza que deseja excluir este documento?")) return;
+
+  try {
+    // Deleta do Firestore
+    await deleteDoc(doc(db, "documentos", id));
+
+    // Se tiver arquivo no Supabase Storage, deleta de lá também!
+    if (caminhoArquivo) {
+      await supabase.storage
+        .from("documentos-clientes")
+        .remove([caminhoArquivo]);
+    }
+
+    alert("Documento excluído com sucesso.");
+  } catch (error) {
+    console.error("Erro ao excluir documento:", error);
+    alert("Erro ao excluir: " + error.message);
+  }
+};
+
+function iniciarDocumentos() {
+  const div = document.getElementById("listaDocumentos");
+  if (!div) return;
 
   onSnapshot(
     query(
@@ -2404,131 +2738,107 @@ function iniciarDocumentos() {
       where("clienteId", "==", clienteIdGlobal)
     ),
     snap => {
-
-      div.innerHTML = "";
-
-      const documentos = [];
-
+      documentosGlobais = [];
       snap.forEach(docItem => {
-
         const d = docItem.data();
-
-        documentos.push(d);
-
-        div.innerHTML += `
-          <div style="background: rgba(255, 255, 255, 0.02); padding:22px; border-radius:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
-            <div>
-              <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
-
-              <small style="opacity:0.5; font-size: 12px;">
-                ${
-                  d.data
-                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
-                    : ""
-                }
-              </small>
-            </div>
-
-            <a
-              href="${d.link}"
-              target="_blank"
-              class="radar-btn"
-              style="margin:0; padding:10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; border: none; box-shadow: 0 4px 12px rgba(216,168,78,0.15);"
-            >
-              Abrir
-            </a>
-          </div>
-        `;
+        d.id = docItem.id;
+        documentosGlobais.push(d);
       });
 
-      atualizarBadgePersistente(
-        "documentos",
-        documentos
-      );
+      // Sort
+      documentosGlobais.sort((a, b) => {
+        const dateA = a.data?.seconds ? a.data.seconds : 0;
+        const dateB = b.data?.seconds ? b.data.seconds : 0;
+        return dateB - dateA;
+      });
+
+      // Render
+      window.renderizarDocumentos();
+
+      atualizarBadgePersistente("documentos", documentosGlobais);
     }
   );
 }
 
 window.adicionarDocumento = async () => {
+  const nome = document.getElementById("nomeDocumento").value;
+  const categoria = document.getElementById("categoriaDocumento").value;
+  const vencimento = document.getElementById("vencimentoDocumento").value;
+  const statusDocumento = document.getElementById("statusDocumento").value;
 
-  const nome =
-    document.getElementById("nomeDocumento").value;
-
-  const categoria =
-document.getElementById("categoriaDocumento").value;
-
-const vencimento =
-document.getElementById("vencimentoDocumento").value;
-
-const statusDocumento =
-document.getElementById("statusDocumento").value;
-
-  
-  const arquivo =
-    document.getElementById("arquivoDocumento")
-    .files[0];
-
-  if (!nome || !arquivo) {
-    alert("Selecione um arquivo.");
+  if (!nome) {
+    alert("Por favor, digite o nome do documento.");
     return;
   }
 
-  const nomeSeguro = arquivo.name
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .replace(/[()]/g, "")
-  .replace(/[^a-zA-Z0-9._-]/g, "_");
+  let linkFinal = "";
+  let caminhoArquivo = null;
+  let tipoArquivo = "link";
+  let tamanhoArquivo = 0;
 
-const caminho =
-  `${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
+  if (categoria === "gdrive") {
+    linkFinal = document.getElementById("linkExternoDocumento").value;
+    if (!linkFinal) {
+      alert("Por favor, cole o link do Google Drive.");
+      return;
+    }
+  } else {
+    const arquivo = document.getElementById("arquivoDocumento").files[0];
+    if (!arquivo) {
+      alert("Selecione um arquivo.");
+      return;
+    }
 
-  const { error } =
-    await supabase.storage
+    const nomeSeguro = arquivo.name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[()]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const caminho = `${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
+
+    const { error } = await supabase.storage
       .from("documentos-clientes")
       .upload(caminho, arquivo);
 
-  if (error) {
-    console.error(error);
-    alert("Erro ao enviar arquivo.");
-    return;
-  }
+    if (error) {
+      console.error(error);
+      alert("Erro ao enviar arquivo.");
+      return;
+    }
 
-  const { data } =
-    supabase.storage
+    const { data } = supabase.storage
       .from("documentos-clientes")
       .getPublicUrl(caminho);
 
-  await addDoc(
-  collection(db, "documentos"),
-  {
-    clienteId: clienteIdGlobal,
+    linkFinal = data.publicUrl;
+    caminhoArquivo = caminho;
+    tipoArquivo = arquivo.type;
+    tamanhoArquivo = arquivo.size;
+  }
 
+  await addDoc(collection(db, "documentos"), {
+    clienteId: clienteIdGlobal,
     nome,
     categoria,
-
-    vencimento,
-
-    statusDocumento,
-
-    link: data.publicUrl,
-
-    arquivo: caminho,
-
-    tipo: arquivo.type,
-
-    tamanho: arquivo.size,
-
+    vencimento: vencimento || null,
+    statusDocumento: statusDocumento || null,
+    link: linkFinal,
+    arquivo: caminhoArquivo,
+    tipo: tipoArquivo,
+    tamanho: tamanhoArquivo,
     data: serverTimestamp()
-  }
-);
+  });
 
+  // Limpa campos
   document.getElementById("nomeDocumento").value = "";
-
   document.getElementById("vencimentoDocumento").value = "";
-
   document.getElementById("statusDocumento").value = "";
+  if (document.getElementById("arquivoDocumento")) document.getElementById("arquivoDocumento").value = "";
+  if (document.getElementById("linkExternoDocumento")) document.getElementById("linkExternoDocumento").value = "";
 
-  document.getElementById("arquivoDocumento").value = "";
+  // Oculta form
+  window.toggleFormDocumento();
 
   alert("Documento enviado com sucesso.");
 };
