@@ -523,24 +523,24 @@ async function iniciarCalendario(clienteId){
 
   calendar.render();
 
-  // TEMPO REAL
+  let listaLicitacoesEventos = [];
+  let listaDocumentosEventos = [];
+
+  function atualizarCalendarioCompleto() {
+    const todosEventos = [...listaLicitacoesEventos, ...listaDocumentosEventos];
+    calendar.removeAllEvents();
+    calendar.addEventSource(todosEventos);
+  }
+
+  // TEMPO REAL LICITAÇÕES
   onSnapshot(q, (snapshot)=>{
-
-    const eventos = [];
-
+    listaLicitacoesEventos = [];
     snapshot.forEach((docItem)=>{
-
       const l = docItem.data();
-
       if(!l.dataSessao) return;
-
-      eventos.push({
-
+      listaLicitacoesEventos.push({
         id:docItem.id,
-
-        title:
-          `${l.orgao || ""}`,
-
+        title: `${l.orgao || ""}`,
         start:
           l.dataSessao.includes("/")
           ? l.dataSessao
@@ -548,40 +548,55 @@ async function iniciarCalendario(clienteId){
               .reverse()
               .join("-")
           : l.dataSessao,
-
         color:
           corStatus(l.status),
-
         extendedProps:{
-
+          tipoEvento: "licitacao",
           orgao:l.orgao,
-
           objeto:l.objeto,
-
           status:l.status,
-
           valor:l.valor,
-
           clienteNome:
             clientesMap[
               l.clienteId
             ] || "Desconhecido",
-
           linkEdital:
             l.linkEdital
-
         }
-
       });
-
     });
+    atualizarCalendarioCompleto();
+  });
 
-    calendar.removeAllEvents();
+  // TEMPO REAL DOCUMENTOS (PRAZOS)
+  let qDocs;
+  if (!clienteId) {
+    qDocs = query(collection(db, "documentos"));
+  } else {
+    qDocs = query(collection(db, "documentos"), where("clienteId", "==", clienteId));
+  }
 
-    calendar.addEventSource(
-      eventos
-    );
-
+  onSnapshot(qDocs, (snapshotDocs) => {
+    listaDocumentosEventos = [];
+    snapshotDocs.forEach((docItem) => {
+      const d = docItem.data();
+      if (!d.vencimento) return;
+      listaDocumentosEventos.push({
+        id: docItem.id,
+        title: `📄 Vencimento: ${d.nome || "Documento"}`,
+        start: d.vencimento,
+        color: "#dc2626", // Red for deadlines
+        extendedProps: {
+          tipoEvento: "documento",
+          nome: d.nome,
+          categoria: d.categoria || "Outros",
+          statusDocumento: d.statusDocumento || "Pendente",
+          link: d.link,
+          clienteNome: clientesMap[d.clienteId] || "Desconhecido"
+        }
+      });
+    });
+    atualizarCalendarioCompleto();
   });
 
   // CLICK EVENTO
@@ -591,6 +606,58 @@ async function iniciarCalendario(clienteId){
 
       const p =
         info.event.extendedProps;
+
+      if (p.tipoEvento === "documento") {
+        abrirDrawer(`
+          <div class="item">
+            <strong>Tipo de Evento:</strong>
+            🚨 Vencimento de Documento
+          </div>
+
+          <div class="item">
+            <strong>Documento:</strong>
+            ${p.nome || "-"}
+          </div>
+
+          <div class="item">
+            <strong>Categoria:</strong>
+            ${p.categoria || "-"}
+          </div>
+
+          <div class="item">
+            <strong>Status do Documento:</strong>
+            ${p.statusDocumento || "-"}
+          </div>
+
+          <div class="item">
+            <strong>Cliente:</strong>
+            ${p.clienteNome || "-"}
+          </div>
+
+          <div class="item">
+            <strong>Documento Anexo:</strong><br><br>
+            ${
+              p.link
+              ? `
+                <a
+                  href="${p.link}"
+                  target="_blank"
+                  style="
+                    color:#e5b85c;
+                    text-decoration: none;
+                    font-weight: 600;
+                    word-break:break-all;
+                  "
+                >
+                  Visualizar Documento ↗
+                </a>
+              `
+              : "Sem anexo"
+            }
+          </div>
+        `);
+        return;
+      }
 
       abrirDrawer(`
 
@@ -620,9 +687,7 @@ async function iniciarCalendario(clienteId){
         </div>
 
         <div class="item">
-
           <strong>Edital:</strong><br><br>
-
           ${
             p.linkEdital
             ? `
@@ -641,11 +706,8 @@ async function iniciarCalendario(clienteId){
             `
             : "Não informado"
           }
-
         </div>
-
       `);
-
     }
   );
 
