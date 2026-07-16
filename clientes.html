@@ -42,6 +42,10 @@
       flex-direction: column;
       gap: 10px;
       border-right: 1px solid rgba(255, 255, 255, 0.03);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
     }
 
     .sidebar h2 {
@@ -216,7 +220,17 @@
 
     @media(max-width:900px){
       body { flex-direction: column; }
-      .sidebar { width: 100%; padding: 30px 24px; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
+      .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        top: unset !important;
+        min-height: auto !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+        padding: 30px 24px !important;
+        overflow-y: visible !important;
+      }
       .sidebar h2 { margin-bottom: 20px; }
       .content { padding: 40px 24px; }
     }
@@ -302,7 +316,21 @@ onAuthStateChanged(auth, (user) => {
 
 /* 🔥 LISTA EM TEMPO REAL INJETANDO ESTRUTURA PREMIUM */
 function obterFotoPerfil(foto, nome) {
-  if (foto && foto.startsWith("data:image")) return foto;
+  if (foto && foto.startsWith("data:image")) {
+    if (foto.includes("<svg") && !foto.includes(";base64,")) {
+      try {
+        let svgPart = foto;
+        if (foto.includes(",")) {
+          svgPart = foto.substring(foto.indexOf(",") + 1);
+        }
+        svgPart = decodeURIComponent(svgPart);
+        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgPart)));
+      } catch (e) {
+        console.error("Erro ao converter SVG:", e);
+      }
+    }
+    return foto;
+  }
   const inicial = nome ? nome.trim().charAt(0).toUpperCase() : "C";
   const cores = [
     ["#e5b85c", "#b8862d"],
