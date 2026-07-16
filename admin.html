@@ -216,7 +216,13 @@ window.criarUsuario = async function () {
         cpf: cpf || null,
         uid,
         status: "ativo",
-        emailsAutorizados: [email.trim().toLowerCase()]
+        emailsAutorizados: [email.trim().toLowerCase()],
+        usuariosMulti: [
+          {
+            nome: nome.trim(),
+            email: email.trim().toLowerCase()
+          }
+        ]
       }
     );
 
