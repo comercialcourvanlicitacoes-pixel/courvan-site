@@ -301,6 +301,21 @@ onAuthStateChanged(auth, (user) => {
 });
 
 /* 🔥 LISTA EM TEMPO REAL INJETANDO ESTRUTURA PREMIUM */
+function obterFotoPerfil(foto, nome) {
+  if (foto && foto.startsWith("data:image")) return foto;
+  const inicial = nome ? nome.trim().charAt(0).toUpperCase() : "C";
+  const cores = [
+    ["#e5b85c", "#b8862d"],
+    ["#3b82f6", "#1d4ed8"],
+    ["#10b981", "#047857"],
+    ["#8b5cf6", "#6d28d9"],
+    ["#ec4899", "#be185d"]
+  ];
+  const index = (inicial.charCodeAt(0) || 0) % cores.length;
+  const [cor1, cor2] = cores[index];
+  return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:${encodeURIComponent(cor1)};stop-opacity:1" /><stop offset="100%" style="stop-color:${encodeURIComponent(cor2)};stop-opacity:1" /></linearGradient></defs><circle cx="50" cy="50" r="50" fill="url(%23grad)"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Inter', sans-serif" font-weight="800" font-size="40" fill="white">${inicial}</text></svg>`;
+}
+
 function iniciarListenerClientes(){
   if (unsubscribeClientes) unsubscribeClientes();
 
@@ -316,18 +331,50 @@ function iniciarListenerClientes(){
         const empresa = cliente?.empresa || "-";
         const email = cliente?.email || "-";
         const status = cliente?.status || "-";
+        const bio = cliente?.bio || "";
+        const fotoPerfil = cliente?.fotoPerfil || "";
+        const usuariosMulti = cliente?.usuariosMulti || [];
         const nomeLower = nome.toLowerCase();
 
-        // Template estrutural limpo, dividindo labels e valores de forma simétrica
-        clientesDiv.innerHTML += `
-          <div class="card cardCliente" data-nome="${nomeLower}">
-            <div>
-              <h2>${nome}</h2>
-              <div class="card-info-group">
-                <p><strong>Empresa</strong> <span>${empresa}</span></p>
-                <p><strong>Email</strong> <span>${email}</span></p>
-                <p><strong>Status</strong> <span style="color: #f3d082;">${status}</span></p>
+        const fotoUrlFinal = obterFotoPerfil(fotoPerfil, nome);
+
+        let htmlColaboradores = "";
+        if (usuariosMulti.length > 0) {
+          htmlColaboradores = `
+            <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; margin-bottom: 12px;">
+              <span style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Colaboradores Ativos (${usuariosMulti.length})</span>
+              <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+          `;
+          usuariosMulti.forEach((colab, i) => {
+            const colabNome = colab.nome || "Colaborador";
+            const colabFoto = colab.fotoPerfil || "";
+            const colabFotoUrl = obterFotoPerfil(colabFoto, colabNome);
+            htmlColaboradores += `
+              <img src="${colabFotoUrl}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #0d233f; margin-left: ${i > 0 ? '-8px' : '0'}; background: #0c1524;" title="${colabNome} (${colab.email})">
+            `;
+          });
+          htmlColaboradores += `
               </div>
+            </div>
+          `;
+        }
+
+        clientesDiv.innerHTML += `
+          <div class="card cardCliente" data-nome="${nomeLower}" style="padding: 24px;">
+            <div>
+              <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px;">
+                <img src="${fotoUrlFinal}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #e5b85c; background: #0c1524; flex-shrink: 0;">
+                <div style="overflow: hidden; flex: 1;">
+                  <h2 style="margin: 0 0 2px 0; font-size: 17px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nome}</h2>
+                  <div style="font-size: 12px; color: #64748b; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${bio ? `"${bio}"` : "Sem biografia cadastrada."}</div>
+                </div>
+              </div>
+              <div class="card-info-group" style="margin-bottom: 16px;">
+                <p style="margin-bottom: 8px; padding-bottom: 6px;"><strong>Empresa</strong> <span>${empresa}</span></p>
+                <p style="margin-bottom: 8px; padding-bottom: 6px;"><strong>Email</strong> <span>${email}</span></p>
+                <p style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;"><strong>Status</strong> <span style="color: #10b981; text-transform: uppercase; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">${status}</span></p>
+              </div>
+              ${htmlColaboradores}
             </div>
 
             <div>
