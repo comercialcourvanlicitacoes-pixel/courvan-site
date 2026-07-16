@@ -484,6 +484,14 @@
     <div id="chat" class="aba" style="display:none;">
       <h1>Chat</h1>
 
+      <!-- Filtros Rápidos de Canais/Conversas -->
+      <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; overflow-x: auto;">
+        <button id="filtroChat-tudo" onclick="window.filtrarCanalChat('tudo')" style="padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(229,184,92,0.15); background: rgba(229,184,92,0.08); color: #e5b85c; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s;">💬 Tudo</button>
+        <button id="filtroChat-todos" onclick="window.filtrarCanalChat('todos')" style="padding: 8px 16px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: #94a3b8; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: 0.2s;">📢 Grupo (Geral)</button>
+        <button id="filtroChat-courvan" onclick="window.filtrarCanalChat('courvan')" style="padding: 8px 16px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: #94a3b8; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: 0.2s;">🤝 Suporte Courvan</button>
+        <button id="filtroChat-dms" onclick="window.filtrarCanalChat('dms')" style="padding: 8px 16px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: #94a3b8; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: 0.2s;">🔒 Conversas Diretas (DMs)</button>
+      </div>
+
       <div id="mensagens" style="background: rgba(5, 11, 19, 0.6); height:450px; overflow-y:auto; overflow-x:hidden; padding:24px; border-radius:20px; margin-bottom:20px; border: 1px solid rgba(255,255,255,0.03);">
       </div>
 
@@ -503,6 +511,15 @@
         <div style="font-size:12px; color:#94a3b8; margin-bottom:10px; font-weight:600; padding-left:4px; text-transform:uppercase; letter-spacing:0.5px;">Emojis Rápidos</div>
         <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:8px;" id="emojiGridChat">
         </div>
+      </div>
+
+      <!-- Seletor Inteligente de Destinatário -->
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: rgba(255, 255, 255, 0.015); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap;">
+        <span style="font-size: 13px; color: #64748b; font-weight: 500;">Enviar para:</span>
+        <select id="chatDestinatario" class="inputPadrao" style="width: auto; padding: 6px 32px 6px 12px; font-size: 13px; border-radius: 8px; border-color: rgba(255,255,255,0.06); background: #0c1524; height: auto; margin-bottom: 0;">
+          <option value="todos">📢 Todos do Grupo (Público)</option>
+          <option value="courvan">🤝 Suporte Courvan (Privado)</option>
+        </select>
       </div>
 
       <div style="display:flex; gap:10px; align-items:center;">
@@ -568,7 +585,6 @@
       <!-- DADOS DA EMPRESA -->
       <div class="info-box" style="border-radius: 20px; padding: 24px;">
         <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px; font-family: 'Plus Jakarta Sans', sans-serif !important;">🏢 Dados da Empresa</h2>
-        <input id="configNome" class="inputPadrao" placeholder="Nome" style="margin-bottom:12px;">
         <input id="configEmpresa" class="inputPadrao" placeholder="Empresa" style="margin-bottom:12px;">
         <input id="configEmail" type="email" class="inputPadrao" placeholder="E-mail Principal" style="margin-bottom:12px;">
         <input id="configTelefone" class="inputPadrao" placeholder="Telefone" style="margin-bottom:12px;">
@@ -663,6 +679,8 @@ emailjs.init("yg2qGBBvZjUbHwU_y");
 let clienteIdGlobal = null;
 let emailClienteGlobal = "";
 let dadosClienteGlobal = null;
+let filtroCanalAtivo = "tudo";
+let ultimoSnapMensagens = null;
 
 // HELPER PARA FOTO DE PERFIL GERADA DINAMICAMENTE
 function obterFotoPerfil(foto, nome) {
@@ -1057,7 +1075,6 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("configPerfilNome").value = nomeUsuarioLogado || "";
   document.getElementById("configPerfilBio").value = bioUsuarioLogado || "";
 
-  document.getElementById("configNome").value = dadosClienteGlobal.nome || "";
   document.getElementById("configEmpresa").value = dadosClienteGlobal.empresa || "";
   document.getElementById("configEmail").value = dadosClienteGlobal.email || "";
   document.getElementById("configTelefone").value = dadosClienteGlobal.telefone || "";
@@ -1077,6 +1094,7 @@ onAuthStateChanged(auth, async (user) => {
   listarDemandas();
   iniciarDocumentos();
   iniciarChat();
+  window.atualizarSelectDestinatarios();
   listarLicitacoes();
   
   carregarRadarPersonalizado();
@@ -1193,7 +1211,7 @@ const ultimaVisualizacao = Number(
 }
   
 window.salvarConfiguracoes = async function () {
-  const nome = document.getElementById("configNome").value;
+  const nome = dadosClienteGlobal.nome || "";
   const empresa = document.getElementById("configEmpresa").value;
   const telefone = document.getElementById("configTelefone").value;
   const city = document.getElementById("configCidade").value;
@@ -1271,6 +1289,7 @@ window.salvarConfiguracoes = async function () {
 
   try {
     renderizarUsuariosMulti();
+    window.atualizarSelectDestinatarios();
   } catch (err) {
     console.error("Erro ao renderizar multiusuarios:", err);
   }
@@ -1341,8 +1360,9 @@ window.salvarPerfilPessoal = async function() {
     document.getElementById("fotoPerfilCard").src = fotoUrl;
     document.getElementById("previewFotoPerfil").src = fotoUrl;
     
-    alert("Perfil pessoal atualizado com sucesso!");
+    alert("Perfil pessoal updated com sucesso!");
     renderizarUsuariosMulti();
+    window.atualizarSelectDestinatarios();
   } catch (error) {
     console.error("Erro ao salvar perfil pessoal:", error);
     alert("Erro ao salvar perfil: " + error.message);
@@ -1443,6 +1463,7 @@ window.adicionarNovoUsuario = async function() {
     senhaInput.value = "";
     
     renderizarUsuariosMulti();
+    window.atualizarSelectDestinatarios();
     alert("Usuário adicionado e cadastrado com sucesso!");
   } catch (error) {
     console.error(error);
@@ -1470,6 +1491,7 @@ window.removerUsuarioMulti = async function(email) {
     dadosClienteGlobal.emailsAutorizados = emails;
     dadosClienteGlobal.usuariosMulti = usuariosMulti;
     renderizarUsuariosMulti();
+    window.atualizarSelectDestinatarios();
     alert("Usuário removido com sucesso!");
   } catch (error) {
     console.error(error);
@@ -1917,247 +1939,328 @@ function iniciarChat() {
   }
 
   onSnapshot(query(collection(db, "chats", clienteIdGlobal, "mensagens"), orderBy("data")), snap => {
-    div.innerHTML = "";
-    snap.forEach(docSnap => {
-
-  const mensagemId = docSnap.id;
-
-  const m = docSnap.data();
-  // Armazena a mensagem para responder de forma segura via clique sem quebrar strings
-  mensagensCarregadas[mensagemId] = m;
-
-  const isMe = m.autor === (
-    auth.currentUser.email ===
-    "comercial.courvanlicitacoes@gmail.com"
-      ? "admin"
-      : "cliente"
-  );
-      const dataMensagem = m.data?.seconds
-  ? new Date(m.data.seconds * 1000)
-  : new Date();
-
-const dataFormatada =
-  dataMensagem.toLocaleDateString("pt-BR") +
-  " às " +
-  dataMensagem.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit"
+    ultimoSnapMensagens = snap;
+    window.renderizarMensagensDoChat(primeiroCarregamentoChat);
+    primeiroCarregamentoChat = false;
   });
+}
 
-      // Renderização do anexo se existir
-      let htmlAnexo = "";
-      if (m.anexoUrl) {
-        const isImg = (m.anexoTipo && m.anexoTipo.startsWith("image/")) || 
-                      /\.(jpg|jpeg|png|gif|webp)$/i.test(m.anexoNome || "");
-        if (isImg) {
-          htmlAnexo = `
-            <div style="margin-top:8px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); max-width:260px;">
-              <img src="${m.anexoUrl}" style="max-width:100%; height:auto; display:block; cursor:pointer;" onclick="window.open('${m.anexoUrl}')" title="Clique para ampliar">
-            </div>
-          `;
-        } else {
-          htmlAnexo = `
-            <div style="margin-top:8px;">
-              <a href="${m.anexoUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); color:#e5b85c; padding:10px 14px; border-radius:12px; font-size:13px; text-decoration:none; border:1px solid rgba(255,255,255,0.05); font-weight:500;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
-                Anexo: 📄 ${escapeHTML(m.anexoNome || 'Abrir anexo')}
-              </a>
-            </div>
+window.renderizarMensagensDoChat = function(forcarScroll = false) {
+  const div = document.getElementById("mensagens");
+  if (!div || !ultimoSnapMensagens) return;
+  
+  div.innerHTML = "";
+  const emailUsuarioLogado = auth.currentUser ? auth.currentUser.email.toLowerCase() : "";
+  const isAdmin = emailUsuarioLogado === "comercial.courvanlicitacoes@gmail.com";
+  
+  ultimoSnapMensagens.forEach(docSnap => {
+    const mensagemId = docSnap.id;
+    const m = docSnap.data();
+    mensagensCarregadas[mensagemId] = m;
+
+    const remetente = (m.remetenteEmail || "").toLowerCase();
+    const destinatario = (m.destinatario || "todos").toLowerCase();
+
+    // 🔐 REGRA DE PRIVACIDADE / VISIBILIDADE DAS MENSAGENS NO CHAT
+    let visivel = false;
+    
+    if (destinatario === "todos" || destinatario === "geral") {
+      visivel = true;
+    } else if (destinatario === "courvan") {
+      visivel = true; // Visível para todos do grupo e para a Courvan
+    } else {
+      // É uma DM (mensagem direta para e-mail específico)
+      // Visível apenas para o remetente e o destinatário
+      if (emailUsuarioLogado === remetente || emailUsuarioLogado === destinatario) {
+        visivel = true;
+      }
+    }
+    
+    if (!visivel) return; // Se não for elegível para ver, ignora a mensagem
+
+    // 🔍 APLICA FILTRAGEM DO TOPO DO CHAT (filtroCanalAtivo)
+    if (filtroCanalAtivo === "todos" && destinatario !== "todos") return;
+    if (filtroCanalAtivo === "courvan" && destinatario !== "courvan") return;
+    if (filtroCanalAtivo === "dms" && (destinatario === "todos" || destinatario === "courvan")) return;
+
+    const isMe = m.autor === (
+      isAdmin ? "admin" : "cliente"
+    ) || (remetente === emailUsuarioLogado && m.autor !== "admin");
+    
+    const dataMensagem = m.data?.seconds
+      ? new Date(m.data.seconds * 1000)
+      : new Date();
+
+    const dataFormatada =
+      dataMensagem.toLocaleDateString("pt-BR") +
+      " às " +
+      dataMensagem.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+    // Renderização do anexo se existir
+    let htmlAnexo = "";
+    if (m.anexoUrl) {
+      const isImg = (m.anexoTipo && m.anexoTipo.startsWith("image/")) || 
+                    /\.(jpg|jpeg|png|gif|webp)$/i.test(m.anexoNome || "");
+      if (isImg) {
+        htmlAnexo = `
+          <div style="margin-top:8px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); max-width:260px;">
+            <img src="${m.anexoUrl}" style="max-width:100%; height:auto; display:block; cursor:pointer;" onclick="window.open('${m.anexoUrl}')" title="Clique para ampliar">
+          </div>
+        `;
+      } else {
+        htmlAnexo = `
+          <div style="margin-top:8px;">
+            <a href="${m.anexoUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); color:#e5b85c; padding:10px 14px; border-radius:12px; font-size:13px; text-decoration:none; border:1px solid rgba(255,255,255,0.05); font-weight:500;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+              Anexo: 📄 ${escapeHTML(m.anexoNome || 'Abrir anexo')}
+            </a>
+          </div>
+        `;
+      }
+    }
+
+    // Renderização das Reações
+    const reacoes = m.reacoes || {};
+    let htmlReacoes = "";
+    const usuarioAtualEmail = auth.currentUser.email;
+    const chavesReacoes = Object.keys(reacoes);
+
+    if (chavesReacoes.length > 0) {
+      htmlReacoes += `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">`;
+      chavesReacoes.forEach(emoji => {
+        const listUsuarios = reacoes[emoji] || [];
+        if (listUsuarios.length > 0) {
+          const euReagi = listUsuarios.includes(usuarioAtualEmail);
+          htmlReacoes += `
+            <button 
+              onclick="window.reagirMensagem('${mensagemId}', '${emoji}')"
+              style="
+                display:inline-flex;
+                align-items:center;
+                gap:4px;
+                background:${euReagi ? 'rgba(229, 184, 92, 0.15)' : 'rgba(255,255,255,0.04)'};
+                color:${euReagi ? '#e5b85c' : '#cbd5e1'};
+                border:1px solid ${euReagi ? 'rgba(229, 184, 92, 0.3)' : 'rgba(255,255,255,0.05)'};
+                padding:4px 8px;
+                border-radius:10px;
+                font-size:12px;
+                cursor:pointer;
+                transition:all 0.15s;
+              "
+              title="Reagido por: ${listUsuarios.join(', ')}"
+            >
+              <span>${emoji}</span>
+              <span style="font-weight:600; font-size:11px;">${listUsuarios.length}</span>
+            </button>
           `;
         }
-      }
+      });
+      htmlReacoes += `</div>`;
+    }
 
-      // Renderização das Reações
-      const reacoes = m.reacoes || {};
-      let htmlReacoes = "";
-      const usuarioAtualEmail = auth.currentUser.email;
-      const chavesReacoes = Object.keys(reacoes);
+    // CRIAÇÃO DOS BADGES VISUAIS DE CANAL / DESTINATÁRIO
+    let htmlBadgeDestinatario = "";
+    if (destinatario === "courvan") {
+      htmlBadgeDestinatario = `<span style="background: rgba(229, 184, 92, 0.15); color: #e5b85c; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 1.5px solid rgba(229, 184, 92, 0.25); text-transform: uppercase; margin-bottom: 4px; display: inline-block;">🤝 Suporte Courvan</span>`;
+    } else if (destinatario !== "todos") {
+      htmlBadgeDestinatario = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 1.5px solid rgba(16, 185, 129, 0.25); text-transform: uppercase; margin-bottom: 4px; display: inline-block;">🔒 Privado</span>`;
+    }
 
-      if (chavesReacoes.length > 0) {
-        htmlReacoes += `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">`;
-        chavesReacoes.forEach(emoji => {
-          const listUsuarios = reacoes[emoji] || [];
-          if (listUsuarios.length > 0) {
-            const euReagi = listUsuarios.includes(usuarioAtualEmail);
-            htmlReacoes += `
-              <button 
-                onclick="window.reagirMensagem('${mensagemId}', '${emoji}')"
-                style="
-                  display:inline-flex;
-                  align-items:center;
-                  gap:4px;
-                  background:${euReagi ? 'rgba(229, 184, 92, 0.15)' : 'rgba(255,255,255,0.04)'};
-                  color:${euReagi ? '#e5b85c' : '#cbd5e1'};
-                  border:1px solid ${euReagi ? 'rgba(229, 184, 92, 0.3)' : 'rgba(255,255,255,0.05)'};
-                  padding:4px 8px;
-                  border-radius:10px;
-                  font-size:12px;
-                  cursor:pointer;
-                  transition:all 0.15s;
-                "
-                title="Reagido por: ${listUsuarios.join(', ')}"
-              >
-                <span>${emoji}</span>
-                <span style="font-weight:600; font-size:11px;">${listUsuarios.length}</span>
-              </button>
-            `;
-          }
-        });
-        htmlReacoes += `</div>`;
-      }
-
-div.innerHTML += `
-  <div
-    style="text-align:${isMe ? 'right' : 'left'}; margin-bottom:12px;"
-  >
-
-    <div style="
-      display:inline-block;
-      background:${isMe ? 'linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%)' : 'rgba(255,255,255,0.04)'};
-      color:${isMe ? '#060b13' : 'white'};
-      padding:12px 16px;
-      border-radius:16px;
-      border-bottom-${isMe ? 'right' : 'left'}-radius:4px;
-      max-width:75%;
-      overflow:hidden;
-      text-align:left;
-      box-shadow:0 4px 10px rgba(0,0,0,0.05);
-      border:${isMe?'none':'1px solid rgba(255,255,255,0.05)'};
-    ">
-
-      <div style="
-        font-size:11px;
-        opacity:0.7;
-        font-weight:600;
-        margin-bottom:4px;
-      ">
-        ${escapeHTML(m.nome)}
-      </div>
-      
-  ${
-  m.respostaTexto
-    ? `
-      <div
-        style="
-          background:rgba(255,255,255,.08);
-          border-left:3px solid #e5b85c;
-          padding:8px;
-          border-radius:8px;
-          margin-bottom:8px;
-          font-size:12px;
-          opacity:.85;
+    div.innerHTML += `
+      <div style="text-align:${isMe ? 'right' : 'left'}; margin-bottom:12px;">
+        <div style="
+          display:inline-block;
+          background:${isMe ? 'linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%)' : 'rgba(255,255,255,0.04)'};
+          color:${isMe ? '#060b13' : 'white'};
+          padding:12px 16px;
+          border-radius:16px;
+          border-bottom-${isMe ? 'right' : 'left'}-radius:4px;
+          max-width:75%;
           overflow:hidden;
-          text-overflow:ellipsis;
-        "
-      >
-        <strong>${escapeHTML(m.respostaAutor)}</strong><br>
-        ${escapeHTML(m.respostaTexto)}
+          text-align:left;
+          box-shadow:0 4px 10px rgba(0,0,0,0.05);
+          border:${isMe?'none':'1px solid rgba(255,255,255,0.05)'};
+        ">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+            <div style="font-size:11px; opacity:0.7; font-weight:600; margin-bottom:4px;">
+              ${escapeHTML(m.nome)}
+            </div>
+            ${htmlBadgeDestinatario}
+          </div>
+          
+          ${m.respostaTexto ? `
+            <div style="
+              background:rgba(255,255,255,.08);
+              border-left:3px solid #e5b85c;
+              padding:8px;
+              border-radius:8px;
+              margin-bottom:8px;
+              font-size:12px;
+              opacity:.85;
+              overflow:hidden;
+              text-overflow:ellipsis;
+            ">
+              <strong>${escapeHTML(m.respostaAutor)}</strong><br>
+              ${escapeHTML(m.respostaTexto)}
+            </div>
+          ` : ""}
+
+          <div style="
+            font-size:14px;
+            line-height:1.4;
+            margin-bottom:8px;
+            word-break:break-word;
+            overflow-wrap:anywhere;
+            white-space:pre-wrap;
+          ">
+            ${escapeHTML(m.texto)}
+          </div>
+
+          ${htmlAnexo}
+
+          <div style="display:flex; align-items:center; gap:10px; margin-top:6px; flex-wrap:wrap;">
+            <button onclick="window.responderMensagemClick('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px;">
+              ↩ Responder
+            </button>
+            <button onclick="window.toggleReactionPicker('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px;">
+              😀 Reagir
+            </button>
+          </div>
+
+          <!-- Reaction Picker Popover -->
+          <div id="reactionPicker-${mensagemId}" style="display:none; background:rgba(13, 25, 44, 0.95); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:6px; margin-top:8px; gap:6px; flex-wrap:wrap; width:fit-content; box-shadow:0 4px 10px rgba(0,0,0,0.3); z-index:10;">
+            ${["👍", "❤️", "😂", "😮", "😢", "🙏", "🎉", "🔥"].map(emoji => `
+              <button onclick="window.reagirMensagem('${mensagemId}', '${emoji}')" style="background:none; border:none; font-size:16px; cursor:pointer; padding:4px; border-radius:6px; transition:0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='none'">
+                ${emoji}
+              </button>
+            `).join("")}
+          </div>
+
+          ${htmlReacoes}
+
+          <div style="font-size:11px; opacity:0.6; text-align:right;">
+            ${dataFormatada}
+          </div>
+        </div>
       </div>
-    `
-    : ""
-}
-
-<div
-  style="
-    font-size:14px;
-    line-height:1.4;
-    margin-bottom:8px;
-    word-break:break-word;
-    overflow-wrap:anywhere;
-    white-space:pre-wrap;
-  "
->
-  ${escapeHTML(m.texto)}
-</div>
-
-${htmlAnexo}
-
-<div style="display:flex; align-items:center; gap:10px; margin-top:6px; flex-wrap:wrap;">
-<button
-  onclick="window.responderMensagemClick('${mensagemId}')"
-  style="
-    margin-top:6px;
-    background:none;
-    border:none;
-    color:${isMe ? '#060b13' : '#e5b85c'};
-    cursor:pointer;
-    font-size:12px;
-  "
->
-  ↩ Responder
-</button>
-
-<button
-  onclick="window.toggleReactionPicker('${mensagemId}')"
-  style="
-    margin-top:6px;
-    background:none;
-    border:none;
-    color:${isMe ? '#060b13' : '#e5b85c'};
-    cursor:pointer;
-    font-size:12px;
-  "
->
-  😀 Reagir
-</button>
-</div>
-
-<!-- Reaction Picker Popover -->
-<div id="reactionPicker-${mensagemId}" style="display:none; background:rgba(13, 25, 44, 0.95); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:6px; margin-top:8px; gap:6px; flex-wrap:wrap; width:fit-content; box-shadow:0 4px 10px rgba(0,0,0,0.3); z-index:10;">
-  ${["👍", "❤️", "😂", "😮", "😢", "🙏", "🎉", "🔥"].map(emoji => `
-    <button onclick="window.reagirMensagem('${mensagemId}', '${emoji}')" style="background:none; border:none; font-size:16px; cursor:pointer; padding:4px; border-radius:6px; transition:0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='none'">
-      ${emoji}
-    </button>
-  `).join("")}
-</div>
-
-${htmlReacoes}
-
-      <div style="
-        font-size:11px;
-        opacity:0.6;
-        text-align:right;
-      ">
-        ${dataFormatada}
-      </div>
-
-    </div>
-
-  </div>
-`;
-    });
-    
-    // Rola suavemente apenas se o usuário estiver próximo ao fundo ou forçar
-    window.scrollChatToBottom(primeiroCarregamentoChat);
-    primeiroCarregamentoChat = false;
-    
-    const mensagens = snap.docs.map(d => d.data());
-
-/* se o chat estiver aberto,
-marca tudo como visualizado automaticamente */
-
-const chatAberto =
-  document.getElementById("chat").style.display === "block";
-
-if (chatAberto) {
-
-  const tipoUsuario =
-    auth.currentUser.email ===
-    "comercial.courvanlicitacoes@gmail.com"
-      ? "admin"
-      : "cliente";
-
-  localStorage.setItem(
-    `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_chat`,
-    Date.now()
-  );
-}
-
-atualizarBadgePersistente(
-  "chat",
-  mensagens
-);
+    `;
   });
-}
+
+  // Rola suavemente apenas se o usuário estiver próximo ao fundo ou forçar
+  window.scrollChatToBottom(forcarScroll);
+
+  // Trata visualizados do chat
+  const chatAberto = document.getElementById("chat").style.display === "block";
+  if (chatAberto) {
+    const tipoUsuario = isAdmin ? "admin" : "cliente";
+    localStorage.setItem(`ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_chat`, Date.now());
+  }
+  
+  // Filtra e contabiliza as mensagens não lidas de forma confiável
+  const mensagens = [];
+  ultimoSnapMensagens.forEach(docSnap => {
+    const m = docSnap.data();
+    const remetente = (m.remetenteEmail || "").toLowerCase();
+    const destinatario = (m.destinatario || "todos").toLowerCase();
+    
+    let visivel = false;
+    if (destinatario === "todos" || destinatario === "geral" || destinatario === "courvan") {
+      visivel = true;
+    } else if (emailUsuarioLogado === remetente || emailUsuarioLogado === destinatario) {
+      visivel = true;
+    }
+    if (visivel) mensagens.push(m);
+  });
+
+  atualizarBadgePersistente("chat", mensagens);
+};
+
+window.filtrarCanalChat = function(canal) {
+  filtroCanalAtivo = canal;
+  
+  // Atualiza classes ativas nos botões
+  const botoes = ["tudo", "todos", "courvan", "dms"];
+  botoes.forEach(b => {
+    const btn = document.getElementById(`filtroChat-${b}`);
+    if (btn) {
+      if (b === canal) {
+        btn.style.border = "1px solid rgba(229,184,92,0.15)";
+        btn.style.background = "rgba(229,184,92,0.08)";
+        btn.style.color = "#e5b85c";
+        btn.style.fontWeight = "600";
+      } else {
+        btn.style.border = "1px solid transparent";
+        btn.style.background = "transparent";
+        btn.style.color = "#94a3b8";
+        btn.style.fontWeight = "500";
+      }
+    }
+  });
+  
+  window.renderizarMensagensDoChat(true);
+};
+
+window.atualizarSelectDestinatarios = function() {
+  const select = document.getElementById("chatDestinatario");
+  if (!select) return;
+  
+  // Salva a opção anteriormente selecionada
+  const anterior = select.value;
+  
+  select.innerHTML = `
+    <option value="todos">📢 Todos do Grupo (Público)</option>
+    <option value="courvan">🤝 Suporte Courvan (Privado)</option>
+  `;
+  
+  const emailLogado = auth.currentUser ? auth.currentUser.email.toLowerCase() : "";
+  const emails = dadosClienteGlobal?.emailsAutorizados || [dadosClienteGlobal?.email];
+  const usuariosList = dadosClienteGlobal?.usuariosMulti || [];
+  
+  // Helper inteligente para extrair nome amigável do e-mail
+  function extrairNomeDoEmailHelper(email) {
+    if (!email) return "Colaborador";
+    const parteLocal = email.split('@')[0];
+    return parteLocal
+      .split(/[\._\-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  emails.forEach(email => {
+    if (!email) return;
+    const emailLower = email.toLowerCase();
+    // Não adiciona o próprio usuário logado
+    if (emailLower !== emailLogado) {
+      const isMain = emailLower === dadosClienteGlobal?.email?.toLowerCase();
+      const userObj = usuariosList.find(u => u.email.toLowerCase() === emailLower);
+      const nome = isMain ? dadosClienteGlobal?.nome : (userObj ? userObj.nome : extrairNomeDoEmailHelper(email));
+      select.innerHTML += `
+        <option value="${emailLower}">🔒 Privado para ${escapeHTML(nome)} (${escapeHTML(emailLower)})</option>
+      `;
+    }
+  });
+  
+  // Se o usuário logado for o admin principal da Courvan
+  if (emailLogado === "comercial.courvanlicitacoes@gmail.com") {
+    // Adiciona e-mail principal como opção também
+    const emailPrincipal = dadosClienteGlobal?.email?.toLowerCase();
+    if (emailPrincipal && emailPrincipal !== emailLogado) {
+      const nome = dadosClienteGlobal?.nome || "Cliente";
+      if (![...select.options].some(opt => opt.value === emailPrincipal)) {
+        select.innerHTML += `
+          <option value="${emailPrincipal}">🔒 Privado para ${escapeHTML(nome)} (${escapeHTML(emailPrincipal)})</option>
+        `;
+      }
+    }
+  }
+  
+  // Tenta re-selecionar o anterior
+  if ([...select.options].some(opt => opt.value === anterior)) {
+    select.value = anterior;
+  }
+};
 
 window.enviarMensagem = async () => {
   const input = document.getElementById("mensagemInput");
@@ -2172,7 +2275,8 @@ window.enviarMensagem = async () => {
     btnEnviar.innerText = "Enviando...";
   }
 
-  const isAdmin = auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com";
+  const emailLogado = auth.currentUser.email.toLowerCase();
+  const isAdmin = emailLogado === "comercial.courvanlicitacoes@gmail.com";
   
   /* limpa imediatamente para melhor sensação de velocidade */
   input.value = "";
@@ -2212,6 +2316,9 @@ window.enviarMensagem = async () => {
       anexoTipo = file.type;
     }
 
+    const destSelect = document.getElementById("chatDestinatario");
+    const destinatario = destSelect ? destSelect.value : "todos";
+
     await addDoc(
       collection(db, "chats", clienteIdGlobal, "mensagens"),
       {
@@ -2219,6 +2326,8 @@ window.enviarMensagem = async () => {
         autor: isAdmin ? "admin" : "cliente",
         nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
         empresa: isAdmin ? "Courvan" : document.getElementById("empresa").innerText,
+        remetenteEmail: emailLogado,
+        destinatario: destinatario,
         respostaId: respostaMensagem?.id || null,
         respostaTexto: respostaMensagem?.texto || null,
         respostaAutor: respostaMensagem?.autor || null,
