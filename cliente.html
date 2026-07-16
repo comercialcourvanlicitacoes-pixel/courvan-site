@@ -516,8 +516,9 @@
         <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px;">Dados da Empresa</h2>
         <input id="configNome" class="inputPadrao" placeholder="Nome" style="margin-bottom:12px;">
         <input id="configEmpresa" class="inputPadrao" placeholder="Empresa" style="margin-bottom:12px;">
+        <input id="configEmail" type="email" class="inputPadrao" placeholder="E-mail Principal" style="margin-bottom:12px;">
         <input id="configTelefone" class="inputPadrao" placeholder="Telefone" style="margin-bottom:12px;">
-        <input id="configCpfCnpj" class="inputPadrao" placeholder="CPF ou CNPJ">
+        <input id="configCpfCnpj" class="inputPadrao" placeholder="CPF ou CNPJ" style="margin-bottom:12px;">
         <input id="configCidade" class="inputPadrao" placeholder="Cidade" style="margin-bottom:20px;">
         
         <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px;">Filtros do Radar</h2>
@@ -529,6 +530,19 @@
         <input id="configOrgaos" class="inputPadrao" placeholder="Filtrar órgãos específicos" style="margin-bottom:20px;">
 
         <button class="botaoPadrao" onclick="salvarConfiguracoes()">Salvar Alterações</button>
+      </div>
+
+      <div class="info-box" style="margin-top:25px;">
+        <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px;">👥 Gerenciar Usuários (Multi-usuário)</h2>
+        <p style="font-size: 14px; opacity: 0.8; margin-bottom: 15px;">Adicione outros colaboradores para acessarem o painel deste cliente com seus próprios logins.</p>
+        
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+          <input id="novoUsuarioEmail" type="email" placeholder="E-mail do colaborador" class="inputPadrao" style="flex:2; min-width:200px;">
+          <input id="novoUsuarioSenha" type="password" placeholder="Senha temporária" class="inputPadrao" style="flex:1; min-width:150px;">
+          <button class="botaoPadrao" onclick="window.adicionarNovoUsuario()" style="padding:16px 20px;">+ Adicionar</button>
+        </div>
+
+        <div id="listaUsuariosMulti" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
 
       <div class="info-box" style="margin-top:25px;">
@@ -549,7 +563,7 @@ import {
   getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut
+  getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut, updateEmail, createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -575,6 +589,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+const secondaryApp = initializeApp(firebaseConfig, "SecondaryClient");
+const secondaryAuth = getAuth(secondaryApp);
+
+function escapeHTML(str) {
+  if (!str) return "";
+  return str.toString()
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 emailjs.init("yg2qGBBvZjUbHwU_y");
 
 // ESTADO GLOBAL
@@ -584,17 +611,6 @@ let dadosClienteGlobal = null;
 
 let respostaMensagem = null;
 let chatArquivoSelecionado = null;
-
-// HELPER PARA EVITAR QUEBRAS DE CARACTERES ESPECIAIS E INJEÇÃO DE HTML NO CHAT
-function escapeHTML(str) {
-  if (!str) return "";
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 const mensagensCarregadas = {};
 
@@ -729,7 +745,6 @@ const notificacoesVisualizadas = {
   chat: false,
   licitacoes: false
 };
- 
   
 /* =========================
    LÓGICA DO RADAR INTEGRADO
@@ -793,7 +808,7 @@ async function carregarRadarPersonalizado() {
           <div style="font-size:13px; color:#94a3b8;"><strong>Abertura:</strong> ${item.abertura || "Não informado"}</div>
           <div class="radar-valor">R$ ${Number(item.valor).toLocaleString("pt-BR")}</div>
           <a class="radar-btn" href="${linkValido ? item.link : "#"}" target="_blank" style="${linkValido ? "" : "opacity:0.4; pointer-events:none;"}">
-            ${linkValido ? "Ver Licitação" : "Link indisponível"}
+            Ver Licitação
           </a>
         </div>
       `;
@@ -823,7 +838,16 @@ onAuthStateChanged(auth, async (user) => {
     const snap = await getDocs(query(collection(db, "clientes")));
     docCliente = snap.docs.find(d => d.id === clienteIdUrl);
   } else {
-    const snap = await getDocs(query(collection(db, "clientes"), where("uid", "==", user.uid)));
+    // 1. Tenta buscar por email na lista de autorizados
+    let snap = await getDocs(query(collection(db, "clientes"), where("emailsAutorizados", "array-contains", user.email)));
+    if (snap.empty) {
+      // 2. Fallback para uid (comportamento antigo)
+      snap = await getDocs(query(collection(db, "clientes"), where("uid", "==", user.uid)));
+    }
+    if (snap.empty) {
+      // 3. Fallback para email direto (comportamento antigo)
+      snap = await getDocs(query(collection(db, "clientes"), where("email", "==", user.email)));
+    }
     docCliente = snap.docs[0];
   }
 
@@ -836,6 +860,14 @@ onAuthStateChanged(auth, async (user) => {
   clienteIdGlobal = docCliente.id;
   emailClienteGlobal = dadosClienteGlobal.email;
 
+  // Se o documento do cliente ainda não tiver o campo emailsAutorizados, inicializa com o e-mail dele
+  if (!dadosClienteGlobal.emailsAutorizados) {
+    dadosClienteGlobal.emailsAutorizados = [dadosClienteGlobal.email];
+    await updateDoc(doc(db, "clientes", clienteIdGlobal), {
+      emailsAutorizados: dadosClienteGlobal.emailsAutorizados
+    });
+  }
+
   document.getElementById("nome").innerText = dadosClienteGlobal.nome;
   document.getElementById("nomeCliente").innerText = dadosClienteGlobal.nome;
   document.getElementById("empresa").innerText = dadosClienteGlobal.empresa;
@@ -844,14 +876,20 @@ onAuthStateChanged(auth, async (user) => {
 
   document.getElementById("configNome").value = dadosClienteGlobal.nome || "";
   document.getElementById("configEmpresa").value = dadosClienteGlobal.empresa || "";
+  document.getElementById("configEmail").value = dadosClienteGlobal.email || "";
   document.getElementById("configTelefone").value = dadosClienteGlobal.telefone || "";
   document.getElementById("configCidade").value = dadosClienteGlobal.cidade || "";
   document.getElementById("configSegmentos").value = dadosClienteGlobal.segmentos || "";
-  document.getElementById("configCpfCnpj").value =
-  dadosClienteGlobal.cpfCnpj || "";
+  document.getElementById("configCpfCnpj").value = dadosClienteGlobal.cpfCnpj || "";
   document.getElementById("configCidades").value = (dadosClienteGlobal.cidadesFiltro || []).join(", ");
   document.getElementById("configEstados").value = (dadosClienteGlobal.estadosFiltro || []).join(", ");
   document.getElementById("configOrgaos").value = (dadosClienteGlobal.orgaosFiltro || []).join(", ");
+
+  try {
+    renderizarUsuariosMulti();
+  } catch (err) {
+    console.error("Erro renderizar multiusuarios:", err);
+  }
 
   listarDemandas();
   iniciarDocumentos();
@@ -897,24 +935,24 @@ window.mostrarAba = function (id) {
 
   const agora = Date.now();
 
-const tipoUsuario =
-  auth.currentUser.email ===
-  "comercial.courvanlicitacoes@gmail.com"
-    ? "admin"
-    : "cliente";
+  const tipoUsuario =
+    auth.currentUser.email ===
+    "comercial.courvanlicitacoes@gmail.com"
+      ? "admin"
+      : "cliente";
 
-localStorage.setItem(
-  `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_${id}`,
-  agora
-);
+  localStorage.setItem(
+    `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_${id}`,
+    agora
+  );
 
-/* força atualização imediata */
+  /* força atualização imediata */
 
-atualizarBadgePersistente(
-  id,
-  0,
-  agora - 1
-);
+  atualizarBadgePersistente(
+    id,
+    0,
+    agora - 1
+  );
 };
 
 function atualizarBadgePersistente(nomeAba, registros) {
@@ -924,16 +962,16 @@ function atualizarBadgePersistente(nomeAba, registros) {
   if (!badge) return;
 
   const tipoUsuario =
-  auth.currentUser.email ===
-  "comercial.courvanlicitacoes@gmail.com"
-    ? "admin"
-    : "cliente";
+    auth.currentUser.email ===
+    "comercial.courvanlicitacoes@gmail.com"
+      ? "admin"
+      : "cliente";
 
-const ultimaVisualizacao = Number(
-  localStorage.getItem(
-    `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_${nomeAba}`
-  ) || 0
-);
+  const ultimaVisualizacao = Number(
+    localStorage.getItem(
+      `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_${nomeAba}`
+    ) || 0
+  );
 
   let naoLidos = 0;
 
@@ -982,24 +1020,166 @@ window.salvarConfiguracoes = async function () {
   const estadosFiltro = document.getElementById("configEstados").value.split(",").map(v => v.trim().toUpperCase()).filter(v => v);
   const orgaosFiltro = document.getElementById("configOrgaos").value.split(",").map(v => v.trim()).filter(v => v);
 
+  const novoEmail = document.getElementById("configEmail").value.trim().toLowerCase();
+  const antigoEmail = dadosClienteGlobal.email;
+  let emails = dadosClienteGlobal.emailsAutorizados || [antigoEmail];
+
+  // Se o email mudou, atualiza a lista de autorizados
+  if (novoEmail && novoEmail !== antigoEmail) {
+    emails = emails.map(e => e === antigoEmail ? novoEmail : e);
+    if (!emails.includes(novoEmail)) {
+      emails.push(novoEmail);
+    }
+  }
+
+  let msgAuth = "";
+  if (novoEmail && novoEmail !== antigoEmail) {
+    try {
+      if (auth.currentUser && auth.currentUser.email === antigoEmail) {
+        await updateEmail(auth.currentUser, novoEmail);
+        msgAuth = " E-mail de login também atualizado!";
+      }
+    } catch (err) {
+      console.warn("Auth email update failed:", err);
+      msgAuth = " (Nota: O e-mail foi atualizado no perfil em Firestore. Para alterar as credenciais de login do usuário principal no Auth, pode ser necessário sair e entrar novamente devido a restrições de segurança do Firebase).";
+    }
+  }
+
   await updateDoc(doc(db, "clientes", clienteIdGlobal), {
-  nome,
-  empresa,
-  telefone,
-  city,
-  cpfCnpj,
-  segmentos,
-  cidadesFiltro,
-  estadosFiltro,
-  orgaosFiltro
-});
+    nome,
+    empresa,
+    email: novoEmail,
+    telefone,
+    city,
+    cpfCnpj,
+    segmentos,
+    cidadesFiltro,
+    estadosFiltro,
+    orgaosFiltro,
+    emailsAutorizados: emails
+  });
 
   dadosClienteGlobal.cpfCnpj = cpfCnpj;
-
-  dadosClienteGlobal = { ...dadosClienteGlobal, nome, empresa, telefone, cidade: city, segmentos, cidadesFiltro, estadosFiltro, orgaosFiltro };
+  dadosClienteGlobal = { 
+    ...dadosClienteGlobal, 
+    nome, 
+    empresa, 
+    email: novoEmail, 
+    telefone, 
+    cidade: city, 
+    segmentos, 
+    cidadesFiltro, 
+    estadosFiltro, 
+    orgaosFiltro,
+    emailsAutorizados: emails 
+  };
   
-  alert("Configurações salvas!");
+  // Atualiza exibição na UI principal
+  document.getElementById("nome").innerText = nome;
+  document.getElementById("nomeCliente").innerText = nome;
+  document.getElementById("empresa").innerText = empresa;
+  document.getElementById("email").innerText = novoEmail;
+
+  try {
+    renderizarUsuariosMulti();
+  } catch (err) {
+    console.error("Erro ao renderizar multiusuarios:", err);
+  }
+
+  alert("Configurações salvas!" + msgAuth);
   carregarRadarPersonalizado();
+};
+
+window.renderizarUsuariosMulti = function() {
+  const div = document.getElementById("listaUsuariosMulti");
+  if (!div) return;
+  div.innerHTML = "";
+  
+  const emails = dadosClienteGlobal.emailsAutorizados || [dadosClienteGlobal.email];
+  
+  emails.forEach(email => {
+    const isMain = email === dadosClienteGlobal.email;
+    div.innerHTML += `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.04);">
+        <span style="font-size:14px; color:#e2e8f0;">${escapeHTML(email)} ${isMain ? '<span style="color:#e5b85c; font-size:11px; margin-left:6px; font-weight:600;">(Principal)</span>' : ''}</span>
+        ${!isMain ? `
+          <button onclick="window.removerUsuarioMulti('${escapeHTML(email)}')" style="background:none; border:none; color:#f87171; cursor:pointer; font-size:13px; font-weight:500;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+            Remover
+          </button>
+        ` : ''}
+      </div>
+    `;
+  });
+};
+
+window.adicionarNovoUsuario = async function() {
+  const emailInput = document.getElementById("novoUsuarioEmail");
+  const senhaInput = document.getElementById("novoUsuarioSenha");
+  const email = emailInput.value.trim().toLowerCase();
+  const senha = senhaInput.value;
+
+  if (!email || !senha) {
+    alert("Preencha o e-mail e a senha temporária.");
+    return;
+  }
+
+  if (senha.length < 6) {
+    alert("A senha deve conter pelo menos 6 caracteres.");
+    return;
+  }
+
+  try {
+    // 1. Cria o login no Firebase Auth usando a secondaryAuth para não deslogar o usuário atual!
+    await createUserWithEmailAndPassword(secondaryAuth, email, senha);
+    
+    // 2. Adiciona o e-mail na lista de e-mails autorizados do cliente em Firestore
+    const emails = dadosClienteGlobal.emailsAutorizados || [dadosClienteGlobal.email];
+    if (emails.includes(email)) {
+      alert("Este e-mail já está autorizado.");
+      return;
+    }
+    
+    emails.push(email);
+    
+    await updateDoc(doc(db, "clientes", clienteIdGlobal), {
+      emailsAutorizados: emails
+    });
+    
+    dadosClienteGlobal.emailsAutorizados = emails;
+    
+    emailInput.value = "";
+    senhaInput.value = "";
+    
+    renderizarUsuariosMulti();
+    alert("Usuário adicionado e cadastrado com sucesso!");
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao adicionar usuário: " + error.message);
+  }
+};
+
+window.removerUsuarioMulti = async function(email) {
+  if (email === dadosClienteGlobal.email) {
+    alert("Não é possível remover o e-mail principal.");
+    return;
+  }
+  
+  if (!confirm(`Deseja remover o acesso de ${email}?`)) return;
+  
+  try {
+    const emails = (dadosClienteGlobal.emailsAutorizados || [dadosClienteGlobal.email]).filter(e => e !== email);
+    
+    await updateDoc(doc(db, "clientes", clienteIdGlobal), {
+      emailsAutorizados: emails
+    });
+    
+    dadosClienteGlobal.emailsAutorizados = emails;
+    renderizarUsuariosMulti();
+    alert("Usuário removido com sucesso!");
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao remover usuário: " + error.message);
+  }
 };
 
 function obterLinkLicitacao(licitacao) {
@@ -1044,13 +1224,12 @@ function listarLicitacoes() {
     (a.dataCriacao?.seconds || 0)
   );
 
-atualizarBadgePersistente(
-  "licitacoes",
-  docs
-);
-atualizarKpisDashboard(docs);
+  atualizarBadgePersistente(
+    "licitacoes",
+    docs
+  );
+  atualizarKpisDashboard(docs);
 
-    
     docs.forEach((l) => {
       const status = (l.status || "aviso").trim().toLowerCase();
       const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
@@ -1071,24 +1250,23 @@ atualizarKpisDashboard(docs);
             </a>
 
             <button
-  onclick="gerarPagamentoLicitacao(
-    '${l.id}',
-    '${l.orgao}',
-    ${Number(l.valor || 0)}
-  )"
-
-  style="
-    padding:10px 14px;
-    border-radius:10px;
-    border:none;
-    background:linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%);
-    color:#060b13;
-    font-weight:700;
-    cursor:pointer;
-  "
->
-  💳 Gerar PIX
-</button>
+              onclick="gerarPagamentoLicitacao(
+                '${l.id}',
+                '${l.orgao}',
+                ${Number(l.valor || 0)}
+              )"
+              style="
+                padding:10px 14px;
+                border-radius:10px;
+                border:none;
+                background:linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%);
+                color:#060b13;
+                font-weight:700;
+                cursor:pointer;
+              "
+            >
+              💳 Gerar PIX
+            </button>
 
             <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="padding:10px 14px; border-radius:10px; border:1px solid rgba(16,185,129,.4); background:${interesse === "tenho_interesse" ? "#065f46" : "rgba(6,95,70,.15)"}; color:#bbf7d0; font-weight:600; cursor:pointer;">
               ✅ Tenho interesse
@@ -1109,61 +1287,61 @@ atualizarKpisDashboard(docs);
           </div>
           <div style="margin-top:20px;">
 
-<button
-  class="botaoPadrao"
-  style="
-    background:rgba(255,255,255,0.04);
-    color:white;
-    width:100%;
-    box-shadow:none;
-    border: 1px solid rgba(255,255,255,0.05);
-  "
-  onclick="abrirMovimentacoesLicitacao('${l.id}')"
->
-  📝 Movimentações da Licitação
-</button>
+            <button
+              class="botaoPadrao"
+              style="
+                background:rgba(255,255,255,0.04);
+                color:white;
+                width:100%;
+                box-shadow:none;
+                border: 1px solid rgba(255,255,255,0.05);
+              "
+              onclick="abrirMovimentacoesLicitacao('${l.id}')"
+            >
+              📝 Movimentações da Licitação
+            </button>
 
-<div
-  id="movimentacoes-${l.id}"
-  style="
-    display:none;
-    margin-top:16px;
-    background:rgba(5, 11, 19, 0.5);
-    border-radius:14px;
-    padding:18px;
-    border:1px solid rgba(255,255,255,.05);
-  "
->
+            <div
+              id="movimentacoes-${l.id}"
+              style="
+                display:none;
+                margin-top:16px;
+                background:rgba(5, 11, 19, 0.5);
+                border-radius:14px;
+                padding:18px;
+                border:1px solid rgba(255,255,255,.05);
+              "
+            >
 
-  <div
-    id="lista-movimentacoes-${l.id}"
-    style="
-      max-height:300px;
-      overflow-y:auto;
-      margin-bottom:15px;
-    "
-  ></div>
+              <div
+                id="lista-movimentacoes-${l.id}"
+                style="
+                  max-height:300px;
+                  overflow-y:auto;
+                  margin-bottom:15px;
+                "
+              ></div>
 
-  <div style="display:flex; gap:10px;">
-    <textarea
-      id="input-movimentacao-${l.id}"
-      class="inputPadrao"
-      placeholder="Registrar atualização da licitação..."
-      style="height:80px; resize:none;"
-    ></textarea>
+              <div style="display:flex; gap:10px;">
+                <textarea
+                  id="input-movimentacao-${l.id}"
+                  class="inputPadrao"
+                  placeholder="Registrar atualização da licitação..."
+                  style="height:80px; resize:none;"
+                ></textarea>
 
-    <button
-      class="botaoPadrao"
-      style="padding:12px 20px;"
-      onclick="enviarMovimentacaoLicitacao('${l.id}')"
-    >
-      ➤
-    </button>
-  </div>
+                <button
+                  class="botaoPadrao"
+                  style="padding:12px 20px;"
+                  onclick="enviarMovimentacaoLicitacao('${l.id}')"
+                >
+                  ➤
+                </button>
+              </div>
 
-</div>
+            </div>
 
-</div>
+          </div>
           
         </div>
       `;
@@ -1217,9 +1395,9 @@ async function listarDemandas() {
     `;
   });
   atualizarBadgePersistente(
-  "demandas",
-  demandasBadge
-);
+    "demandas",
+    demandasBadge
+  );
 }
 
 window.criarDemanda = async function() {
@@ -1311,15 +1489,12 @@ function iniciarMovimentacoesLicitacao(id) {
 
             <div style="
               max-width:80%;
-
               background:${
                 isMe
                   ? "linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%)"
                   : "rgba(255,255,255,0.04)"
               };
-
               color:${isMe ? "#060b13" : "white"};
-
               padding:14px;
               border-radius:14px;
               border-bottom-${isMe ? "right" : "left"}-radius:4px;
@@ -1383,19 +1558,15 @@ window.enviarMovimentacaoLicitacao = async function(id) {
     ),
     {
       texto: input.value,
-
       autor: isAdmin
         ? "admin"
         : "cliente",
-
       nome: isAdmin
         ? "Equipe Courvan"
         : document.getElementById("nome").innerText,
-
       empresa: isAdmin
         ? "Courvan"
         : document.getElementById("empresa").innerText,
-
       data: serverTimestamp()
     }
   );
@@ -1446,8 +1617,8 @@ function iniciarChat() {
     snap.forEach(docSnap => {
 
       const mensagemId = docSnap.id;
-
       const m = docSnap.data();
+      
       // Armazena a mensagem para responder de forma segura via clique sem quebrar strings
       mensagensCarregadas[mensagemId] = m;
 
@@ -1457,6 +1628,7 @@ function iniciarChat() {
           ? "admin"
           : "cliente"
       );
+      
       const dataMensagem = m.data?.seconds
         ? new Date(m.data.seconds * 1000)
         : new Date();
@@ -1543,9 +1715,14 @@ function iniciarChat() {
             overflow:hidden;
             text-align:left;
             box-shadow:0 4px 10px rgba(0,0,0,0.05);
-            border:${isMe?'none':'1px solid rgba(255,255,255,0.05)'};
+            border:${isMe ? 'none' : '1px solid rgba(255,255,255,0.05)'};
           ">
-            <div style="font-size:11px; opacity:0.7; font-weight:600; margin-bottom:4px;">
+            <div style="
+              font-size:11px;
+              opacity:0.7;
+              font-weight:600;
+              margin-bottom:4px;
+            ">
               ${escapeHTML(m.nome)}
             </div>
             
@@ -1620,7 +1797,11 @@ function iniciarChat() {
 
             ${htmlReacoes}
 
-            <div style="font-size:11px; opacity:0.6; text-align:right; margin-top:4px;">
+            <div style="
+              font-size:11px;
+              opacity:0.6;
+              text-align:right;
+            ">
               ${dataFormatada}
             </div>
           </div>
@@ -1634,11 +1815,20 @@ function iniciarChat() {
     
     const mensagens = snap.docs.map(d => d.data());
 
-    // Se o chat estiver aberto, marca tudo como visualizado automaticamente
+    /* se o chat estiver aberto, marca tudo como visualizado automaticamente */
     const chatAberto = document.getElementById("chat").style.display === "block";
+
     if (chatAberto) {
-      const tipoUsuario = auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "admin" : "cliente";
-      localStorage.setItem(`ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_chat`, Date.now());
+      const tipoUsuario =
+        auth.currentUser.email ===
+        "comercial.courvanlicitacoes@gmail.com"
+          ? "admin"
+          : "cliente";
+
+      localStorage.setItem(
+        `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_chat`,
+        Date.now()
+      );
     }
 
     atualizarBadgePersistente("chat", mensagens);
@@ -1754,7 +1944,6 @@ document
       e.preventDefault();
       enviarMensagem();
     }
-
 });
   
 function iniciarDocumentos() {
@@ -1769,26 +1958,18 @@ function iniciarDocumentos() {
     snap => {
 
       div.innerHTML = "";
-
       const documentos = [];
 
       snap.forEach(docItem => {
-
         const d = docItem.data();
-
         documentos.push(d);
 
         div.innerHTML += `
           <div style="background: rgba(255, 255, 255, 0.02); padding:22px; border-radius:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.04);">
             <div>
               <h3 style="color:#ffffff; font-size: 16px; margin-bottom: 4px;">📄 ${d.nome}</h3>
-
               <small style="opacity:0.5; font-size: 12px;">
-                ${
-                  d.data
-                    ? new Date(d.data.seconds * 1000).toLocaleDateString()
-                    : ""
-                }
+                ${d.data ? new Date(d.data.seconds * 1000).toLocaleDateString() : ""}
               </small>
             </div>
 
@@ -1804,32 +1985,18 @@ function iniciarDocumentos() {
         `;
       });
 
-      atualizarBadgePersistente(
-        "documentos",
-        documentos
-      );
+      atualizarBadgePersistente("documentos", documentos);
     }
   );
 }
 
 window.adicionarDocumento = async () => {
 
-  const nome =
-    document.getElementById("nomeDocumento").value;
-
-  const categoria =
-document.getElementById("categoriaDocumento").value;
-
-const vencimento =
-document.getElementById("vencimentoDocumento").value;
-
-const statusDocumento =
-document.getElementById("statusDocumento").value;
-
-  
-  const arquivo =
-    document.getElementById("arquivoDocumento")
-    .files[0];
+  const nome = document.getElementById("nomeDocumento").value;
+  const categoria = document.getElementById("categoriaDocumento").value;
+  const vencimento = document.getElementById("vencimentoDocumento").value;
+  const statusDocumento = document.getElementById("statusDocumento").value;
+  const arquivo = document.getElementById("arquivoDocumento").files[0];
 
   if (!nome || !arquivo) {
     alert("Selecione um arquivo.");
@@ -1837,13 +2004,12 @@ document.getElementById("statusDocumento").value;
   }
 
   const nomeSeguro = arquivo.name
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .replace(/[()]/g, "")
-  .replace(/[^a-zA-Z0-9._-]/g, "_");
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[()]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
 
-const caminho =
-  `${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
+  const caminho = `${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
 
   const { error } =
     await supabase.storage
@@ -1862,35 +2028,24 @@ const caminho =
       .getPublicUrl(caminho);
 
   await addDoc(
-  collection(db, "documentos"),
-  {
-    clienteId: clienteIdGlobal,
-
-    nome,
-    categoria,
-
-    vencimento,
-
-    statusDocumento,
-
-    link: data.publicUrl,
-
-    arquivo: caminho,
-
-    tipo: arquivo.type,
-
-    tamanho: arquivo.size,
-
-    data: serverTimestamp()
-  }
-);
+    collection(db, "documentos"),
+    {
+      clienteId: clienteIdGlobal,
+      nome,
+      categoria,
+      vencimento,
+      statusDocumento,
+      link: data.publicUrl,
+      arquivo: caminho,
+      tipo: arquivo.type,
+      tamanho: arquivo.size,
+      data: serverTimestamp()
+    }
+  );
 
   document.getElementById("nomeDocumento").value = "";
-
   document.getElementById("vencimentoDocumento").value = "";
-
   document.getElementById("statusDocumento").value = "";
-
   document.getElementById("arquivoDocumento").value = "";
 
   alert("Documento enviado com sucesso.");
@@ -1967,16 +2122,16 @@ function atualizarKpisDashboard(licitacoes = []) {
   setText("kpiInteresseNeutro", String(interesseNeutro));
 }
 
- window.gerarPagamentoLicitacao = async function (
+window.gerarPagamentoLicitacao = async function (
   licitacaoId,
   orgao,
   valor
 ) {
 
-   if (!dadosClienteGlobal.cpfCnpj) {
-  alert("CPF/CNPJ não cadastrado no cliente.");
-  return;
-}
+  if (!dadosClienteGlobal.cpfCnpj) {
+    alert("CPF/CNPJ não cadastrado no cliente.");
+    return;
+  }
    
   try {
     const response = await fetch(
@@ -1993,7 +2148,6 @@ function atualizarKpisDashboard(licitacoes = []) {
           nome: dadosClienteGlobal.nome,
           email: dadosClienteGlobal.email,
           cpfCnpj: dadosClienteGlobal.cpfCnpj,        
-          // 🔥 PADRONIZADO COM BACKEND
           valor: 100,
           descricao: `Licitação - ${orgao}`,
           licitacaoId: licitacaoId,
@@ -2018,7 +2172,6 @@ function atualizarKpisDashboard(licitacoes = []) {
     }
 
     if (data.invoiceUrl) {
-      // 🚀 REDIRECIONAMENTO REAL (checkout Asaas)
       window.location.href = data.invoiceUrl;
       return;
     }
