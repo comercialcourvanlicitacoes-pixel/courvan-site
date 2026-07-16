@@ -467,9 +467,33 @@
         <button onclick="cancelarResposta()" style="margin-top:6px; background:none; border:none; color:#f87171; cursor:pointer; font-weight: 500;">Cancelar</button>
       </div>
 
-      <div style="display:flex;gap:10px;">
-        <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." class="inputPadrao">
-        <button class="botaoPadrao" onclick="enviarMensagem()">Enviar</button>
+      <!-- Preview de Arquivo Anexado -->
+      <div id="previewAnexoChat" style="display:none; background: rgba(229, 184, 92, 0.08); padding:14px; border-left:4px solid #10b981; margin-bottom:14px; border-radius:12px; align-items:center; justify-content:space-between; gap:10px;">
+        <div id="nomeAnexoChat" style="font-size: 14px; color:#cbd5e1; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; flex:1;"></div>
+        <button onclick="window.removerAnexoChat()" style="background:none; border:none; color:#f87171; cursor:pointer; font-weight: 600; font-size:14px; flex-shrink:0;">Remover</button>
+      </div>
+
+      <!-- Seletor de Emojis do Chat -->
+      <div id="emojiPickerChat" style="display:none; background:#0d192c; border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:16px; margin-bottom:14px; box-shadow:0 15px 35px rgba(0,0,0,0.5); max-width:340px;">
+        <div style="font-size:12px; color:#94a3b8; margin-bottom:10px; font-weight:600; padding-left:4px; text-transform:uppercase; letter-spacing:0.5px;">Emojis Rápidos</div>
+        <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:8px;" id="emojiGridChat">
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:center;">
+        <!-- Botão para Anexar Arquivo -->
+        <button onclick="document.getElementById('chatArquivoInput').click()" class="botaoPadrao" style="padding:15px; background:rgba(255,255,255,0.04); color:#e5b85c; border:1px solid rgba(255,255,255,0.05); box-shadow:none; flex-shrink:0; border-radius:14px; display:flex; align-items:center; justify-content:center;" title="Anexar arquivo">
+          📎
+        </button>
+        <input type="file" id="chatArquivoInput" style="display:none;" onchange="window.handleChatArquivoSelecionado()">
+        
+        <!-- Botão para Emojis -->
+        <button onclick="window.toggleEmojiPickerChat()" class="botaoPadrao" style="padding:15px; background:rgba(255,255,255,0.04); color:#e5b85c; border:1px solid rgba(255,255,255,0.05); box-shadow:none; flex-shrink:0; border-radius:14px; display:flex; align-items:center; justify-content:center;" title="Inserir emoji">
+          😄
+        </button>
+
+        <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." class="inputPadrao" style="flex:1;">
+        <button id="btnEnviarMensagem" class="botaoPadrao" onclick="enviarMensagem()">Enviar</button>
       </div>
     </div>
 
@@ -519,13 +543,47 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
 <script type="module">
+  
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  // ESTADO GLOBAL
+const firebaseConfig = {
+  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+  authDomain: "courvan-sistema.firebaseapp.com",
+  projectId: "courvan-sistema",
+  storageBucket: "courvan-sistema.appspot.com",
+  messagingSenderId: "729755072978",
+  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+};
+
+const SUPABASE_URL = "https://ruquejiboirzagcjddmp.supabase.co";
+
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1cXVlamlib2lyemFnY2pkZG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzE3MzQsImV4cCI6MjA5NTY0NzczNH0.FH6h--fRAHcUC5-UMMnBJtdjGY6NusijojwMcZA6zwU";
+
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+  
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+emailjs.init("yg2qGBBvZjUbHwU_y");
+
+// ESTADO GLOBAL
 let clienteIdGlobal = null;
 let emailClienteGlobal = "";
 let dadosClienteGlobal = null;
 
 let respostaMensagem = null;
+let chatArquivoSelecionado = null;
 
 // HELPER PARA EVITAR QUEBRAS DE CARACTERES ESPECIAIS E INJEÇÃO DE HTML NO CHAT
 function escapeHTML(str) {
@@ -546,48 +604,6 @@ window.responderMensagemClick = function(id) {
     window.responderMensagem(id, m.texto, m.nome);
   }
 };
-  
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
-  authDomain: "courvan-sistema.firebaseapp.com",
-  projectId: "courvan-sistema",
-  storageBucket: "courvan-sistema.appspot.com",
-  messagingSenderId: "729755072978",
-  appId: "1:729755072978:web:e76e98fd704c10da34f00b"
-};
-
-const SUPABASE_URL = "https://ruquejiboirzagcjddmp.supabase.co";
-
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1cXVlamlib2lyemFnY2pkZG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzE3MzQsImV4cCI6MjA5NTY0NzczNH0.FH6h--fRAHcUC5-UMMnBJtdjGY6NusijojwMcZA6zwU";
-
-import { createClient }
-from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-  
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-emailjs.init("yg2qGBBvZjUbHwU_y");
-
-// ESTADO GLOBAL
-let clienteIdGlobal = null;
-let emailClienteGlobal = "";
-let dadosClienteGlobal = null;
-
-let respostaMensagem = null;
 
 window.responderMensagem = function(id, texto, autor){
 
@@ -608,6 +624,103 @@ window.cancelarResposta = function(){
   respostaMensagem = null;
 
   document.getElementById("previewResposta").style.display = "none";
+};
+
+/* ==========================================================================
+   CONTROLES DO NOVO CHAT: ANEXOS, EMOJIS, REAÇÕES E SCROLL COMPLETO
+   ========================================================================== */
+
+window.handleChatArquivoSelecionado = function() {
+  const input = document.getElementById("chatArquivoInput");
+  const file = input?.files?.[0];
+  if (!file) return;
+
+  chatArquivoSelecionado = file;
+  const sizeKb = (file.size / 1024).toFixed(1);
+  document.getElementById("nomeAnexoChat").innerText = `📎 ${file.name} (${sizeKb} KB)`;
+  document.getElementById("previewAnexoChat").style.display = "flex";
+  
+  if (input) input.value = ""; // limpa para re-seleção se necessário
+};
+
+window.removerAnexoChat = function() {
+  chatArquivoSelecionado = null;
+  document.getElementById("previewAnexoChat").style.display = "none";
+};
+
+window.toggleEmojiPickerChat = function() {
+  const picker = document.getElementById("emojiPickerChat");
+  if (picker) {
+    picker.style.display = picker.style.display === "none" ? "block" : "none";
+  }
+};
+
+window.inserirEmojiChat = function(emoji) {
+  const input = document.getElementById("mensagemInput");
+  if (!input) return;
+
+  const start = input.selectionStart || 0;
+  const end = input.selectionEnd || 0;
+  const text = input.value;
+  input.value = text.substring(0, start) + emoji + text.substring(end);
+  input.focus();
+  const newPos = start + emoji.length;
+  input.setSelectionRange(newPos, newPos);
+};
+
+window.toggleReactionPicker = function(id) {
+  const picker = document.getElementById(`reactionPicker-${id}`);
+  if (picker) {
+    picker.style.display = picker.style.display === "none" ? "flex" : "none";
+  }
+};
+
+window.reagirMensagem = async function(mensagemId, emoji) {
+  try {
+    const msgRef = doc(db, "chats", clienteIdGlobal, "mensagens", mensagemId);
+    const m = mensagensCarregadas[mensagemId];
+    if (!m) return;
+
+    const reacoes = { ...(m.reacoes || {}) };
+    const email = auth.currentUser.email;
+
+    if (!reacoes[emoji]) {
+      reacoes[emoji] = [];
+    }
+
+    const idx = reacoes[emoji].indexOf(email);
+    if (idx > -1) {
+      reacoes[emoji].splice(idx, 1);
+    } else {
+      reacoes[emoji].push(email);
+    }
+
+    if (reacoes[emoji].length === 0) {
+      delete reacoes[emoji];
+    }
+
+    await updateDoc(msgRef, { reacoes });
+
+    const picker = document.getElementById(`reactionPicker-${mensagemId}`);
+    if (picker) {
+      picker.style.display = "none";
+    }
+  } catch (error) {
+    console.error("Erro ao reagir:", error);
+  }
+};
+
+window.scrollChatToBottom = function(force = false) {
+  const div = document.getElementById("mensagens");
+  if (!div) return;
+
+  const isNearBottom = div.scrollHeight - div.scrollTop - div.clientHeight < 250;
+  if (force || isNearBottom) {
+    div.scrollTop = div.scrollHeight;
+    setTimeout(() => {
+      div.scrollTop = div.scrollHeight;
+    }, 100);
+  }
 };
   
 const notificacoesVisualizadas = {
@@ -759,6 +872,12 @@ window.mostrarAba = function (id) {
 
   if (id === "radar") {
     carregarRadarPersonalizado();
+  }
+
+  if (id === "chat") {
+    setTimeout(() => {
+      window.scrollChatToBottom(true);
+    }, 50);
   }
 
   /* =========================
@@ -1309,13 +1428,26 @@ function iniciarComentarios(id) {
 
 function iniciarChat() {
   const div = document.getElementById("mensagens");
+  let primeiroCarregamentoChat = true;
+  
+  // Inicializa o seletor de emojis do chat se ainda não estiver preenchido
+  const grid = document.getElementById("emojiGridChat");
+  if (grid && !grid.children.length) {
+    const emojisLista = ["👍", "❤️", "😂", "😮", "😢", "🙏", "👏", "🎉", "🔥", "🚀", "👀", "💯", "✅", "❌", "📡", "🏛", "🤝", "💵", "📈", "📢", "📅", "⚙️", "💬", "📝"];
+    grid.innerHTML = emojisLista.map(emoji => `
+      <button onclick="window.inserirEmojiChat('${emoji}')" style="background:none; border:none; font-size:22px; cursor:pointer; padding:6px; border-radius:10px; transition:all 0.15s; display:flex; align-items:center; justify-content:center;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='none'">
+        ${emoji}
+      </button>
+    `).join("");
+  }
+
   onSnapshot(query(collection(db, "chats", clienteIdGlobal, "mensagens"), orderBy("data")), snap => {
     div.innerHTML = "";
     snap.forEach(docSnap => {
 
       const mensagemId = docSnap.id;
+
       const m = docSnap.data();
-      
       // Armazena a mensagem para responder de forma segura via clique sem quebrar strings
       mensagensCarregadas[mensagemId] = m;
 
@@ -1325,7 +1457,6 @@ function iniciarChat() {
           ? "admin"
           : "cliente"
       );
-      
       const dataMensagem = m.data?.seconds
         ? new Date(m.data.seconds * 1000)
         : new Date();
@@ -1337,6 +1468,67 @@ function iniciarChat() {
           hour: "2-digit",
           minute: "2-digit"
         });
+
+      // Renderização do anexo se existir
+      let htmlAnexo = "";
+      if (m.anexoUrl) {
+        const isImg = (m.anexoTipo && m.anexoTipo.startsWith("image/")) || 
+                      /\.(jpg|jpeg|png|gif|webp)$/i.test(m.anexoNome || "");
+        if (isImg) {
+          htmlAnexo = `
+            <div style="margin-top:8px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); max-width:260px;">
+              <img src="${m.anexoUrl}" style="max-width:100%; height:auto; display:block; cursor:pointer;" onclick="window.open('${m.anexoUrl}')" title="Clique para ampliar">
+            </div>
+          `;
+        } else {
+          htmlAnexo = `
+            <div style="margin-top:8px;">
+              <a href="${m.anexoUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); color:#e5b85c; padding:10px 14px; border-radius:12px; font-size:13px; text-decoration:none; border:1px solid rgba(255,255,255,0.05); font-weight:500;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                Anexo: 📄 ${escapeHTML(m.anexoNome || 'Abrir anexo')}
+              </a>
+            </div>
+          `;
+        }
+      }
+
+      // Renderização das Reações
+      const reacoes = m.reacoes || {};
+      let htmlReacoes = "";
+      const usuarioAtualEmail = auth.currentUser.email;
+      const chavesReacoes = Object.keys(reacoes);
+
+      if (chavesReacoes.length > 0) {
+        htmlReacoes += `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">`;
+        chavesReacoes.forEach(emoji => {
+          const listUsuarios = reacoes[emoji] || [];
+          if (listUsuarios.length > 0) {
+            const euReagi = listUsuarios.includes(usuarioAtualEmail);
+            htmlReacoes += `
+              <button 
+                onclick="window.reagirMensagem('${mensagemId}', '${emoji}')"
+                style="
+                  display:inline-flex;
+                  align-items:center;
+                  gap:4px;
+                  background:${euReagi ? 'rgba(229, 184, 92, 0.15)' : 'rgba(255,255,255,0.04)'};
+                  color:${euReagi ? '#e5b85c' : '#cbd5e1'};
+                  border:1px solid ${euReagi ? 'rgba(229, 184, 92, 0.3)' : 'rgba(255,255,255,0.05)'};
+                  padding:4px 8px;
+                  border-radius:10px;
+                  font-size:12px;
+                  cursor:pointer;
+                  transition:all 0.15s;
+                "
+                title="Reagido por: ${listUsuarios.join(', ')}"
+              >
+                <span>${emoji}</span>
+                <span style="font-weight:600; font-size:11px;">${listUsuarios.length}</span>
+              </button>
+            `;
+          }
+        });
+        htmlReacoes += `</div>`;
+      }
 
       div.innerHTML += `
         <div style="text-align:${isMe ? 'right' : 'left'}; margin-bottom:12px;">
@@ -1385,19 +1577,48 @@ function iniciarChat() {
               ${escapeHTML(m.texto)}
             </div>
 
-            <button
-              onclick="window.responderMensagemClick('${mensagemId}')"
-              style="
-                margin-top:6px;
-                background:none;
-                border:none;
-                color:${isMe ? '#060b13' : '#e5b85c'};
-                cursor:pointer;
-                font-size:12px;
-              "
-            >
-              ↩ Responder
-            </button>
+            ${htmlAnexo}
+
+            <div style="display:flex; align-items:center; gap:10px; margin-top:6px; flex-wrap:wrap;">
+              <button
+                onclick="window.responderMensagemClick('${mensagemId}')"
+                style="
+                  margin-top:6px;
+                  background:none;
+                  border:none;
+                  color:${isMe ? '#060b13' : '#e5b85c'};
+                  cursor:pointer;
+                  font-size:12px;
+                "
+              >
+                ↩ Responder
+              </button>
+
+              <button
+                onclick="window.toggleReactionPicker('${mensagemId}')"
+                style="
+                  margin-top:6px;
+                  background:none;
+                  border:none;
+                  color:${isMe ? '#060b13' : '#e5b85c'};
+                  cursor:pointer;
+                  font-size:12px;
+                "
+              >
+                😀 Reagir
+              </button>
+            </div>
+
+            <!-- Reaction Picker Popover -->
+            <div id="reactionPicker-${mensagemId}" style="display:none; background:rgba(13, 25, 44, 0.95); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:6px; margin-top:8px; gap:6px; flex-wrap:wrap; width:fit-content; box-shadow:0 4px 10px rgba(0,0,0,0.3); z-index:10;">
+              ${["👍", "❤️", "😂", "😮", "😢", "🙏", "🎉", "🔥"].map(emoji => `
+                <button onclick="window.reagirMensagem('${mensagemId}', '${emoji}')" style="background:none; border:none; font-size:16px; cursor:pointer; padding:4px; border-radius:6px; transition:0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='none'">
+                  ${emoji}
+                </button>
+              `).join("")}
+            </div>
+
+            ${htmlReacoes}
 
             <div style="font-size:11px; opacity:0.6; text-align:right; margin-top:4px;">
               ${dataFormatada}
@@ -1407,11 +1628,9 @@ function iniciarChat() {
       `;
     });
     
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        div.scrollTop = div.scrollHeight;
-      });
-    });
+    // Rola suavemente apenas se o usuário estiver próximo ao fundo ou forçar
+    window.scrollChatToBottom(primeiroCarregamentoChat);
+    primeiroCarregamentoChat = false;
     
     const mensagens = snap.docs.map(d => d.data());
 
@@ -1427,92 +1646,103 @@ function iniciarChat() {
 }
 
 window.enviarMensagem = async () => {
-
-  const input =
-    document.getElementById("mensagemInput");
-
+  const input = document.getElementById("mensagemInput");
   const texto = input.value.trim();
+  const file = chatArquivoSelecionado;
 
-  if (!texto) return;
+  if (!texto && !file) return;
 
-  const isAdmin =
-    auth.currentUser.email ===
-    "comercial.courvanlicitacoes@gmail.com";
+  const btnEnviar = document.getElementById("btnEnviarMensagem");
+  if (btnEnviar) {
+    btnEnviar.disabled = true;
+    btnEnviar.innerText = "Enviando...";
+  }
 
-  /* limpa imediatamente */
+  const isAdmin = auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com";
+  
+  /* limpa imediatamente para melhor sensação de velocidade */
   input.value = "";
+  window.removerAnexoChat();
+  const picker = document.getElementById("emojiPickerChat");
+  if (picker) picker.style.display = "none";
 
   try {
+    let anexoUrl = null;
+    let anexoNome = null;
+    let anexoTipo = null;
+
+    if (file) {
+      const nomeSeguro = file.name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[()]/g, "")
+        .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+      const caminho = `chats/${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
+
+      // Envia o arquivo para o storage do Supabase no mesmo bucket seguro
+      const { error } = await supabase.storage
+        .from("documentos-clientes")
+        .upload(caminho, file);
+
+      if (error) {
+        throw new Error("Erro ao enviar arquivo: " + error.message);
+      }
+
+      const { data } = supabase.storage
+        .from("documentos-clientes")
+        .getPublicUrl(caminho);
+
+      anexoUrl = data.publicUrl;
+      anexoNome = file.name;
+      anexoTipo = file.type;
+    }
 
     await addDoc(
-      collection(
-        db,
-        "chats",
-        clienteIdGlobal,
-        "mensagens"
-      ),
+      collection(db, "chats", clienteIdGlobal, "mensagens"),
       {
         texto,
-
-        autor: isAdmin
-          ? "admin"
-          : "cliente",
-
-        nome: isAdmin
-          ? "Equipe Courvan"
-          : document.getElementById("nome").innerText,
-
-        empresa: isAdmin
-          ? "Courvan"
-          : document.getElementById("empresa").innerText,
-
-        respostaId:
-          respostaMensagem?.id || null,
-
-        respostaTexto:
-          respostaMensagem?.texto || null,
-
-        respostaAutor:
-          respostaMensagem?.autor || null,
-
+        autor: isAdmin ? "admin" : "cliente",
+        nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
+        empresa: isAdmin ? "Courvan" : document.getElementById("empresa").innerText,
+        respostaId: respostaMensagem?.id || null,
+        respostaTexto: respostaMensagem?.texto || null,
+        respostaAutor: respostaMensagem?.autor || null,
+        anexoUrl,
+        anexoNome,
+        anexoTipo,
         data: serverTimestamp()
       }
     );
 
     try {
-
       await emailjs.send(
         "service_p5ln9fw",
         "template_2qckj0y",
         {
-          nome:
-            document.getElementById("nome").innerText,
-
-          mensagem:
-            "Nova mensagem no chat Courvan",
-
-          to_email: isAdmin
-            ? emailClienteGlobal
-            : "comercial.courvanlicitacoes@gmail.com"
+          nome: document.getElementById("nome").innerText,
+          mensagem: file ? "Enviou um anexo no chat" : "Nova mensagem no chat Courvan",
+          to_email: isAdmin ? emailClienteGlobal : "comercial.courvanlicitacoes@gmail.com"
         }
       );
-
     } catch (e) {
       console.log(e);
     }
 
     cancelarResposta();
-
   } catch (erro) {
-
     console.error(erro);
-
-    alert(
-      "Erro ao enviar mensagem."
-    );
-
-    /* devolve o texto caso falhe */
-    input.value = texto;
+    alert(erro.message || "Erro ao enviar mensagem.");
+    input.value = texto; // Restaura se falhar
+  } finally {
+    if (btnEnviar) {
+      btnEnviar.disabled = false;
+      btnEnviar.innerText = "Enviar";
+    }
+    // Força rolar tudo até o final após o envio bem-sucedido
+    setTimeout(() => {
+      window.scrollChatToBottom(true);
+    }, 100);
   }
 };
 
