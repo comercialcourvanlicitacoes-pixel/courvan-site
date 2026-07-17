@@ -240,7 +240,9 @@ h2{
   
   <h2 style="margin: 0; font-size: 28px; font-weight: 700; color: #e5b85c;">📅 Agenda de Licitações</h2>
   
-  <div style="width: 160px; display: block;" class="hide-mobile"></div>
+  <button id="btnNotificacaoSininhoAgenda" onclick="window.togglePreferenciaNotificacao()" style="display: flex; align-items: center; gap: 8px; background: rgba(229, 184, 92, 0.08); border: 1.5px solid rgba(229, 184, 92, 0.2); color: #e5b85c; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" title="Configurar Notificações de E-mail">
+    <span id="sininhoIconAgenda">🔔</span> <span id="sininhoTextoAgenda">E-mail: Ativado</span>
+  </button>
 </div>
 
 <div id="calendar-container">
@@ -285,7 +287,8 @@ import {
   where,
   onSnapshot,
   getDoc,
-  doc
+  doc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -373,6 +376,55 @@ window.fecharDrawer = function(){
 
 };
 
+window.abrirArquivoBase64 = (base64OrLink, nomeOriginal, categoria) => {
+  if (!base64OrLink) return;
+  if (categoria === "gdrive" || !base64OrLink.startsWith("data:")) {
+    window.open(base64OrLink, "_blank");
+    return;
+  }
+  try {
+    const parts = base64OrLink.split(";base64,");
+    const mimeType = parts[0].split(":")[1] || "application/octet-stream";
+    const base64Data = parts[1];
+    
+    const sliceSize = 1024;
+    const byteCharacters = atob(base64Data);
+    const bytesLength = byteCharacters.length;
+    const slicesCount = Math.ceil(bytesLength / sliceSize);
+    const byteArrays = new Array(slicesCount);
+
+    for (let sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+      const begin = sliceIndex * sliceSize;
+      const end = Math.min(begin + sliceSize, bytesLength);
+
+      const bytes = new Array(end - begin);
+      for (let offset = begin, i = 0; offset < end; ++i, ++offset) {
+        bytes[i] = byteCharacters.charCodeAt(offset);
+      }
+      byteArrays[sliceIndex] = new Uint8Array(bytes);
+    }
+
+    const blob = new Blob(byteArrays, { type: mimeType });
+    const blobUrl = URL.createObjectURL(blob);
+    
+    const newWindow = window.open();
+    if (newWindow) {
+      newWindow.location.href = blobUrl;
+    } else {
+      window.open(blobUrl, "_blank");
+    }
+  } catch (err) {
+    console.error("Erro ao converter base64 para blob:", err);
+    // Fallback: tentar download
+    const linkElement = document.createElement("a");
+    linkElement.href = base64OrLink;
+    linkElement.download = nomeOriginal || "arquivo";
+    document.body.appendChild(linkElement);
+    linkElement.click();
+    document.body.removeChild(linkElement);
+  }
+};
+
 window.voltarPainel = async function() {
   if (auth.currentUser) {
     const emailLogado = auth.currentUser.email.toLowerCase();
@@ -397,6 +449,54 @@ window.voltarPainel = async function() {
   }
 };
 
+let emailHabilitadoGlobal = true;
+let emailLogadoUser = "";
+
+window.inicializarPreferenciaNotificacao = function(email) {
+  if (!email) return;
+  emailLogadoUser = email.toLowerCase().trim();
+  
+  onSnapshot(doc(db, "configuracoes_notificacoes", emailLogadoUser), (docSnap) => {
+    if (docSnap.exists()) {
+      emailHabilitadoGlobal = docSnap.data().emailHabilitado !== false;
+    } else {
+      emailHabilitadoGlobal = true;
+    }
+    window.atualizarInterfaceSininho();
+  });
+};
+
+window.atualizarInterfaceSininho = function() {
+  const sininhoIconAgenda = document.getElementById("sininhoIconAgenda");
+  const sininhoTextoAgenda = document.getElementById("sininhoTextoAgenda");
+  const btnAgenda = document.getElementById("btnNotificacaoSininhoAgenda");
+  if (sininhoIconAgenda) sininhoIconAgenda.innerText = emailHabilitadoGlobal ? "🔔" : "🔕";
+  if (sininhoTextoAgenda) sininhoTextoAgenda.innerText = emailHabilitadoGlobal ? "E-mail: Ativado" : "E-mail: Desativado";
+  if (btnAgenda) {
+    if (emailHabilitadoGlobal) {
+      btnAgenda.style.background = "rgba(229, 184, 92, 0.08)";
+      btnAgenda.style.borderColor = "rgba(229, 184, 92, 0.2)";
+      btnAgenda.style.color = "#e5b85c";
+    } else {
+      btnAgenda.style.background = "rgba(239, 68, 68, 0.06)";
+      btnAgenda.style.borderColor = "rgba(239, 68, 68, 0.15)";
+      btnAgenda.style.color = "#ef4444";
+    }
+  }
+};
+
+window.togglePreferenciaNotificacao = async function() {
+  if (!emailLogadoUser) return;
+  const novoEstado = !emailHabilitadoGlobal;
+  try {
+    await setDoc(doc(db, "configuracoes_notificacoes", emailLogadoUser), {
+      emailHabilitado: novoEstado
+    }, { merge: true });
+  } catch (err) {
+    console.error("Erro ao salvar preferência de notificação:", err);
+  }
+};
+
 /* =========================
    LOGIN
 ========================= */
@@ -412,6 +512,7 @@ onAuthStateChanged(auth, async (user)=>{
   }
 
   const emailLogado = user.email.toLowerCase();
+  window.inicializarPreferenciaNotificacao(emailLogado);
   let isCourvanTeam = (emailLogado === "comercial.courvanlicitacoes@gmail.com");
   if (!isCourvanTeam) {
     try {
@@ -667,18 +768,24 @@ async function iniciarCalendario(clienteId){
             ${
               p.link
               ? `
-                <a
-                  href="${p.link}"
-                  target="_blank"
+                <button
+                  onclick="window.abrirArquivoBase64(decodeURIComponent('${encodeURIComponent(p.link)}'), decodeURIComponent('${encodeURIComponent(p.nome || 'documento')}'), decodeURIComponent('${encodeURIComponent(p.categoria || '')}'))"
                   style="
                     color:#e5b85c;
-                    text-decoration: none;
+                    background: none;
+                    border: none;
+                    padding: 0;
+                    font-family: inherit;
+                    font-size: inherit;
+                    cursor: pointer;
                     font-weight: 600;
-                    word-break:break-all;
+                    text-decoration: underline;
+                    text-align: left;
+                    word-break: break-all;
                   "
                 >
                   Visualizar Documento ↗
-                </a>
+                </button>
               `
               : "Sem anexo"
             }
