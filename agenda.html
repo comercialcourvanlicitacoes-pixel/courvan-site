@@ -343,6 +343,49 @@
   </div>
 </div>
 
+<!-- Painel de Integração Cloud (Google & Outros) -->
+<div id="painelCloud" style="display: flex; flex-direction: column; gap: 16px; max-width: 1400px; margin: -10px auto 24px auto; background: rgba(229, 184, 92, 0.02); border: 1px solid rgba(229, 184, 92, 0.15); padding: 20px; border-radius: 16px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 24px;">☁️</span>
+      <div>
+        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #e5b85c;">Sincronização Automática em Nuvem</h3>
+        <p style="margin: 4px 0 0 0; font-size: 13px; color: #94a3b8;">Conecte seus eventos ao Google Agenda, Microsoft Outlook ou Apple Calendar para atualizações automáticas.</p>
+      </div>
+    </div>
+    
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <!-- Google Agenda Direto -->
+      <button id="btnGoogleSync" onclick="window.sincronizarGoogleAgendaDireto()" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #ffffff; border: 1px solid #dadce0; color: #3c4043; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8f9fa'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#ffffff'; this.style.transform='none';">
+        <svg width="18" height="18" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.8 2.7l2.8 2.17c1.63-1.5 2.57-3.7 2.57-6.53z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.2l-2.8-2.17c-.78.52-1.78.83-2.96.83-2.28 0-4.22-1.54-4.9-3.6l-2.9 2.24C2.87 15.65 5.67 18 9 18z"/>
+          <path fill="#FBBC05" d="M4.1 11.06c-.17-.52-.27-1.07-.27-1.64s.1-1.12.27-1.64L1.2 5.54C.43 7.08 0 8.79 0 10.62c0 1.83.43 3.54 1.2 5.08l2.9-2.64z"/>
+          <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47 1.05 11.43 0 9 0 5.67 0 2.87 2.35 1.2 4.96l2.9 2.64c.68-2.06 2.62-3.6 4.9-3.6z"/>
+        </svg>
+        Sincronizar Google Agenda
+      </button>
+
+      <!-- Copiar link de inscrição -->
+      <button onclick="window.copiarLinkInscricao()" style="display: flex; align-items: center; gap: 6px; padding: 10px 18px; background: rgba(229, 184, 92, 0.1); border: 1px solid rgba(229, 184, 92, 0.2); color: #e5b85c; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(229, 184, 92, 0.18)'" onmouseout="this.style.background='rgba(229, 184, 92, 0.1)'">
+        🔗 Copiar Link de Inscrição (iCal/Outlook)
+      </button>
+    </div>
+  </div>
+  
+  <div id="infoInscricaoBox" style="display: none; background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.05); padding: 14px 18px; border-radius: 10px; margin-top: 10px; animation: fadeIn 0.3s ease;">
+    <h4 style="margin: 0 0 8px 0; font-size: 13px; font-weight: 600; color: #f1f5f9; display: flex; align-items: center; gap: 6px;">
+      <span>💡</span> Como usar o Link de Inscrição (Sincronização em Tempo Real):
+    </h4>
+    <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">
+      O link de inscrição (iCal) sincroniza automaticamente. Sempre que uma licitação ou vencimento for atualizado no Courvan, ele aparecerá sozinho na sua agenda!<br>
+      • <strong>Google Agenda:</strong> Clique em "+" ao lado de "Outros agendas" → "Do URL" → cole o link e clique em adicionar.<br>
+      • <strong>Microsoft Outlook:</strong> Clique em "Adicionar calendário" → "Assinar da Web" → cole o link e clique em Importar.<br>
+      • <strong>Apple Calendar / iPhone:</strong> Abra o app Calendário → "Adicionar Calendário" → "Adicionar Assinatura de Calendário" → cole o link.
+    </p>
+  </div>
+</div>
+
 <div id="calendar-container">
   <div id="calendar"></div>
 </div>
@@ -393,7 +436,9 @@ import {
   getAuth,
   onAuthStateChanged,
   setPersistence,
-  browserLocalPersistence
+  browserLocalPersistence,
+  signInWithPopup,
+  GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -843,6 +888,172 @@ window.gerarUrlGoogleAgenda = function(titulo, descricao, dataStr) {
   
   const dates = `${ymd}/${nextYmd}`;
   return `${base}&text=${t}&dates=${dates}&details=${d}`;
+};
+
+window.copiarLinkInscricao = function() {
+  const activeClienteId = window.currentClienteIdGlobal;
+  if (!activeClienteId) {
+    alert("Nenhum cliente ativo para gerar link de inscrição.");
+    return;
+  }
+  
+  const feedUrl = window.location.origin + "/api/feed/" + activeClienteId;
+  
+  // Copy to clipboard
+  navigator.clipboard.writeText(feedUrl).then(() => {
+    alert("Link de inscrição copiado com sucesso para a área de transferência!");
+    document.getElementById("infoInscricaoBox").style.display = "block";
+  }).catch(err => {
+    console.error("Erro ao copiar link:", err);
+    // fallback
+    const tempInput = document.createElement("input");
+    tempInput.value = feedUrl;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    alert("Link de inscrição copiado!");
+    document.getElementById("infoInscricaoBox").style.display = "block";
+  });
+};
+
+window.sincronizarGoogleAgendaDireto = async function() {
+  const activeClienteId = window.currentClienteIdGlobal;
+  if (!activeClienteId) {
+    alert("Por favor, acesse o calendário através de um painel de cliente antes de sincronizar.");
+    return;
+  }
+  
+  // Obter todos os eventos
+  if (!window.currentCalendarInstance) {
+    alert("O calendário não está carregado.");
+    return;
+  }
+  const events = window.currentCalendarInstance.getEvents();
+  if (events.length === 0) {
+    alert("Não há eventos na agenda para sincronizar.");
+    return;
+  }
+  
+  const provider = new GoogleAuthProvider();
+  provider.addScope("https://www.googleapis.com/auth/calendar");
+  provider.addScope("https://www.googleapis.com/auth/calendar.events");
+  
+  const btn = document.getElementById("btnGoogleSync");
+  const originalText = btn.innerHTML;
+  
+  try {
+    btn.innerHTML = `⏳ Autenticando...`;
+    btn.disabled = true;
+    
+    // Sign-in
+    const result = await signInWithPopup(auth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const accessToken = credential.accessToken;
+    
+    if (!accessToken) {
+      throw new Error("Não foi possível obter o token do Google.");
+    }
+    
+    btn.innerHTML = `⏳ Preparando agenda "Courvan"...`;
+    
+    let calendarId = "primary";
+    
+    try {
+      const listRes = await fetch("https://www.googleapis.com/calendar/v3/users/me/calendarList", {
+        headers: { "Authorization": `Bearer ${accessToken}` }
+      });
+      const listData = await listRes.json();
+      
+      const existingCal = listData.items && listData.items.find(c => c.summary === "Courvan - Licitações");
+      if (existingCal) {
+        calendarId = existingCal.id;
+      } else {
+        const createRes = await fetch("https://www.googleapis.com/calendar/v3/calendars", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ summary: "Courvan - Licitações" })
+        });
+        if (createRes.ok) {
+          const createData = await createRes.json();
+          calendarId = createData.id;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not handle secondary calendar, fallback to primary:", e);
+    }
+    
+    btn.innerHTML = `⏳ Enviando eventos...`;
+    let successCount = 0;
+    
+    for (const ev of events) {
+      const p = ev.extendedProps;
+      const title = ev.title;
+      let description = "";
+      if (p.tipoEvento === "documento") {
+        description = `Documento: ${p.nome || ""}\nCategoria: ${p.categoria || ""}\nCliente: ${p.clienteNome || ""}`;
+      } else {
+        description = `Órgão: ${p.orgao || ""}\nObjeto: ${p.objeto || ""}\nValor: ${p.valor || ""}\nCliente: ${p.clienteNome || ""}`;
+      }
+      
+      const startObj = ev.start;
+      if (!startObj) continue;
+      const ymd = startObj.toISOString().split("T")[0];
+      
+      // Duplication check
+      let eventExists = false;
+      try {
+        const checkRes = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${ymd}T00:00:00Z&timeMax=${ymd}T23:59:59Z&q=${encodeURIComponent(title)}`, {
+          headers: { "Authorization": `Bearer ${accessToken}` }
+        });
+        if (checkRes.ok) {
+          const checkData = await checkRes.json();
+          if (checkData.items && checkData.items.length > 0) {
+            eventExists = true;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not check duplication:", e);
+      }
+      
+      if (eventExists) {
+        successCount++;
+        continue;
+      }
+      
+      const eventBody = {
+        summary: title,
+        description: description,
+        start: { date: ymd },
+        end: { date: ymd }
+      };
+      
+      const insertRes = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(eventBody)
+      });
+      
+      if (insertRes.ok) {
+        successCount++;
+      }
+    }
+    
+    alert(`Sucesso! ${successCount} eventos sincronizados na sua agenda "Courvan - Licitações" do Google!`);
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  } catch (error) {
+    console.error("Google sync error:", error);
+    alert("Erro ao sincronizar com Google Agenda: " + error.message);
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
 };
 
 /* =========================
