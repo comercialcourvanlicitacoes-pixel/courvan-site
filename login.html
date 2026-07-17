@@ -139,27 +139,32 @@
 
   <h2>Área do Cliente</h2>
 
-  <div class="input-field">
-    <input
-      type="email"
-      id="email"
-      placeholder="Email"
-    >
-    <i class="fas fa-envelope"></i>
-  </div>
+  <!-- Formulário que intercepta o pressionamento de Enter e faz login nativamente -->
+  <form id="formLogin" onsubmit="event.preventDefault(); login();" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <div class="input-field">
+      <input
+        type="email"
+        id="email"
+        placeholder="Email"
+        required
+      >
+      <i class="fas fa-envelope"></i>
+    </div>
 
-  <div class="input-field">
-    <input
-      type="password"
-      id="senha"
-      placeholder="Senha"
-    >
-    <i class="fas fa-lock"></i>
-  </div>
+    <div class="input-field">
+      <input
+        type="password"
+        id="senha"
+        placeholder="Senha"
+        required
+      >
+      <i class="fas fa-lock"></i>
+    </div>
 
-  <button onclick="login()">
-    Entrar
-  </button>
+    <button type="submit">
+      Entrar
+    </button>
+  </form>
 
   <a href="index.html" class="back-site">
     <i class="fas fa-arrow-left"></i> Voltar para o site
