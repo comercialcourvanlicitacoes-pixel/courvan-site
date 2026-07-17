@@ -320,6 +320,29 @@
   </button>
 </div>
 
+<!-- Painel de Sincronização de Agenda -->
+<div id="painelSincronizacao" style="display: flex; gap: 16px; max-width: 1400px; margin: 0 auto 24px auto; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); padding: 16px 20px; border-radius: 16px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <span style="font-size: 18px;">🔄</span>
+    <div>
+      <h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #f1f5f9;">Sincronização de Agenda</h3>
+      <p style="margin: 0; font-size: 12px; color: #64748b;">Exporte os eventos da plataforma ou importe calendários externos (.ics)</p>
+    </div>
+  </div>
+  <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+    <!-- Exportar -->
+    <button onclick="window.exportarAgendaICS()" style="display: flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(229, 184, 92, 0.1); border: 1px solid rgba(229, 184, 92, 0.2); color: #e5b85c; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(229, 184, 92, 0.18)'" onmouseout="this.style.background='rgba(229, 184, 92, 0.1)'">
+      📤 Exportar Calendário (.ics)
+    </button>
+    
+    <!-- Importar -->
+    <label style="display: flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: #cbd5e1; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.04)'">
+      📥 Importar Calendário (.ics)
+      <input type="file" id="importarICSFile" style="display: none;" onchange="window.importarICS(this.files[0])" accept=".ics">
+    </label>
+  </div>
+</div>
+
 <div id="calendar-container">
   <div id="calendar"></div>
 </div>
@@ -515,7 +538,13 @@ window.voltarPainel = async function() {
       }
     }
     if (isCourvanTeam) {
-      window.location.href = "clientes.html";
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramId = urlParams.get("id");
+      if (paramId) {
+        window.location.href = `cliente.html?id=${paramId}`;
+      } else {
+        window.location.href = "clientes.html";
+      }
     } else {
       window.location.href = "cliente.html";
     }
@@ -602,7 +631,13 @@ onAuthStateChanged(auth, async (user)=>{
 
   let clienteId = null;
 
-  if(!isCourvanTeam){
+  if (isCourvanTeam) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramId = urlParams.get("id");
+    if (paramId) {
+      clienteId = paramId;
+    }
+  } else {
 
     // 1. Tenta buscar por email na lista de autorizados
     let snap = await getDocs(query(collection(db, "clientes"), where("emailsAutorizados", "array-contains", user.email)));
@@ -628,10 +663,194 @@ onAuthStateChanged(auth, async (user)=>{
 
 });
 
+window.currentCalendarInstance = null;
+window.currentClienteIdGlobal = null;
+
+window.exportarAgendaICS = function() {
+  if (!window.currentCalendarInstance) {
+    alert("Calendário não inicializado.");
+    return;
+  }
+  
+  const events = window.currentCalendarInstance.getEvents();
+  if (events.length === 0) {
+    alert("Não há eventos na agenda para exportar.");
+    return;
+  }
+  
+  let icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Courvan//Courvan Agenda//PT\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n";
+  
+  events.forEach(ev => {
+    const p = ev.extendedProps;
+    const uid = ev.id || "event_" + Math.random().toString(36).substring(2, 11) + "@courvan.com.br";
+    const summary = ev.title;
+    
+    let description = "";
+    if (p.tipoEvento === "documento") {
+      description = `Documento: ${p.nome || ""}\\nCategoria: ${p.categoria || ""}\\nCliente: ${p.clienteNome || ""}`;
+    } else {
+      description = `Órgão: ${p.orgao || ""}\\nObjeto: ${p.objeto || ""}\\nValor: ${p.valor || ""}\\nCliente: ${p.clienteNome || ""}`;
+    }
+    
+    const startObj = ev.start;
+    if (!startObj) return;
+    const ymd = startObj.toISOString().split("T")[0].replace(/-/g, "");
+    
+    icsContent += "BEGIN:VEVENT\r\n";
+    icsContent += `UID:${uid}\r\n`;
+    icsContent += `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z\r\n`;
+    icsContent += `DTSTART;VALUE=DATE:${ymd}\r\n`;
+    icsContent += `SUMMARY:${summary.replace(/,/g, "\\,").replace(/;/g, "\\;")}\r\n`;
+    icsContent += `DESCRIPTION:${description.replace(/,/g, "\\,").replace(/;/g, "\\;")}\r\n`;
+    icsContent += "END:VEVENT\r\n";
+  });
+  
+  icsContent += "END:VCALENDAR\r\n";
+  
+  const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "agenda_courvan.ics";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+window.importarICS = function(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const text = e.target.result;
+      const events = parseICS(text);
+      if (events.length === 0) {
+        alert("Nenhum evento válido encontrado no arquivo .ics.");
+        return;
+      }
+      
+      const emailLogado = auth.currentUser ? auth.currentUser.email.toLowerCase() : "";
+      let isCourvanTeam = (emailLogado === "comercial.courvanlicitacoes@gmail.com");
+      if (!isCourvanTeam && emailLogado) {
+        const teamDoc = await getDoc(doc(db, "courvan_team", emailLogado));
+        if (teamDoc.exists()) {
+          isCourvanTeam = true;
+        }
+      }
+      
+      let activeClienteId = null;
+      if (isCourvanTeam) {
+        const urlParams = new URLSearchParams(window.location.search);
+        activeClienteId = urlParams.get("id");
+      } else if (window.currentClienteIdGlobal) {
+        activeClienteId = window.currentClienteIdGlobal;
+      }
+      
+      if (!activeClienteId) {
+        alert("Por favor, selecione um cliente ou acesse um perfil de cliente antes de importar.");
+        return;
+      }
+      
+      if (!confirm(`Deseja importar ${events.length} eventos para a agenda do cliente selecionado?`)) return;
+      
+      let importados = 0;
+      for (const ev of events) {
+        await addDoc(collection(db, "licitacoes"), {
+          clienteId: activeClienteId,
+          orgao: ev.summary || "Evento Importado",
+          objeto: ev.description || "",
+          valor: "Importado",
+          dataSessao: ev.startDate || "",
+          linkEdital: "",
+          status: "andamento",
+          isImported: true,
+          dataCriacao: serverTimestamp()
+        });
+        importados++;
+      }
+      
+      alert(`${importados} eventos importados com sucesso!`);
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao importar o arquivo .ics: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+};
+
+function parseICS(text) {
+  const events = [];
+  const lines = text.split(/\r?\n/);
+  let currentEvent = null;
+  
+  for (let line of lines) {
+    line = line.trim();
+    if (line === "BEGIN:VEVENT") {
+      currentEvent = {};
+    } else if (line === "END:VEVENT" && currentEvent) {
+      events.push(currentEvent);
+      currentEvent = null;
+    } else if (currentEvent) {
+      const match = line.match(/^([A-Z0-9;=]+):(.*)$/i);
+      if (match) {
+        const key = match[1].split(";")[0].toUpperCase();
+        let val = match[2];
+        
+        val = val.replace(/\\,/g, ",").replace(/\\;/g, ";").replace(/\\n/g, "\n");
+        
+        if (key === "SUMMARY") {
+          currentEvent.summary = val;
+        } else if (key === "DESCRIPTION") {
+          currentEvent.description = val;
+        } else if (key === "DTSTART") {
+          let dateStr = val;
+          if (dateStr.length >= 8) {
+            const ano = dateStr.substring(0, 4);
+            const mes = dateStr.substring(4, 6);
+            const dia = dateStr.substring(6, 8);
+            let formatted = `${ano}-${mes}-${dia}`;
+            if (dateStr.includes("T") && dateStr.length >= 15) {
+              const hora = dateStr.substring(9, 11);
+              const min = dateStr.substring(11, 13);
+              formatted += `T${hora}:${min}`;
+            }
+            currentEvent.startDate = formatted;
+          }
+        }
+      }
+    }
+  }
+  return events;
+}
+
+window.gerarUrlGoogleAgenda = function(titulo, descricao, dataStr) {
+  const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
+  const t = encodeURIComponent(titulo);
+  const d = encodeURIComponent(descricao);
+  
+  const dateObj = new Date(dataStr);
+  let ymd = "";
+  if (isNaN(dateObj.getTime())) {
+    ymd = new Date().toISOString().split("T")[0].replace(/-/g, "");
+  } else {
+    ymd = dateObj.toISOString().split("T")[0].replace(/-/g, "");
+  }
+  
+  const nextDateObj = new Date(dateObj.getTime() + 24 * 60 * 60 * 1000);
+  const nextYmd = nextDateObj.toISOString().split("T")[0].replace(/-/g, "");
+  
+  const dates = `${ymd}/${nextYmd}`;
+  return `${base}&text=${t}&dates=${dates}&details=${d}`;
+};
+
 /* =========================
    CALENDÁRIO
 ========================= */
 async function iniciarCalendario(clienteId){
+
+  window.currentClienteIdGlobal = clienteId;
 
   const calendarEl =
     document.getElementById(
@@ -726,6 +945,7 @@ async function iniciarCalendario(clienteId){
     );
 
   calendar.render();
+  window.currentCalendarInstance = calendar;
 
   let listaLicitacoesEventos = [];
   let listaDocumentosEventos = [];
@@ -867,6 +1087,12 @@ async function iniciarCalendario(clienteId){
               : "Sem anexo"
             }
           </div>
+
+          <div class="item" style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+            <button onclick="window.open(window.gerarUrlGoogleAgenda('Vencimento: ${p.nome || 'Doc'}', 'Documento: ${p.nome || ''}\\nCategoria: ${p.categoria || ''}\\nCliente: ${p.clienteNome || ''}', '${info.event.start ? info.event.start.toISOString() : new Date().toISOString()}'), '_blank')" style="display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center; padding: 12px; background: #e5b85c; color: #060b13; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+              📅 Agendar no Google Agenda
+            </button>
+          </div>
         `);
         return;
       }
@@ -918,6 +1144,12 @@ async function iniciarCalendario(clienteId){
             `
             : "Não informado"
           }
+        </div>
+
+        <div class="item" style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+          <button onclick="window.open(window.gerarUrlGoogleAgenda('Licitação: ${p.orgao || 'Courvan'}', 'Objeto: ${p.objeto || ''}\\nValor: ${p.valor || ''}\\nCliente: ${p.clienteNome || ''}', '${info.event.start ? info.event.start.toISOString() : new Date().toISOString()}'), '_blank')" style="display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center; padding: 12px; background: #e5b85c; color: #060b13; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+            📅 Agendar no Google Agenda
+          </button>
         </div>
       `);
     }
