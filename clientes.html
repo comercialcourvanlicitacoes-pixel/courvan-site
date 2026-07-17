@@ -82,11 +82,30 @@
     }
 
     /* Item Ativo na Sidebar */
-    .sidebar a[href="clientes.html"] {
+    .sidebar a.active {
       background: linear-gradient(135deg, rgba(216, 168, 78, 0.15) 0%, rgba(216, 168, 78, 0.03) 100%);
       color: #f3d082;
       border-color: rgba(216, 168, 78, 0.25);
       font-weight: 600;
+    }
+
+    /* BOTÃO PADRÃO EM PERFIL */
+    .botaoPadrao {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
+      color: #06101e;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .botaoPadrao:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(216, 168, 78, 0.2);
     }
 
     /* PAINEL DE CONTEÚDO */
@@ -241,33 +260,115 @@
 
 <div class="sidebar">
   <h2>Courvan</h2>
-  <a href="clientes.html">👥 Clientes</a>
+  <a href="#" onclick="window.mostrarSection('clientes')" id="btnClientes" class="active">👥 Clientes</a>
   <a href="admin.html">➕ Novo Cliente</a>
   <a href="agenda.html">📅 Agenda Geral</a>
+  <a href="#" onclick="window.mostrarSection('perfil')" id="btnPerfil">👤 Perfil & Equipe</a>
   <a href="#" id="logoutBtn" class="logout">🚪 Sair</a>
 </div>
 
 <div class="content">
-  <h1 style="margin-bottom:30px;">Clientes</h1>
 
-  <input
-    type="text"
-    id="pesquisaCliente"
-    placeholder="Pesquisar cliente por nome..."
-    onkeyup="filtrarClientes()"
-    style="
-      width: 100%;
-      padding: 16px 20px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 14px;
-      margin-bottom: 35px;
-      background: #0d233f;
-      color: white;
-      font-size: 15px;
-    "
-  >
+  <!-- SEÇÃO CLIENTES -->
+  <div id="sectionClientes">
+    <h1 style="margin-bottom:30px;">Clientes</h1>
 
-  <div class="clientes" id="clientes"></div>
+    <input
+      type="text"
+      id="pesquisaCliente"
+      placeholder="Pesquisar cliente por nome..."
+      onkeyup="filtrarClientes()"
+      style="
+        width: 100%;
+        padding: 16px 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 14px;
+        margin-bottom: 35px;
+        background: #0d233f;
+        color: white;
+        font-size: 15px;
+      "
+    >
+
+    <div class="clientes" id="clientes"></div>
+  </div>
+
+  <!-- SEÇÃO PERFIL & EQUIPE -->
+  <div id="sectionPerfil" style="display:none;">
+    <h1 style="margin-bottom:30px;">👤 Meu Perfil & Equipe Courvan</h1>
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; align-items: start;">
+      
+      <!-- MEU PERFIL -->
+      <div class="card" style="padding: 30px;">
+        <h2 style="color:#e5b85c; margin-bottom: 20px; font-size: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">👤 Meu Perfil Admin</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="display: flex; gap: 20px; align-items: center;">
+            <div style="position: relative;">
+              <img id="myProfilePhoto" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #e5b85c; background: #0c1524;">
+              <label for="uploadMyPhoto" style="position: absolute; bottom: 0; right: 0; background: #e5b85c; color: #060b13; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #060b13; box-shadow: 0 4px 10px rgba(0,0,0,0.25); font-weight: bold; transition: 0.2s;">
+                📷
+              </label>
+              <input type="file" id="uploadMyPhoto" style="display:none;" accept="image/*" onchange="window.uploadFotoPerfilAdmin(this)">
+            </div>
+            <div style="flex: 1;">
+              <span style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom: 6px;">E-mail de Acesso</span>
+              <span id="myProfileEmail" style="color:#94a3b8; font-size:15px; font-weight:500;">-</span>
+            </div>
+          </div>
+          
+          <div>
+            <label style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom: 6px;">Nome de Exibição</label>
+            <input type="text" id="myProfileNome" placeholder="Seu nome" style="width:100%; padding:14px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); background:#16385f; color:white; font-size:15px;">
+          </div>
+          
+          <div>
+            <label style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom: 6px;">Biografia / Cargo</label>
+            <textarea id="myProfileBio" placeholder="Escreva sobre sua atuação na Courvan..." style="width:100%; height:100px; padding:14px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); background:#16385f; color:white; font-size:15px; resize:none;"></textarea>
+          </div>
+          
+          <button class="botaoPadrao" onclick="window.salvarMeuPerfilAdmin()" style="margin-top:10px;">
+            Salvar Meu Perfil
+          </button>
+        </div>
+      </div>
+
+      <!-- GERENCIAR EQUIPE -->
+      <div class="card" style="padding: 30px;">
+        <h2 style="color:#e5b85c; margin-bottom: 20px; font-size: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">👥 Gerenciar Equipe Courvan</h2>
+        
+        <!-- Formulário de Criação -->
+        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.03);">
+          <h3 style="font-size:14px; color:#e2e8f0; font-weight:600; margin-bottom:5px;">➕ Cadastrar Novo Membro</h3>
+          
+          <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <input type="text" id="teamNovoNome" placeholder="Nome completo" style="flex: 1; min-width: 150px; padding:12px; border-radius:8px; border:none; background:#16385f; color:white; font-size:14px;">
+            <input type="email" id="teamNovoEmail" placeholder="E-mail de login" style="flex: 1; min-width: 150px; padding:12px; border-radius:8px; border:none; background:#16385f; color:white; font-size:14px;">
+          </div>
+          
+          <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <input type="password" id="teamNovoSenha" placeholder="Senha inicial" style="flex: 1; min-width: 150px; padding:12px; border-radius:8px; border:none; background:#16385f; color:white; font-size:14px;">
+            <input type="text" id="teamNovoBio" placeholder="Função / Cargo (Ex: Assessor)" style="flex: 1; min-width: 150px; padding:12px; border-radius:8px; border:none; background:#16385f; color:white; font-size:14px;">
+          </div>
+          
+          <button class="botaoPadrao" onclick="window.criarNovoMembroEquipe()" style="background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color:#06101e; font-weight:700; border:none; padding:12px; border-radius:8px; font-size:14px; cursor:pointer;">
+            Cadastrar Membro
+          </button>
+        </div>
+        
+        <!-- Listagem de Membros -->
+        <div>
+          <h3 style="font-size:14px; color:#e2e8f0; font-weight:600; margin-bottom:15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">Membros Ativos</h3>
+          <div id="listaMembrosEquipe" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Membros carregados via JS -->
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div> <!-- Fim de sectionPerfil -->
+
 </div>
 
 <script type="module">
@@ -277,12 +378,15 @@ import {
   collection,
   onSnapshot,
   deleteDoc,
-  doc
+  doc,
+  getDoc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth,
   onAuthStateChanged,
-  signOut
+  signOut,
+  createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -298,21 +402,250 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// App secundário para criar membros da equipe sem deslogar o admin atual
+const secondaryApp = initializeApp(firebaseConfig, "SecondaryTeam");
+const secondaryAuth = getAuth(secondaryApp);
+
 const clientesDiv = document.getElementById("clientes");
 let unsubscribeClientes = null;
+let unsubscribeEquipe = null;
+
+window.tempMyPhotoBase64 = "";
 
 /* 🔐 LOGIN ADMIN */
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
     return;
   }
-  if (user.email !== "comercial.courvanlicitacoes@gmail.com") {
+  
+  // Verifica se o e-mail logado é admin ou equipe autorizada
+  let isAuthorized = false;
+  const emailLogado = user.email.toLowerCase();
+  
+  if (emailLogado === "comercial.courvanlicitacoes@gmail.com") {
+    isAuthorized = true;
+  } else {
+    try {
+      const teamDoc = await getDoc(doc(db, "courvan_team", emailLogado));
+      if (teamDoc.exists()) {
+        isAuthorized = true;
+      }
+    } catch (e) {
+      console.error("Erro ao verificar equipe admin:", e);
+    }
+  }
+
+  if (!isAuthorized) {
     window.location.href = "cliente.html";
     return;
   }
+
   iniciarListenerClientes();
+  iniciarListenerEquipe();
+  carregarMeuPerfilAdminLogado(emailLogado);
 });
+
+/* 📑 INTERFACE TOGGLE */
+window.mostrarSection = function(sectionName) {
+  document.getElementById("sectionClientes").style.display = sectionName === "clientes" ? "block" : "none";
+  document.getElementById("sectionPerfil").style.display = sectionName === "perfil" ? "block" : "none";
+  
+  document.getElementById("btnClientes").classList.toggle("active", sectionName === "clientes");
+  document.getElementById("btnPerfil").classList.toggle("active", sectionName === "perfil");
+};
+
+/* 🔥 COMPRESSÃO E REDIMENSIONAMENTO DE IMAGENS CLIENT-SIDE */
+window.comprimirImagem = function(file, maxW, maxH, qualidade) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement("canvas");
+        let w = img.width;
+        let h = img.height;
+        if (w > maxW || h > maxH) {
+          if (w > h) {
+            h = Math.round((h * maxW) / w);
+            w = maxW;
+          } else {
+            w = Math.round((w * maxH) / h);
+            h = maxH;
+          }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", qualidade));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+/* 👤 CARREGAR E SALVAR PERFIL PESSOAL DO ADMINISTRADOR */
+async function carregarMeuPerfilAdminLogado(email) {
+  document.getElementById("myProfileEmail").innerText = email;
+  try {
+    const docSnap = await getDoc(doc(db, "courvan_team", email));
+    if (docSnap.exists()) {
+      const colab = docSnap.data();
+      document.getElementById("myProfileNome").value = colab.nome || "";
+      document.getElementById("myProfileBio").value = colab.bio || "";
+      if (colab.fotoPerfil) {
+        document.getElementById("myProfilePhoto").src = colab.fotoPerfil;
+        window.tempMyPhotoBase64 = colab.fotoPerfil;
+      } else {
+        document.getElementById("myProfilePhoto").src = obterFotoPerfil("", colab.nome || "C");
+      }
+    } else {
+      document.getElementById("myProfileNome").value = email === "comercial.courvanlicitacoes@gmail.com" ? "Courvan Licitações" : "Membro da Equipe";
+      document.getElementById("myProfileBio").value = "Equipe de Gestão e Suporte";
+      document.getElementById("myProfilePhoto").src = obterFotoPerfil("", "C");
+    }
+  } catch (err) {
+    console.error("Erro ao carregar perfil pessoal:", err);
+  }
+}
+
+window.uploadFotoPerfilAdmin = async function(input) {
+  if (input.files && input.files[0]) {
+    try {
+      const base64 = await window.comprimirImagem(input.files[0], 150, 150, 0.7);
+      document.getElementById("myProfilePhoto").src = base64;
+      window.tempMyPhotoBase64 = base64;
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao processar imagem.");
+    }
+  }
+};
+
+window.salvarMeuPerfilAdmin = async function() {
+  const nome = document.getElementById("myProfileNome").value.trim();
+  const bio = document.getElementById("myProfileBio").value.trim();
+  const email = auth.currentUser.email.toLowerCase();
+  
+  if (!nome) {
+    alert("O nome de exibição é obrigatório.");
+    return;
+  }
+  
+  try {
+    const docData = {
+      nome,
+      bio,
+      email,
+      ultimaAtualizacao: new Date()
+    };
+    
+    if (window.tempMyPhotoBase64) {
+      docData.fotoPerfil = window.tempMyPhotoBase64;
+    }
+    
+    await setDoc(doc(db, "courvan_team", email), docData, { merge: true });
+    alert("Seu perfil foi atualizado com sucesso!");
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao atualizar perfil: " + err.message);
+  }
+};
+
+/* 👥 GERENCIAR MEMBROS DA EQUIPE COURVAN */
+window.criarNovoMembroEquipe = async function() {
+  const nome = document.getElementById("teamNovoNome").value.trim();
+  const email = document.getElementById("teamNovoEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("teamNovoSenha").value.trim();
+  const bio = document.getElementById("teamNovoBio").value.trim();
+  
+  if (!nome || !email || !senha) {
+    alert("Nome, E-mail e Senha são obrigatórios para novos membros!");
+    return;
+  }
+  
+  try {
+    const cred = await createUserWithEmailAndPassword(secondaryAuth, email, senha);
+    const uid = cred.user.uid;
+    
+    await setDoc(doc(db, "courvan_team", email), {
+      nome,
+      email,
+      bio: bio || "Membro da equipe Courvan Licitações.",
+      uid,
+      fotoPerfil: "",
+      dataCriacao: new Date()
+    });
+    
+    document.getElementById("teamNovoNome").value = "";
+    document.getElementById("teamNovoEmail").value = "";
+    document.getElementById("teamNovoSenha").value = "";
+    document.getElementById("teamNovoBio").value = "";
+    
+    alert(`Membro "${nome}" cadastrado com sucesso! Ele já pode fazer login com o e-mail informado.`);
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao cadastrar membro da equipe: " + err.message);
+  }
+};
+
+window.excluirMembroEquipe = async function(email, nome) {
+  const confirmar = confirm(`Deseja remover o membro "${nome}" da equipe Courvan? Ele perderá acesso administrativo.`);
+  if (!confirmar) return;
+  
+  try {
+    await deleteDoc(doc(db, "courvan_team", email));
+    alert("Membro removido da equipe com sucesso!");
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao remover membro da equipe: " + err.message);
+  }
+};
+
+function iniciarListenerEquipe() {
+  if (unsubscribeEquipe) unsubscribeEquipe();
+  
+  unsubscribeEquipe = onSnapshot(collection(db, "courvan_team"), (snapshot) => {
+    const listDiv = document.getElementById("listaMembrosEquipe");
+    listDiv.innerHTML = "";
+    
+    snapshot.forEach(docSnap => {
+      const colab = docSnap.data();
+      const colabEmail = docSnap.id;
+      const colabNome = colab.nome || "Membro da Equipe";
+      const colabBio = colab.bio || "Membro da equipe Courvan.";
+      const colabFoto = colab.fotoPerfil || "";
+      const colabFotoUrl = obterFotoPerfil(colabFoto, colabNome);
+      
+      let deleteBtn = "";
+      if (colabEmail.toLowerCase() !== auth.currentUser.email.toLowerCase() && auth.currentUser.email.toLowerCase() === "comercial.courvanlicitacoes@gmail.com") {
+        deleteBtn = `
+          <button onclick="window.excluirMembroEquipe('${colabEmail}', '${colabNome}')" style="background:none; border:none; color:#ef4444; font-size:18px; cursor:pointer;" title="Remover da Equipe">
+            🗑️
+          </button>
+        `;
+      }
+      
+      listDiv.innerHTML += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.03);">
+          <div style="display:flex; gap:12px; align-items:center; overflow:hidden;">
+            <img src="${colabFotoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1.5px solid #e5b85c; background:#0c1524; flex-shrink:0;">
+            <div style="overflow:hidden;">
+              <h4 style="color:#ffffff; font-size:14px; margin:0; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${colabNome}</h4>
+              <span style="font-size:11px; color:#64748b; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${colabBio}</span>
+              <span style="font-size:11px; color:#e5b85c; font-weight:500;">${colabEmail}</span>
+            </div>
+          </div>
+          ${deleteBtn}
+        </div>
+      `;
+    });
+  });
+}
 
 /* 🔥 LISTA EM TEMPO REAL INJETANDO ESTRUTURA PREMIUM */
 function obterFotoPerfil(foto, nome) {
