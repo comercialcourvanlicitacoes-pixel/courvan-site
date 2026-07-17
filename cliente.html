@@ -330,6 +330,36 @@
       border-color: rgba(216, 168, 78, 0.25);
       font-weight: 600;
     }
+
+    /* ==========================================
+       ESTILOS DE IMPRESSÃO A4 (PREMIUM)
+       ========================================== */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .layout, .sidebar, .topbar, .aba, button, .modal, .notificacao-badge {
+        display: none !important;
+      }
+      #areaImpressao {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 1.5cm;
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+      }
+      /* Ensure colors print correctly */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
   </style>
 </head>
 
@@ -373,6 +403,7 @@
     </button>
     
     <button onclick="window.location.href='agenda.html'">📅 Agenda</button>
+    <button onclick="mostrarAba('geradores')">📄 Gerador de Docs</button>
     <button onclick="mostrarAba('config')">⚙ Configurações</button>
 
     <div style="margin-top:auto; padding-top: 20px;">
@@ -393,6 +424,243 @@
   </div>
 
   <div class="content">
+
+    <div id="geradores" class="aba" style="display:none;">
+      <h1>📄 Central de Geradores de Documentos</h1>
+      <p style="font-size:14px; opacity:0.8; margin-bottom:20px;">Crie declarações unificadas e propostas comerciais customizadas, com papel timbrado e assinaturas de forma automatizada.</p>
+
+      <!-- Sub-Tabs dos Geradores -->
+      <div style="display:flex; gap:12px; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px; overflow-x:auto;">
+        <button class="doc-tab-btn active" id="btnSubTabListar" onclick="window.alternarSubTabGerador('listar')">📁 Documentos Gerados</button>
+        <button class="doc-tab-btn" id="btnSubTabDeclaracao" onclick="window.alternarSubTabGerador('declaracao')">✍️ Gerador de Declaração Unificada</button>
+        <button class="doc-tab-btn" id="btnSubTabProposta" onclick="window.alternarSubTabGerador('proposta')">💰 Gerador de Proposta Comercial</button>
+      </div>
+
+      <!-- SUB-TAB LISTAR -->
+      <div id="subTabGeradores-listar" class="sub-tab-geradores">
+        <div class="info-box" style="border-radius:20px; padding:24px;">
+          <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">Histórico de Documentos Gerados</h2>
+          <div id="listaDocumentosGerados" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- Itens carregados via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB DECLARAÇÃO UNIFICADA -->
+      <div id="subTabGeradores-declaracao" class="sub-tab-geradores" style="display:none;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:start;">
+          <!-- Formulário -->
+          <div class="info-box" style="border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:18px; font-size:18px;">✍️ Nova Declaração Unificada</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Dados Proponente -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">1. Dados da Empresa</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="decEmpresa" class="inputPadrao" placeholder="Razão Social / Nome da Empresa">
+                  <input id="decCNPJ" class="inputPadrao" placeholder="CNPJ">
+                </div>
+                <input id="decEndereco" class="inputPadrao" placeholder="Endereço Completo (Rua, Nº, Bairro, CEP, Cidade, UF)">
+              </div>
+
+              <!-- Dados Representante -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">2. Representante Legal</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="decRepNome" class="inputPadrao" placeholder="Nome do Representante">
+                  <input id="decRepCPF" class="inputPadrao" placeholder="CPF">
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="decRepRG" class="inputPadrao" placeholder="RG (Opcional)">
+                  <input id="decRepCargo" class="inputPadrao" placeholder="Cargo (Ex: Sócio-Administrador, Procurador)">
+                </div>
+              </div>
+
+              <!-- Configuração Visual -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">3. Papel Timbrado & Assinatura</h3>
+                
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Upload do Logotipo/Timbrado (Topo)</label>
+                  <input type="file" id="decTimbradoInput" accept="image/*" onchange="window.handleUploadVisual('timbrado', this)" class="inputPadrao" style="padding:10px;">
+                </div>
+
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:6px;">Formato da Assinatura</label>
+                  <div style="display:flex; gap:14px; margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="decAssinaturaTipo" value="desenhar" checked onchange="window.alternarAssinaturaTipo('declaracao', 'desenhar')"> Desenhar na Tela
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="decAssinaturaTipo" value="upload" onchange="window.alternarAssinaturaTipo('declaracao', 'upload')"> Enviar Imagem
+                    </label>
+                  </div>
+
+                  <!-- Canvas Desenho -->
+                  <div id="decAssinaturaDesenharArea">
+                    <canvas id="canvasAssinaturaDec" width="360" height="120" style="background:#0c1524; border:1px dashed rgba(255,255,255,0.15); border-radius:10px; cursor:crosshair; width:100%; display:block;"></canvas>
+                    <div style="margin-top:6px; display:flex; gap:8px;">
+                      <button class="botaoPadrao" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); font-size:12px; padding:6px 12px; width:auto;" onclick="window.limparCanvas('canvasAssinaturaDec')">Limpar Tela</button>
+                      <button class="botaoPadrao" style="font-size:12px; padding:6px 12px; width:auto;" onclick="window.salvarAssinaturaDesenho('declaracao')">Confirmar Assinatura</button>
+                    </div>
+                  </div>
+
+                  <!-- Upload Imagem -->
+                  <div id="decAssinaturaUploadArea" style="display:none;">
+                    <input type="file" id="decAssinaturaInput" accept="image/*" onchange="window.handleUploadVisual('assinatura', this)" class="inputPadrao" style="padding:10px;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seleção de Declarações -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">4. Declarações a Incluir</h3>
+                <div style="display:flex; flex-direction:column; gap:10px; background:rgba(255,255,255,0.01); padding:14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">
+                  <label style="display:flex; align-items:start; gap:8px; font-size:13px; cursor:pointer; line-height:1.4;">
+                    <input type="checkbox" id="chkDecFatos" checked style="margin-top:3px;"> Inexistência de Fatos Impeditivos (Supervenientes)
+                  </label>
+                  <label style="display:flex; align-items:start; gap:8px; font-size:13px; cursor:pointer; line-height:1.4;">
+                    <input type="checkbox" id="chkDecMenor" checked style="margin-top:3px;"> Cumprimento do Art. 7º, Inciso XXXIII CF (Trabalho Infantil)
+                  </label>
+                  <label style="display:flex; align-items:start; gap:8px; font-size:13px; cursor:pointer; line-height:1.4;">
+                    <input type="checkbox" id="chkDecProposta" checked style="margin-top:3px;"> Elaboração de Proposta Independente
+                  </label>
+                  <label style="display:flex; align-items:start; gap:8px; font-size:13px; cursor:pointer; line-height:1.4;">
+                    <input type="checkbox" id="chkDecME" checked style="margin-top:3px;"> Enquadramento de Microempresa / EPP (Lei Complementar 123)
+                  </label>
+                  <label style="display:flex; align-items:start; gap:8px; font-size:13px; cursor:pointer; line-height:1.4;">
+                    <input type="checkbox" id="chkDecServidor" checked style="margin-top:3px;"> Não-Emprego de Servidores Públicos
+                  </label>
+                  <label style="display:flex; align-items:start; gap:8px; font-size:13px; cursor:pointer; line-height:1.4;">
+                    <input type="checkbox" id="chkDecRegularidade" style="margin-top:3px;"> Regularidade Fiscal e Habilitação Geral
+                  </label>
+                  <label style="display:flex; align-items:start; gap:8px; font-size:13px; cursor:pointer; line-height:1.4;">
+                    <input type="checkbox" id="chkDecIdoneidade" style="margin-top:3px;"> Idoneidade perante a Administração Pública
+                  </label>
+                  <label style="display:flex; align-items:start; gap:8px; font-size:13px; cursor:pointer; line-height:1.4;">
+                    <input type="checkbox" id="chkDecLGPD" style="margin-top:3px;"> Adequação e Cumprimento da LGPD
+                  </label>
+                </div>
+              </div>
+
+              <!-- Local e Data -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">5. Local e Data</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="decCidade" class="inputPadrao" placeholder="Cidade (Ex: Belo Horizonte)">
+                  <input id="decData" type="date" class="inputPadrao">
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px;">
+                <button class="botaoPadrao" onclick="window.atualizarPreVisualizacaoDeclaracao()" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1);">Visualizar</button>
+                <button class="botaoPadrao" onclick="window.salvarEImprimirDocumento('declaracao')" style="flex:1;">Salvar & Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-visualização -->
+          <div class="info-box" style="position:sticky; top:20px; border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
+            <div id="areaPreVisualizacaoDec" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
+              <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia do documento em formato de folha A4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB PROPOSTA COMERCIAL -->
+      <div id="subTabGeradores-proposta" class="sub-tab-geradores" style="display:none;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:start;">
+          <!-- Formulário -->
+          <div class="info-box" style="border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:18px; font-size:18px;">💰 Nova Proposta Comercial</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Dados Proponente -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">1. Identificação do Licitante</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="propEmpresa" class="inputPadrao" placeholder="Razão Social / Nome da Empresa">
+                  <input id="propCNPJ" class="inputPadrao" placeholder="CNPJ">
+                </div>
+                <input id="propEndereco" class="inputPadrao" placeholder="Endereço Completo">
+              </div>
+
+              <!-- Dados Destinatario -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">2. Destinatário (Órgão Público)</h3>
+                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="propOrgao" class="inputPadrao" placeholder="Nome do Órgão (Ex: Prefeitura de Itabira)">
+                  <input id="propProcesso" class="inputPadrao" placeholder="Processo / Pregão Nº">
+                </div>
+                <input id="propObjeto" class="inputPadrao" placeholder="Objeto da Licitação (Resumo)">
+              </div>
+
+              <!-- Tabela Itens -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                  <span>3. Tabela de Preços (Itens)</span>
+                  <button class="botaoPadrao" style="width:auto; padding:4px 10px; font-size:11px;" onclick="window.adicionarLinhaItemProposta()">+ Item</button>
+                </h3>
+                
+                <div id="containerItensProposta" style="display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
+                  <!-- Linhas de Itens -->
+                  <div class="linha-item-prop" style="display:flex; gap:8px; align-items:center;">
+                    <input class="inputPadrao item-num" placeholder="Nº" style="width:50px; margin-bottom:0;" value="1">
+                    <input class="inputPadrao item-desc" placeholder="Descrição do produto/serviço" style="flex:2; margin-bottom:0;">
+                    <input class="inputPadrao item-unid" placeholder="Unid" style="width:60px; margin-bottom:0;" value="UN">
+                    <input class="inputPadrao item-qtd" type="number" placeholder="Qtd" style="width:65px; margin-bottom:0;" value="1" onchange="window.calcularTotaisProposta()">
+                    <input class="inputPadrao item-valor" type="number" step="0.01" placeholder="R$ Unit" style="width:100px; margin-bottom:0;" value="0.00" onchange="window.calcularTotaisProposta()">
+                    <button class="botaoPadrao" style="background:none; border:none; color:#ef4444; width:auto; font-size:16px; cursor:pointer;" onclick="this.parentElement.remove(); window.calcularTotaisProposta()">🗑️</button>
+                  </div>
+                </div>
+
+                <div style="text-align:right; font-size:14px; font-weight:700; color:#e5b85c; padding-top:4px;">
+                  Valor Total: R$ <span id="valorTotalPropostaPreview">0,00</span>
+                </div>
+              </div>
+
+              <!-- Condições da Proposta -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">4. Condições e Dados Bancários</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="propValidade" class="inputPadrao" placeholder="Validade da Proposta" value="60 (sessenta) dias">
+                  <input id="propPrazo" class="inputPadrao" placeholder="Prazo de Entrega / Início" value="10 (dez) dias">
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="propCondicoes" class="inputPadrao" placeholder="Condições de Pagamento" value="Conforme Edital">
+                  <input id="propDadosBancos" class="inputPadrao" placeholder="Dados Bancários (Banco, Ag, C/C)">
+                </div>
+              </div>
+
+              <!-- Local e Data -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">5. Local e Data</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="propCidade" class="inputPadrao" placeholder="Cidade (Ex: Belo Horizonte)">
+                  <input id="propData" type="date" class="inputPadrao">
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px;">
+                <button class="botaoPadrao" onclick="window.atualizarPreVisualizacaoProposta()" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1);">Visualizar</button>
+                <button class="botaoPadrao" onclick="window.salvarEImprimirDocumento('proposta')" style="flex:1;">Salvar & Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-visualização -->
+          <div class="info-box" style="position:sticky; top:20px; border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
+            <div id="areaPreVisualizacaoProp" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
+              <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia da proposta em formato de folha A4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div id="dashboard" class="aba">
       <h1>Dashboard do Cliente</h1>
@@ -1107,6 +1375,20 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
+  const emailLogado = user.email.toLowerCase();
+  let isCourvanTeam = (emailLogado === "comercial.courvanlicitacoes@gmail.com");
+  if (!isCourvanTeam) {
+    try {
+      const teamDoc = await getDoc(doc(db, "courvan_team", emailLogado));
+      if (teamDoc.exists()) {
+        isCourvanTeam = true;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  window.isCourvanTeamAdmin = isCourvanTeam;
+
   const params = new URLSearchParams(window.location.search);
   const clienteIdUrl = params.get("id");
 
@@ -1235,6 +1517,7 @@ onAuthStateChanged(auth, async (user) => {
   
   carregarRadarPersonalizado();
   setInterval(carregarRadarPersonalizado, 30000); 
+  window.iniciarListenerDocsGerados();
 });
 
 window.mostrarAba = function (id) {
@@ -2402,7 +2685,7 @@ window.enviarMensagem = async () => {
   }
 
   const emailLogado = auth.currentUser.email.toLowerCase();
-  const isAdmin = emailLogado === "comercial.courvanlicitacoes@gmail.com";
+  const isAdmin = window.isCourvanTeamAdmin;
   
   /* limpa imediatamente para melhor sensação de velocidade */
   input.value = "";
@@ -2416,30 +2699,28 @@ window.enviarMensagem = async () => {
     let anexoTipo = null;
 
     if (file) {
-      const nomeSeguro = file.name
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[()]/g, "")
-        .replace(/[^a-zA-Z0-9._-]/g, "_");
-
-      const caminho = `chats/${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
-
-      // Envia o arquivo para o storage do Supabase no mesmo bucket seguro
-      const { error } = await supabase.storage
-        .from("documentos-clientes")
-        .upload(caminho, file);
-
-      if (error) {
-        throw new Error("Erro ao enviar arquivo: " + error.message);
+      try {
+        const base64 = await window.lerArquivoComoBase64(file);
+        if (base64.length > 1300000) {
+          alert("O arquivo anexo excede o limite máximo de 1.2MB para envio direto no chat. Por favor, utilize um arquivo menor ou envie via Google Drive.");
+          if (btnEnviar) {
+            btnEnviar.disabled = false;
+            btnEnviar.innerText = "Enviar";
+          }
+          return;
+        }
+        anexoUrl = base64;
+        anexoNome = file.name;
+        anexoTipo = file.type;
+      } catch (err) {
+        console.error("Erro ao processar anexo:", err);
+        alert("Erro ao carregar o arquivo.");
+        if (btnEnviar) {
+          btnEnviar.disabled = false;
+          btnEnviar.innerText = "Enviar";
+        }
+        return;
       }
-
-      const { data } = supabase.storage
-        .from("documentos-clientes")
-        .getPublicUrl(caminho);
-
-      anexoUrl = data.publicUrl;
-      anexoNome = file.name;
-      anexoTipo = file.type;
     }
 
     const destSelect = document.getElementById("chatDestinatario");
@@ -2760,6 +3041,15 @@ function iniciarDocumentos() {
   );
 }
 
+window.lerArquivoComoBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+};
+
 window.adicionarDocumento = async () => {
   const nome = document.getElementById("nomeDocumento").value;
   const categoria = document.getElementById("categoriaDocumento").value;
@@ -2789,38 +3079,21 @@ window.adicionarDocumento = async () => {
       return;
     }
 
-    const nomeSeguro = arquivo.name
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[()]/g, "")
-      .replace(/[^a-zA-Z0-9._-]/g, "_");
-
-    const caminho = `${clienteIdGlobal}/${Date.now()}_${nomeSeguro}`;
-
     try {
-      const { error } = await supabase.storage
-        .from("documentos-clientes")
-        .upload(caminho, arquivo);
-
-      if (error) {
-        console.error("Erro no upload do Supabase:", error);
-        alert("Erro ao enviar arquivo: " + (error.message || JSON.stringify(error)) + "\n\nO servidor do Supabase (armazenamento de arquivos) pode estar inativo ou pausado por inatividade no painel do administrador.");
+      const base64 = await window.lerArquivoComoBase64(arquivo);
+      if (base64.length > 1300000) {
+        alert("O arquivo excede o limite máximo de 1.2MB para persistência direta. Por favor, utilize um link do Google Drive para arquivos maiores ou comprima o arquivo.");
         return;
       }
+      linkFinal = base64;
+      caminhoArquivo = ""; // Sem Supabase
+      tipoArquivo = arquivo.type;
+      tamanhoArquivo = arquivo.size;
     } catch (err) {
-      console.error("Erro de requisição ao Supabase:", err);
-      alert("Erro de conexão ao enviar o arquivo.\n\nMotivo: Não foi possível alcançar o servidor de arquivos (Supabase).\n" + (err.message || "Isso geralmente ocorre se o projeto do Supabase foi pausado por inatividade ou está offline. O administrador do sistema precisa reativar o projeto no console do Supabase."));
+      console.error("Erro ao ler arquivo:", err);
+      alert("Erro ao ler o arquivo selecionado.");
       return;
     }
-
-    const { data } = supabase.storage
-      .from("documentos-clientes")
-      .getPublicUrl(caminho);
-
-    linkFinal = data.publicUrl;
-    caminhoArquivo = caminho;
-    tipoArquivo = arquivo.type;
-    tamanhoArquivo = arquivo.size;
   }
 
   await addDoc(collection(db, "documentos"), {
@@ -2982,7 +3255,550 @@ function atualizarKpisDashboard(licitacoes = []) {
     alert("Erro ao gerar pagamento.");
   }
 };
+
+/* ====================================================
+   AUTOMATED DOCUMENT & PROPOSAL GENERATOR SYSTEM
+   ==================================================== */
+
+window.comprimirImagem = function(file, maxWidth, maxHeight, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+window.alternarSubTabGerador = function(subTab) {
+  document.querySelectorAll(".sub-tab-geradores").forEach(el => el.style.display = "none");
+  const target = document.getElementById(`subTabGeradores-${subTab}`);
+  if (target) target.style.display = "block";
   
+  const bListar = document.getElementById("btnSubTabListar");
+  const bDec = document.getElementById("btnSubTabDeclaracao");
+  const bProp = document.getElementById("btnSubTabProposta");
+  
+  if (bListar) bListar.classList.toggle("active", subTab === "listar");
+  if (bDec) bDec.classList.toggle("active", subTab === "declaracao");
+  if (bProp) bProp.classList.toggle("active", subTab === "proposta");
+  
+  if (subTab === "declaracao") {
+    setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaDec"), 150);
+  }
+};
+
+window.inicializarCanvasAssinatura = function(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext("2d");
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = "round";
+  
+  ctx.fillStyle = "rgba(0,0,0,0)";
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  let drawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  
+  function getMousePos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) * (canvas.width / rect.width),
+      y: (clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+  
+  function startDrawing(e) {
+    drawing = true;
+    const pos = getMousePos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+    e.preventDefault();
+  }
+  
+  function draw(e) {
+    if (!drawing) return;
+    const pos = getMousePos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    lastX = pos.x;
+    lastY = pos.y;
+    e.preventDefault();
+  }
+  
+  function stopDrawing() {
+    drawing = false;
+  }
+  
+  // Clean event listeners to prevent duplicate triggers
+  canvas.replaceWith(canvas.cloneNode(true));
+  const newCanvas = document.getElementById(canvasId);
+  
+  newCanvas.addEventListener("mousedown", startDrawing);
+  newCanvas.addEventListener("mousemove", draw);
+  newCanvas.addEventListener("mouseup", stopDrawing);
+  newCanvas.addEventListener("mouseout", stopDrawing);
+  
+  newCanvas.addEventListener("touchstart", startDrawing, { passive: false });
+  newCanvas.addEventListener("touchmove", draw, { passive: false });
+  newCanvas.addEventListener("touchend", stopDrawing);
+};
+
+window.limparCanvas = function(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (canvas) {
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+};
+
+window.tempVisuals = {
+  timbrado: "",
+  assinaturaDec: ""
+};
+
+window.handleUploadVisual = async function(tipo, input) {
+  if (input.files && input.files[0]) {
+    try {
+      const maxW = tipo === "timbrado" ? 800 : 350;
+      const maxH = tipo === "timbrado" ? 220 : 120;
+      const base64 = await window.comprimirImagem(input.files[0], maxW, maxH, 0.8);
+      
+      if (tipo === "timbrado") {
+        window.tempVisuals.timbrado = base64;
+      } else {
+        window.tempVisuals.assinaturaDec = base64;
+      }
+      alert("Imagem carregada e processada com sucesso!");
+      
+      if (tipo === "timbrado") {
+        window.atualizarPreVisualizacaoDeclaracao();
+        window.atualizarPreVisualizacaoProposta();
+      } else {
+        window.atualizarPreVisualizacaoDeclaracao();
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao processar imagem.");
+    }
+  }
+};
+
+window.salvarAssinaturaDesenho = function(tipo) {
+  const canvasId = tipo === "declaracao" ? "canvasAssinaturaDec" : "";
+  const canvas = document.getElementById(canvasId);
+  if (canvas) {
+    const base64 = canvas.toDataURL("image/png");
+    window.tempVisuals.assinaturaDec = base64;
+    alert("Assinatura desenhada confirmada com sucesso!");
+    window.atualizarPreVisualizacaoDeclaracao();
+  }
+};
+
+window.alternarAssinaturaTipo = function(tipo, modo) {
+  if (tipo === "declaracao") {
+    document.getElementById("decAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
+    document.getElementById("decAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
+  }
+};
+
+window.adicionarLinhaItemProposta = function() {
+  const container = document.getElementById("containerItensProposta");
+  if (!container) return;
+  const count = container.querySelectorAll(".linha-item-prop").length + 1;
+  const div = document.createElement("div");
+  div.className = "linha-item-prop";
+  div.style = "display:flex; gap:8px; align-items:center; margin-bottom:8px;";
+  div.innerHTML = `
+    <input class="inputPadrao item-num" placeholder="Nº" style="width:50px; margin-bottom:0;" value="${count}">
+    <input class="inputPadrao item-desc" placeholder="Descrição do produto/serviço" style="flex:2; margin-bottom:0;">
+    <input class="inputPadrao item-unid" placeholder="Unid" style="width:60px; margin-bottom:0;" value="UN">
+    <input class="inputPadrao item-qtd" type="number" placeholder="Qtd" style="width:65px; margin-bottom:0;" value="1" onchange="window.calcularTotaisProposta()">
+    <input class="inputPadrao item-valor" type="number" step="0.01" placeholder="R$ Unit" style="width:100px; margin-bottom:0;" value="0.00" onchange="window.calcularTotaisProposta()">
+    <button class="botaoPadrao" style="background:none; border:none; color:#ef4444; width:auto; font-size:16px; cursor:pointer;" onclick="this.parentElement.remove(); window.calcularTotaisProposta()">🗑️</button>
+  `;
+  container.appendChild(div);
+  window.calcularTotaisProposta();
+};
+
+window.calcularTotaisProposta = function() {
+  let total = 0;
+  document.querySelectorAll(".linha-item-prop").forEach(linha => {
+    const qtd = parseFloat(linha.querySelector(".item-qtd").value) || 0;
+    const valor = parseFloat(linha.querySelector(".item-valor").value) || 0;
+    total += qtd * valor;
+  });
+  const elTotal = document.getElementById("valorTotalPropostaPreview");
+  if (elTotal) {
+    elTotal.innerText = total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  window.atualizarPreVisualizacaoProposta();
+};
+
+window.atualizarPreVisualizacaoDeclaracao = function() {
+  const empresa = document.getElementById("decEmpresa").value.trim() || "NOME DA EMPRESA LTDA";
+  const cnpj = document.getElementById("decCNPJ").value.trim() || "00.000.000/0001-00";
+  const endereco = document.getElementById("decEndereco").value.trim() || "Endereço da Empresa, Cidade/UF";
+  
+  const repNome = document.getElementById("decRepNome").value.trim() || "REPRESENTANTE LEGAL";
+  const repCPF = document.getElementById("decRepCPF").value.trim() || "000.000.000-00";
+  const repRG = document.getElementById("decRepRG").value.trim() || "";
+  const repCargo = document.getElementById("decRepCargo").value.trim() || "Representante";
+  
+  const cidade = document.getElementById("decCidade").value.trim() || "Belo Horizonte";
+  const dataInput = document.getElementById("decData").value;
+  
+  let dataFormatada = "";
+  if (dataInput) {
+    const d = new Date(dataInput + "T12:00:00");
+    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    dataFormatada = `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  } else {
+    dataFormatada = "___ de _________________ de 202___";
+  }
+  
+  let decHTML = "";
+  if (document.getElementById("chkDecFatos").checked) {
+    decHTML += `<p style="margin-bottom:15px; text-align:justify; font-size:12px;"><strong>DECLARAÇÃO DE INEXISTÊNCIA DE FATOS IMPEDITIVOS:</strong> Declaramos, sob as penas cabíveis e para fins de direito, sob as sanções penais da lei, a inexistência de fatos impeditivos supervenientes à nossa habilitação para participar da presente licitação, nos termos do artigo 97 da Lei 14.133/2021.</p>`;
+  }
+  if (document.getElementById("chkDecMenor").checked) {
+    decHTML += `<p style="margin-bottom:15px; text-align:justify; font-size:12px;"><strong>DECLARAÇÃO DE TRABALHO INFANTIL (CF ART. 7º):</strong> Declaramos, para fins de direito, que a nossa empresa cumpre plenamente o disposto no inciso XXXIII do artigo 7º da Constituição Federal, não empregando menores de dezoito anos em trabalho noturno, perigoso ou insalubre, nem menores de dezoito anos em qualquer trabalho, salvo na condição de aprendiz, a partir de quatorze anos.</p>`;
+  }
+  if (document.getElementById("chkDecProposta").checked) {
+    decHTML += `<p style="margin-bottom:15px; text-align:justify; font-size:12px;"><strong>DECLARAÇÃO DE ELABORAÇÃO DE PROPOSTA INDEPENDENTE:</strong> Declaramos que a proposta comercial apresentada foi elaborada de maneira independente, e que o teor da proposta não foi, no todo ou em parte, comunicado ou discutido de forma a frustrar o caráter competitivo do certame.</p>`;
+  }
+  if (document.getElementById("chkDecME").checked) {
+    decHTML += `<p style="margin-bottom:15px; text-align:justify; font-size:12px;"><strong>DECLARAÇÃO DE ENQUADRAMENTO ME/EPP:</strong> Declaramos, sob as penas da lei, que a nossa empresa se enquadra na categoria de Microempresa (ME) ou Empresa de Pequeno Porte (EPP), nos termos da Lei Complementar nº 123/2006, inexistindo qualquer um dos impedimentos do § 4º do artigo 3º da referida lei.</p>`;
+  }
+  if (document.getElementById("chkDecServidor").checked) {
+    decHTML += `<p style="margin-bottom:15px; text-align:justify; font-size:12px;"><strong>DECLARAÇÃO DE NÃO-EMPREGO DE SERVIDOR PÚBLICO:</strong> Declaramos que nenhum sócio, gerente ou colaborador responsável técnico da nossa empresa exerce cargo, função ou emprego público no órgão contratante, em conformidade com as vedações éticas e legais vigentes.</p>`;
+  }
+  if (document.getElementById("chkDecRegularidade").checked) {
+    decHTML += `<p style="margin-bottom:15px; text-align:justify; font-size:12px;"><strong>DECLARAÇÃO DE REGULARIDADE FISCAL E TRABALHISTA:</strong> Declaramos que nos encontramos em situação perfeitamente regular perante a Fazenda Nacional, Estadual, Municipal, o FGTS e a Justiça do Trabalho, com plena capacidade de honrar os compromissos assumidos.</p>`;
+  }
+  if (document.getElementById("chkDecIdoneidade").checked) {
+    decHTML += `<p style="margin-bottom:15px; text-align:justify; font-size:12px;"><strong>DECLARAÇÃO DE IDONEIDADE:</strong> Declaramos que a nossa empresa não foi declarada inidônea para licitar ou contratar com a Administração Pública de qualquer esfera governamental, nem se encontra suspensa do direito de licitar.</p>`;
+  }
+  if (document.getElementById("chkDecLGPD").checked) {
+    decHTML += `<p style="margin-bottom:15px; text-align:justify; font-size:12px;"><strong>DECLARAÇÃO DE CONFORMIDADE LGPD:</strong> Declaramos que a nossa empresa adota medidas técnicas e organizativas aptas a proteger os dados pessoais de acessos não autorizados e de situações acidentais ou ilícitas de destruição, perda, alteração ou difusão, em fiel cumprimento à Lei Geral de Proteção de Dados (Lei nº 13.709/2018).</p>`;
+  }
+
+  const headerHTML = window.tempVisuals.timbrado 
+    ? `<div style="text-align:center; margin-bottom:25px;"><img src="${window.tempVisuals.timbrado}" style="max-height:110px; max-width:100%; object-fit:contain;"></div>`
+    : `<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:30px;"><h2 style="font-size:20px; font-weight:800; text-transform:uppercase; margin:0;">DECLARAÇÃO UNIFICADA</h2></div>`;
+
+  const assinaturaHTML = window.tempVisuals.assinaturaDec
+    ? `<div style="text-align:center; margin-top:25px;"><img src="${window.tempVisuals.assinaturaDec}" style="max-height:80px; max-width:250px; object-fit:contain; display:block; margin:0 auto 5px auto;"><div style="border-top:1px solid #333; display:inline-block; width:280px; padding-top:4px;"><strong>${repNome}</strong><br><span style="font-size:10px; color:#555;">CPF: ${repCPF} | ${repCargo}</span></div></div>`
+    : `<div style="text-align:center; margin-top:55px;"><div style="border-top:1px dashed #777; display:inline-block; width:280px; padding-top:4px;"><strong>${repNome}</strong><br><span style="font-size:10px; color:#555;">CPF: ${repCPF} | ${repCargo}</span></div></div>`;
+
+  const fullA4Content = `
+    <div style="background:white; color:black; padding:40px; font-family:'Times New Roman', Times, serif; font-size:12px; line-height:1.6; min-height:600px; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      ${headerHTML}
+      
+      <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:25px; text-decoration:underline;">DECLARAÇÃO UNIFICADA</div>
+      
+      <p style="text-align:justify; margin-bottom:20px; font-size:12px;">
+        A empresa <strong>${empresa}</strong>, inscrita no CNPJ sob o nº <strong>${cnpj}</strong>, com sede estabelecida à <strong>${endereco}</strong>, por intermédio de seu representante legal, o(a) Sr(a). <strong>${repNome}</strong>, portador(a) do CPF nº <strong>${repCPF}</strong>, ${repRG ? `e do RG nº <strong>${repRG}</strong>,` : ""} no uso de suas atribuições legais, declara solenemente perante o Órgão Licitante:
+      </p>
+
+      ${decHTML}
+
+      <p style="margin-bottom:15px; text-align:justify; font-size:12px;">Por ser a expressão da verdade, firmamos a presente.</p>
+
+      <div style="text-align:right; margin-top:25px; font-size:12px; font-style:italic;">
+        ${cidade}, ${dataFormatada}.
+      </div>
+
+      ${assinaturaHTML}
+    </div>
+  `;
+
+  const elPreview = document.getElementById("areaPreVisualizacaoDec");
+  if (elPreview) elPreview.innerHTML = fullA4Content;
+  return fullA4Content;
+};
+
+window.atualizarPreVisualizacaoProposta = function() {
+  const empresa = document.getElementById("propEmpresa").value.trim() || "NOME DA EMPRESA LTDA";
+  const cnpj = document.getElementById("propCNPJ").value.trim() || "00.000.000/0001-00";
+  const endereco = document.getElementById("propEndereco").value.trim() || "Endereço da Empresa, Cidade/UF";
+  
+  const orgao = document.getElementById("propOrgao").value.trim() || "ÓRGÃO PÚBLICO LICITANTE";
+  const pregão = document.getElementById("propProcesso").value.trim() || "PREGÃO ELETRÔNICO Nº 01/2026";
+  const objeto = document.getElementById("propObjeto").value.trim() || "Aquisição de materiais e equipamentos diversos.";
+  
+  const validade = document.getElementById("propValidade").value.trim() || "60 (sessenta) dias";
+  const prazo = document.getElementById("propPrazo").value.trim() || "10 (dez) dias";
+  const condicoes = document.getElementById("propCondicoes").value.trim() || "Conforme Edital";
+  const dadosBancos = document.getElementById("propDadosBancos").value.trim() || "Banco do Brasil, Agência: 1234, C/C: 56789-0";
+  
+  const cidade = document.getElementById("propCidade").value.trim() || "Belo Horizonte";
+  const dataInput = document.getElementById("propData").value;
+  
+  let dataFormatada = "";
+  if (dataInput) {
+    const d = new Date(dataInput + "T12:00:00");
+    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    dataFormatada = `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  } else {
+    dataFormatada = "___ de _________________ de 202___";
+  }
+
+  let rowsHTML = "";
+  let totalGeral = 0;
+  
+  document.querySelectorAll(".linha-item-prop").forEach(linha => {
+    const num = linha.querySelector(".item-num").value || "1";
+    const desc = linha.querySelector(".item-desc").value || "-";
+    const unid = linha.querySelector(".item-unid").value || "UN";
+    const qtd = parseFloat(linha.querySelector(".item-qtd").value) || 0;
+    const valor = parseFloat(linha.querySelector(".item-valor").value) || 0;
+    const sub = qtd * valor;
+    totalGeral += sub;
+    
+    rowsHTML += `
+      <tr style="border-bottom:1px solid #ddd;">
+        <td style="padding:6px; text-align:center;">${num}</td>
+        <td style="padding:6px;">${desc}</td>
+        <td style="padding:6px; text-align:center;">${unid}</td>
+        <td style="padding:6px; text-align:center;">${qtd}</td>
+        <td style="padding:6px; text-align:right;">R$ ${valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td style="padding:6px; text-align:right;">R$ ${sub.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      </tr>
+    `;
+  });
+
+  const headerHTML = window.tempVisuals.timbrado 
+    ? `<div style="text-align:center; margin-bottom:25px;"><img src="${window.tempVisuals.timbrado}" style="max-height:110px; max-width:100%; object-fit:contain;"></div>`
+    : `<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:30px;"><h2 style="font-size:20px; font-weight:800; text-transform:uppercase; margin:0;">PROPOSTA COMERCIAL</h2></div>`;
+
+  const assinaturaHTML = window.tempVisuals.assinaturaDec
+    ? `<div style="text-align:center; margin-top:25px;"><img src="${window.tempVisuals.assinaturaDec}" style="max-height:80px; max-width:250px; object-fit:contain; display:block; margin:0 auto 5px auto;"><div style="border-top:1px solid #333; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">CNPJ: ${cnpj}</span></div></div>`
+    : `<div style="text-align:center; margin-top:55px;"><div style="border-top:1px dashed #777; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">CNPJ: ${cnpj}</span></div></div>`;
+
+  const fullA4Content = `
+    <div style="background:white; color:black; padding:40px; font-family:'Times New Roman', Times, serif; font-size:12px; line-height:1.6; min-height:600px; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      ${headerHTML}
+      
+      <div style="text-align:center; font-weight:bold; font-size:15px; margin-bottom:10px; text-transform:uppercase;">À COORDENAÇÃO DE LICITAÇÃO / COMISSÃO DE CONTRATAÇÃO</div>
+      <div style="text-align:center; font-weight:bold; font-size:14px; margin-bottom:25px; text-transform:uppercase;">${orgao}</div>
+      
+      <div style="background:#f4f4f4; padding:12px; border-radius:6px; margin-bottom:20px; font-size:11px;">
+        <strong>Ref:</strong> ${pregão}<br>
+        <strong>Objeto:</strong> ${objeto}
+      </div>
+
+      <p style="text-align:justify; margin-bottom:15px;">
+        Apresentamos a seguir nossa Proposta de Preços em estrita conformidade com as exigências estabelecidas no respectivo instrumento convocatório (Edital).
+      </p>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:11px;">
+        <thead>
+          <tr style="background:#eaeaea; border-bottom:2px solid #bbb;">
+            <th style="padding:6px; text-align:center; width:40px;">Item</th>
+            <th style="padding:6px; text-align:left;">Descrição Detalhada do Objeto</th>
+            <th style="padding:6px; text-align:center; width:50px;">Unid</th>
+            <th style="padding:6px; text-align:center; width:50px;">Qtd</th>
+            <th style="padding:6px; text-align:right; width:100px;">Unitário</th>
+            <th style="padding:6px; text-align:right; width:110px;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHTML}
+          <tr style="font-weight:bold; background:#f9f9f9; border-top:2px solid #ccc;">
+            <td colspan="5" style="padding:8px; text-align:right;">VALOR TOTAL DA PROPOSTA:</td>
+            <td style="padding:8px; text-align:right;">R$ ${totalGeral.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-bottom:20px; font-size:11px; display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div>
+          <strong>Validade da Proposta:</strong> ${validade}<br>
+          <strong>Prazo de Entrega/Início:</strong> ${prazo}
+        </div>
+        <div>
+          <strong>Condições de Pagamento:</strong> ${condicoes}<br>
+          <strong>Dados Bancários:</strong> ${dadosBancos}
+        </div>
+      </div>
+
+      <p style="margin-bottom:15px; text-align:justify; font-size:11px;">
+        Declaramos que, no valor global proposto, estão inclusos todos os tributos, taxas, fretes, encargos trabalhistas, previdenciários e comerciais de qualquer natureza incidentes sobre o fornecimento do objeto licitado.
+      </p>
+
+      <div style="text-align:right; margin-top:20px; font-size:12px; font-style:italic;">
+        ${cidade}, ${dataFormatada}.
+      </div>
+
+      ${assinaturaHTML}
+    </div>
+  `;
+
+  const elPreview = document.getElementById("areaPreVisualizacaoProp");
+  if (elPreview) elPreview.innerHTML = fullA4Content;
+  return fullA4Content;
+};
+
+window.salvarEImprimirDocumento = async function(tipo) {
+  const isDec = tipo === "declaracao";
+  const nomeDoc = isDec ? "Declaração Unificada" : "Proposta Comercial";
+  
+  let htmlConteudo = "";
+  if (isDec) {
+    htmlConteudo = window.atualizarPreVisualizacaoDeclaracao();
+  } else {
+    htmlConteudo = window.atualizarPreVisualizacaoProposta();
+  }
+  
+  try {
+    await addDoc(collection(db, "documentos_gerados"), {
+      clienteId: clienteIdGlobal,
+      tipo,
+      nome: nomeDoc,
+      htmlConteudo,
+      timbrado: window.tempVisuals.timbrado || "",
+      assinatura: window.tempVisuals.assinaturaDec || "",
+      dataCriacao: serverTimestamp()
+    });
+    
+    let printArea = document.getElementById("areaImpressao");
+    if (!printArea) {
+      printArea = document.createElement("div");
+      printArea.id = "areaImpressao";
+      printArea.style.display = "none";
+      document.body.appendChild(printArea);
+    }
+    
+    printArea.innerHTML = htmlConteudo;
+    alert("Documento salvo com sucesso no histórico de gerados. A janela de impressão do seu navegador será aberta agora.");
+    window.print();
+    
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao salvar documento no histórico: " + err.message);
+  }
+};
+
+let unsubscribeDocsGerados = null;
+window.iniciarListenerDocsGerados = function() {
+  if (unsubscribeDocsGerados) unsubscribeDocsGerados();
+  
+  unsubscribeDocsGerados = onSnapshot(
+    query(
+      collection(db, "documentos_gerados"),
+      where("clienteId", "==", clienteIdGlobal)
+    ),
+    (snapshot) => {
+      const listDiv = document.getElementById("listaDocumentosGerados");
+      if (!listDiv) return;
+      
+      listDiv.innerHTML = "";
+      if (snapshot.empty) {
+        listDiv.innerHTML = `<div style="text-align:center; color:#64748b; padding:30px; font-style:italic;">Nenhum documento gerado para este cliente ainda.</div>`;
+        return;
+      }
+      
+      snapshot.forEach(docSnap => {
+        const item = docSnap.data();
+        const docId = docSnap.id;
+        let dataStr = "Recém-criado";
+        if (item.dataCriacao && item.dataCriacao.seconds) {
+          dataStr = new Date(item.dataCriacao.seconds * 1000).toLocaleDateString("pt-BR") + " " + new Date(item.dataCriacao.seconds * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+        }
+        const tipoLabel = item.tipo === "declaracao" ? "✍️ Declaração" : "💰 Proposta";
+        
+        listDiv.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:16px 20px; border-radius:15px; border:1px solid rgba(255,255,255,0.04);">
+            <div>
+              <span style="font-size:11px; color:#e5b85c; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">${tipoLabel}</span>
+              <h3 style="color:#ffffff; font-size:15px; font-weight:600; margin:0;">${item.nome}</h3>
+              <span style="font-size:12px; color:#64748b;">Criado em ${dataStr}</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="doc-tab-btn" onclick="window.reimprimirDocumento('${docId}')" style="background:#e5b85c; color:#06101e; font-weight:700; border:none; padding: 6px 12px; font-size:12px;">🖨️ Re-Imprimir</button>
+              <button class="doc-tab-btn" onclick="window.excluirDocumentoGerado('${docId}')" style="background:rgba(239, 68, 68, 0.1); color:#f87171; border:1px solid rgba(239, 68, 68, 0.15); padding: 6px 10px; font-size:12px;">🗑️ Excluir</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+  );
+};
+
+window.reimprimirDocumento = async function(docId) {
+  try {
+    const docSnap = await getDocs(query(collection(db, "documentos_gerados")));
+    const docItem = docSnap.docs.find(d => d.id === docId);
+    if (docItem) {
+      const item = docItem.data();
+      let printArea = document.getElementById("areaImpressao");
+      if (!printArea) {
+        printArea = document.createElement("div");
+        printArea.id = "areaImpressao";
+        printArea.style.display = "none";
+        document.body.appendChild(printArea);
+      }
+      printArea.innerHTML = item.htmlConteudo;
+      window.print();
+    } else {
+      alert("Documento não encontrado.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao buscar documento.");
+  }
+};
+
+window.excluirDocumentoGerado = async function(docId) {
+  if (!confirm("Tem certeza que deseja excluir permanentemente este documento do histórico?")) return;
+  try {
+    await deleteDoc(doc(db, "documentos_gerados", docId));
+    alert("Documento removido.");
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// Start default listing tab
+setTimeout(() => {
+  window.alternarSubTabGerador("listar");
+}, 1000);
+
 </script>
 
 </body>
