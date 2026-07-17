@@ -198,12 +198,6 @@
     }
     
     @media(max-width: 1024px) {
-      .sidebar {
-        width: 100% !important;
-        height: auto !important;
-        position: relative !important;
-        padding: 20px !important;
-      }
       .sidebar .sidebar-label,
       .sidebar .sidebar-profile-info,
       .sidebar .notificacao-badge {
@@ -401,38 +395,126 @@
       margin-top: 35px;
     }
 
+    /* ==========================================
+       RESPONSIVE MOBILE OVERHAUL (DRAWER NAVIGATION)
+       ========================================== */
     @media(max-width:1024px){
-      .layout{flex-direction:column;}
-      .sidebar{
-        width:100% !important;
-        height: auto !important;
-        position: relative !important;
-        top: unset !important;
-        min-height: auto !important;
-        border-right: none !important;
-        border-bottom: 1px solid var(--border-color) !important;
-        padding: 25px 20px !important;
-        overflow-y: visible !important;
-        flex-direction: row !important;
-        flex-wrap: wrap !important;
-        align-items: center !important;
-        justify-content: space-between !important;
+      .layout {
+        flex-direction: column !important;
+        padding-top: 60px !important; /* Space for fixed header bar */
       }
-      .sidebar h2 { margin-bottom: 0 !important; }
-      .sidebar button { width: auto !important; padding: 10px 14px !important; font-size: 13px !important; }
-      .content{padding:25px 20px;}
+      
+      /* Sticky Top Bar on Mobile */
+      #mobile-header {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: #050811;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        z-index: 1001;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      /* Sidebar converted to drawer slide-out on Mobile */
+      .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -280px !important; /* Start hidden on left */
+        width: 280px !important;
+        height: 100vh !important;
+        z-index: 1003 !important;
+        background: linear-gradient(180deg, #050811 0%, #02040a 100%) !important;
+        box-shadow: 25px 0 50px rgba(0, 0, 0, 0.8) !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 30px 20px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-bottom: none !important;
+      }
+
+      /* Revealed Drawer State */
+      .sidebar.sidebar-open-mobile {
+        left: 0 !important;
+      }
+
+      .sidebar h2 {
+        margin-bottom: 25px !important;
+        display: flex !important;
+      }
+
+      .sidebar button {
+        width: 100% !important;
+        padding: 14px 18px !important;
+        font-size: 15px !important;
+      }
+
+      /* Content Panel Adaptive adjustments */
+      .content {
+        padding: 20px 16px !important;
+        min-height: calc(100vh - 60px) !important;
+      }
+
+      .aba {
+        padding: 24px 16px !important;
+        border-radius: 20px !important;
+      }
+
+      /* Chat input area layout fix on mobile */
+      #chat div[style*="display:flex; gap:10px; align-items:center;"],
+      #chat div[style*="display: flex; gap: 10px; align-items: center;"] {
+        gap: 6px !important;
+      }
+      
+      #chat div[style*="display:flex; gap:10px; align-items:center;"] .botaoPadrao,
+      #chat div[style*="display: flex; gap: 10px; align-items: center;"] .botaoPadrao {
+        padding: 12px 14px !important;
+        border-radius: 10px !important;
+        font-size: 13px !important;
+      }
+
+      #btnEnviarMensagem {
+        padding: 12px 16px !important;
+      }
+
+      #mensagemInput {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        border-radius: 10px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+      }
     }
 
-    @media(max-width: 640px) {
-      .sidebar {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 10px !important;
-      }
-      .sidebar h2 {
-        justify-content: center;
-        margin-bottom: 15px !important;
-      }
+    /* Backdrop Overlay for mobile menu */
+    #mobile-sidebar-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(3, 7, 18, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1002;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #mobile-sidebar-backdrop.active {
+      display: block !important;
+      opacity: 1 !important;
     }
 
     /* BADGE DE NOTIFICAÇÃO ANIMADA */
@@ -521,6 +603,23 @@
 </head>
 
 <body>
+
+<!-- Backdrop para fechar o menu mobile ao clicar fora -->
+<div id="mobile-sidebar-backdrop" onclick="window.fecharSidebarMobile()"></div>
+
+<!-- Cabeçalho Mobile -->
+<div id="mobile-header" style="display: none;">
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <button id="mobile-menu-toggle" onclick="window.abrirSidebarMobile()" style="background: none; border: none; color: #cbd5e1; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; transition: color 0.2s;" onmouseover="this.style.color='#e5b85c'" onmouseout="this.style.color='#cbd5e1'">☰</button>
+    <div style="display: flex; flex-direction: column;">
+      <span style="font-family: var(--font-display); font-weight: 800; font-size: 16px; color: #e5b85c; letter-spacing: -0.5px; line-height: 1.2;">Courvan</span>
+      <span style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Painel do Cliente</span>
+    </div>
+  </div>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <img id="fotoMiniMobile" src="" style="width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #e5b85c; object-fit: cover; background: #0c1524;">
+  </div>
+</div>
 
 <div class="layout">
 
@@ -2050,6 +2149,11 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 window.mostrarAba = function (id) {
+  // Fechar a sidebar no mobile se estiver aberta
+  if (typeof window.fecharSidebarMobile === "function") {
+    window.fecharSidebarMobile();
+  }
+
   // Destacar o botão ativo na sidebar
   document.querySelectorAll(".sidebar button").forEach(btn => {
     btn.classList.remove("active");
@@ -3456,6 +3560,35 @@ document
 
 });
   
+window.abrirSidebarMobile = function() {
+  const sidebar = document.querySelector(".sidebar");
+  const backdrop = document.getElementById("mobile-sidebar-backdrop");
+  if (sidebar) sidebar.classList.add("sidebar-open-mobile");
+  if (backdrop) backdrop.classList.add("active");
+};
+
+window.fecharSidebarMobile = function() {
+  const sidebar = document.querySelector(".sidebar");
+  const backdrop = document.getElementById("mobile-sidebar-backdrop");
+  if (sidebar) sidebar.classList.remove("sidebar-open-mobile");
+  if (backdrop) backdrop.classList.remove("active");
+};
+
+// Sincroniza a foto do cabeçalho mobile com a foto do perfil carregada na sidebar em tempo real
+document.addEventListener("DOMContentLoaded", () => {
+  const fotoSidebar = document.getElementById("fotoSidebar");
+  const fotoMiniMobile = document.getElementById("fotoMiniMobile");
+  if (fotoSidebar && fotoMiniMobile) {
+    const observer = new MutationObserver(() => {
+      fotoMiniMobile.src = fotoSidebar.src;
+    });
+    observer.observe(fotoSidebar, { attributes: true, attributeFilter: ["src"] });
+    if (fotoSidebar.src) {
+      fotoMiniMobile.src = fotoSidebar.src;
+    }
+  }
+});
+
 window.mensagemEditandoId = null;
 
 window.irParaAgenda = function() {
