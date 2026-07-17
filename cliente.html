@@ -1073,7 +1073,7 @@ let ultimoSnapMensagens = null;
 
 // HELPER PARA FOTO DE PERFIL GERADA DINAMICAMENTE
 function obterFotoPerfil(foto, nome) {
-  if (foto && foto.startsWith("data:image")) {
+  if (foto && foto.startsWith("data:image") && !foto.includes("<img") && !foto.includes("style=") && !foto.includes("<span") && !foto.includes("<div")) {
     if (foto.includes("<svg") && !foto.includes(";base64,")) {
       try {
         let svgPart = foto;
@@ -1439,30 +1439,43 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   // Identificação dinâmica de perfil logado
-  let nomeUsuarioLogado = dadosClienteGlobal.nome;
-  let emailUsuarioLogado = user.email || dadosClienteGlobal.email;
+  let nomeUsuarioLogado;
+  let emailUsuarioLogado;
   let fotoUsuarioLogado = "";
   let bioUsuarioLogado = "";
-  let eUsuarioPrincipal = emailUsuarioLogado.toLowerCase() === dadosClienteGlobal.email.toLowerCase();
+  let eUsuarioPrincipal;
 
-  if (dadosClienteGlobal.usuariosMulti) {
-    const userObj = dadosClienteGlobal.usuariosMulti.find(u => u.email.toLowerCase() === emailUsuarioLogado.toLowerCase());
-    if (userObj) {
-      if (userObj.nome) nomeUsuarioLogado = userObj.nome;
-      if (userObj.fotoPerfil) fotoUsuarioLogado = userObj.fotoPerfil;
-      if (userObj.bio) bioUsuarioLogado = userObj.bio;
+  if (window.isCourvanTeamAdmin) {
+    // Se for administrador da Courvan, visualiza o perfil do cliente principal por padrão
+    nomeUsuarioLogado = dadosClienteGlobal.nome;
+    emailUsuarioLogado = dadosClienteGlobal.email;
+    fotoUsuarioLogado = dadosClienteGlobal.fotoPerfil || "";
+    bioUsuarioLogado = dadosClienteGlobal.bio || "";
+    eUsuarioPrincipal = true;
+  } else {
+    nomeUsuarioLogado = dadosClienteGlobal.nome;
+    emailUsuarioLogado = user.email || dadosClienteGlobal.email;
+    eUsuarioPrincipal = emailUsuarioLogado.toLowerCase() === dadosClienteGlobal.email.toLowerCase();
+
+    if (dadosClienteGlobal.usuariosMulti) {
+      const userObj = dadosClienteGlobal.usuariosMulti.find(u => u.email.toLowerCase() === emailUsuarioLogado.toLowerCase());
+      if (userObj) {
+        if (userObj.nome) nomeUsuarioLogado = userObj.nome;
+        if (userObj.fotoPerfil) fotoUsuarioLogado = userObj.fotoPerfil;
+        if (userObj.bio) bioUsuarioLogado = userObj.bio;
+      }
     }
-  }
 
-  // Sincronização de campos de foto ou bio caso o usuário seja o principal
-  if (eUsuarioPrincipal) {
-    if (!fotoUsuarioLogado && dadosClienteGlobal.fotoPerfil) fotoUsuarioLogado = dadosClienteGlobal.fotoPerfil;
-    if (!bioUsuarioLogado && dadosClienteGlobal.bio) bioUsuarioLogado = dadosClienteGlobal.bio;
-  }
+    // Sincronização de campos de foto ou bio caso o usuário seja o principal
+    if (eUsuarioPrincipal) {
+      if (!fotoUsuarioLogado && dadosClienteGlobal.fotoPerfil) fotoUsuarioLogado = dadosClienteGlobal.fotoPerfil;
+      if (!bioUsuarioLogado && dadosClienteGlobal.bio) bioUsuarioLogado = dadosClienteGlobal.bio;
+    }
 
-  // Fallback se o colaborador ainda não tiver o nome salvo em usuariosMulti
-  if (!eUsuarioPrincipal && nomeUsuarioLogado === dadosClienteGlobal.nome) {
-    nomeUsuarioLogado = extrairNomeDoEmail(emailUsuarioLogado);
+    // Fallback se o colaborador ainda não tiver o nome salvo em usuariosMulti
+    if (!eUsuarioPrincipal && nomeUsuarioLogado === dadosClienteGlobal.nome) {
+      nomeUsuarioLogado = extrairNomeDoEmail(emailUsuarioLogado);
+    }
   }
 
   document.getElementById("nome").innerText = nomeUsuarioLogado;
@@ -1555,11 +1568,7 @@ window.mostrarAba = function (id) {
 
   const agora = Date.now();
 
-const tipoUsuario =
-  auth.currentUser.email ===
-  "comercial.courvanlicitacoes@gmail.com"
-    ? "admin"
-    : "cliente";
+const tipoUsuario = window.isCourvanTeamAdmin ? "admin" : "cliente";
 
 localStorage.setItem(
   `ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_${id}`,
@@ -1581,11 +1590,7 @@ function atualizarBadgePersistente(nomeAba, registros) {
 
   if (!badge) return;
 
-  const tipoUsuario =
-  auth.currentUser.email ===
-  "comercial.courvanlicitacoes@gmail.com"
-    ? "admin"
-    : "cliente";
+  const tipoUsuario = window.isCourvanTeamAdmin ? "admin" : "cliente";
 
 const ultimaVisualizacao = Number(
   localStorage.getItem(
@@ -2199,8 +2204,7 @@ function iniciarMovimentacoesLicitacao(id) {
         const isMe =
           m.autor ===
           (
-            auth.currentUser.email ===
-            "comercial.courvanlicitacoes@gmail.com"
+            window.isCourvanTeamAdmin
               ? "admin"
               : "cliente"
           );
@@ -2286,9 +2290,7 @@ window.enviarMovimentacaoLicitacao = async function(id) {
 
   if (!input.value.trim()) return;
 
-  const isAdmin =
-    auth.currentUser.email ===
-    "comercial.courvanlicitacoes@gmail.com";
+  const isAdmin = window.isCourvanTeamAdmin;
 
   await addDoc(
     collection(
@@ -2323,8 +2325,8 @@ window.enviarComentario = async (id) => {
   const input = document.getElementById(`input-comentario-${id}`);
   if(!input.value) return;
   await addDoc(collection(db, "demandas", id, "comentarios"), {
-    texto: input.value, nome: auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "Equipe Courvan" : document.getElementById("nome").innerText,
-    empresa: auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com" ? "Courvan" : document.getElementById("empresa").innerText, data: serverTimestamp()
+    texto: input.value, nome: window.isCourvanTeamAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
+    empresa: window.isCourvanTeamAdmin ? "Courvan" : document.getElementById("empresa").innerText, data: serverTimestamp()
   });
   input.value = "";
 };
@@ -2368,9 +2370,10 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
   const div = document.getElementById("mensagens");
   if (!div || !ultimoSnapMensagens) return;
   
-  div.innerHTML = "";
   const emailUsuarioLogado = auth.currentUser ? auth.currentUser.email.toLowerCase() : "";
-  const isAdmin = emailUsuarioLogado === "comercial.courvanlicitacoes@gmail.com";
+  const isAdmin = window.isCourvanTeamAdmin;
+  
+  let htmlAcumulado = "";
   
   ultimoSnapMensagens.forEach(docSnap => {
     const mensagemId = docSnap.id;
@@ -2416,15 +2419,15 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
       if (isImg) {
         htmlAnexo = `
           <div style="margin-top:8px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); max-width:260px;">
-            <img src="${m.anexoUrl}" style="max-width:100%; height:auto; display:block; cursor:pointer;" onclick="window.open('${m.anexoUrl}')" title="Clique para ampliar">
+            <img src="${m.anexoUrl}" style="max-width:100%; height:auto; display:block; cursor:pointer;" onclick="window.abrirAnexoMensagem('${mensagemId}')" title="Clique para ampliar">
           </div>
         `;
       } else {
         htmlAnexo = `
           <div style="margin-top:8px;">
-            <a href="${m.anexoUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); color:#e5b85c; padding:10px 14px; border-radius:12px; font-size:13px; text-decoration:none; border:1px solid rgba(255,255,255,0.05); font-weight:500;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+            <button onclick="window.abrirAnexoMensagem('${mensagemId}')" style="cursor:pointer; display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); color:#e5b85c; padding:10px 14px; border-radius:12px; font-size:13px; text-decoration:none; border:1px solid rgba(255,255,255,0.05); font-weight:500;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
               Anexo: 📄 ${escapeHTML(m.anexoNome || 'Abrir anexo')}
-            </a>
+            </button>
           </div>
         `;
       }
@@ -2477,7 +2480,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
       htmlBadgeDestinatario = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 1.5px solid rgba(16, 185, 129, 0.25); text-transform: uppercase; margin-bottom: 4px; display: inline-block;">🔒 Privado</span>`;
     }
 
-    div.innerHTML += `
+    htmlAcumulado += `
       <div style="text-align:${isMe ? 'right' : 'left'}; margin-bottom:12px;">
         <div style="
           display:inline-block;
@@ -2556,6 +2559,8 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
       </div>
     `;
   });
+  
+  div.innerHTML = htmlAcumulado;
 
   // Rola suavemente apenas se o usuário estiver próximo ao fundo ou forçar
   window.scrollChatToBottom(forcarScroll);
@@ -2651,8 +2656,8 @@ window.atualizarSelectDestinatarios = function() {
     }
   });
   
-  // Se o usuário logado for o admin principal da Courvan
-  if (emailLogado === "comercial.courvanlicitacoes@gmail.com") {
+  // Se o usuário logado for da equipe Courvan
+  if (window.isCourvanTeamAdmin) {
     // Adiciona e-mail principal como opção também
     const emailPrincipal = dadosClienteGlobal?.email?.toLowerCase();
     if (emailPrincipal && emailPrincipal !== emailLogado) {
@@ -2750,7 +2755,7 @@ window.enviarMensagem = async () => {
         "service_p5ln9fw",
         "template_2qckj0y",
         {
-          nome: document.getElementById("nome").innerText,
+          nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
           mensagem: file ? "Enviou um anexo no chat" : "Nova mensagem no chat Courvan",
           to_email: isAdmin ? emailClienteGlobal : "comercial.courvanlicitacoes@gmail.com"
         }
@@ -2976,9 +2981,9 @@ window.renderizarDocumentos = function() {
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 14px;">
-          <a href="${d.link}" target="_blank" class="doc-tab-btn" style="margin: 0; padding: 10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; font-weight: 700; border: none; display: flex; align-items: center; gap: 6px; text-decoration: none;">
+          <button onclick="window.abrirAnexoDocumento('${d.id}')" class="doc-tab-btn" style="margin: 0; padding: 10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; font-weight: 700; border: none; display: flex; align-items: center; gap: 6px; text-decoration: none; cursor: pointer;">
             ${d.categoria === "gdrive" ? "🔗 Acessar Link" : "📥 Baixar / Abrir"}
-          </a>
+          </button>
           <button class="doc-tab-btn" style="background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}', '${d.arquivo || ""}')">
             🗑 Excluir
           </button>
@@ -3048,6 +3053,67 @@ window.lerArquivoComoBase64 = (file) => {
     reader.onerror = error => reject(error);
     reader.readAsDataURL(file);
   });
+};
+
+window.abrirArquivoBase64 = (base64OrLink, nomeOriginal, categoria) => {
+  if (!base64OrLink) return;
+  if (categoria === "gdrive" || !base64OrLink.startsWith("data:")) {
+    window.open(base64OrLink, "_blank");
+    return;
+  }
+  try {
+    const parts = base64OrLink.split(";base64,");
+    const mimeType = parts[0].split(":")[1] || "application/octet-stream";
+    const base64Data = parts[1];
+    
+    const sliceSize = 1024;
+    const byteCharacters = atob(base64Data);
+    const bytesLength = byteCharacters.length;
+    const slicesCount = Math.ceil(bytesLength / sliceSize);
+    const byteArrays = new Array(slicesCount);
+
+    for (let sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+      const begin = sliceIndex * sliceSize;
+      const end = Math.min(begin + sliceSize, bytesLength);
+
+      const bytes = new Array(end - begin);
+      for (let offset = begin, i = 0; offset < end; ++i, ++offset) {
+        bytes[i] = byteCharacters.charCodeAt(offset);
+      }
+      byteArrays[sliceIndex] = new Uint8Array(bytes);
+    }
+
+    const blob = new Blob(byteArrays, { type: mimeType });
+    const blobUrl = URL.createObjectURL(blob);
+    
+    const newWindow = window.open();
+    if (newWindow) {
+      newWindow.location.href = blobUrl;
+    } else {
+      window.open(blobUrl, "_blank");
+    }
+  } catch (err) {
+    console.error("Erro ao converter base64 para blob:", err);
+    // Fallback: tentar download
+    const linkElement = document.createElement("a");
+    linkElement.href = base64OrLink;
+    linkElement.download = nomeOriginal || "arquivo";
+    document.body.appendChild(linkElement);
+    linkElement.click();
+    document.body.removeChild(linkElement);
+  }
+};
+
+window.abrirAnexoMensagem = (mensagemId) => {
+  const m = mensagensCarregadas[mensagemId];
+  if (!m || !m.anexoUrl) return;
+  window.abrirArquivoBase64(m.anexoUrl, m.anexoNome || "anexo");
+};
+
+window.abrirAnexoDocumento = (id) => {
+  const d = documentosGlobais.find(doc => doc.id === id);
+  if (!d) return;
+  window.abrirArquivoBase64(d.link, d.nome, d.categoria);
 };
 
 window.adicionarDocumento = async () => {
