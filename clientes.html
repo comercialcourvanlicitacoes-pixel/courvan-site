@@ -860,6 +860,59 @@ function obterFotoPerfil(foto, nome) {
   return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
 }
 
+function obterStatusHtml(statusOnline, ultimoAcesso) {
+  if (!ultimoAcesso) {
+    return `
+      <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:#64748b; margin-top:2px;">
+        <span style="width:8px; height:8px; border-radius:50%; background:#64748b; display:inline-block;"></span>
+        <span>Nunca acessou</span>
+      </div>
+    `;
+  }
+
+  const dataAcesso = new Date(ultimoAcesso);
+  const agora = new Date();
+  const diferencaSegundos = Math.floor((agora - dataAcesso) / 1000);
+
+  // Se statusOnline === "online" e o último acesso foi há menos de 75 segundos, está online
+  const estaOnline = statusOnline === "online" && diferencaSegundos < 75;
+
+  // Formata data amigável
+  const dia = String(dataAcesso.getDate()).padStart(2, '0');
+  const mes = String(dataAcesso.getMonth() + 1).padStart(2, '0');
+  const hora = String(dataAcesso.getHours()).padStart(2, '0');
+  const minuto = String(dataAcesso.getMinutes()).padStart(2, '0');
+  const dataFormatada = `${dia}/${mes}/${dataAcesso.getFullYear()} às ${hora}:${minuto}`;
+
+  if (estaOnline) {
+    return `
+      <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:#10b981; font-weight:600; margin-top:2px;">
+        <span style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 8px #10b981;"></span>
+        <span>Online</span>
+      </div>
+    `;
+  } else {
+    let descAcesso = "";
+    if (diferencaSegundos < 60) {
+      descAcesso = "Ativo há poucos segundos";
+    } else if (diferencaSegundos < 3600) {
+      const min = Math.floor(diferencaSegundos / 60);
+      descAcesso = `Ativo há ${min} min`;
+    } else if (diferencaSegundos < 86400) {
+      descAcesso = `Último acesso hoje às ${hora}:${minuto}`;
+    } else {
+      descAcesso = `Último acesso: ${dataFormatada}`;
+    }
+
+    return `
+      <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:#94a3b8; margin-top:2px;">
+        <span style="width:8px; height:8px; border-radius:50%; background:#475569; display:inline-block;"></span>
+        <span>${descAcesso}</span>
+      </div>
+    `;
+  }
+}
+
 function iniciarListenerClientes(){
   if (unsubscribeClientes) unsubscribeClientes();
 
@@ -882,35 +935,29 @@ function iniciarListenerClientes(){
           empresasAgrupadas[empresaChave] = {
             empresa: empresaNome,
             idPrincipal: id,
-            responsavel: data.nome || "Sem nome",
-            emailPrincipal: data.email || "-",
-            status: data.status || "ATIVO",
-            bio: data.bio || "",
-            fotoPerfil: data.fotoPerfil || "",
             idsDocumentos: [id],
-            emailsAutorizados: [],
-            usuariosMulti: [],
-            dadosOriginais: data
+            usuariosGrupo: [],
+            usuariosMulti: []
           };
         } else {
           empresasAgrupadas[empresaChave].idsDocumentos.push(id);
         }
 
         const emp = empresasAgrupadas[empresaChave];
-        
-        // Consolida emails autorizados
-        const emailPrincipal = (data.email || "").toLowerCase().trim();
-        if (emailPrincipal && !emp.emailsAutorizados.includes(emailPrincipal)) {
-          emp.emailsAutorizados.push(emailPrincipal);
-        }
-        (data.emailsAutorizados || []).forEach(e => {
-          const eLower = e.toLowerCase().trim();
-          if (eLower && !emp.emailsAutorizados.includes(eLower)) {
-            emp.emailsAutorizados.push(eLower);
-          }
+
+        // Adiciona à lista de usuários principais registrados na empresa
+        emp.usuariosGrupo.push({
+          id: id,
+          nome: data.nome || "Sem nome",
+          email: data.email || "-",
+          bio: data.bio || "",
+          fotoPerfil: data.fotoPerfil || "",
+          statusOnline: data.statusOnline || "offline",
+          ultimoAcesso: data.ultimoAcesso || null,
+          status: data.status || "ATIVO"
         });
 
-        // Consolida usuariosMulti
+        // Consolida colaboradores cadastrados via usuariosMulti
         (data.usuariosMulti || []).forEach(u => {
           const uEmail = (u.email || "").toLowerCase().trim();
           if (uEmail && !emp.usuariosMulti.some(um => um.email.toLowerCase().trim() === uEmail)) {
@@ -918,89 +965,89 @@ function iniciarListenerClientes(){
               nome: u.nome || uEmail.split('@')[0],
               email: uEmail,
               bio: u.bio || "",
-              fotoPerfil: u.fotoPerfil || ""
+              fotoPerfil: u.fotoPerfil || "",
+              statusOnline: u.statusOnline || "offline",
+              ultimoAcesso: u.ultimoAcesso || null
             });
           }
         });
-
-        // Se o documento atual não for o principal, adiciona o responsável secundário aos colaboradores
-        const emailAtual = (data.email || "").toLowerCase().trim();
-        if (id !== emp.idPrincipal && emailAtual) {
-          if (!emp.usuariosMulti.some(um => um.email.toLowerCase().trim() === emailAtual)) {
-            emp.usuariosMulti.push({
-              nome: data.nome || emailAtual.split('@')[0],
-              email: emailAtual,
-              bio: data.bio || "",
-              fotoPerfil: data.fotoPerfil || ""
-            });
-          }
-        }
       });
 
-      // Agora renderiza cada empresa agrupada
+      // Agora renderiza cada empresa agrupada com seus usuários cadastrados
       Object.keys(empresasAgrupadas).forEach(chave => {
         const emp = empresasAgrupadas[chave];
-        const nome = emp.responsavel;
         const empresa = emp.empresa;
-        const email = emp.emailPrincipal;
-        const status = emp.status;
-        const bio = emp.bio;
-        const fotoPerfil = emp.fotoPerfil;
-        const usuariosMulti = emp.usuariosMulti;
-        
-        const nomeLower = nome.toLowerCase();
         const empresaLower = empresa.toLowerCase();
 
-        const fotoUrlFinal = obterFotoPerfil(fotoPerfil, nome);
-
-        let htmlColaboradores = "";
-        if (usuariosMulti.length > 0) {
-          htmlColaboradores = `
-            <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; margin-bottom: 12px;">
-              <span style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Colaboradores Ativos (${usuariosMulti.length})</span>
-              <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
-          `;
-          usuariosMulti.forEach((colab, i) => {
-            const colabNome = colab.nome || "Colaborador";
-            const colabFoto = colab.fotoPerfil || "";
-            const colabFotoUrl = obterFotoPerfil(colabFoto, colabNome);
-            htmlColaboradores += `
-              <img src="${colabFotoUrl}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #0d233f; margin-left: ${i > 0 ? '-8px' : '0'}; background: #0c1524;" title="${colabNome} (${colab.email})">
-            `;
-          });
-          htmlColaboradores += `
-              </div>
-            </div>
-          `;
-        }
-
         clientesDiv.innerHTML += `
-          <div class="card cardCliente" data-nome="${nomeLower} ${empresaLower}" style="padding: 24px;">
+          <div class="card cardCliente" data-nome="${empresaLower}" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
+              <!-- Cabeçalho do Card com Nome da Empresa -->
               <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px;">
-                <img src="${fotoUrlFinal}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #e5b85c; background: #0c1524; flex-shrink: 0;">
+                <div style="background: rgba(229, 184, 92, 0.1); color: #e5b85c; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; border: 1px solid rgba(229, 184, 92, 0.15); flex-shrink: 0;">
+                  🏢
+                </div>
                 <div style="overflow: hidden; flex: 1;">
-                  <h2 style="margin: 0 0 2px 0; font-size: 17px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nome}</h2>
-                  <div style="font-size: 12px; color: #64748b; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${bio ? `"${bio}"` : "Sem biografia cadastrada."}</div>
+                  <h2 style="margin: 0 0 2px 0; font-size: 18px; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${empresa}</h2>
+                  <div style="font-size: 11px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Empresa Parceira</div>
                 </div>
               </div>
-              <div class="card-info-group" style="margin-bottom: 16px;">
-                <p style="margin-bottom: 8px; padding-bottom: 6px;"><strong>Empresa</strong> <span>${empresa}</span></p>
-                <p style="margin-bottom: 8px; padding-bottom: 6px;"><strong>Email Principal</strong> <span>${email}</span></p>
-                <p style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;"><strong>Status</strong> <span style="color: #10b981; text-transform: uppercase; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">${status}</span></p>
+
+              <!-- Lista de Usuários e E-mails Associados -->
+              <div style="margin-bottom: 16px;">
+                <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 12px;">Usuários Disponíveis (${emp.usuariosGrupo.length + emp.usuariosMulti.length})</span>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <!-- Usuários Registrados (Contas Principais) -->
+                  ${emp.usuariosGrupo.map(user => {
+                    const fotoUrl = obterFotoPerfil(user.fotoPerfil, user.nome);
+                    const statusHtml = obterStatusHtml(user.statusOnline, user.ultimoAcesso);
+                    return `
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 12px; gap: 8px;">
+                        <div style="display: flex; gap: 10px; align-items: center; overflow: hidden; flex: 1;">
+                          <img src="${fotoUrl}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid #e5b85c; background: #0c1524; flex-shrink:0;">
+                          <div style="overflow: hidden; flex: 1;">
+                            <div style="font-size: 13px; font-weight: 600; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.nome} <span style="font-size: 10px; color: #e5b85c; font-weight: 500;">(Titular)</span></div>
+                            <div style="font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.email}</div>
+                            ${statusHtml}
+                          </div>
+                        </div>
+                        <button class="doc-tab-btn" onclick="abrirCliente('${user.id}')" style="padding: 6px 12px; font-size: 11px; font-weight: 600; background: rgba(229, 184, 92, 0.1); color: #e5b85c; border: 1px solid rgba(229,184,92,0.15);">
+                          Acessar
+                        </button>
+                      </div>
+                    `;
+                  }).join('')}
+
+                  <!-- Colaboradores (Sub-contas) -->
+                  ${emp.usuariosMulti.map(colab => {
+                    const fotoUrl = obterFotoPerfil(colab.fotoPerfil, colab.nome);
+                    const statusHtml = obterStatusHtml(colab.statusOnline, colab.ultimoAcesso);
+                    return `
+                      <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.02); padding: 10px 12px; border-radius: 12px; gap: 8px;">
+                        <div style="display: flex; gap: 10px; align-items: center; overflow: hidden; flex: 1;">
+                          <img src="${fotoUrl}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); background: #0c1524; flex-shrink:0;">
+                          <div style="overflow: hidden; flex: 1;">
+                            <div style="font-size: 13px; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${colab.nome} <span style="font-size: 10px; color: #94a3b8; font-weight: 500;">(Colab)</span></div>
+                            <div style="font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${colab.email}</div>
+                            ${statusHtml}
+                          </div>
+                        </div>
+                        <button class="doc-tab-btn" onclick="abrirCliente('${emp.idPrincipal}')" style="padding: 6px 12px; font-size: 11px; font-weight: 600; background: rgba(255, 255, 255, 0.03); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.05);">
+                          Acessar
+                        </button>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
               </div>
-              ${htmlColaboradores}
             </div>
 
-            <div>
-              <button class="btn-abrir" onclick="abrirCliente('${emp.idPrincipal}')">
-                Abrir Painel da Empresa
-              </button>
+            <div style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 16px;">
               <button
                 onclick="excluirEmpresa('${emp.idPrincipal}', '${emp.idsDocumentos.join(',')}', '${empresa}')"
                 style="
                   width: 100%;
-                  margin-top: 10px;
                   background: rgba(239, 68, 68, 0.06);
                   color: #ef4444;
                   border: 1px solid rgba(239, 68, 68, 0.15);
@@ -1010,6 +1057,10 @@ function iniciarListenerClientes(){
                   font-weight: 600;
                   cursor: pointer;
                   transition: all 0.2s ease;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 8px;
                 "
                 onmouseover="this.style.background='#ef4444'; this.style.color='white'"
                 onmouseout="this.style.background='rgba(239, 68, 68, 0.06)'; this.style.color='#ef4444'"
