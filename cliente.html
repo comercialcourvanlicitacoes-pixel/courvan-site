@@ -871,7 +871,12 @@
     </div>
 
     <div id="chat" class="aba" style="display:none;">
-      <h1>Chat</h1>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; flex-wrap: wrap; gap: 12px;">
+        <h1 style="margin: 0;">Chat</h1>
+        <button id="btnNotificacaoSininhoChat" onclick="window.togglePreferenciaNotificacao()" style="display: flex; align-items: center; gap: 8px; background: rgba(229, 184, 92, 0.08); border: 1.5px solid rgba(229, 184, 92, 0.2); color: #e5b85c; padding: 10px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" title="Configurar Notificações de E-mail">
+          <span id="sininhoIconChat">🔔</span> <span id="sininhoTextoChat">E-mail: Ativado</span>
+        </button>
+      </div>
 
       <!-- Filtros Rápidos de Canais/Conversas -->
       <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; overflow-x: auto;">
@@ -971,6 +976,25 @@
         <button class="botaoPadrao" onclick="window.salvarPerfilPessoal()">Salvar Meu Perfil</button>
       </div>
 
+      <!-- PREFERÊNCIA DE NOTIFICAÇÕES -->
+      <div class="info-box" style="margin-bottom:25px; background: linear-gradient(135deg, rgba(12, 39, 72, 0.3) 0%, rgba(6, 11, 19, 0.3) 100%); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 24px;">
+        <h2 style="margin-bottom:15px;color:#e5b85c; font-size: 18px; font-family: 'Plus Jakarta Sans', sans-serif !important; display: flex; align-items: center; gap: 8px;">
+          <span>🔔</span> Notificações do Sistema
+        </h2>
+        <p style="font-size: 14px; opacity: 0.8; margin-bottom: 20px; line-height: 1.5;">Configure se deseja receber alertas por e-mail quando novas mensagens forem enviadas no chat.</p>
+        
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 16px 20px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.04); flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span id="sininhoIconConfig" style="font-size: 24px;">🔔</span>
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #ffffff;">Notificações por E-mail</div>
+              <div id="sininhoDescConfig" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Você receberá e-mails de novas mensagens do chat.</div>
+            </div>
+          </div>
+          <button class="botaoPadrao" id="btnToggleConfigNotif" onclick="window.togglePreferenciaNotificacao()" style="width: auto; margin-bottom: 0; padding: 10px 18px; font-size: 13px;">Desativar</button>
+        </div>
+      </div>
+
       <!-- DADOS DA EMPRESA -->
       <div class="info-box" style="border-radius: 20px; padding: 24px;">
         <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px; font-family: 'Plus Jakarta Sans', sans-serif !important;">🏢 Dados da Empresa</h2>
@@ -1020,7 +1044,7 @@
   
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc
+  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut, updateEmail, createUserWithEmailAndPassword
@@ -1376,6 +1400,27 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   const emailLogado = user.email.toLowerCase();
+  
+  // Sincronizar equipe Courvan em tempo real para obter nomes e fotos no chat
+  window.equipeMap = {};
+  onSnapshot(collection(db, "courvan_team"), (snapshot) => {
+    snapshot.forEach(docItem => {
+      const d = docItem.data();
+      window.equipeMap[docItem.id.toLowerCase()] = {
+        nome: d.nome || "Membro da Equipe",
+        fotoPerfil: d.fotoPerfil || ""
+      };
+    });
+    if (typeof window.renderizarMensagensDoChat === "function") {
+      window.renderizarMensagensDoChat();
+    }
+  });
+
+  // Inicializar preferência de notificações por e-mail do usuário logado
+  if (typeof window.inicializarPreferenciaNotificacao === "function") {
+    window.inicializarPreferenciaNotificacao(emailLogado);
+  }
+
   let isCourvanTeam = (emailLogado === "comercial.courvanlicitacoes@gmail.com");
   if (!isCourvanTeam) {
     try {
@@ -2480,8 +2525,14 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
       htmlBadgeDestinatario = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 1.5px solid rgba(16, 185, 129, 0.25); text-transform: uppercase; margin-bottom: 4px; display: inline-block;">🔒 Privado</span>`;
     }
 
+    const infoRemetente = window.obterInformacoesDoRemetente(m.remetenteEmail || remetente, m.autor);
+
     htmlAcumulado += `
-      <div style="text-align:${isMe ? 'right' : 'left'}; margin-bottom:12px;">
+      <div style="display: flex; gap: 12px; justify-content: ${isMe ? 'flex-end' : 'flex-start'}; align-items: flex-end; margin-bottom: 16px;">
+        ${!isMe ? `
+          <img src="${infoRemetente.foto}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.08); background: #0c1524; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);" title="${escapeHTML(infoRemetente.nome)}">
+        ` : ""}
+        
         <div style="
           display:inline-block;
           background:${isMe ? 'linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%)' : 'rgba(255,255,255,0.04)'};
@@ -2489,7 +2540,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
           padding:12px 16px;
           border-radius:16px;
           border-bottom-${isMe ? 'right' : 'left'}-radius:4px;
-          max-width:75%;
+          max-width:70%;
           overflow:hidden;
           text-align:left;
           box-shadow:0 4px 10px rgba(0,0,0,0.05);
@@ -2497,7 +2548,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
         ">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
             <div style="font-size:11px; opacity:0.7; font-weight:600; margin-bottom:4px;">
-              ${escapeHTML(m.nome)}
+              ${escapeHTML(infoRemetente.nome)}
             </div>
             ${htmlBadgeDestinatario}
           </div>
@@ -2533,10 +2584,10 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
           ${htmlAnexo}
 
           <div style="display:flex; align-items:center; gap:10px; margin-top:6px; flex-wrap:wrap;">
-            <button onclick="window.responderMensagemClick('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px;">
+            <button onclick="window.responderMensagemClick('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
               ↩ Responder
             </button>
-            <button onclick="window.toggleReactionPicker('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px;">
+            <button onclick="window.toggleReactionPicker('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
               😀 Reagir
             </button>
           </div>
@@ -2544,7 +2595,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
           <!-- Reaction Picker Popover -->
           <div id="reactionPicker-${mensagemId}" style="display:none; background:rgba(13, 25, 44, 0.95); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:6px; margin-top:8px; gap:6px; flex-wrap:wrap; width:fit-content; box-shadow:0 4px 10px rgba(0,0,0,0.3); z-index:10;">
             ${["👍", "❤️", "😂", "😮", "😢", "🙏", "🎉", "🔥"].map(emoji => `
-              <button onclick="window.reagirMensagem('${mensagemId}', '${emoji}')" style="background:none; border:none; font-size:16px; cursor:pointer; padding:4px; border-radius:6px; transition:0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='none'">
+              <button onclick="window.reagirMensagem('${mensagemId}', '${emoji}')" style="background:none; border:none; font-size:18px; cursor:pointer; padding:4px; border-radius:6px; transition:all 0.15s; display:inline-flex; align-items:center; justify-content:center;" onmouseover="this.style.background='rgba(255,255,255,0.08)'; this.style.transform='scale(1.2)'" onmouseout="this.style.background='none'; this.style.transform='none'">
                 ${emoji}
               </button>
             `).join("")}
@@ -2556,6 +2607,10 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
             ${dataFormatada}
           </div>
         </div>
+
+        ${isMe ? `
+          <img src="${infoRemetente.foto}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #e5b85c; background: #0c1524; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2);" title="${escapeHTML(infoRemetente.nome)}">
+        ` : ""}
       </div>
     `;
   });
@@ -2751,17 +2806,30 @@ window.enviarMensagem = async () => {
     );
 
     try {
-      await emailjs.send(
-        "service_p5ln9fw",
-        "template_2qckj0y",
-        {
-          nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
-          mensagem: file ? "Enviou um anexo no chat" : "Nova mensagem no chat Courvan",
-          to_email: isAdmin ? emailClienteGlobal : "comercial.courvanlicitacoes@gmail.com"
-        }
-      );
+      const destinatarioEmail = isAdmin ? emailClienteGlobal.toLowerCase().trim() : "comercial.courvanlicitacoes@gmail.com";
+      
+      // Busca a preferência de notificação do destinatário em tempo real
+      const prefDoc = await getDoc(doc(db, "configuracoes_notificacoes", destinatarioEmail));
+      let enviarEmail = true;
+      if (prefDoc.exists()) {
+        enviarEmail = prefDoc.data().emailHabilitado !== false;
+      }
+      
+      if (enviarEmail) {
+        await emailjs.send(
+          "service_p5ln9fw",
+          "template_2qckj0y",
+          {
+            nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
+            mensagem: file ? "Enviou um anexo no chat" : "Nova mensagem no chat Courvan",
+            to_email: destinatarioEmail
+          }
+        );
+      } else {
+        console.log("Notificação por e-mail ignorada por preferência do usuário:", destinatarioEmail);
+      }
     } catch (e) {
-      console.log(e);
+      console.log("Erro ao verificar preferências ou enviar e-mail:", e);
     }
 
     cancelarResposta();
@@ -3102,6 +3170,127 @@ window.abrirArquivoBase64 = (base64OrLink, nomeOriginal, categoria) => {
     linkElement.click();
     document.body.removeChild(linkElement);
   }
+};
+
+let emailHabilitadoGlobal = true;
+let emailLogadoUser = "";
+
+window.inicializarPreferenciaNotificacao = function(email) {
+  if (!email) return;
+  emailLogadoUser = email.toLowerCase().trim();
+  
+  onSnapshot(doc(db, "configuracoes_notificacoes", emailLogadoUser), (docSnap) => {
+    if (docSnap.exists()) {
+      emailHabilitadoGlobal = docSnap.data().emailHabilitado !== false;
+    } else {
+      emailHabilitadoGlobal = true;
+    }
+    window.atualizarInterfaceSininho();
+  });
+};
+
+window.atualizarInterfaceSininho = function() {
+  // Atualiza botões no cabeçalho do chat
+  const sininhoIconChat = document.getElementById("sininhoIconChat");
+  const sininhoTextoChat = document.getElementById("sininhoTextoChat");
+  if (sininhoIconChat) sininhoIconChat.innerText = emailHabilitadoGlobal ? "🔔" : "🔕";
+  if (sininhoTextoChat) sininhoTextoChat.innerText = emailHabilitadoGlobal ? "E-mail: Ativado" : "E-mail: Desativado";
+  
+  const btnChat = document.getElementById("btnNotificacaoSininhoChat");
+  if (btnChat) {
+    if (emailHabilitadoGlobal) {
+      btnChat.style.background = "rgba(229, 184, 92, 0.08)";
+      btnChat.style.borderColor = "rgba(229, 184, 92, 0.2)";
+      btnChat.style.color = "#e5b85c";
+    } else {
+      btnChat.style.background = "rgba(239, 68, 68, 0.06)";
+      btnChat.style.borderColor = "rgba(239, 68, 68, 0.15)";
+      btnChat.style.color = "#ef4444";
+    }
+  }
+
+  // Atualiza cartão de notificações na aba de configurações
+  const sininhoIconConfig = document.getElementById("sininhoIconConfig");
+  const sininhoDescConfig = document.getElementById("sininhoDescConfig");
+  const btnToggleConfig = document.getElementById("btnToggleConfigNotif");
+  if (sininhoIconConfig) sininhoIconConfig.innerText = emailHabilitadoGlobal ? "🔔" : "🔕";
+  if (sininhoDescConfig) {
+    sininhoDescConfig.innerText = emailHabilitadoGlobal 
+      ? "Você receberá e-mails de novas mensagens do chat." 
+      : "As notificações de e-mail estão desativadas.";
+  }
+  if (btnToggleConfig) {
+    btnToggleConfig.innerText = emailHabilitadoGlobal ? "Desativar" : "Ativar";
+    if (emailHabilitadoGlobal) {
+      btnToggleConfig.style.background = "rgba(239, 68, 68, 0.1)";
+      btnToggleConfig.style.color = "#ef4444";
+      btnToggleConfig.style.border = "1px solid rgba(239, 68, 68, 0.15)";
+      btnToggleConfig.style.boxShadow = "none";
+    } else {
+      btnToggleConfig.style.background = "linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%)";
+      btnToggleConfig.style.color = "#06101e";
+      btnToggleConfig.style.border = "none";
+      btnToggleConfig.style.boxShadow = "0 4px 15px rgba(216, 168, 78, 0.2)";
+    }
+  }
+};
+
+window.togglePreferenciaNotificacao = async function() {
+  if (!emailLogadoUser) return;
+  const novoEstado = !emailHabilitadoGlobal;
+  try {
+    await setDoc(doc(db, "configuracoes_notificacoes", emailLogadoUser), {
+      emailHabilitado: novoEstado
+    }, { merge: true });
+  } catch (err) {
+    console.error("Erro ao salvar preferência de notificação:", err);
+  }
+};
+
+window.obterInformacoesDoRemetente = function(remetenteEmail, autor) {
+  const emailLower = (remetenteEmail || "").toLowerCase().trim();
+  
+  // 1. Cliente principal
+  if (dadosClienteGlobal && dadosClienteGlobal.email && dadosClienteGlobal.email.toLowerCase() === emailLower) {
+    return {
+      nome: dadosClienteGlobal.nome || "Cliente Principal",
+      foto: obterFotoPerfil(dadosClienteGlobal.fotoPerfil, dadosClienteGlobal.nome || "Cliente")
+    };
+  }
+  
+  // 2. Colaborador do cliente
+  if (dadosClienteGlobal && dadosClienteGlobal.usuariosMulti) {
+    const colab = dadosClienteGlobal.usuariosMulti.find(u => u.email.toLowerCase() === emailLower);
+    if (colab) {
+      return {
+        nome: colab.nome || "Colaborador",
+        foto: obterFotoPerfil(colab.fotoPerfil, colab.nome || "Colaborador")
+      };
+    }
+  }
+  
+  // 3. Equipe Courvan
+  if (window.equipeMap && window.equipeMap[emailLower]) {
+    const mem = window.equipeMap[emailLower];
+    return {
+      nome: mem.nome || "Equipe Courvan",
+      foto: obterFotoPerfil(mem.fotoPerfil, mem.nome || "Equipe")
+    };
+  }
+  
+  // 4. Admin comercial principal
+  if (emailLower === "comercial.courvanlicitacoes@gmail.com") {
+    return {
+      nome: "Courvan Licitações",
+      foto: obterFotoPerfil("", "Courvan Licitações")
+    };
+  }
+  
+  // 5. Fallback
+  return {
+    nome: autor === "admin" ? "Equipe Courvan" : "Usuário",
+    foto: obterFotoPerfil("", autor === "admin" ? "Equipe" : "Usuário")
+  };
 };
 
 window.abrirAnexoMensagem = (mensagemId) => {
