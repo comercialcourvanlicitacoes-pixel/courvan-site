@@ -107,6 +107,7 @@
     }
 
     .sidebar button {
+      position: relative;
       padding: 14px 18px;
       border: 1px solid transparent;
       border-radius: 14px;
@@ -180,17 +181,19 @@
       /* Quando a sidebar está colapsada (não hovered) */
       .sidebar:not(:hover) .notificacao-badge {
         position: absolute;
-        top: 8px;
-        left: 32px;
+        top: 4px;
+        right: 4px;
+        left: auto;
         margin-left: 0;
-        min-width: 18px;
-        height: 18px;
-        font-size: 10px;
-        padding: 0 4px;
-        box-shadow: 0 0 0 2px #050811;
+        min-width: 16px;
+        height: 16px;
+        font-size: 9px;
+        padding: 0 3px;
+        box-shadow: 0 0 0 2px #02040a;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        z-index: 10;
       }
     }
     
@@ -583,6 +586,21 @@
     </button>
 
     <div style="margin-top:auto; padding-top: 20px;">
+      <!-- Gestor Courvan Presence Tracker -->
+      <div id="gestorPresencaSidebar" class="sidebar-profile-info" style="padding: 12px; background: rgba(229,184,92,0.05); border: 1px solid rgba(229,184,92,0.1); border-radius: 12px; margin-bottom: 12px; display: none;">
+        <div style="font-size: 10px; color: #e5b85c; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Gestor Courvan</div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="position: relative; flex-shrink: 0;">
+            <img id="fotoGestorSidebar" src="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #e5b85c; background: #0c1524;">
+            <div id="dotGestorSidebar" style="position: absolute; bottom: -2px; right: -2px; width: 8px; height: 8px; background: #64748b; border-radius: 50%; border: 1px solid #060b13;"></div>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <span id="nomeGestorSidebar" style="font-size: 12px; font-weight: 600; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;">Suporte</span>
+            <span id="statusGestorSidebar" style="font-size: 9px; color: #94a3b8;">Offline</span>
+          </div>
+        </div>
+      </div>
+
       <button
         onclick="logout()"
         style="
@@ -860,7 +878,12 @@
             <div><span style="color: #64748b; font-weight: 500;">Empresa:</span> <span id="empresa" style="color: #e2e8f0; font-weight: 600;"></span></div>
             <div><span style="color: #64748b; font-weight: 500;">E-mail:</span> <span id="email" style="color: #e2e8f0; font-weight: 600;"></span></div>
             <div><span style="color: #64748b; font-weight: 500;">Status:</span> <span id="status" style="color: #10b981; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">ATIVO</span></div>
+            <div><span style="color: #64748b; font-weight: 500;">Atividade:</span> <span id="statusAtividadeUsuario" style="font-weight: 600; color: #cbd5e1;">Carregando...</span></div>
           </div>
+        </div>
+        <div id="containerLogoEmpresaHeader" style="margin-left: auto; display: none; flex-direction: column; align-items: center; gap: 6px; border-left: 1px solid rgba(255,255,255,0.08); padding-left: 24px; min-width: 120px;">
+          <img id="logoEmpresaHeader" src="" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 2px solid rgba(229,184,92,0.3); background: #0c1524;">
+          <span style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Logo da Empresa</span>
         </div>
       </div>
 
@@ -1187,6 +1210,22 @@
       <!-- DADOS DA EMPRESA -->
       <div class="info-box" style="border-radius: 20px; padding: 24px;">
         <h2 style="margin-bottom:20px;color:#e5b85c; font-size: 18px; font-family: 'Plus Jakarta Sans', sans-serif !important;">🏢 Dados da Empresa</h2>
+        
+        <!-- Logotipo da Empresa Uploader -->
+        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.01); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03);">
+          <div style="position: relative; flex-shrink: 0;">
+            <img id="previewLogoEmpresa" src="" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 2px solid rgba(229,184,92,0.3); background: #0c1524;">
+            <label for="uploadLogoInput" style="position: absolute; bottom: -6px; right: -6px; background: #e5b85c; color: #060b13; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #060b13; box-shadow: 0 4px 8px rgba(0,0,0,0.25); font-size: 11px; font-weight: bold; transition: 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='none'">
+              📷
+            </label>
+            <input type="file" id="uploadLogoInput" style="display:none;" accept="image/*" onchange="window.processarUploadLogo(this)">
+          </div>
+          <div>
+            <div style="font-weight: 600; font-size: 14px; color: #ffffff; margin-bottom: 4px;">Logotipo da Empresa</div>
+            <div style="font-size: 12px; color: #94a3b8; line-height: 1.4;">Faça o upload do logo em formato quadrado para exibição personalizada no cabeçalho do painel.</div>
+          </div>
+        </div>
+
         <input id="configEmpresa" class="inputPadrao" placeholder="Empresa" style="margin-bottom:12px;">
         <input id="configEmail" type="email" class="inputPadrao" placeholder="E-mail Principal" style="margin-bottom:12px;">
         <input id="configTelefone" class="inputPadrao" placeholder="Telefone" style="margin-bottom:12px;">
@@ -1318,6 +1357,72 @@ function obterFotoPerfil(foto, nome) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:${cor1};stop-opacity:1" /><stop offset="100%" style="stop-color:${cor2};stop-opacity:1" /></linearGradient></defs><circle cx="50" cy="50" r="50" fill="url(#grad)"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="40" fill="white">${inicial}</text></svg>`;
   return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
 }
+
+// RECURSO SONORO VIA WEB AUDIO API (SINTETIZADOR NATIVO DE ALTO PADRÃO)
+window.tocarSomNotificacao = function(tipo) {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const agora = audioCtx.currentTime;
+
+    if (tipo === "chat") {
+      // Som suave duplo de mensagem de chat: nota sol seguida por nota do (frequências 392Hz e 523Hz)
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = "sine";
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.frequency.setValueAtTime(392, agora); // Sol
+      gain.gain.setValueAtTime(0, agora);
+      gain.gain.linearRampToValueAtTime(0.15, agora + 0.05);
+      gain.gain.linearRampToValueAtTime(0, agora + 0.15);
+      
+      osc.frequency.setValueAtTime(523, agora + 0.15); // Do
+      gain.gain.linearRampToValueAtTime(0.15, agora + 0.2);
+      gain.gain.linearRampToValueAtTime(0, agora + 0.35);
+      
+      osc.start(agora);
+      osc.stop(agora + 0.4);
+    } else if (tipo === "licitacao" || tipo === "novo") {
+      // Som futurista ascendente brilhante para nova licitação
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = "triangle";
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.frequency.setValueAtTime(440, agora); // La
+      osc.frequency.exponentialRampToValueAtTime(880, agora + 0.3); // La agudo
+      
+      gain.gain.setValueAtTime(0, agora);
+      gain.gain.linearRampToValueAtTime(0.2, agora + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, agora + 0.3);
+      
+      osc.start(agora);
+      osc.stop(agora + 0.35);
+    } else {
+      // Som discreto para atualização geral / documentos
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = "sine";
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.frequency.setValueAtTime(587, agora); // Re
+      gain.gain.setValueAtTime(0, agora);
+      gain.gain.linearRampToValueAtTime(0.1, agora + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, agora + 0.2);
+      
+      osc.start(agora);
+      osc.stop(agora + 0.25);
+    }
+  } catch (e) {
+    console.warn("Web Audio API bloqueada ou indisponível:", e);
+  }
+};
 
 // OTIMIZAR E REDIMENSIONAR IMAGEM PARA BASE64 LEVE
 window.otimizarESalvarFoto = function(file) {
@@ -1845,16 +1950,29 @@ onAuthStateChanged(auth, async (user) => {
 
   // Sincronização de status online, offline e último acesso
   window.atualizarStatusAtividadeUsuario = async function(status) {
-    if (window.isCourvanTeamAdmin) return; // Não atualiza status para administradores
-
     try {
       const emailLogadoLower = emailLogado.toLowerCase().trim();
+      const nowIso = new Date().toISOString();
+
+      if (window.isCourvanTeamAdmin) {
+        // Se for administrador da Courvan, atualiza seu status na coleção "courvan_team"
+        const adminRef = doc(db, "courvan_team", emailLogadoLower);
+        const adminSnap = await getDoc(adminRef);
+        if (adminSnap.exists()) {
+          await updateDoc(adminRef, {
+            statusOnline: status,
+            ultimoAcesso: nowIso
+          });
+        }
+        return;
+      }
+
+      // Se for usuário cliente comum
       const cliRef = doc(db, "clientes", clienteIdGlobal);
       const snap = await getDoc(cliRef);
       if (!snap.exists()) return;
 
       const data = snap.data();
-      const nowIso = new Date().toISOString();
 
       // Se for o e-mail principal da conta
       if ((data.email || "").toLowerCase().trim() === emailLogadoLower) {
