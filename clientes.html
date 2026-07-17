@@ -274,8 +274,10 @@
     <h1 style="margin-bottom:30px;">Clientes</h1>
 
     <input
-      type="text"
+      type="search"
       id="pesquisaCliente"
+      name="pesquisaCliente"
+      autocomplete="off"
       placeholder="Pesquisar cliente por nome..."
       onkeyup="filtrarClientes()"
       style="
@@ -649,7 +651,7 @@ function iniciarListenerEquipe() {
 
 /* 🔥 LISTA EM TEMPO REAL INJETANDO ESTRUTURA PREMIUM */
 function obterFotoPerfil(foto, nome) {
-  if (foto && foto.startsWith("data:image")) {
+  if (foto && foto.startsWith("data:image") && !foto.includes("<img") && !foto.includes("style=") && !foto.includes("<span") && !foto.includes("<div")) {
     if (foto.includes("<svg") && !foto.includes(";base64,")) {
       try {
         let svgPart = foto;
