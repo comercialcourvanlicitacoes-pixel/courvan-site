@@ -178,6 +178,12 @@ import {
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
   authDomain: "courvan-sistema.firebaseapp.com",
@@ -190,6 +196,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 /* LOGIN */
 window.login = async function(){
@@ -215,13 +222,24 @@ window.login = async function(){
 
     const user = cred.user;
 
-    /* 🔥 ADMIN */
-    if(user.email === "comercial.courvanlicitacoes@gmail.com"){
-      window.location.href = "clientes.html";
+    /* 🔥 VERIFICA SE É ADMIN OU EQUIPE COURVAN */
+    let isAdmin = false;
+    if (user.email.toLowerCase() === "comercial.courvanlicitacoes@gmail.com") {
+      isAdmin = true;
+    } else {
+      try {
+        const teamDoc = await getDoc(doc(db, "courvan_team", user.email.toLowerCase()));
+        if (teamDoc.exists()) {
+          isAdmin = true;
+        }
+      } catch (e) {
+        console.error("Erro ao verificar equipe admin:", e);
+      }
     }
 
-    /* 🔥 CLIENTE */
-    else{
+    if (isAdmin) {
+      window.location.href = "clientes.html";
+    } else {
       window.location.href = "cliente.html";
     }
 
