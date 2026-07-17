@@ -65,11 +65,11 @@
       min-height: 100vh;
     }
 
-    /* SIDEBAR PREMIUM */
+    /* SIDEBAR PREMIUM (EXPANDÍVEL NO PASSAR DO MOUSE) */
     .sidebar {
-      width: 290px;
+      width: 80px;
       background: linear-gradient(180deg, var(--sidebar-bg) 0%, #02040a 100%);
-      padding: 35px 24px;
+      padding: 35px 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -78,7 +78,18 @@
       top: 0;
       border-right: 1px solid var(--border-color);
       overflow-y: auto;
+      overflow-x: hidden;
       flex-shrink: 0;
+      white-space: nowrap;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 990;
+    }
+
+    @media(min-width: 1025px) {
+      .sidebar:hover {
+        width: 280px;
+        padding: 35px 24px;
+      }
     }
 
     .sidebar h2 {
@@ -126,6 +137,63 @@
       border-color: rgba(229, 184, 92, 0.2);
       font-weight: 600;
       box-shadow: inset 0 0 12px rgba(229, 184, 92, 0.05);
+    }
+
+    /* Ocultar labels no estado colapsado */
+    .sidebar-icon {
+      font-size: 18px;
+      width: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar .sidebar-label {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .sidebar .sidebar-profile-info {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .sidebar .notificacao-badge {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      margin-left: auto;
+    }
+
+    @media(min-width: 1025px) {
+      .sidebar:hover .sidebar-label,
+      .sidebar:hover .sidebar-profile-info,
+      .sidebar:hover .notificacao-badge {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+    
+    @media(max-width: 1024px) {
+      .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        padding: 20px !important;
+      }
+      .sidebar .sidebar-label,
+      .sidebar .sidebar-profile-info,
+      .sidebar .notificacao-badge {
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
     }
 
     /* CONTEÚDO PRINCIPAL COM BACKDROP RADIAL DE ALTO PADRÃO */
@@ -446,38 +514,60 @@
         <img id="fotoSidebar" src="" style="width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid #e5b85c; box-shadow: 0 4px 12px rgba(0,0,0,0.25); background: #0c1524;">
         <div id="statusDot" style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background: #10b981; border-radius: 50%; border: 2px solid #060b13; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
       </div>
-      <div style="overflow: hidden; flex: 1;">
+      <div class="sidebar-profile-info">
         <h2 id="nomeCliente" style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700; color: #f1f5f9; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-width: 130px; font-family: 'Plus Jakarta Sans', sans-serif !important;">Cliente</h2>
         <div id="empresaCliente" style="font-size: 11px; color: #94a3b8; font-weight: 500; opacity: 0.9; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-width: 130px;">Empresa</div>
       </div>
     </div>
 
-    <button onclick="mostrarAba('dashboard')">📊 Dashboard</button>
-    <button onclick="mostrarAba('radar')">📡 Radar Multi-Cliente</button>
+    <button onclick="mostrarAba('dashboard')">
+      <span class="sidebar-icon">📊</span>
+      <span class="sidebar-label">Dashboard</span>
+    </button>
+    
+    <button onclick="mostrarAba('radar')">
+      <span class="sidebar-icon">📡</span>
+      <span class="sidebar-label">Radar Multi-Cliente</span>
+    </button>
 
     <button onclick="mostrarAba('demandas')">
-      📑 Demandas
+      <span class="sidebar-icon">✍️</span>
+      <span class="sidebar-label">Demandas</span>
       <span class="notificacao-badge" id="badge-demandas">0</span>
     </button>
 
     <button onclick="mostrarAba('documentos')">
-      📁 Documentos
+      <span class="sidebar-icon">📂</span>
+      <span class="sidebar-label">Documentos</span>
       <span class="notificacao-badge" id="badge-documentos">0</span>
     </button>
 
     <button onclick="mostrarAba('chat')">
-      💬 Chat
+      <span class="sidebar-icon">💬</span>
+      <span class="sidebar-label">Chat</span>
       <span class="notificacao-badge" id="badge-chat">0</span>
     </button>
 
     <button onclick="mostrarAba('licitacoes')">
-      🏛 Minhas Licitações
+      <span class="sidebar-icon">🏛️</span>
+      <span class="sidebar-label">Minhas Licitações</span>
       <span class="notificacao-badge" id="badge-licitacoes">0</span>
     </button>
     
-    <button onclick="window.location.href='agenda.html'">📅 Agenda</button>
-    <button onclick="mostrarAba('geradores')">📄 Gerador de Docs</button>
-    <button onclick="mostrarAba('config')">⚙ Configurações</button>
+    <button onclick="window.location.href='agenda.html'">
+      <span class="sidebar-icon">📅</span>
+      <span class="sidebar-label">Agenda</span>
+    </button>
+    
+    <button onclick="mostrarAba('geradores')">
+      <span class="sidebar-icon">📄</span>
+      <span class="sidebar-label">Gerador de Docs</span>
+    </button>
+    
+    <button onclick="mostrarAba('config')">
+      <span class="sidebar-icon">⚙️</span>
+      <span class="sidebar-label">Configurações</span>
+    </button>
 
     <div style="margin-top:auto; padding-top: 20px;">
       <button
@@ -487,11 +577,15 @@
           color: #f87171;
           width:100%;
           border: 1px solid rgba(239, 68, 68, 0.2);
+          display: flex;
+          align-items: center;
+          gap: 14px;
         "
         onmouseover="this.style.background='#ef4444'; this.style.color='white'; this.style.transform='none';"
         onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'; this.style.color='#f87171'"
       >
-        🚪 Sair do Sistema
+        <span class="sidebar-icon">🚪</span>
+        <span class="sidebar-label">Sair do Sistema</span>
       </button>
     </div>
   </div>
@@ -849,8 +943,17 @@
 
       <!-- FORMULÁRIO DE CADASTRO EXPANDÍVEL -->
       <div id="formDocumentos" style="display:none; flex-direction: column; gap:16px; margin-bottom:30px; background: rgba(13, 25, 44, 0.35); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.04);">
-        <h3 style="color: #e5b85c; font-size: 16px; margin-bottom: 5px;">Novo Documento ou Link do Google Drive</h3>
+        <h3 style="color: #e5b85c; font-size: 16px; margin-bottom: 5px;">Novo Documento ou Subpasta</h3>
         
+        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 5px;">
+          <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; color: #f3f4f6; cursor: pointer;">
+            <input type="radio" name="tipoItemDoc" value="arquivo" checked onchange="window.onChangeTipoItemDoc()" style="accent-color: #e5b85c;"> 📄 Novo Arquivo / Link
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; color: #f3f4f6; cursor: pointer;">
+            <input type="radio" name="tipoItemDoc" value="pasta" onchange="window.onChangeTipoItemDoc()" style="accent-color: #e5b85c;"> 📁 Criar Subpasta
+          </label>
+        </div>
+
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
           <div>
             <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">CATEGORIA</label>
@@ -1167,23 +1270,27 @@ let emailClienteGlobal = "";
 let dadosClienteGlobal = null;
 let filtroCanalAtivo = "tudo";
 let ultimoSnapMensagens = null;
+let pastaAtivaId = null;
 
 // HELPER PARA FOTO DE PERFIL GERADA DINAMICAMENTE
 function obterFotoPerfil(foto, nome) {
-  if (foto && foto.startsWith("data:image") && !foto.includes("<img") && !foto.includes("style=") && !foto.includes("<span") && !foto.includes("<div")) {
-    if (foto.includes("<svg") && !foto.includes(";base64,")) {
-      try {
-        let svgPart = foto;
-        if (foto.includes(",")) {
-          svgPart = foto.substring(foto.indexOf(",") + 1);
+  if (foto && typeof foto === "string" && foto.trim() !== "") {
+    const fotoTrim = foto.trim();
+    if (!fotoTrim.includes("<img") && !fotoTrim.includes("style=") && !fotoTrim.includes("<span") && !fotoTrim.includes("<div")) {
+      if (fotoTrim.includes("<svg") && !fotoTrim.includes(";base64,")) {
+        try {
+          let svgPart = fotoTrim;
+          if (fotoTrim.includes(",")) {
+            svgPart = fotoTrim.substring(fotoTrim.indexOf(",") + 1);
+          }
+          svgPart = decodeURIComponent(svgPart);
+          return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgPart)));
+        } catch (e) {
+          console.error("Erro ao converter SVG:", e);
         }
-        svgPart = decodeURIComponent(svgPart);
-        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgPart)));
-      } catch (e) {
-        console.error("Erro ao converter SVG:", e);
       }
+      return fotoTrim;
     }
-    return foto;
   }
   const inicial = nome ? nome.trim().charAt(0).toUpperCase() : "C";
   const cores = [
@@ -2609,7 +2716,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
       htmlBadgeDestinatario = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 1.5px solid rgba(16, 185, 129, 0.25); text-transform: uppercase; margin-bottom: 4px; display: inline-block;">🔒 Privado</span>`;
     }
 
-    const infoRemetente = window.obterInformacoesDoRemetente(m.remetenteEmail || remetente, m.autor);
+    const infoRemetente = window.obterInformacoesDoRemetente(m.remetenteEmail || remetente, m.autor, m.nome);
 
     htmlAcumulado += `
       <div style="display: flex; gap: 12px; justify-content: ${isMe ? 'flex-end' : 'flex-start'}; align-items: flex-end; margin-bottom: 16px;">
@@ -2973,23 +3080,28 @@ window.onChangeCategoriaDoc = function() {
   }
 };
 
-window.filtrarSubDoc = function(canal) {
-  subDocFiltroAtivo = canal;
-  document.querySelectorAll("#abasSubDocumentos button").forEach(btn => {
-    btn.classList.remove("active");
-  });
-  const selectedBtn = document.getElementById(`subDocTab-${canal}`);
-  if (selectedBtn) selectedBtn.classList.add("active");
-
-  const painelPrazos = document.getElementById("painelPrazos");
-  if (painelPrazos) {
-    if (canal === "prazos") {
-      painelPrazos.style.display = "block";
-    } else {
-      painelPrazos.style.display = "none";
-    }
+window.onChangeTipoItemDoc = function() {
+  const radio = document.querySelector('input[name="tipoItemDoc"]:checked');
+  const tipo = radio ? radio.value : "arquivo";
+  const isPasta = (tipo === "pasta");
+  
+  const campoVencimento = document.getElementById("vencimentoDocumento")?.parentElement;
+  const campoStatus = document.getElementById("statusDocumento")?.parentElement;
+  const wrapperFonte = document.getElementById("wrapperFonteDocumento");
+  const inputNome = document.getElementById("nomeDocumento");
+  const labelNome = inputNome ? inputNome.previousElementSibling : null;
+  
+  if (campoVencimento) campoVencimento.style.display = isPasta ? "none" : "block";
+  if (campoStatus) campoStatus.style.display = isPasta ? "none" : "block";
+  if (wrapperFonte) wrapperFonte.style.display = isPasta ? "none" : "block";
+  
+  if (labelNome) {
+    labelNome.innerText = isPasta ? "NOME DA SUBPASTA" : "NOME DO DOCUMENTO / ATALHO";
   }
+};
 
+window.navegarParaPasta = function(pastaId) {
+  pastaAtivaId = pastaId;
   window.renderizarDocumentos();
 };
 
@@ -3005,12 +3117,12 @@ window.renderizarDocumentos = function() {
   let vencendo = 0;
   let validos = 0;
 
-  // Filtragem e Cálculo dos KPIs
-  const filtrados = documentosGlobais.filter(d => {
-    let statusPrazo = "valido"; // valido, vencendo, expirado
+  // Compute KPIs and pre-process documents
+  documentosGlobais.forEach(d => {
+    let statusPrazo = "valido";
     let diasRestantes = null;
 
-    if (d.vencimento) {
+    if (d.vencimento && d.tipoObjeto !== "pasta") {
       const parts = d.vencimento.split("-");
       const vencData = new Date(parts[0], parts[1] - 1, parts[2]);
       vencData.setHours(0,0,0,0);
@@ -3028,20 +3140,25 @@ window.renderizarDocumentos = function() {
         statusPrazo = "valido";
         validos++;
       }
-    } else {
+    } else if (d.tipoObjeto !== "pasta") {
       validos++;
     }
 
-    // Attach computed properties to d temporarily
     d.statusPrazo = statusPrazo;
     d.diasRestantes = diasRestantes;
+  });
 
-    // Apply filter
-    if (subDocFiltroAtivo === "todos") return true;
+  // Filter list based on subDocFiltroAtivo and pastaAtivaId
+  const filtrados = documentosGlobais.filter(d => {
     if (subDocFiltroAtivo === "prazos") {
-      // Show only documents with vencimento
-      return !!d.vencimento;
+      return !!d.vencimento && d.tipoObjeto !== "pasta";
     }
+
+    // Must match current subfolder
+    const matchPasta = (d.pastaPaiId === pastaAtivaId);
+    if (!matchPasta) return false;
+
+    if (subDocFiltroAtivo === "todos") return true;
     return d.categoria === subDocFiltroAtivo;
   });
 
@@ -3054,10 +3171,45 @@ window.renderizarDocumentos = function() {
   if (kpiVencendo) kpiVencendo.innerText = vencendo;
   if (kpiValidos) kpiValidos.innerText = validos;
 
+  // Render Breadcrumb Navigation
+  if (subDocFiltroAtivo !== "prazos") {
+    const caminho = [];
+    let atualId = pastaAtivaId;
+    while (atualId) {
+      const pastaObj = documentosGlobais.find(x => x.id === atualId);
+      if (pastaObj) {
+        caminho.unshift(pastaObj);
+        atualId = pastaObj.pastaPaiId;
+      } else {
+        break;
+      }
+    }
+
+    let htmlBreadcrumb = `
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; padding: 12px 18px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); font-size: 13px; color: #94a3b8;">
+        <span onclick="window.navegarParaPasta(null)" style="cursor: pointer; display: flex; align-items: center; gap: 6px; color: #e5b85c; font-weight: 600;" onmouseover="this.style.color='#fcd34d'" onmouseout="this.style.color='#e5b85c'">
+          📂 Início
+        </span>
+    `;
+
+    caminho.forEach((segmento, idx) => {
+      const isUltimo = (idx === caminho.length - 1);
+      htmlBreadcrumb += `
+        <span style="color: rgba(255,255,255,0.15); font-size: 11px;">▶</span>
+        <span onclick="${isUltimo ? '' : `window.navegarParaPasta('${segmento.id}')`}" style="${isUltimo ? 'color: #ffffff; font-weight: 700;' : 'cursor: pointer; color: #e5b85c;'}" ${isUltimo ? '' : `onmouseover="this.style.color='#fcd34d'" onmouseout="this.style.color='#e5b85c'"`}>
+          ${escapeHTML(segmento.nome)}
+        </span>
+      `;
+    });
+
+    htmlBreadcrumb += `</div>`;
+    div.innerHTML += htmlBreadcrumb;
+  }
+
   if (filtrados.length === 0) {
-    div.innerHTML = `
+    div.innerHTML += `
       <div style="text-align: center; padding: 40px; color: #64748b; font-style: italic; background: rgba(255,255,255,0.01); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.06);">
-        Nenhum documento encontrado nesta categoria.
+        Nenhum item encontrado nesta pasta.
       </div>
     `;
     return;
@@ -3065,78 +3217,149 @@ window.renderizarDocumentos = function() {
 
   // Generate cards
   filtrados.forEach(d => {
-    let badgePrazoHTML = "";
-    if (d.vencimento) {
-      if (d.statusPrazo === "expirado") {
-        badgePrazoHTML = `
-          <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(239, 68, 68, 0.25);">
-            🚨 Expirado (${Math.abs(d.diasRestantes)}d atrás)
-          </span>
-        `;
-      } else if (d.statusPrazo === "vencendo") {
-        badgePrazoHTML = `
-          <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(245, 158, 11, 0.25);">
-            ⚠️ Vence em ${d.diasRestantes} dias
-          </span>
-        `;
-      } else {
-        badgePrazoHTML = `
-          <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(16, 185, 129, 0.25);">
-            🟢 Válido (${d.diasRestantes}d restantes)
-          </span>
-        `;
-      }
-    }
-
-    // Tradução de categoria
-    const categoriasMapa = {
-      certidoes: "📜 Controle de Certidões",
-      contratos: "✍️ Contratos & Aditivos",
-      editais: "📢 Editais & Propostas",
-      habilitacao: "💼 Habilitação Jurídica & Fiscal",
-      gdrive: "🔗 Google Drive",
-      outros: "📁 Outros Documentos"
-    };
-
-    const catTexto = categoriasMapa[d.categoria] || "📁 Documento";
-
-    // Ícone por tipo de arquivo
-    let fileIcon = "📄";
-    if (d.categoria === "gdrive") {
-      fileIcon = "🔗";
-    } else if (d.tipo && d.tipo.includes("pdf")) {
-      fileIcon = "📕";
-    } else if (d.tipo && d.tipo.includes("image")) {
-      fileIcon = "🖼️";
-    }
-
-    // Data de upload formatada
-    const uploadData = d.data?.seconds ? new Date(d.data.seconds * 1000).toLocaleDateString("pt-BR") : "";
-
-    div.innerHTML += `
-      <div style="background: linear-gradient(145deg, rgba(13, 25, 44, 0.45) 0%, rgba(5, 11, 19, 0.45) 100%); padding:24px; border-radius:20px; margin-bottom:16px; border: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
-          <div style="display: flex; gap: 14px; align-items: center;">
-            <div style="font-size: 28px; background: rgba(255,255,255,0.03); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05);">${fileIcon}</div>
-            <div>
-              <h3 style="color:#ffffff; font-size: 16px; font-weight: 700; margin: 0;">${escapeHTML(d.nome)}</h3>
-              <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
-                <span style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">${catTexto}</span>
-                ${uploadData ? `<span style="font-size: 11px; color: #475569;">• Upload em ${uploadData}</span>` : ""}
+    if (d.tipoObjeto === "pasta") {
+      div.innerHTML += `
+        <div style="background: linear-gradient(145deg, rgba(229, 184, 92, 0.03) 0%, rgba(5, 11, 19, 0.45) 100%); padding:20px; border-radius:20px; margin-bottom:16px; border: 1px solid rgba(229, 184, 92, 0.15); display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(229, 184, 92, 0.3)'" onmouseout="this.style.borderColor='rgba(229, 184, 92, 0.15)'">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; gap: 14px; align-items: center; cursor: pointer; flex: 1;" onclick="window.navegarParaPasta('${d.id}')">
+              <div style="font-size: 28px; background: rgba(229, 184, 92, 0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(229, 184, 92, 0.2); color: #e5b85c;">📁</div>
+              <div>
+                <h3 style="color:#ffffff; font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+                  ${escapeHTML(d.nome)}
+                </h3>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-top: 2px;">Pasta de Arquivos</div>
               </div>
             </div>
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            ${badgePrazoHTML}
-            ${d.statusDocumento ? `<span style="background: rgba(255,255,255,0.04); color: #cbd5e1; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; border: 1px solid rgba(255,255,255,0.06);">${escapeHTML(d.statusDocumento)}</span>` : ""}
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button onclick="window.navegarParaPasta('${d.id}')" class="doc-tab-btn" style="margin:0; padding: 8px 16px; background: rgba(229, 184, 92, 0.15); color: #e5b85c; font-weight: 700; border: 1px solid rgba(229, 184, 92, 0.25);">
+                📂 Abrir Pasta
+              </button>
+              <button class="doc-tab-btn" style="margin:0; padding: 8px 16px; background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}')">
+                🗑 Excluir
+              </button>
+            </div>
           </div>
         </div>
+      `;
+    } else {
+      let badgePrazoHTML = "";
+      if (d.vencimento) {
+        if (d.statusPrazo === "expirado") {
+          badgePrazoHTML = `
+            <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(239, 68, 68, 0.25);">
+              🚨 Expirado (${Math.abs(d.diasRestantes)}d atrás)
+            </span>
+          `;
+        } else if (d.statusPrazo === "vencendo") {
+          badgePrazoHTML = `
+            <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(245, 158, 11, 0.25);">
+              ⚠️ Vence em ${d.diasRestantes} dias
+            </span>
+          `;
+        } else {
+          badgePrazoHTML = `
+            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(16, 185, 129, 0.25);">
+              🟢 Válido (${d.diasRestantes}d restantes)
+            </span>
+          `;
+        }
+      }
 
-        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 14px;">
-          <button onclick="window.abrirAnexoDocumento('${d.id}')" class="doc-tab-btn" style="margin: 0; padding: 10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; font-weight: 700; border: none; display: flex; align-items: center; gap: 6px; text-decoration: none; cursor: pointer;">
-            ${d.categoria === "gdrive" ? "🔗 Acessar Link" : "📥 Baixar / Abrir"}
-          </button>
-          <button class="doc-tab-btn" style="background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}', '${d.arquivo || ""}')">
+      const categoriasMapa = {
+        certidoes: "📜 Controle de Certidões",
+        contratos: "✍️ Contratos & Aditivos",
+        editais: "📢 Editais & Propostas",
+        habilitacao: "💼 Habilitação Jurídica & Fiscal",
+        gdrive: "🔗 Google Drive",
+        outros: "📁 Outros Documentos"
+      };
+
+      const catTexto = categoriasMapa[d.categoria] || "📁 Documento";
+
+      let fileIcon = "📄";
+      if (d.categoria === "gdrive") {
+        fileIcon = "🔗";
+      } else if (d.tipo && d.tipo.includes("pdf")) {
+        fileIcon = "📕";
+      } else if (d.tipo && d.tipo.includes("image")) {
+        fileIcon = "🖼️";
+      }
+
+      const uploadData = d.data?.seconds ? new Date(d.data.seconds * 1000).toLocaleDateString("pt-BR") : "";
+
+      div.innerHTML += `
+        <div style="background: linear-gradient(145deg, rgba(13, 25, 44, 0.45) 0%, rgba(5, 11, 19, 0.45) 100%); padding:24px; border-radius:20px; margin-bottom:16px; border: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; gap: 14px; align-items: center;">
+              <div style="font-size: 28px; background: rgba(255,255,255,0.03); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05);">${fileIcon}</div>
+              <div>
+                <h3 style="color:#ffffff; font-size: 16px; font-weight: 700; margin: 0;">${escapeHTML(d.nome)}</h3>
+                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+                  <span style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">${catTexto}</span>
+                  ${uploadData ? `<span style="font-size: 11px; color: #475569;">• Upload em ${uploadData}</span>` : ""}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              ${badgePrazoHTML}
+              ${d.statusDocumento ? `<span style="background: rgba(255,255,255,0.04); color: #cbd5e1; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; border: 1px solid rgba(255,255,255,0.06);">${escapeHTML(d.statusDocumento)}</span>` : ""}
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 14px;">
+            <button onclick="window.abrirAnexoDocumento('${d.id}')" class="doc-tab-btn" style="margin: 0; padding: 10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; font-weight: 700; border: none; display: flex; align-items: center; gap: 6px; text-decoration: none; cursor: pointer;">
+              ${d.categoria === "gdrive" ? "🔗 Acessar Link" : "📥 Baixar / Abrir"}
+            </button>
+            <button class="doc-tab-btn" style="background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}', '${d.arquivo || ""}')">
+              🗑 Excluir
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  });
+};
+
+window.excluirDocumento = async (id, caminhoArquivo) => {
+  if (!confirm("Tem certeza que deseja excluir este item? Se for uma subpasta, os itens e subpastas dentro dela também serão excluídos.")) return;
+
+  try {
+    // Check and recursively delete all children items if this is a folder
+    const deletarRecursivo = async (parentFolderId) => {
+      const filhos = documentosGlobais.filter(d => d.pastaPaiId === parentFolderId);
+      for (const f of filhos) {
+        if (f.tipoObjeto === "pasta") {
+          await deletarRecursivo(f.id);
+        } else if (f.arquivo) {
+          try {
+            await supabase.storage.from("documentos-clientes").remove([f.arquivo]);
+          } catch(storageErr) {
+            console.error("Erro ao deletar arquivo do storage:", storageErr);
+          }
+        }
+        await deleteDoc(doc(db, "documentos", f.id));
+      }
+    };
+
+    // Trigger recursive delete of children
+    await deletarRecursivo(id);
+
+    // Deleta o próprio item do Firestore
+    await deleteDoc(doc(db, "documentos", id));
+
+    // Se for arquivo físico direto e tiver arquivo no Supabase Storage, deleta de lá
+    if (caminhoArquivo) {
+      await supabase.storage
+        .from("documentos-clientes")
+        .remove([caminhoArquivo]);
+    }
+
+    alert("Excluído com sucesso.");
+  } catch (error) {
+    console.error("Erro ao excluir item:", error);
+    alert("Erro ao excluir: " + error.message);
+  }
+};id rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}', '${d.arquivo || ""}')">
             🗑 Excluir
           </button>
         </div>
@@ -3331,24 +3554,24 @@ window.togglePreferenciaNotificacao = async function() {
   }
 };
 
-window.obterInformacoesDoRemetente = function(remetenteEmail, autor) {
+window.obterInformacoesDoRemetente = function(remetenteEmail, autor, nomeSalvo) {
   const emailLower = (remetenteEmail || "").toLowerCase().trim();
   
   // 1. Cliente principal
-  if (dadosClienteGlobal && dadosClienteGlobal.email && dadosClienteGlobal.email.toLowerCase() === emailLower) {
+  if (dadosClienteGlobal && dadosClienteGlobal.email && dadosClienteGlobal.email.toLowerCase().trim() === emailLower) {
     return {
-      nome: dadosClienteGlobal.nome || "Cliente Principal",
-      foto: obterFotoPerfil(dadosClienteGlobal.fotoPerfil, dadosClienteGlobal.nome || "Cliente")
+      nome: dadosClienteGlobal.nome || nomeSalvo || "Cliente Principal",
+      foto: obterFotoPerfil(dadosClienteGlobal.fotoPerfil, dadosClienteGlobal.nome || nomeSalvo || "Cliente")
     };
   }
   
   // 2. Colaborador do cliente
   if (dadosClienteGlobal && dadosClienteGlobal.usuariosMulti) {
-    const colab = dadosClienteGlobal.usuariosMulti.find(u => u.email.toLowerCase() === emailLower);
+    const colab = dadosClienteGlobal.usuariosMulti.find(u => u.email.toLowerCase().trim() === emailLower);
     if (colab) {
       return {
-        nome: colab.nome || "Colaborador",
-        foto: obterFotoPerfil(colab.fotoPerfil, colab.nome || "Colaborador")
+        nome: colab.nome || nomeSalvo || "Colaborador",
+        foto: obterFotoPerfil(colab.fotoPerfil, colab.nome || nomeSalvo || "Colaborador")
       };
     }
   }
@@ -3357,8 +3580,8 @@ window.obterInformacoesDoRemetente = function(remetenteEmail, autor) {
   if (window.equipeMap && window.equipeMap[emailLower]) {
     const mem = window.equipeMap[emailLower];
     return {
-      nome: mem.nome || "Equipe Courvan",
-      foto: obterFotoPerfil(mem.fotoPerfil, mem.nome || "Equipe")
+      nome: mem.nome || nomeSalvo || "Equipe Courvan",
+      foto: obterFotoPerfil(mem.fotoPerfil, mem.nome || nomeSalvo || "Equipe")
     };
   }
   
@@ -3370,10 +3593,11 @@ window.obterInformacoesDoRemetente = function(remetenteEmail, autor) {
     };
   }
   
-  // 5. Fallback
+  // 5. Fallback using saved name from message!
+  const nomeExibicao = nomeSalvo || (autor === "admin" ? "Equipe Courvan" : "Usuário");
   return {
-    nome: autor === "admin" ? "Equipe Courvan" : "Usuário",
-    foto: obterFotoPerfil("", autor === "admin" ? "Equipe" : "Usuário")
+    nome: nomeExibicao,
+    foto: obterFotoPerfil("", nomeExibicao)
   };
 };
 
@@ -3390,63 +3614,79 @@ window.abrirAnexoDocumento = (id) => {
 };
 
 window.adicionarDocumento = async () => {
+  const radio = document.querySelector('input[name="tipoItemDoc"]:checked');
+  const tipoItem = radio ? radio.value : "arquivo";
   const nome = document.getElementById("nomeDocumento").value;
   const categoria = document.getElementById("categoriaDocumento").value;
-  const vencimento = document.getElementById("vencimentoDocumento").value;
-  const statusDocumento = document.getElementById("statusDocumento").value;
 
   if (!nome) {
-    alert("Por favor, digite o nome do documento.");
+    alert("Por favor, digite o nome do item.");
     return;
   }
 
-  let linkFinal = "";
-  let caminhoArquivo = null;
-  let tipoArquivo = "link";
-  let tamanhoArquivo = 0;
-
-  if (categoria === "gdrive") {
-    linkFinal = document.getElementById("linkExternoDocumento").value;
-    if (!linkFinal) {
-      alert("Por favor, cole o link do Google Drive.");
-      return;
-    }
-  } else {
-    const arquivo = document.getElementById("arquivoDocumento").files[0];
-    if (!arquivo) {
-      alert("Selecione um arquivo.");
-      return;
-    }
-
-    try {
-      const base64 = await window.lerArquivoComoBase64(arquivo);
-      if (base64.length > 1300000) {
-        alert("O arquivo excede o limite máximo de 1.2MB para persistência direta. Por favor, utilize um link do Google Drive para arquivos maiores ou comprima o arquivo.");
-        return;
-      }
-      linkFinal = base64;
-      caminhoArquivo = ""; // Sem Supabase
-      tipoArquivo = arquivo.type;
-      tamanhoArquivo = arquivo.size;
-    } catch (err) {
-      console.error("Erro ao ler arquivo:", err);
-      alert("Erro ao ler o arquivo selecionado.");
-      return;
-    }
-  }
-
-  await addDoc(collection(db, "documentos"), {
+  let docObj = {
     clienteId: clienteIdGlobal,
     nome,
     categoria,
-    vencimento: vencimento || null,
-    statusDocumento: statusDocumento || null,
-    link: linkFinal,
-    arquivo: caminhoArquivo,
-    tipo: tipoArquivo,
-    tamanho: tamanhoArquivo,
+    tipoObjeto: tipoItem,
+    pastaPaiId: pastaAtivaId || null,
     data: serverTimestamp()
-  });
+  };
+
+  if (tipoItem === "pasta") {
+    docObj.vencimento = null;
+    docObj.statusDocumento = null;
+    docObj.link = "";
+    docObj.arquivo = null;
+    docObj.tipo = "pasta";
+    docObj.tamanho = 0;
+  } else {
+    const vencimento = document.getElementById("vencimentoDocumento").value;
+    const statusDocumento = document.getElementById("statusDocumento").value;
+    let linkFinal = "";
+    let caminhoArquivo = null;
+    let tipoArquivo = "link";
+    let tamanhoArquivo = 0;
+
+    if (categoria === "gdrive") {
+      linkFinal = document.getElementById("linkExternoDocumento").value;
+      if (!linkFinal) {
+        alert("Por favor, cole o link do Google Drive.");
+        return;
+      }
+    } else {
+      const arquivo = document.getElementById("arquivoDocumento").files[0];
+      if (!arquivo) {
+        alert("Selecione um arquivo.");
+        return;
+      }
+
+      try {
+        const base64 = await window.lerArquivoComoBase64(arquivo);
+        if (base64.length > 1300000) {
+          alert("O arquivo excede o limite máximo de 1.2MB para persistência direta. Por favor, utilize um link do Google Drive para arquivos maiores ou comprima o arquivo.");
+          return;
+        }
+        linkFinal = base64;
+        caminhoArquivo = ""; // Sem Supabase
+        tipoArquivo = arquivo.type;
+        tamanhoArquivo = arquivo.size;
+      } catch (err) {
+        console.error("Erro ao ler arquivo:", err);
+        alert("Erro ao ler o arquivo selecionado.");
+        return;
+      }
+    }
+
+    docObj.vencimento = vencimento || null;
+    docObj.statusDocumento = statusDocumento || null;
+    docObj.link = linkFinal;
+    docObj.arquivo = caminhoArquivo;
+    docObj.tipo = tipoArquivo;
+    docObj.tamanho = tamanhoArquivo;
+  }
+
+  await addDoc(collection(db, "documentos"), docObj);
 
   // Limpa campos
   document.getElementById("nomeDocumento").value = "";
@@ -3455,10 +3695,17 @@ window.adicionarDocumento = async () => {
   if (document.getElementById("arquivoDocumento")) document.getElementById("arquivoDocumento").value = "";
   if (document.getElementById("linkExternoDocumento")) document.getElementById("linkExternoDocumento").value = "";
 
+  // Reset radio to file
+  const fileRadio = document.querySelector('input[name="tipoItemDoc"][value="arquivo"]');
+  if (fileRadio) {
+    fileRadio.checked = true;
+    window.onChangeTipoItemDoc();
+  }
+
   // Oculta form
   window.toggleFormDocumento();
 
-  alert("Documento enviado com sucesso.");
+  alert(tipoItem === "pasta" ? "Subpasta criada com sucesso." : "Documento enviado com sucesso.");
 };
 
 window.alterarSenha = async () => {
