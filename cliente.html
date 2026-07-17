@@ -3105,6 +3105,27 @@ window.navegarParaPasta = function(pastaId) {
   window.renderizarDocumentos();
 };
 
+window.filtrarSubDoc = function(canal) {
+  subDocFiltroAtivo = canal;
+  pastaAtivaId = null; // Reset folder hierarchy when switching categories
+  document.querySelectorAll("#abasSubDocumentos button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  const selectedBtn = document.getElementById(`subDocTab-${canal}`);
+  if (selectedBtn) selectedBtn.classList.add("active");
+
+  const painelPrazos = document.getElementById("painelPrazos");
+  if (painelPrazos) {
+    if (canal === "prazos") {
+      painelPrazos.style.display = "block";
+    } else {
+      painelPrazos.style.display = "none";
+    }
+  }
+
+  window.renderizarDocumentos();
+};
+
 window.renderizarDocumentos = function() {
   const div = document.getElementById("listaDocumentos");
   if (!div) return;
@@ -3357,34 +3378,6 @@ window.excluirDocumento = async (id, caminhoArquivo) => {
     alert("Excluído com sucesso.");
   } catch (error) {
     console.error("Erro ao excluir item:", error);
-    alert("Erro ao excluir: " + error.message);
-  }
-};id rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}', '${d.arquivo || ""}')">
-            🗑 Excluir
-          </button>
-        </div>
-      </div>
-    `;
-  });
-};
-
-window.excluirDocumento = async (id, caminhoArquivo) => {
-  if (!confirm("Tem certeza que deseja excluir este documento?")) return;
-
-  try {
-    // Deleta do Firestore
-    await deleteDoc(doc(db, "documentos", id));
-
-    // Se tiver arquivo no Supabase Storage, deleta de lá também!
-    if (caminhoArquivo) {
-      await supabase.storage
-        .from("documentos-clientes")
-        .remove([caminhoArquivo]);
-    }
-
-    alert("Documento excluído com sucesso.");
-  } catch (error) {
-    console.error("Erro ao excluir documento:", error);
     alert("Erro ao excluir: " + error.message);
   }
 };
