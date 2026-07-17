@@ -15,205 +15,280 @@
   rel="stylesheet"
 />
 
-<style>
+  <style>
+    :root {
+      --primary: #e5b85c;
+      --primary-hover: #fcd34d;
+      --primary-glow: rgba(229, 184, 92, 0.15);
+      --dark: #030712;
+      --card-bg: #090e1a;
+      --border-color: rgba(255, 255, 255, 0.04);
+      --font-display: 'Plus Jakarta Sans', sans-serif;
+      --font-sans: 'Inter', sans-serif;
+    }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Inter', sans-serif;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font-sans);
+    }
 
-body{
-  background:#060b13; /* Fundo institucional */
-  color:#f1f5f9;
-  min-height:100vh;
-  padding:40px;
-}
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
 
-h2{
-  text-align:center;
-  color:#e5b85c; /* Dourado Courvan */
-  margin-bottom:30px;
-  font-size: 32px;
-  font-weight: 700;
-}
+    body {
+      background: var(--dark);
+      background-image: radial-gradient(circle at top right, rgba(229, 184, 92, 0.03) 0%, var(--dark) 60%);
+      color: #f3f4f6;
+      min-height: 100vh;
+      padding: 50px 40px;
+    }
 
-/* CALENDÁRIO COM GLASSMORPHISM */
-#calendar-container{
-  width:100%;
-  max-width:1400px;
-  margin:0 auto;
-}
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 30px;
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
 
-#calendar{
-  background: rgba(13, 25, 44, 0.45);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  padding:30px;
-  border-radius:28px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  min-height:78vh;
-}
+    /* CALENDÁRIO COM GLASSMORPHISM AVANÇADO */
+    #calendar-container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-/* FULLCALENDAR CUSTOMIZADO */
-.fc{
-  height:100%;
-}
+    #calendar {
+      background: rgba(9, 14, 26, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 35px;
+      border-radius: 28px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      min-height: 78vh;
+    }
 
-.fc-toolbar-title{
-  color:white;
-  font-size:22px !important;
-  font-weight: 600;
-}
+    /* FULLCALENDAR CUSTOMIZADO */
+    .fc {
+      height: 100%;
+    }
 
-.fc-button{
-  background:#0e1e36 !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  color: #94a3b8 !important;
-  border-radius: 8px !important;
-  text-transform: capitalize;
-}
+    .fc-toolbar-title {
+      color: #ffffff;
+      font-family: var(--font-display) !important;
+      font-size: 24px !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.02em;
+    }
 
-.fc-button-active{
-  background:linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%) !important;
-  color:#060b13 !important;
-  border: none !important;
-  font-weight: 600;
-}
+    .fc-button {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px solid rgba(255, 255, 255, 0.05) !important;
+      color: #94a3b8 !important;
+      border-radius: 12px !important;
+      text-transform: capitalize;
+      font-weight: 600 !important;
+      padding: 10px 18px !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
 
-.fc-daygrid-day{
-  background: rgba(255,255,255,0.02);
-}
+    .fc-button:hover {
+      background: rgba(229, 184, 92, 0.05) !important;
+      color: #fcd34d !important;
+      border-color: rgba(229, 184, 92, 0.2) !important;
+    }
 
-.fc-col-header-cell{
-  background: rgba(255,255,255,0.03);
-  padding: 10px 0;
-}
+    .fc-button-active {
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%) !important;
+      color: #030712 !important;
+      border: none !important;
+      font-weight: 700 !important;
+      box-shadow: 0 4px 12px var(--primary-glow) !important;
+    }
 
-.fc-scrollgrid{
-  border: 1px solid rgba(255,255,255,0.05) !important;
-  border-radius: 12px;
-  overflow: hidden;
-}
+    .fc-daygrid-day {
+      background: rgba(255, 255, 255, 0.01);
+      transition: background 0.15s ease;
+    }
 
-.fc-theme-standard td,
-.fc-theme-standard th{
-  border-color:rgba(255,255,255,0.05) !important;
-}
+    .fc-daygrid-day:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
 
-.fc-event{
-  border:none !important;
-  padding:4px 8px;
-  border-radius:6px;
-  font-size:12px;
-  cursor: pointer;
-}
+    .fc-col-header-cell {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 14px 0 !important;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.04) !important;
+    }
 
-/* DRAWER PREMIUM */
-#drawerOverlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  display:none;
-  z-index:999;
-}
+    .fc-col-header-cell-cushion {
+      color: #94a3b8 !important;
+      font-weight: 600 !important;
+      font-size: 14px;
+    }
 
-#drawer{
-  position:fixed;
-  right:-420px;
-  top:0;
-  width:400px;
-  max-width:100%;
-  height:100%;
-  background: #091322;
-  padding:30px;
-  transition:0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index:1000;
-  overflow-y:auto;
-  border-left: 1px solid rgba(229, 184, 92, 0.2);
-}
+    .fc-scrollgrid {
+      border: 1px solid var(--border-color) !important;
+      border-radius: 20px;
+      overflow: hidden;
+    }
 
-#drawer.open{
-  right:0;
-}
+    .fc-theme-standard td,
+    .fc-theme-standard th {
+      border-color: var(--border-color) !important;
+    }
 
-#drawerOverlay.show{
-  display:block;
-}
+    .fc-event {
+      border: none !important;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s !important;
+    }
 
-.drawer-title{
-  color:#e5b85c;
-  font-size:24px;
-  font-weight: 700;
-  margin-bottom:30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
+    .fc-event:hover {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      filter: brightness(1.1);
+    }
 
-.item{
-  margin-bottom:20px;
-  line-height:1.6;
-  color: #cbd5e1;
-}
+    /* DRAWER PREMIUM */
+    #drawerOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 4, 10, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      z-index: 999;
+      animation: fadeIn 0.3s ease;
+    }
 
-.item strong {
-    color: #94a3b8;
-    display: block;
-    margin-bottom: 4px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+    #drawer {
+      position: fixed;
+      right: -450px;
+      top: 0;
+      width: 440px;
+      max-width: 100%;
+      height: 100%;
+      background: #050811;
+      padding: 40px;
+      transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+      border-left: 1px solid rgba(229, 184, 92, 0.15);
+      box-shadow: -25px 0 50px rgba(0, 0, 0, 0.5);
+    }
 
-.btn-fechar{
-  margin-top:30px;
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
-  color:#060b13;
-  font-weight:700;
-  cursor:pointer;
-  transition: 0.2s;
-}
+    #drawer.open {
+      right: 0;
+    }
 
-.btn-fechar:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-}
+    #drawerOverlay.show {
+      display: block;
+    }
 
-/* MOBILE */
-@media(max-width:768px){
+    .drawer-title {
+      color: var(--primary);
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      letter-spacing: -0.02em;
+    }
 
-  body{
-    padding:10px;
-  }
+    .item {
+      margin-bottom: 24px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      font-size: 14px;
+    }
 
-  #calendar{
-    padding:10px;
-    min-height:85vh;
-  }
+    .item strong {
+      color: #64748b;
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-  .fc-toolbar{
-    flex-direction:column;
-    gap:10px;
-  }
+    .btn-fechar {
+      margin-top: 30px;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
+      color: #030712;
+      font-weight: 700;
+      font-family: var(--font-display);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
 
-  .fc-toolbar-title{
-    font-size:18px !important;
-  }
+    .btn-fechar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(229, 184, 92, 0.35);
+      filter: brightness(1.05);
+    }
 
-  #drawer{
-    width:100%;
-  }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
-}
+    /* MOBILE */
+    @media(max-width:768px) {
+      body {
+        padding: 24px 16px;
+      }
 
-</style>
+      #calendar {
+        padding: 16px;
+        min-height: 85vh;
+        border-radius: 20px;
+      }
+
+      .fc-toolbar {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .fc-toolbar-title {
+        font-size: 18px !important;
+      }
+
+      #drawer {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -736,6 +811,8 @@ async function iniciarCalendario(clienteId){
       const p =
         info.event.extendedProps;
 
+      window.currentActiveEventProps = p;
+
       if (p.tipoEvento === "documento") {
         abrirDrawer(`
           <div class="item">
@@ -769,7 +846,7 @@ async function iniciarCalendario(clienteId){
               p.link
               ? `
                 <button
-                  onclick="window.abrirArquivoBase64(decodeURIComponent('${encodeURIComponent(p.link)}'), decodeURIComponent('${encodeURIComponent(p.nome || 'documento')}'), decodeURIComponent('${encodeURIComponent(p.categoria || '')}'))"
+                  onclick="window.abrirArquivoBase64(window.currentActiveEventProps.link, window.currentActiveEventProps.nome, window.currentActiveEventProps.categoria)"
                   style="
                     color:#e5b85c;
                     background: none;
