@@ -1316,6 +1316,25 @@ function escapeHTML(str) {
 
 emailjs.init("yg2qGBBvZjUbHwU_y");
 
+// Desbloquear áudio em navegadores modernos via primeira interação do usuário
+const desativarInteracaoSom = () => {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      const t = new AudioCtx();
+      if (t.state === "suspended") {
+        t.resume();
+      }
+    }
+  } catch (e) {
+    console.warn("Erro ao iniciar áudio:", e);
+  }
+  window.removeEventListener("click", desativarInteracaoSom);
+  window.removeEventListener("touchstart", desativarInteracaoSom);
+};
+window.addEventListener("click", desativarInteracaoSom);
+window.addEventListener("touchstart", desativarInteracaoSom);
+
 // ESTADO GLOBAL
 let clienteIdGlobal = null;
 let emailClienteGlobal = "";
@@ -2862,6 +2881,31 @@ function iniciarChat() {
   }
 
   onSnapshot(query(collection(db, "chats", clienteIdGlobal, "mensagens"), orderBy("data")), snap => {
+    if (!primeiroCarregamentoChat) {
+      const emailUsuarioLogado = auth.currentUser ? auth.currentUser.email.toLowerCase().trim() : "";
+      const meuTipo = window.isCourvanTeamAdmin ? "admin" : "cliente";
+      snap.docChanges().forEach(change => {
+        if (change.type === "added") {
+          const m = change.doc.data();
+          const remetente = (m.remetenteEmail || "").toLowerCase().trim();
+          const autor = m.autor || "";
+          
+          const destinatario = (m.destinatario || "todos").toLowerCase().trim();
+          let visivel = false;
+          if (destinatario === "todos" || destinatario === "geral" || destinatario === "courvan") {
+            visivel = true;
+          } else if (emailUsuarioLogado === remetente || emailUsuarioLogado === destinatario) {
+            visivel = true;
+          }
+          
+          if (visivel && remetente !== emailUsuarioLogado && autor !== meuTipo) {
+            if (typeof window.tocarSomNotificacao === "function") {
+              window.tocarSomNotificacao("chat");
+            }
+          }
+        }
+      });
+    }
     ultimoSnapMensagens = snap;
     window.renderizarMensagensDoChat(primeiroCarregamentoChat);
     primeiroCarregamentoChat = false;
@@ -3337,6 +3381,9 @@ window.enviarMensagem = async () => {
     }
 
     cancelarResposta();
+    if (typeof window.tocarSomNotificacao === "function") {
+      window.tocarSomNotificacao("chat");
+    }
   } catch (erro) {
     console.error(erro);
     alert(erro.message || "Erro ao enviar mensagem.");
