@@ -570,7 +570,7 @@
       <span class="notificacao-badge" id="badge-licitacoes">0</span>
     </button>
     
-    <button onclick="window.location.href='agenda.html'">
+    <button onclick="window.irParaAgenda()">
       <span class="sidebar-icon">📅</span>
       <span class="sidebar-label">Agenda</span>
     </button>
@@ -1126,6 +1126,12 @@
           <option value="todos">📢 Todos do Grupo (Público)</option>
           <option value="courvan">🤝 Suporte Courvan (Privado)</option>
         </select>
+      </div>
+
+      <!-- Indicador de Modo de Edição -->
+      <div id="indicadorEdicao" style="display: none; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; background: rgba(229, 184, 92, 0.1); border: 1px solid rgba(229, 184, 92, 0.25); padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #e5b85c;">
+        <span>✏️ <strong>Editando mensagem...</strong></span>
+        <button onclick="window.cancelarEdicaoMensagem()" style="background: none; border: none; color: #ef4444; font-weight: bold; cursor: pointer; font-size: 12px;">Cancelar [X]</button>
       </div>
 
       <div style="display:flex; gap:10px; align-items:center;">
@@ -2898,7 +2904,7 @@ function iniciarChat() {
             visivel = true;
           }
           
-          if (visivel && remetente !== emailUsuarioLogado && autor !== meuTipo) {
+          if (visivel && remetente !== emailUsuarioLogado) {
             if (typeof window.tocarSomNotificacao === "function") {
               window.tocarSomNotificacao("chat");
             }
@@ -2948,6 +2954,10 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
     const dataMensagem = m.data?.seconds
       ? new Date(m.data.seconds * 1000)
       : new Date();
+
+    const isMeRealSender = remetente === emailUsuarioLogado;
+    const minutosPassados = (new Date().getTime() - dataMensagem.getTime()) / 60000;
+    const elegivelParaEdicao = isMeRealSender && minutosPassados <= 15;
 
     const dataFormatada =
       dataMensagem.toLocaleDateString("pt-BR") +
@@ -3079,7 +3089,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
             overflow-wrap:anywhere;
             white-space:pre-wrap;
           ">
-            ${escapeHTML(m.texto)}
+            ${window.formatarMentionsNoTexto(m.texto)}
           </div>
 
           ${htmlAnexo}
@@ -3091,6 +3101,14 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
             <button onclick="window.toggleReactionPicker('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
               😀 Reagir
             </button>
+            ${elegivelParaEdicao ? `
+              <button onclick="window.iniciarEdicaoMensagem('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                ✏️ Editar
+              </button>
+              <button onclick="window.excluirMensagem('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                🗑️ Excluir
+              </button>
+            ` : ""}
           </div>
 
           <!-- Reaction Picker Popover -->
@@ -3105,7 +3123,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
           ${htmlReacoes}
 
           <div style="font-size:11px; opacity:0.6; text-align:right;">
-            ${dataFormatada}
+            ${m.editado ? '<span style="font-style: italic; opacity: 0.8; margin-right: 6px;">(editado)</span>' : ''} ${dataFormatada}
           </div>
         </div>
 
@@ -3256,6 +3274,21 @@ window.enviarMensagem = async () => {
   if (picker) picker.style.display = "none";
 
   try {
+    if (window.mensagemEditandoId) {
+      const msgRef = doc(db, "chats", clienteIdGlobal, "mensagens", window.mensagemEditandoId);
+      await updateDoc(msgRef, {
+        texto: texto,
+        editado: true,
+        dataEdicao: serverTimestamp()
+      });
+      window.cancelarEdicaoMensagem();
+      if (btnEnviar) {
+        btnEnviar.disabled = false;
+        btnEnviar.innerText = "Enviar";
+      }
+      return;
+    }
+
     let anexoUrl = null;
     let anexoNome = null;
     let anexoTipo = null;
@@ -3381,9 +3414,6 @@ window.enviarMensagem = async () => {
     }
 
     cancelarResposta();
-    if (typeof window.tocarSomNotificacao === "function") {
-      window.tocarSomNotificacao("chat");
-    }
   } catch (erro) {
     console.error(erro);
     alert(erro.message || "Erro ao enviar mensagem.");
@@ -3426,6 +3456,232 @@ document
 
 });
   
+window.mensagemEditandoId = null;
+
+window.irParaAgenda = function() {
+  if (window.clienteIdGlobal) {
+    window.location.href = 'agenda.html?id=' + window.clienteIdGlobal;
+  } else {
+    window.location.href = 'agenda.html';
+  }
+};
+
+window.iniciarEdicaoMensagem = function(mensagemId) {
+  const m = mensagensCarregadas[mensagemId];
+  if (!m) return;
+  window.mensagemEditandoId = mensagemId;
+  const input = document.getElementById("mensagemInput");
+  if (input) {
+    input.value = m.texto;
+    input.focus();
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 150) + "px";
+  }
+  const indicador = document.getElementById("indicadorEdicao");
+  if (indicador) {
+    indicador.style.display = "flex";
+  }
+};
+
+window.cancelarEdicaoMensagem = function() {
+  window.mensagemEditandoId = null;
+  const input = document.getElementById("mensagemInput");
+  if (input) {
+    input.value = "";
+    input.style.height = "50px";
+  }
+  const indicador = document.getElementById("indicadorEdicao");
+  if (indicador) {
+    indicador.style.display = "none";
+  }
+};
+
+window.excluirMensagem = async function(mensagemId) {
+  if (!confirm("Deseja realmente excluir esta mensagem para todos os usuários?")) return;
+  try {
+    const msgRef = doc(db, "chats", clienteIdGlobal, "mensagens", mensagemId);
+    await deleteDoc(msgRef);
+    console.log("Mensagem excluída com sucesso:", mensagemId);
+  } catch (error) {
+    console.error("Erro ao excluir mensagem:", error);
+    alert("Erro ao excluir mensagem: " + error.message);
+  }
+};
+
+window.obterUsuariosMencionaveis = function() {
+  const lista = [];
+  
+  lista.push({ nome: "Equipe Courvan", email: "comercial.courvanlicitacoes@gmail.com" });
+  
+  const localExtrairNome = function(email) {
+    if (!email) return "Colaborador";
+    const parteLocal = email.split('@')[0];
+    return parteLocal
+      .split(/[\._\-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  if (dadosClienteGlobal) {
+    if (dadosClienteGlobal.nome) {
+      lista.push({ nome: dadosClienteGlobal.nome, email: dadosClienteGlobal.email });
+    }
+    
+    if (dadosClienteGlobal.usuariosMulti) {
+      dadosClienteGlobal.usuariosMulti.forEach(u => {
+        if (u.nome && u.email) {
+          lista.push({ nome: u.nome, email: u.email });
+        }
+      });
+    }
+    
+    if (dadosClienteGlobal.emailsAutorizados) {
+      dadosClienteGlobal.emailsAutorizados.forEach(email => {
+        if (email) {
+          const emailLower = email.toLowerCase().trim();
+          if (!lista.some(item => item.email.toLowerCase().trim() === emailLower)) {
+            const userObj = dadosClienteGlobal.usuariosMulti?.find(u => u.email.toLowerCase().trim() === emailLower);
+            const nome = userObj ? userObj.nome : localExtrairNome(emailLower);
+            lista.push({ nome: nome, email: emailLower });
+          }
+        }
+      });
+    }
+  }
+  
+  const unicos = [];
+  const emailsVistos = new Set();
+  lista.forEach(item => {
+    const emailLower = item.email ? item.email.toLowerCase().trim() : "";
+    if (emailLower && !emailsVistos.has(emailLower)) {
+      emailsVistos.add(emailLower);
+      unicos.push(item);
+    }
+  });
+  
+  return unicos;
+};
+
+document.getElementById("mensagemInput")?.addEventListener("input", function(e) {
+  const texto = this.value;
+  const cursorPosition = this.selectionStart;
+  const textoAteCursor = texto.substring(0, cursorPosition);
+  
+  const match = textoAteCursor.match(/@([a-zA-Z0-9._]*)$/);
+  
+  if (match) {
+    const termoBusca = match[1].toLowerCase();
+    const lista = window.obterUsuariosMencionaveis();
+    
+    const filtrados = lista.filter(u => 
+      u.nome.toLowerCase().includes(termoBusca) || 
+      u.email.toLowerCase().includes(termoBusca)
+    );
+    
+    if (filtrados.length > 0) {
+      window.mostrarDropdownMencoes(filtrados, match.index, cursorPosition);
+    } else {
+      window.esconderDropdownMencoes();
+    }
+  } else {
+    window.esconderDropdownMencoes();
+  }
+});
+
+window.mostrarDropdownMencoes = function(usuarios, indexArroba, indexCursor) {
+  let div = document.getElementById("mencoesDropdown");
+  if (!div) {
+    div = document.createElement("div");
+    div.id = "mencoesDropdown";
+    div.style.cssText = `
+      position: absolute;
+      background: #0c1524;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      max-height: 180px;
+      overflow-y: auto;
+      width: 280px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 100;
+      padding: 6px 0;
+    `;
+    const container = document.getElementById("mensagemInput").parentElement;
+    container.style.position = "relative";
+    container.appendChild(div);
+  }
+  
+  div.style.bottom = "60px";
+  div.style.left = "10px";
+  div.style.display = "block";
+  
+  div.innerHTML = usuarios.map(u => `
+    <div 
+      onclick="window.selecionarMencao('${u.nome}', ${indexArroba}, ${indexCursor})"
+      style="
+        padding: 8px 14px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #cbd5e1;
+        transition: all 0.15s;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      "
+      onmouseover="this.style.background='rgba(255,255,255,0.06)'; this.style.color='white'"
+      onmouseout="this.style.background='none'; this.style.color='#cbd5e1'"
+    >
+      <span style="font-weight: 600;">@${escapeHTML(u.nome)}</span>
+      <span style="font-size: 11px; opacity: 0.6;">${escapeHTML(u.email)}</span>
+    </div>
+  `).join("");
+};
+
+window.esconderDropdownMencoes = function() {
+  const div = document.getElementById("mencoesDropdown");
+  if (div) div.style.display = "none";
+};
+
+window.selecionarMencao = function(nome, indexArroba, indexCursor) {
+  const input = document.getElementById("mensagemInput");
+  if (!input) return;
+  const texto = input.value;
+  
+  const antesArroba = texto.substring(0, indexArroba);
+  const depoisCursor = texto.substring(indexCursor);
+  
+  input.value = antesArroba + "@" + nome + " " + depoisCursor;
+  window.esconderDropdownMencoes();
+  input.focus();
+  
+  const novaPosicao = indexArroba + nome.length + 2;
+  input.setSelectionRange(novaPosicao, novaPosicao);
+};
+
+document.addEventListener("click", function(e) {
+  const div = document.getElementById("mencoesDropdown");
+  const input = document.getElementById("mensagemInput");
+  if (div && e.target !== div && !div.contains(e.target) && e.target !== input) {
+    window.esconderDropdownMencoes();
+  }
+});
+
+window.formatarMentionsNoTexto = function(texto) {
+  if (!texto) return "";
+  const escaped = escapeHTML(texto);
+  const list = window.obterUsuariosMencionaveis();
+  let resultado = escaped;
+  
+  list.forEach(u => {
+    const nomeEscaped = escapeHTML(u.nome);
+    const regexSafeName = nomeEscaped.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const re = new RegExp("@" + regexSafeName + "\\b", "gi");
+    
+    resultado = resultado.replace(re, `<span style="background: rgba(229, 184, 92, 0.25); color: #e5b85c; padding: 2px 6px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(229, 184, 92, 0.4); display: inline-block; font-size: 13px;">@${nomeEscaped}</span>`);
+  });
+  
+  return resultado;
+};
+
 let documentosGlobais = [];
 let subDocFiltroAtivo = "todos";
 
