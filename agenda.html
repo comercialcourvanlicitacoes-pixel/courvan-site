@@ -283,7 +283,9 @@ import {
   getDocs,
   query,
   where,
-  onSnapshot
+  onSnapshot,
+  getDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -371,9 +373,21 @@ window.fecharDrawer = function(){
 
 };
 
-window.voltarPainel = function() {
+window.voltarPainel = async function() {
   if (auth.currentUser) {
-    if (auth.currentUser.email === "comercial.courvanlicitacoes@gmail.com") {
+    const emailLogado = auth.currentUser.email.toLowerCase();
+    let isCourvanTeam = (emailLogado === "comercial.courvanlicitacoes@gmail.com");
+    if (!isCourvanTeam) {
+      try {
+        const teamDoc = await getDoc(doc(db, "courvan_team", emailLogado));
+        if (teamDoc.exists()) {
+          isCourvanTeam = true;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (isCourvanTeam) {
       window.location.href = "clientes.html";
     } else {
       window.location.href = "cliente.html";
@@ -397,24 +411,38 @@ onAuthStateChanged(auth, async (user)=>{
 
   }
 
+  const emailLogado = user.email.toLowerCase();
+  let isCourvanTeam = (emailLogado === "comercial.courvanlicitacoes@gmail.com");
+  if (!isCourvanTeam) {
+    try {
+      const teamDoc = await getDoc(doc(db, "courvan_team", emailLogado));
+      if (teamDoc.exists()) {
+        isCourvanTeam = true;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   let clienteId = null;
 
-  // ADMIN
-  if(
-    user.email !==
-    "comercial.courvanlicitacoes@gmail.com"
-  ){
+  if(!isCourvanTeam){
 
-    const snap = await getDocs(
+    // 1. Tenta buscar por email na lista de autorizados
+    let snap = await getDocs(query(collection(db, "clientes"), where("emailsAutorizados", "array-contains", user.email)));
+    if (snap.empty) {
+      // 2. Fallback para uid (comportamento antigo)
+      snap = await getDocs(query(collection(db, "clientes"), where("uid", "==", user.uid)));
+    }
+    if (snap.empty) {
+      // 3. Fallback para email direto (comportamento antigo)
+      snap = await getDocs(query(collection(db, "clientes"), where("email", "==", user.email)));
+    }
 
-      query(
-        collection(db, "clientes"),
-        where("uid", "==", user.uid)
-      )
-
-    );
-
-    if(snap.empty) return;
+    if(snap.empty) {
+      alert("Acesso negado: Cliente não configurado para este usuário.");
+      return;
+    }
 
     clienteId = snap.docs[0].id;
 
