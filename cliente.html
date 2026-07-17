@@ -166,18 +166,28 @@
     }
 
     .sidebar .notificacao-badge {
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.2s ease, visibility 0.2s ease;
       margin-left: auto;
+      transition: all 0.2s ease;
     }
 
     @media(min-width: 1025px) {
       .sidebar:hover .sidebar-label,
-      .sidebar:hover .sidebar-profile-info,
-      .sidebar:hover .notificacao-badge {
+      .sidebar:hover .sidebar-profile-info {
         opacity: 1;
         visibility: visible;
+      }
+      
+      /* Quando a sidebar está colapsada (não hovered) */
+      .sidebar:not(:hover) .notificacao-badge {
+        position: absolute;
+        top: 6px;
+        right: 14px;
+        margin-left: 0;
+        min-width: 16px;
+        height: 16px;
+        font-size: 9px;
+        padding: 0 4px;
+        box-shadow: 0 0 0 2px #050811;
       }
     }
     
@@ -1829,6 +1839,68 @@ onAuthStateChanged(auth, async (user) => {
   carregarRadarPersonalizado();
   setInterval(carregarRadarPersonalizado, 30000); 
   window.iniciarListenerDocsGerados();
+
+  // Sincronização de status online, offline e último acesso
+  window.atualizarStatusAtividadeUsuario = async function(status) {
+    if (window.isCourvanTeamAdmin) return; // Não atualiza status para administradores
+
+    try {
+      const emailLogadoLower = emailLogado.toLowerCase().trim();
+      const cliRef = doc(db, "clientes", clienteIdGlobal);
+      const snap = await getDoc(cliRef);
+      if (!snap.exists()) return;
+
+      const data = snap.data();
+      const nowIso = new Date().toISOString();
+
+      // Se for o e-mail principal da conta
+      if ((data.email || "").toLowerCase().trim() === emailLogadoLower) {
+        await updateDoc(cliRef, {
+          statusOnline: status,
+          ultimoAcesso: nowIso
+        });
+      } else {
+        // Se for um colaborador em usuariosMulti
+        let alterou = false;
+        const novosUsuariosMulti = (data.usuariosMulti || []).map(u => {
+          if ((u.email || "").toLowerCase().trim() === emailLogadoLower) {
+            alterou = true;
+            return {
+              ...u,
+              statusOnline: status,
+              ultimoAcesso: nowIso
+            };
+          }
+          return u;
+        });
+
+        if (alterou) {
+          await updateDoc(cliRef, {
+            usuariosMulti: novosUsuariosMulti
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Erro ao atualizar status de atividade:", e);
+    }
+  };
+
+  // Inicializa imediatamente
+  await window.atualizarStatusAtividadeUsuario("online");
+
+  // Mantém ativo (heartbeat) a cada 30 segundos
+  const intervalStatusHeartbeat = setInterval(() => {
+    if (typeof window.atualizarStatusAtividadeUsuario === "function") {
+      window.atualizarStatusAtividadeUsuario("online");
+    }
+  }, 30000);
+
+  // Define offline ao sair da página
+  window.addEventListener("beforeunload", () => {
+    if (typeof window.atualizarStatusAtividadeUsuario === "function") {
+      window.atualizarStatusAtividadeUsuario("offline");
+    }
+  });
 });
 
 window.mostrarAba = function (id) {
@@ -3842,7 +3914,17 @@ window.alterarSenha = async () => {
 };
 
 window.logout = async () => {
-  if(confirm("Sair?")) { await signOut(auth); window.location.href = "login.html"; }
+  if(confirm("Sair?")) {
+    if (typeof window.atualizarStatusAtividadeUsuario === "function") {
+      try {
+        await window.atualizarStatusAtividadeUsuario("offline");
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    await signOut(auth);
+    window.location.href = "login.html";
+  }
 };
 
 function moedaBRL(v) {
