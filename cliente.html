@@ -1614,26 +1614,39 @@ onAuthStateChanged(auth, async (user) => {
   }
   window.isCourvanTeamAdmin = isCourvanTeam;
 
+  // Helper inteligente para extrair nome amigável do e-mail (definido acima para uso no agrupamento)
+  function extrairNomeDoEmail(email) {
+    if (!email) return "Colaborador";
+    const parteLocal = email.split('@')[0];
+    return parteLocal
+      .split(/[\._\-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
   const params = new URLSearchParams(window.location.search);
   const clienteIdUrl = params.get("id");
 
   let docCliente;
+  const snapTodosClientes = await getDocs(collection(db, "clientes"));
+  const emailLogadoLower = emailLogado.toLowerCase().trim();
+
   if (clienteIdUrl) {
     document.getElementById("formDocumentos").style.display = "flex";
-    const snap = await getDocs(query(collection(db, "clientes")));
-    docCliente = snap.docs.find(d => d.id === clienteIdUrl);
+    docCliente = snapTodosClientes.docs.find(d => d.id === clienteIdUrl);
   } else {
-    // 1. Tenta buscar por email na lista de autorizados
-    let snap = await getDocs(query(collection(db, "clientes"), where("emailsAutorizados", "array-contains", user.email)));
-    if (snap.empty) {
-      // 2. Fallback para uid (comportamento antigo)
-      snap = await getDocs(query(collection(db, "clientes"), where("uid", "==", user.uid)));
-    }
-    if (snap.empty) {
-      // 3. Fallback para email direto (comportamento antigo)
-      snap = await getDocs(query(collection(db, "clientes"), where("email", "==", user.email)));
-    }
-    docCliente = snap.docs[0];
+    // Busca inteligente e robusta de multi-usuários por e-mail ou UID
+    docCliente = snapTodosClientes.docs.find(d => {
+      const data = d.data();
+      const emailPrincipal = (data.email || "").toLowerCase().trim();
+      const emailsAutorizados = (data.emailsAutorizados || []).map(e => e.toLowerCase().trim());
+      const usuariosMulti = (data.usuariosMulti || []).map(u => (u.email || "").toLowerCase().trim());
+      
+      return emailPrincipal === emailLogadoLower || 
+             emailsAutorizados.includes(emailLogadoLower) || 
+             usuariosMulti.includes(emailLogadoLower) || 
+             data.uid === user.uid;
+    });
   }
 
   if (!docCliente) {
@@ -1645,22 +1658,82 @@ onAuthStateChanged(auth, async (user) => {
   clienteIdGlobal = docCliente.id;
   emailClienteGlobal = dadosClienteGlobal.email;
 
+  // 🔥 AGRUPAMENTO ROBUSTO POR EMPRESA (Unificação de múltiplos documentos da mesma empresa)
+  const nomeEmpresa = (dadosClienteGlobal.empresa || "").trim();
+  if (nomeEmpresa) {
+    const docsMesmaEmpresa = snapTodosClientes.docs.filter(d => {
+      const emp = (d.data().empresa || "").trim();
+      return emp.toLowerCase() === nomeEmpresa.toLowerCase();
+    });
+
+    if (docsMesmaEmpresa.length > 1) {
+      // Elegemos o documento mestre: ordena por id para que o primeiro documento seja o mestre consistente
+      docsMesmaEmpresa.sort((a, b) => a.id.localeCompare(b.id));
+      const docMestre = docsMesmaEmpresa[0];
+      
+      // Consolidamos os arrays de emailsAutorizados e usuariosMulti de todos os registros que pertencem a essa empresa
+      let emailsConsolidados = [];
+      let usuariosMultiConsolidados = [];
+
+      docsMesmaEmpresa.forEach(d => {
+        const data = d.data();
+        const mEmail = (data.email || "").toLowerCase().trim();
+        if (mEmail && !emailsConsolidados.includes(mEmail)) {
+          emailsConsolidados.push(mEmail);
+        }
+        (data.emailsAutorizados || []).forEach(e => {
+          const eLower = e.toLowerCase().trim();
+          if (eLower && !emailsConsolidados.includes(eLower)) {
+            emailsConsolidados.push(eLower);
+          }
+        });
+        (data.usuariosMulti || []).forEach(u => {
+          const uEmail = (u.email || "").toLowerCase().trim();
+          if (uEmail && !emailsConsolidados.includes(uEmail)) {
+            emailsConsolidados.push(uEmail);
+          }
+          if (uEmail && !usuariosMultiConsolidados.some(um => um.email.toLowerCase().trim() === uEmail)) {
+            usuariosMultiConsolidados.push({
+              nome: u.nome || extrairNomeDoEmail(uEmail),
+              email: uEmail,
+              bio: u.bio || "",
+              fotoPerfil: u.fotoPerfil || ""
+            });
+          }
+        });
+      });
+
+      // Garante que o responsável original do mestre esteja na lista de usuariosMulti
+      const mestreData = docMestre.data();
+      const mestreEmail = (mestreData.email || "").toLowerCase().trim();
+      if (mestreEmail && !usuariosMultiConsolidados.some(um => um.email.toLowerCase().trim() === mestreEmail)) {
+        usuariosMultiConsolidados.unshift({
+          nome: mestreData.nome || extrairNomeDoEmail(mestreEmail),
+          email: mestreEmail,
+          bio: mestreData.bio || "",
+          fotoPerfil: mestreData.fotoPerfil || ""
+        });
+      }
+
+      // Atualiza o documento mestre com os dados consolidados para sincronizar as contas no Firestore
+      await updateDoc(doc(db, "clientes", docMestre.id), {
+        emailsAutorizados: emailsConsolidados,
+        usuariosMulti: usuariosMultiConsolidados
+      });
+
+      docCliente = docMestre;
+      dadosClienteGlobal = docMestre.data();
+      clienteIdGlobal = docMestre.id;
+      emailClienteGlobal = dadosClienteGlobal.email;
+    }
+  }
+
   // Se o documento do cliente ainda não tiver o campo emailsAutorizados, inicializa com o e-mail dele
   if (!dadosClienteGlobal.emailsAutorizados) {
     dadosClienteGlobal.emailsAutorizados = [dadosClienteGlobal.email];
     await updateDoc(doc(db, "clientes", clienteIdGlobal), {
       emailsAutorizados: dadosClienteGlobal.emailsAutorizados
     });
-  }
-
-  // Helper inteligente para extrair nome amigável do e-mail
-  function extrairNomeDoEmail(email) {
-    if (!email) return "Colaborador";
-    const parteLocal = email.split('@')[0];
-    return parteLocal
-      .split(/[\._\-]/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
   }
 
   // Identificação dinâmica de perfil logado
@@ -2938,8 +3011,9 @@ window.enviarMensagem = async () => {
   const emailLogado = auth.currentUser.email.toLowerCase();
   const isAdmin = window.isCourvanTeamAdmin;
   
-  /* limpa imediatamente para melhor sensação de velocidade */
+  /* limpa imediatamente para melhor sensação de velocidade e redefine altura */
   input.value = "";
+  input.style.height = "50px";
   window.removerAnexoChat();
   const picker = document.getElementById("emojiPickerChat");
   if (picker) picker.style.display = "none";
@@ -2997,27 +3071,73 @@ window.enviarMensagem = async () => {
     );
 
     try {
-      const destinatarioEmail = isAdmin ? emailClienteGlobal.toLowerCase().trim() : "comercial.courvanlicitacoes@gmail.com";
-      
-      // Busca a preferência de notificação do destinatário em tempo real
-      const prefDoc = await getDoc(doc(db, "configuracoes_notificacoes", destinatarioEmail));
-      let enviarEmail = true;
-      if (prefDoc.exists()) {
-        enviarEmail = prefDoc.data().emailHabilitado !== false;
-      }
-      
-      if (enviarEmail) {
-        await emailjs.send(
-          "service_p5ln9fw",
-          "template_2qckj0y",
-          {
-            nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
-            mensagem: file ? "Enviou um anexo no chat" : "Nova mensagem no chat Courvan",
-            to_email: destinatarioEmail
+      if (isAdmin) {
+        // ADMIN ENVIANDO PARA CLIENTES (Empresa)
+        // Coleta todos os e-mails autorizados para a empresa do cliente
+        const emailsParaNotificar = dadosClienteGlobal.emailsAutorizados || [dadosClienteGlobal.email];
+        
+        for (const e of emailsParaNotificar) {
+          const eLower = e.toLowerCase().trim();
+          if (!eLower) continue;
+          
+          // Verifica a preferência individual de cada e-mail em configuracoes_notificacoes
+          const prefDoc = await getDoc(doc(db, "configuracoes_notificacoes", eLower));
+          const enviarEmail = prefDoc.exists() ? prefDoc.data().emailHabilitado !== false : true;
+          
+          if (enviarEmail) {
+            await emailjs.send(
+              "service_p5ln9fw",
+              "template_2qckj0y",
+              {
+                nome: "Equipe Courvan",
+                mensagem: file ? "Enviou um anexo no chat" : `Nova mensagem no chat Courvan: "${texto.substring(0, 60)}${texto.length > 60 ? '...' : ''}"`,
+                to_email: eLower
+              }
+            );
+            console.log("E-mail de notificação enviado para o cliente/colaborador:", eLower);
+          } else {
+            console.log("Notificação de e-mail ignorada pelo sininho para o cliente/colaborador:", eLower);
           }
-        );
+        }
       } else {
-        console.log("Notificação por e-mail ignorada por preferência do usuário:", destinatarioEmail);
+        // CLIENTE ENVIANDO PARA ADMIN
+        // O destinatário principal da Courvan é comercial.courvanlicitacoes@gmail.com
+        const equipeEmails = ["comercial.courvanlicitacoes@gmail.com"];
+        
+        // Também adicionamos os membros ativos da equipe Courvan para notificá-los opcionalmente
+        try {
+          const teamSnap = await getDocs(collection(db, "courvan_team"));
+          teamSnap.forEach(docSnap => {
+            const teamEmail = docSnap.id.toLowerCase().trim();
+            if (teamEmail && !equipeEmails.includes(teamEmail)) {
+              equipeEmails.push(teamEmail);
+            }
+          });
+        } catch (teamErr) {
+          console.error("Erro ao buscar equipe para notificar:", teamErr);
+        }
+        
+        for (const e of equipeEmails) {
+          const eLower = e.toLowerCase().trim();
+          
+          const prefDoc = await getDoc(doc(db, "configuracoes_notificacoes", eLower));
+          const enviarEmail = prefDoc.exists() ? prefDoc.data().emailHabilitado !== false : true;
+          
+          if (enviarEmail) {
+            await emailjs.send(
+              "service_p5ln9fw",
+              "template_2qckj0y",
+              {
+                nome: document.getElementById("nome").innerText || "Cliente",
+                mensagem: file ? "Enviou um anexo no chat" : `Nova mensagem no chat Courvan: "${texto.substring(0, 60)}${texto.length > 60 ? '...' : ''}"`,
+                to_email: eLower
+              }
+            );
+            console.log("E-mail de notificação enviado para membro da equipe Courvan:", eLower);
+          } else {
+            console.log("Notificação de e-mail desativada pelo sininho para membro da equipe Courvan:", eLower);
+          }
+        }
       }
     } catch (e) {
       console.log("Erro ao verificar preferências ou enviar e-mail:", e);
@@ -3040,13 +3160,28 @@ window.enviarMensagem = async () => {
   }
 };
 
+// Auto-ajuste de altura conforme digitação no chat
+document.getElementById("mensagemInput").addEventListener("input", function() {
+  this.style.height = "auto";
+  this.style.height = Math.min(this.scrollHeight, 150) + "px";
+});
+
 document
   .getElementById("mensagemInput")
   .addEventListener("keydown", function(e) {
 
+    // Se pressionar apenas Enter (sem Shift), envia a mensagem e limpa a altura do input
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       enviarMensagem();
+      this.style.height = "50px";
+    }
+    // Se pressionar Shift + Enter, deixa pular para a linha de baixo naturalmente e ajusta a altura
+    else if (e.key === "Enter" && e.shiftKey) {
+      setTimeout(() => {
+        this.style.height = "auto";
+        this.style.height = Math.min(this.scrollHeight, 150) + "px";
+      }, 0);
     }
 
 });
