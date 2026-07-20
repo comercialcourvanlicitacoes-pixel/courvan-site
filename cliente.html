@@ -724,13 +724,16 @@
 
     <div id="geradores" class="aba" style="display:none;">
       <h1>📄 Central de Geradores de Documentos</h1>
-      <p style="font-size:14px; opacity:0.8; margin-bottom:20px;">Crie declarações unificadas e propostas comerciais customizadas, com papel timbrado e assinaturas de forma automatizada.</p>
+      <p style="font-size:14px; opacity:0.8; margin-bottom:20px;">Crie declarações unificadas, propostas comerciais, recursos, impugnações e defesas administrativas customizadas, com papel timbrado e assinaturas de forma automatizada.</p>
 
       <!-- Sub-Tabs dos Geradores -->
-      <div style="display:flex; gap:12px; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px; overflow-x:auto;">
+      <div style="display:flex; gap:12px; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch;">
         <button class="doc-tab-btn active" id="btnSubTabListar" onclick="window.alternarSubTabGerador('listar')">📁 Documentos Gerados</button>
-        <button class="doc-tab-btn" id="btnSubTabDeclaracao" onclick="window.alternarSubTabGerador('declaracao')">✍️ Gerador de Declaração Unificada</button>
-        <button class="doc-tab-btn" id="btnSubTabProposta" onclick="window.alternarSubTabGerador('proposta')">💰 Gerador de Proposta Comercial</button>
+        <button class="doc-tab-btn" id="btnSubTabDeclaracao" onclick="window.alternarSubTabGerador('declaracao')">✍️ Declaração Unificada</button>
+        <button class="doc-tab-btn" id="btnSubTabProposta" onclick="window.alternarSubTabGerador('proposta')">💰 Proposta Comercial</button>
+        <button class="doc-tab-btn" id="btnSubTabRecurso" onclick="window.alternarSubTabGerador('recurso')">⚖️ Recurso Administrativo</button>
+        <button class="doc-tab-btn" id="btnSubTabImpugnacao" onclick="window.alternarSubTabGerador('impugnacao')">🚫 Impugnação de Edital</button>
+        <button class="doc-tab-btn" id="btnSubTabDefesa" onclick="window.alternarSubTabGerador('defesa')">🛡️ Defesa Administrativa</button>
       </div>
 
       <!-- SUB-TAB LISTAR -->
@@ -953,6 +956,327 @@
             <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
             <div id="areaPreVisualizacaoProp" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
               <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia da proposta em formato de folha A4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB RECURSO ADMINISTRATIVO -->
+      <div id="subTabGeradores-recurso" class="sub-tab-geradores" style="display:none;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:start;">
+          <!-- Formulário -->
+          <div class="info-box" style="border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:18px; font-size:18px;">⚖️ Novo Recurso Administrativo</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Dados Proponente -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">1. Dados do Recorrente</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="recEmpresa" class="inputPadrao" placeholder="Razão Social / Nome da Empresa">
+                  <input id="recCNPJ" class="inputPadrao" placeholder="CNPJ">
+                </div>
+                <input id="recEndereco" class="inputPadrao" placeholder="Endereço Completo">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                  <input id="recRepNome" class="inputPadrao" placeholder="Representante Legal">
+                  <input id="recRepCargo" class="inputPadrao" placeholder="Cargo (Ex: Diretor)">
+                </div>
+              </div>
+
+              <!-- Dados Destinatario -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">2. Identificação do Certame</h3>
+                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="recOrgao" class="inputPadrao" placeholder="Órgão Licitante (Ex: Pregoeiro / Comissão de Licitação)">
+                  <input id="recProcesso" class="inputPadrao" placeholder="Processo / Pregão Nº">
+                </div>
+                <input id="recObjeto" class="inputPadrao" placeholder="Objeto da Licitação (Resumo)">
+                <input id="recLote" class="inputPadrao" placeholder="Lote / Item Recorrido (Opcional)" style="margin-top:10px;">
+              </div>
+
+              <!-- Razões do Recurso -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">3. Teor do Recurso</h3>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Síntese dos Fatos</label>
+                  <textarea id="recFatos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Breve relato do ocorrido...">A empresa Recorrente participou do certame epigrafado, apresentando proposta e documentação adequadas. No entanto, o pregoeiro declarou a desclassificação/inabilitação indevida sob o fundamento de divergência formal em documento secundário, contrariando o princípio da ampla competitividade.</textarea>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fundamentação Jurídica</label>
+                  <textarea id="recFundamento" class="inputPadrao" style="height:120px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Fundamentos de direito...">A decisão combatida deve ser reformada, visto que o vício apontado é de natureza meramente formal, perfeitamente sanável por meio de diligência, conforme preconiza o art. 64 da Lei 14.133/2021. A inabilitação da melhor proposta com base em mero formalismo viola o interesse público de obtenção da proposta mais vantajosa, o princípio da razoabilidade e o princípio do formalismo moderado consagrado pela doutrina e jurisprudência pacífica do TCU.</textarea>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Pedidos e Requerimentos</label>
+                  <textarea id="recPedidos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Pedidos finais...">Diante do exposto, requer-se o recebimento e o total provimento deste Recurso Administrativo para reformar a decisão combatida, reabilitando a Recorrente no certame, dando-se continuidade aos atos de direito.</textarea>
+                </div>
+              </div>
+
+              <!-- Configuração Visual -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">4. Assinatura</h3>
+                
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:6px;">Formato da Assinatura</label>
+                  <div style="display:flex; gap:14px; margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="recAssinaturaTipo" value="desenhar" checked onchange="window.alternarAssinaturaTipo('recurso', 'desenhar')"> Desenhar na Tela
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="recAssinaturaTipo" value="upload" onchange="window.alternarAssinaturaTipo('recurso', 'upload')"> Enviar Imagem
+                    </label>
+                  </div>
+
+                  <!-- Canvas Desenho -->
+                  <div id="recAssinaturaDesenharArea">
+                    <canvas id="canvasAssinaturaRec" width="360" height="120" style="background:#0c1524; border:1px dashed rgba(255,255,255,0.15); border-radius:10px; cursor:crosshair; width:100%; display:block;"></canvas>
+                    <div style="margin-top:6px; display:flex; gap:8px;">
+                      <button class="botaoPadrao" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); font-size:12px; padding:6px 12px; width:auto;" onclick="window.limparCanvas('canvasAssinaturaRec')">Limpar Tela</button>
+                      <button class="botaoPadrao" style="font-size:12px; padding:6px 12px; width:auto;" onclick="window.salvarAssinaturaDesenho('recurso')">Confirmar Assinatura</button>
+                    </div>
+                  </div>
+
+                  <!-- Upload Imagem -->
+                  <div id="recAssinaturaUploadArea" style="display:none;">
+                    <input type="file" id="recAssinaturaInput" accept="image/*" onchange="window.handleUploadVisual('assinatura', this)" class="inputPadrao" style="padding:10px;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Local e Data -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">5. Local e Data</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="recCidade" class="inputPadrao" placeholder="Cidade (Ex: Belo Horizonte)">
+                  <input id="recData" type="date" class="inputPadrao">
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px;">
+                <button class="botaoPadrao" onclick="window.atualizarPreVisualizacaoRecurso()" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1);">Visualizar</button>
+                <button class="botaoPadrao" onclick="window.salvarEImprimirDocumento('recurso')" style="flex:1;">Salvar & Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-visualização -->
+          <div class="info-box" style="position:sticky; top:20px; border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
+            <div id="areaPreVisualizacaoRec" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
+              <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia do recurso em formato de folha A4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB IMPUGNAÇÃO DE EDITAL -->
+      <div id="subTabGeradores-impugnacao" class="sub-tab-geradores" style="display:none;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:start;">
+          <!-- Formulário -->
+          <div class="info-box" style="border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:18px; font-size:18px;">🚫 Nova Impugnação de Edital</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Dados Proponente -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">1. Dados da Impugnante</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="impEmpresa" class="inputPadrao" placeholder="Razão Social / Nome da Empresa">
+                  <input id="impCNPJ" class="inputPadrao" placeholder="CNPJ">
+                </div>
+                <input id="impEndereco" class="inputPadrao" placeholder="Endereço Completo">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                  <input id="impRepNome" class="inputPadrao" placeholder="Representante Legal">
+                  <input id="impRepCargo" class="inputPadrao" placeholder="Cargo (Ex: Sócio)">
+                </div>
+              </div>
+
+              <!-- Dados Destinatario -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">2. Destinatário e Edital</h3>
+                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="impOrgao" class="inputPadrao" placeholder="Órgão Licitante (Ex: Pregoeiro / Secretaria de Saúde)">
+                  <input id="impProcesso" class="inputPadrao" placeholder="Processo / Pregão Nº">
+                </div>
+                <input id="impObjeto" class="inputPadrao" placeholder="Objeto da Licitação (Resumo)">
+                <input id="impItem" class="inputPadrao" placeholder="Cláusula ou Item Impugnado (Ex: Cláusula 5.1 do Edital)" style="margin-top:10px;">
+              </div>
+
+              <!-- Conteúdo da Impugnação -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">3. Teor da Impugnação</h3>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fatos e Irregularidade Apontada</label>
+                  <textarea id="impFatos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Explicação da irregularidade no edital...">A empresa Impugnante, atuante no segmento licitado, ao analisar as disposições editalícias, identificou exigência abusiva e injustificada de comprovação de requisitos de habilitação técnica cumulatória, o que restringe o universo de proponentes e direciona o certame.</textarea>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fundamentação de Direito</label>
+                  <textarea id="impFundamento" class="inputPadrao" style="height:120px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Fundamentos jurídicos e legais...">A cláusula combatida contraria expressamente o art. 37, XXI da Constituição Federal e o art. 67 da Lei nº 14.133/2021, pois introduz critério de habilitação técnica excessivo e desarrazoado, não justificado pela complexidade do objeto. Exigir atestados com especificações desnecessárias atenta contra a ampla concorrência e a isonomia que devem reger a contratação pública.</textarea>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Pedidos de Alteração</label>
+                  <textarea id="impPedidos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Pedidos finais...">Requer-se o acolhimento da presente Impugnação de Edital para que seja alterada a redação da cláusula guerreada, suprimindo-se a exigência limitadora, com a consequente republicação do edital e devida reabertura dos prazos legais.</textarea>
+                </div>
+              </div>
+
+              <!-- Configuração Visual -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">4. Assinatura</h3>
+                
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:6px;">Formato da Assinatura</label>
+                  <div style="display:flex; gap:14px; margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="impAssinaturaTipo" value="desenhar" checked onchange="window.alternarAssinaturaTipo('impugnacao', 'desenhar')"> Desenhar na Tela
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="impAssinaturaTipo" value="upload" onchange="window.alternarAssinaturaTipo('impugnacao', 'upload')"> Enviar Imagem
+                    </label>
+                  </div>
+
+                  <!-- Canvas Desenho -->
+                  <div id="impAssinaturaDesenharArea">
+                    <canvas id="canvasAssinaturaImp" width="360" height="120" style="background:#0c1524; border:1px dashed rgba(255,255,255,0.15); border-radius:10px; cursor:crosshair; width:100%; display:block;"></canvas>
+                    <div style="margin-top:6px; display:flex; gap:8px;">
+                      <button class="botaoPadrao" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); font-size:12px; padding:6px 12px; width:auto;" onclick="window.limparCanvas('canvasAssinaturaImp')">Limpar Tela</button>
+                      <button class="botaoPadrao" style="font-size:12px; padding:6px 12px; width:auto;" onclick="window.salvarAssinaturaDesenho('impugnacao')">Confirmar Assinatura</button>
+                    </div>
+                  </div>
+
+                  <!-- Upload Imagem -->
+                  <div id="impAssinaturaUploadArea" style="display:none;">
+                    <input type="file" id="impAssinaturaInput" accept="image/*" onchange="window.handleUploadVisual('assinatura', this)" class="inputPadrao" style="padding:10px;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Local e Data -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">5. Local e Data</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="impCidade" class="inputPadrao" placeholder="Cidade (Ex: Belo Horizonte)">
+                  <input id="impData" type="date" class="inputPadrao">
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px;">
+                <button class="botaoPadrao" onclick="window.atualizarPreVisualizacaoImpugnacao()" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1);">Visualizar</button>
+                <button class="botaoPadrao" onclick="window.salvarEImprimirDocumento('impugnacao')" style="flex:1;">Salvar & Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-visualização -->
+          <div class="info-box" style="position:sticky; top:20px; border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
+            <div id="areaPreVisualizacaoImp" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
+              <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia da impugnação em formato de folha A4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB DEFESA ADMINISTRATIVA -->
+      <div id="subTabGeradores-defesa" class="sub-tab-geradores" style="display:none;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:start;">
+          <!-- Formulário -->
+          <div class="info-box" style="border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:18px; font-size:18px;">🛡️ Nova Defesa Prévia / Administrativa</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Dados Proponente -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">1. Dados da Defendente</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="defEmpresa" class="inputPadrao" placeholder="Razão Social / Nome da Empresa">
+                  <input id="defCNPJ" class="inputPadrao" placeholder="CNPJ">
+                </div>
+                <input id="defEndereco" class="inputPadrao" placeholder="Endereço Completo">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                  <input id="defRepNome" class="inputPadrao" placeholder="Representante Legal">
+                  <input id="defRepCargo" class="inputPadrao" placeholder="Cargo (Ex: Sócio-Administrador)">
+                </div>
+              </div>
+
+              <!-- Dados Destinatario -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">2. Destinatário e Notificação</h3>
+                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="defOrgao" class="inputPadrao" placeholder="Órgão / Autoridade Notificante (Ex: Secretário de Administração)">
+                  <input id="defProcesso" class="inputPadrao" placeholder="Processo Sancionador / Notificação Nº">
+                </div>
+                <input id="defObjeto" class="inputPadrao" placeholder="Objeto do Contrato / Licitação (Resumo)">
+                <input id="defInfracao" class="inputPadrao" placeholder="Suposta Infração Apontada (Ex: Atraso na entrega dos produtos)" style="margin-top:10px;">
+              </div>
+
+              <!-- Conteúdo da Defesa -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">3. Teor da Defesa</h3>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fatos e Esclarecimentos</label>
+                  <textarea id="defFatos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Explicação detalhada dos acontecimentos reais...">A empresa Defendente recebeu notificação de instauração de processo administrativo sancionador, para apuração de suposto atraso na entrega do objeto licitado, visando a aplicação de multa contratual e penalidades correlatas.</textarea>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fundamentação de Defesa (Ausência de Culpa, etc.)</label>
+                  <textarea id="defFundamento" class="inputPadrao" style="height:120px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Fundamentos de exclusão de culpa, força maior, razoabilidade...">O atraso verificado decorreu de caso fortuito e força maior (art. 393 do Código Civil), consistente na comprovada escassez global de matérias-primas no mercado fornecedor, hipótese excludente de nexo de causalidade. A Defendente notificou tempestivamente a Administração solicitando prorrogação do prazo, demonstrando boa-fé e envidando todos os esforços possíveis para minimizar os impactos.</textarea>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Pedidos de Isenção / Absolvição</label>
+                  <textarea id="defPedidos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Pedidos finais...">Posto isto, requer-se o arquivamento do presente processo de aplicação de penalidade, sem imposição de multas ou qualquer sanção impeditiva, reconhecendo-se a ausência de culpa ou dolo da Defendente.</textarea>
+                </div>
+              </div>
+
+              <!-- Configuração Visual -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">4. Assinatura</h3>
+                
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:6px;">Formato da Assinatura</label>
+                  <div style="display:flex; gap:14px; margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="defAssinaturaTipo" value="desenhar" checked onchange="window.alternarAssinaturaTipo('defesa', 'desenhar')"> Desenhar na Tela
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="defAssinaturaTipo" value="upload" onchange="window.alternarAssinaturaTipo('defesa', 'upload')"> Enviar Imagem
+                    </label>
+                  </div>
+
+                  <!-- Canvas Desenho -->
+                  <div id="defAssinaturaDesenharArea">
+                    <canvas id="canvasAssinaturaDef" width="360" height="120" style="background:#0c1524; border:1px dashed rgba(255,255,255,0.15); border-radius:10px; cursor:crosshair; width:100%; display:block;"></canvas>
+                    <div style="margin-top:6px; display:flex; gap:8px;">
+                      <button class="botaoPadrao" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); font-size:12px; padding:6px 12px; width:auto;" onclick="window.limparCanvas('canvasAssinaturaDef')">Limpar Tela</button>
+                      <button class="botaoPadrao" style="font-size:12px; padding:6px 12px; width:auto;" onclick="window.salvarAssinaturaDesenho('defesa')">Confirmar Assinatura</button>
+                    </div>
+                  </div>
+
+                  <!-- Upload Imagem -->
+                  <div id="defAssinaturaUploadArea" style="display:none;">
+                    <input type="file" id="defAssinaturaInput" accept="image/*" onchange="window.handleUploadVisual('assinatura', this)" class="inputPadrao" style="padding:10px;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Local e Data -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">5. Local e Data</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="defCidade" class="inputPadrao" placeholder="Cidade (Ex: Belo Horizonte)">
+                  <input id="defData" type="date" class="inputPadrao">
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px;">
+                <button class="botaoPadrao" onclick="window.atualizarPreVisualizacaoDefesa()" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1);">Visualizar</button>
+                <button class="botaoPadrao" onclick="window.salvarEImprimirDocumento('defesa')" style="flex:1;">Salvar & Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-visualização -->
+          <div class="info-box" style="position:sticky; top:20px; border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
+            <div id="areaPreVisualizacaoDef" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
+              <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia da defesa em formato de folha A4.</div>
             </div>
           </div>
         </div>
@@ -1902,7 +2226,7 @@ onAuthStateChanged(auth, async (user) => {
 
   // 🔥 AGRUPAMENTO ROBUSTO POR EMPRESA (Unificação de múltiplos documentos da mesma empresa)
   const nomeEmpresa = (dadosClienteGlobal.empresa || "").trim();
-  if (nomeEmpresa) {
+  if (nomeEmpresa && !clienteIdUrl) {
     const docsMesmaEmpresa = snapTodosClientes.docs.filter(d => {
       const emp = (d.data().empresa || "").trim();
       return emp.toLowerCase() === nomeEmpresa.toLowerCase();
@@ -4657,13 +4981,93 @@ window.alternarSubTabGerador = function(subTab) {
   const bListar = document.getElementById("btnSubTabListar");
   const bDec = document.getElementById("btnSubTabDeclaracao");
   const bProp = document.getElementById("btnSubTabProposta");
+  const bRec = document.getElementById("btnSubTabRecurso");
+  const bImp = document.getElementById("btnSubTabImpugnacao");
+  const bDef = document.getElementById("btnSubTabDefesa");
   
   if (bListar) bListar.classList.toggle("active", subTab === "listar");
   if (bDec) bDec.classList.toggle("active", subTab === "declaracao");
   if (bProp) bProp.classList.toggle("active", subTab === "proposta");
+  if (bRec) bRec.classList.toggle("active", subTab === "recurso");
+  if (bImp) bImp.classList.toggle("active", subTab === "impugnacao");
+  if (bDef) bDef.classList.toggle("active", subTab === "defesa");
   
+  // Pre-fill fields automatically if active client data exists
+  if (dadosClienteGlobal) {
+    if (subTab === "declaracao") {
+      const elEmp = document.getElementById("decEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("decCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("decEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elRep = document.getElementById("decRepNome");
+      if (elRep && !elRep.value) elRep.value = dadosClienteGlobal.nome || "";
+      const elCid = document.getElementById("decCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("decData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    } else if (subTab === "proposta") {
+      const elEmp = document.getElementById("propEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("propCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("propEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elCid = document.getElementById("propCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("propData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    } else if (subTab === "recurso") {
+      const elEmp = document.getElementById("recEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("recCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("recEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elRep = document.getElementById("recRepNome");
+      if (elRep && !elRep.value) elRep.value = dadosClienteGlobal.nome || "";
+      const elCid = document.getElementById("recCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("recData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    } else if (subTab === "impugnacao") {
+      const elEmp = document.getElementById("impEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("impCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("impEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elRep = document.getElementById("impRepNome");
+      if (elRep && !elRep.value) elRep.value = dadosClienteGlobal.nome || "";
+      const elCid = document.getElementById("impCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("impData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    } else if (subTab === "defesa") {
+      const elEmp = document.getElementById("defEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("defCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("defEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elRep = document.getElementById("defRepNome");
+      if (elRep && !elRep.value) elRep.value = dadosClienteGlobal.nome || "";
+      const elCid = document.getElementById("defCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("defData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    }
+  }
+
   if (subTab === "declaracao") {
     setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaDec"), 150);
+  } else if (subTab === "recurso") {
+    setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaRec"), 150);
+  } else if (subTab === "impugnacao") {
+    setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaImp"), 150);
+  } else if (subTab === "defesa") {
+    setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaDef"), 150);
   }
 };
 
@@ -4761,8 +5165,14 @@ window.handleUploadVisual = async function(tipo, input) {
       if (tipo === "timbrado") {
         window.atualizarPreVisualizacaoDeclaracao();
         window.atualizarPreVisualizacaoProposta();
+        if (typeof window.atualizarPreVisualizacaoRecurso === "function") window.atualizarPreVisualizacaoRecurso();
+        if (typeof window.atualizarPreVisualizacaoImpugnacao === "function") window.atualizarPreVisualizacaoImpugnacao();
+        if (typeof window.atualizarPreVisualizacaoDefesa === "function") window.atualizarPreVisualizacaoDefesa();
       } else {
         window.atualizarPreVisualizacaoDeclaracao();
+        if (typeof window.atualizarPreVisualizacaoRecurso === "function") window.atualizarPreVisualizacaoRecurso();
+        if (typeof window.atualizarPreVisualizacaoImpugnacao === "function") window.atualizarPreVisualizacaoImpugnacao();
+        if (typeof window.atualizarPreVisualizacaoDefesa === "function") window.atualizarPreVisualizacaoDefesa();
       }
     } catch (e) {
       console.error(e);
@@ -4772,13 +5182,26 @@ window.handleUploadVisual = async function(tipo, input) {
 };
 
 window.salvarAssinaturaDesenho = function(tipo) {
-  const canvasId = tipo === "declaracao" ? "canvasAssinaturaDec" : "";
+  let canvasId = "";
+  if (tipo === "declaracao") canvasId = "canvasAssinaturaDec";
+  else if (tipo === "recurso") canvasId = "canvasAssinaturaRec";
+  else if (tipo === "impugnacao") canvasId = "canvasAssinaturaImp";
+  else if (tipo === "defesa") canvasId = "canvasAssinaturaDef";
+
   const canvas = document.getElementById(canvasId);
   if (canvas) {
     const base64 = canvas.toDataURL("image/png");
     window.tempVisuals.assinaturaDec = base64;
     alert("Assinatura desenhada confirmada com sucesso!");
-    window.atualizarPreVisualizacaoDeclaracao();
+    if (tipo === "declaracao") {
+      window.atualizarPreVisualizacaoDeclaracao();
+    } else if (tipo === "recurso") {
+      window.atualizarPreVisualizacaoRecurso();
+    } else if (tipo === "impugnacao") {
+      window.atualizarPreVisualizacaoImpugnacao();
+    } else if (tipo === "defesa") {
+      window.atualizarPreVisualizacaoDefesa();
+    }
   }
 };
 
@@ -4786,6 +5209,15 @@ window.alternarAssinaturaTipo = function(tipo, modo) {
   if (tipo === "declaracao") {
     document.getElementById("decAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
     document.getElementById("decAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
+  } else if (tipo === "recurso") {
+    document.getElementById("recAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
+    document.getElementById("recAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
+  } else if (tipo === "impugnacao") {
+    document.getElementById("impAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
+    document.getElementById("impAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
+  } else if (tipo === "defesa") {
+    document.getElementById("defAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
+    document.getElementById("defAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
   }
 };
 
@@ -5027,15 +5459,276 @@ window.atualizarPreVisualizacaoProposta = function() {
   return fullA4Content;
 };
 
-window.salvarEImprimirDocumento = async function(tipo) {
-  const isDec = tipo === "declaracao";
-  const nomeDoc = isDec ? "Declaração Unificada" : "Proposta Comercial";
+window.atualizarPreVisualizacaoRecurso = function() {
+  const empresa = document.getElementById("recEmpresa").value.trim() || "NOME DA EMPRESA LTDA";
+  const cnpj = document.getElementById("recCNPJ").value.trim() || "00.000.000/0001-00";
+  const endereco = document.getElementById("recEndereco").value.trim() || "Endereço da Empresa, Cidade/UF";
+  const repNome = document.getElementById("recRepNome").value.trim() || "REPRESENTANTE LEGAL";
+  const repCargo = document.getElementById("recRepCargo").value.trim() || "Sócio-Administrador";
   
-  let htmlConteudo = "";
-  if (isDec) {
-    htmlConteudo = window.atualizarPreVisualizacaoDeclaracao();
+  const orgao = document.getElementById("recOrgao").value.trim() || "ILUSTRÍSSIMO SENHOR PREGOEIRO / COMISSÃO DE CONTRATAÇÃO";
+  const processo = document.getElementById("recProcesso").value.trim() || "PREGÃO ELETRÔNICO Nº 01/2026";
+  const objeto = document.getElementById("recObjeto").value.trim() || "Prestação de serviços especializados.";
+  const lote = document.getElementById("recLote").value.trim() || "";
+  
+  const fatos = document.getElementById("recFatos").value.trim() || "";
+  const fundamento = document.getElementById("recFundamento").value.trim() || "";
+  const pedidos = document.getElementById("recPedidos").value.trim() || "";
+  
+  const cidade = document.getElementById("recCidade").value.trim() || "Belo Horizonte";
+  const dataInput = document.getElementById("recData").value;
+  
+  let dataFormatada = "";
+  if (dataInput) {
+    const d = new Date(dataInput + "T12:00:00");
+    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    dataFormatada = `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
   } else {
+    dataFormatada = "___ de _________________ de 202___";
+  }
+
+  const headerHTML = window.tempVisuals.timbrado 
+    ? `<div style="text-align:center; margin-bottom:25px;"><img src="${window.tempVisuals.timbrado}" style="max-height:110px; max-width:100%; object-fit:contain;"></div>`
+    : `<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:30px;"><h2 style="font-size:20px; font-weight:800; text-transform:uppercase; margin:0;">RECURSO ADMINISTRATIVO</h2></div>`;
+  
+  const assinaturaHTML = window.tempVisuals.assinaturaDec
+    ? `<div style="text-align:center; margin-top:25px;"><img src="${window.tempVisuals.assinaturaDec}" style="max-height:80px; max-width:250px; object-fit:contain; display:block; margin:0 auto 5px auto;"><div style="border-top:1px solid #333; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`
+    : `<div style="text-align:center; margin-top:55px;"><div style="border-top:1px dashed #777; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`;
+
+  const fullA4Content = `
+    <div style="background:white; color:black; padding:40px; font-family:'Times New Roman', Times, serif; font-size:12px; line-height:1.6; min-height:600px; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      ${headerHTML}
+      
+      <div style="text-align:left; font-size:12px; margin-bottom:20px;">
+        <strong>AO ${orgao.toUpperCase()}</strong><br>
+        <strong>REF:</strong> ${processo}<br>
+        <strong>OBJETO:</strong> ${objeto}
+        ${lote ? `<br><strong>LOTE/ITEM:</strong> ${lote}` : ""}
+      </div>
+      
+      <p style="text-align:justify; margin-bottom:15px;">
+        <strong>${empresa.toUpperCase()}</strong>, inscrita no CNPJ sob o nº <strong>${cnpj}</strong>, com sede à <strong>${endereco}</strong>, representada por seu ${repCargo}, Sr(a). <strong>${repNome}</strong>, vem, tempestiva e respeitosamente, perante Vossa Senhoria, interpor o presente:
+      </p>
+
+      <div style="text-align:center; font-weight:bold; font-size:14px; margin: 20px 0; text-transform:uppercase; text-decoration:underline;">RECURSO ADMINISTRATIVO</div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>I. DA SÍNTESE DOS FATOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fatos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>II. DA FUNDAMENTAÇÃO JURÍDICA</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fundamento.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>III. DOS PEDIDOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${pedidos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <p style="margin-bottom:15px; text-align:justify;">Termos em que, pede e espera deferimento.</p>
+
+      <div style="text-align:right; margin-top:25px; font-size:12px; font-style:italic;">
+        ${cidade}, ${dataFormatada}.
+      </div>
+
+      ${assinaturaHTML}
+    </div>
+  `;
+
+  const elPreview = document.getElementById("areaPreVisualizacaoRec");
+  if (elPreview) elPreview.innerHTML = fullA4Content;
+  return fullA4Content;
+};
+
+window.atualizarPreVisualizacaoImpugnacao = function() {
+  const empresa = document.getElementById("impEmpresa").value.trim() || "NOME DA EMPRESA LTDA";
+  const cnpj = document.getElementById("impCNPJ").value.trim() || "00.000.000/0001-00";
+  const endereco = document.getElementById("impEndereco").value.trim() || "Endereço da Empresa, Cidade/UF";
+  const repNome = document.getElementById("impRepNome").value.trim() || "REPRESENTANTE LEGAL";
+  const repCargo = document.getElementById("impRepCargo").value.trim() || "Sócio-Administrador";
+  
+  const orgao = document.getElementById("impOrgao").value.trim() || "ILUSTRÍSSIMO SENHOR PREGOEIRO / SUBSCRITOR DO EDITAL";
+  const processo = document.getElementById("impProcesso").value.trim() || "PREGÃO ELETRÔNICO Nº 01/2026";
+  const objeto = document.getElementById("impObjeto").value.trim() || "Prestação de serviços ou fornecimento.";
+  const item = document.getElementById("impItem").value.trim() || "";
+  
+  const fatos = document.getElementById("impFatos").value.trim() || "";
+  const fundamento = document.getElementById("impFundamento").value.trim() || "";
+  const pedidos = document.getElementById("impPedidos").value.trim() || "";
+  
+  const cidade = document.getElementById("impCidade").value.trim() || "Belo Horizonte";
+  const dataInput = document.getElementById("impData").value;
+  
+  let dataFormatada = "";
+  if (dataInput) {
+    const d = new Date(dataInput + "T12:00:00");
+    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    dataFormatada = `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  } else {
+    dataFormatada = "___ de _________________ de 202___";
+  }
+
+  const headerHTML = window.tempVisuals.timbrado 
+    ? `<div style="text-align:center; margin-bottom:25px;"><img src="${window.tempVisuals.timbrado}" style="max-height:110px; max-width:100%; object-fit:contain;"></div>`
+    : `<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:30px;"><h2 style="font-size:20px; font-weight:800; text-transform:uppercase; margin:0;">IMPUGNAÇÃO DE EDITAL</h2></div>`;
+  
+  const signatureImage = window.tempVisuals.assinaturaDec;
+  const assinaturaHTML = signatureImage
+    ? `<div style="text-align:center; margin-top:25px;"><img src="${signatureImage}" style="max-height:80px; max-width:250px; object-fit:contain; display:block; margin:0 auto 5px auto;"><div style="border-top:1px solid #333; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`
+    : `<div style="text-align:center; margin-top:55px;"><div style="border-top:1px dashed #777; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`;
+
+  const fullA4Content = `
+    <div style="background:white; color:black; padding:40px; font-family:'Times New Roman', Times, serif; font-size:12px; line-height:1.6; min-height:600px; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      ${headerHTML}
+      
+      <div style="text-align:left; font-size:12px; margin-bottom:20px;">
+        <strong>AO ${orgao.toUpperCase()}</strong><br>
+        <strong>REF:</strong> ${processo}<br>
+        <strong>OBJETO:</strong> ${objeto}
+        ${item ? `<br><strong>ELEMENTO IMPUGNADO:</strong> ${item}` : ""}
+      </div>
+      
+      <p style="text-align:justify; margin-bottom:15px;">
+        <strong>${empresa.toUpperCase()}</strong>, inscrita no CNPJ sob o nº <strong>${cnpj}</strong>, com sede à <strong>${endereco}</strong>, representada por seu ${repCargo}, Sr(a). <strong>${repNome}</strong>, vem, tempestiva e respeitosamente, perante Vossa Senhoria, apresentar:
+      </p>
+
+      <div style="text-align:center; font-weight:bold; font-size:14px; margin: 20px 0; text-transform:uppercase; text-decoration:underline;">IMPUGNAÇÃO AO EDITAL</div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>I. DOS FATOS E ADMISSIBILIDADE</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fatos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>II. DOS FUNDAMENTOS JURÍDICOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fundamento.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>III. DOS PEDIDOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${pedidos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <p style="margin-bottom:15px; text-align:justify;">Termos em que, pede acolhimento e deferimento.</p>
+
+      <div style="text-align:right; margin-top:25px; font-size:12px; font-style:italic;">
+        ${cidade}, ${dataFormatada}.
+      </div>
+
+      ${assinaturaHTML}
+    </div>
+  `;
+
+  const elPreview = document.getElementById("areaPreVisualizacaoImp");
+  if (elPreview) elPreview.innerHTML = fullA4Content;
+  return fullA4Content;
+};
+
+window.atualizarPreVisualizacaoDefesa = function() {
+  const empresa = document.getElementById("defEmpresa").value.trim() || "NOME DA EMPRESA LTDA";
+  const cnpj = document.getElementById("defCNPJ").value.trim() || "00.000.000/0001-00";
+  const endereco = document.getElementById("defEndereco").value.trim() || "Endereço da Empresa, Cidade/UF";
+  const repNome = document.getElementById("defRepNome").value.trim() || "REPRESENTANTE LEGAL";
+  const repCargo = document.getElementById("defRepCargo").value.trim() || "Sócio-Administrador";
+  
+  const orgao = document.getElementById("defOrgao").value.trim() || "ILUSTRÍSSIMO SENHOR DIRIGENTE / AUTORIDADE SANÇÃO";
+  const processo = document.getElementById("defProcesso").value.trim() || "PROCESSO ADMINISTRATIVO SANCIONADOR Nº 01/2026";
+  const objeto = document.getElementById("defObjeto").value.trim() || "Contrato decorrente de licitação.";
+  const infracao = document.getElementById("defInfracao").value.trim() || "";
+  
+  const fatos = document.getElementById("defFatos").value.trim() || "";
+  const fundamento = document.getElementById("defFundamento").value.trim() || "";
+  const pedidos = document.getElementById("defPedidos").value.trim() || "";
+  
+  const city = document.getElementById("defCidade").value.trim() || "Belo Horizonte";
+  const dataInput = document.getElementById("defData").value;
+  
+  let dataFormatada = "";
+  if (dataInput) {
+    const d = new Date(dataInput + "T12:00:00");
+    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    dataFormatada = `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  } else {
+    dataFormatada = "___ de _________________ de 202___";
+  }
+
+  const headerHTML = window.tempVisuals.timbrado 
+    ? `<div style="text-align:center; margin-bottom:25px;"><img src="${window.tempVisuals.timbrado}" style="max-height:110px; max-width:100%; object-fit:contain;"></div>`
+    : `<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:30px;"><h2 style="font-size:20px; font-weight:800; text-transform:uppercase; margin:0;">DEFESA ADMINISTRATIVA</h2></div>`;
+  
+  const signatureImage = window.tempVisuals.assinaturaDec;
+  const assinaturaHTML = signatureImage
+    ? `<div style="text-align:center; margin-top:25px;"><img src="${signatureImage}" style="max-height:80px; max-width:250px; object-fit:contain; display:block; margin:0 auto 5px auto;"><div style="border-top:1px solid #333; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`
+    : `<div style="text-align:center; margin-top:55px;"><div style="border-top:1px dashed #777; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`;
+
+  const fullA4Content = `
+    <div style="background:white; color:black; padding:40px; font-family:'Times New Roman', Times, serif; font-size:12px; line-height:1.6; min-height:600px; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      ${headerHTML}
+      
+      <div style="text-align:left; font-size:12px; margin-bottom:20px;">
+        <strong>AO ${orgao.toUpperCase()}</strong><br>
+        <strong>REF:</strong> ${processo}<br>
+        <strong>CONTRATO / OBJETO:</strong> ${objeto}
+        ${infracao ? `<br><strong>INFRAÇÃO APONTADA:</strong> ${infracao}` : ""}
+      </div>
+      
+      <p style="text-align:justify; margin-bottom:15px;">
+        <strong>${empresa.toUpperCase()}</strong>, inscrita no CNPJ sob o nº <strong>${cnpj}</strong>, com sede à <strong>${endereco}</strong>, representada por seu ${repCargo}, Sr(a). <strong>${repNome}</strong>, vem, tempestiva e respeitosamente, perante Vossa Senhoria, apresentar:
+      </p>
+
+      <div style="text-align:center; font-weight:bold; font-size:14px; margin: 20px 0; text-transform:uppercase; text-decoration:underline;">DEFESA ADMINISTRATIVA</div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>I. DOS ESCLARECIMENTOS DE FATO</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fatos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>II. DOS RAZÕES DE DIREITO</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fundamento.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>III. DOS PEDIDOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${pedidos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <p style="margin-bottom:15px; text-align:justify;">Termos em que, pede acolhimento e o deferimento da presente peça defensiva.</p>
+
+      <div style="text-align:right; margin-top:25px; font-size:12px; font-style:italic;">
+        ${city}, ${dataFormatada}.
+      </div>
+
+      ${assinaturaHTML}
+    </div>
+  `;
+
+  const elPreview = document.getElementById("areaPreVisualizacaoDef");
+  if (elPreview) elPreview.innerHTML = fullA4Content;
+  return fullA4Content;
+};
+
+window.salvarEImprimirDocumento = async function(tipo) {
+  let nomeDoc = "";
+  let htmlConteudo = "";
+  
+  if (tipo === "declaracao") {
+    nomeDoc = "Declaração Unificada";
+    htmlConteudo = window.atualizarPreVisualizacaoDeclaracao();
+  } else if (tipo === "proposta") {
+    nomeDoc = "Proposta Comercial";
     htmlConteudo = window.atualizarPreVisualizacaoProposta();
+  } else if (tipo === "recurso") {
+    nomeDoc = "Recurso Administrativo";
+    htmlConteudo = window.atualizarPreVisualizacaoRecurso();
+  } else if (tipo === "impugnacao") {
+    nomeDoc = "Impugnação de Edital";
+    htmlConteudo = window.atualizarPreVisualizacaoImpugnacao();
+  } else if (tipo === "defesa") {
+    nomeDoc = "Defesa Administrativa";
+    htmlConteudo = window.atualizarPreVisualizacaoDefesa();
   }
   
   try {
@@ -5093,7 +5786,13 @@ window.iniciarListenerDocsGerados = function() {
         if (item.dataCriacao && item.dataCriacao.seconds) {
           dataStr = new Date(item.dataCriacao.seconds * 1000).toLocaleDateString("pt-BR") + " " + new Date(item.dataCriacao.seconds * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
         }
-        const tipoLabel = item.tipo === "declaracao" ? "✍️ Declaração" : "💰 Proposta";
+        
+        let tipoLabel = "📄 Documento";
+        if (item.tipo === "declaracao") tipoLabel = "✍️ Declaração";
+        else if (item.tipo === "proposta") tipoLabel = "💰 Proposta";
+        else if (item.tipo === "recurso") tipoLabel = "⚖️ Recurso";
+        else if (item.tipo === "impugnacao") tipoLabel = "🚫 Impugnação";
+        else if (item.tipo === "defesa") tipoLabel = "🛡️ Defesa";
         
         listDiv.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:16px 20px; border-radius:15px; border:1px solid rgba(255,255,255,0.04);">
