@@ -673,13 +673,43 @@ function atualizarBadgePersistente(nomeAba, registros) {
   const ultimaVisualizacao = Number(localStorage.getItem(`ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_${nomeAba}`) || 0);
 
   let naoLidos = 0;
-  registros.forEach(item => {
-    let dataRegistro = 0;
-    if (item?.data?.seconds) dataRegistro = item.data.seconds * 1000;
-    else if (item?.dataCriacao?.seconds) dataRegistro = item.dataCriacao.seconds * 1000;
+  if (nomeAba === "chat") {
+    const chatAberto = document.getElementById("chat") && document.getElementById("chat").style.display === "block";
+    if (chatAberto) {
+      naoLidos = 0;
+    } else if (Array.isArray(registros)) {
+      const emailLogado = auth.currentUser ? auth.currentUser.email.toLowerCase().trim() : "";
+      registros.forEach(m => {
+        const remetente = (m.remetenteEmail || "").toLowerCase().trim();
+        // Não conta se for do próprio usuário logado
+        if (remetente === emailLogado) return;
+        
+        // Só conta se não estiver marcada como lida e for posterior à última visualização
+        if (m.lido !== true) {
+          let dataRegistro = 0;
+          if (m?.data?.seconds) dataRegistro = m.data.seconds * 1000;
+          else if (m?.dataCriacao?.seconds) dataRegistro = m.dataCriacao.seconds * 1000;
+          if (dataRegistro > ultimaVisualizacao) {
+            naoLidos++;
+          }
+        }
+      });
+    } else {
+      naoLidos = Number(registros) || 0;
+    }
+  } else {
+    if (Array.isArray(registros)) {
+      registros.forEach(item => {
+        let dataRegistro = 0;
+        if (item?.data?.seconds) dataRegistro = item.data.seconds * 1000;
+        else if (item?.dataCriacao?.seconds) dataRegistro = item.dataCriacao.seconds * 1000;
 
-    if (dataRegistro > ultimaVisualizacao) naoLidos++;
-  });
+        if (dataRegistro > ultimaVisualizacao) naoLidos++;
+      });
+    } else {
+      naoLidos = Number(registros) || 0;
+    }
+  }
 
   const anterior = window.ultimoContadorNaoLidos[nomeAba] || 0;
   
@@ -1570,7 +1600,8 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
     // Marcar mensagens recebidas do outro lado como lidas no Firestore
     ultimoSnapMensagens.forEach(async (docSnap) => {
       const m = docSnap.data();
-      const isFromOtherSide = isAdmin ? (m.autor !== "admin") : (m.autor === "admin");
+      const remetenteLower = (m.remetenteEmail || "").toLowerCase().trim();
+      const isFromOtherSide = remetenteLower !== emailUsuarioLogado;
       if (isFromOtherSide && m.lido !== true) {
         try {
           await updateDoc(doc(db, "chats", clienteIdGlobal, "mensagens", docSnap.id), { lido: true });
