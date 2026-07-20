@@ -1534,7 +1534,14 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
           </div>
 
           ${htmlReacoes}
-          <div style="font-size:11px; opacity:0.6; text-align:right;">${dataFormatada}</div>
+          <div style="font-size:11px; opacity:0.6; text-align:right; display:flex; align-items:center; justify-content:flex-end; gap:4px;">
+            <span>${dataFormatada}</span>
+            ${isMe ? `
+              <span style="font-size: 13px; font-weight: 800; color: ${m.lido ? '#10b981' : '#060b13'}; opacity: ${m.lido ? '1' : '0.45'}; margin-left: 4px;" title="${m.lido ? 'Mensagem lida' : 'Enviada (não lida)'}">
+                ${m.lido ? '✓✓' : '✓'}
+              </span>
+            ` : ''}
+          </div>
         </div>
         ${isMe ? htmlAvatarEu : ""}
       </div>
@@ -1548,6 +1555,19 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
   if (chatAberto) {
     const tipoUsuario = isAdmin ? "admin" : "cliente";
     localStorage.setItem(`ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_chat`, Date.now());
+    
+    // Marcar mensagens recebidas do outro lado como lidas no Firestore
+    ultimoSnapMensagens.forEach(async (docSnap) => {
+      const m = docSnap.data();
+      const isFromOtherSide = isAdmin ? (m.autor !== "admin") : (m.autor === "admin");
+      if (isFromOtherSide && m.lido !== true) {
+        try {
+          await updateDoc(doc(db, "chats", clienteIdGlobal, "mensagens", docSnap.id), { lido: true });
+        } catch (err) {
+          console.error("Erro ao marcar mensagem como lida:", err);
+        }
+      }
+    });
   }
   
   const mensagens = [];
@@ -1708,7 +1728,8 @@ window.enviarMensagem = async () => {
         respostaTexto: respostaMensagem?.texto || null,
         respostaAutor: respostaMensagem?.autor || null,
         anexoUrl, anexoNome, anexoTipo,
-        data: serverTimestamp()
+        data: serverTimestamp(),
+        lido: false
       }
     );
 
