@@ -679,6 +679,12 @@
       <span class="sidebar-label">Gerador de Docs</span>
     </button>
     
+    <button onclick="mostrarAba('financeiro')">
+      <span class="sidebar-icon">💰</span>
+      <span class="sidebar-label">Financeiro</span>
+      <span class="notificacao-badge" id="badge-financeiro" style="display:none;">0</span>
+    </button>
+    
     <button onclick="mostrarAba('config')">
       <span class="sidebar-icon">⚙️</span>
       <span class="sidebar-label">Configurações</span>
@@ -1279,6 +1285,154 @@
               <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia da defesa em formato de folha A4.</div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO FINANCEIRO -->
+    <div id="financeiro" class="aba" style="display:none;">
+      <h1 style="display:flex; align-items:center; gap:12px;">💰 Painel Financeiro & Faturamento</h1>
+      <p style="font-size:14px; opacity:0.8; margin-bottom:25px;">Acompanhe sua mensalidade recorrente e as taxas de execução de demandas do sistema integrado Asaas.</p>
+
+      <!-- KPI Grid -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:18px; margin-bottom:30px;">
+        <div class="info-box" style="padding:22px; border-radius:18px; display:flex; flex-direction:column; justify-content:space-between; min-height:120px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Status da Conta</span>
+          <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+            <div id="financeiroStatusGeralDot" style="width:12px; height:12px; border-radius:50%; background:#10b981; box-shadow:0 0 10px #10b981;"></div>
+            <span id="financeiroStatusGeralText" style="font-size:22px; font-weight:800; color:#ffffff;">REGULAR</span>
+          </div>
+          <span style="font-size:11px; color:#64748b; margin-top:6px;">Integração Asaas ativa e monitorada</span>
+        </div>
+
+        <div class="info-box" style="padding:22px; border-radius:18px; display:flex; flex-direction:column; justify-content:space-between; min-height:120px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Mensalidade Fixa</span>
+          <span style="font-size:26px; font-weight:800; color:#e5b85c; margin-top:8px;">R$ 500,00</span>
+          <span style="font-size:11px; color:#64748b; margin-top:6px;">Vencimento mensal recorrente</span>
+        </div>
+
+        <div class="info-box" style="padding:22px; border-radius:18px; display:flex; flex-direction:column; justify-content:space-between; min-height:120px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Demandas & Execuções</span>
+          <span id="financeiroKPIDemandas" style="font-size:26px; font-weight:800; color:#fcd34d; margin-top:8px;">R$ 0,00</span>
+          <span style="font-size:11px; color:#64748b; margin-top:6px;">Taxas por demanda realizada</span>
+        </div>
+
+        <div class="info-box" style="padding:22px; border-radius:18px; display:flex; flex-direction:column; justify-content:space-between; min-height:120px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Total em Aberto</span>
+          <span id="financeiroKPITotalAberto" style="font-size:26px; font-weight:800; color:#ef4444; margin-top:8px;">R$ 0,00</span>
+          <span style="font-size:11px; color:#64748b; margin-top:6px;">Faturas pendentes de pagamento</span>
+        </div>
+      </div>
+
+      <!-- Histórico de Cobranças -->
+      <div class="info-box" style="padding:30px; border-radius:24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 style="color:#e5b85c; font-size:20px; font-weight:700; margin:0;">Histórico de Faturas</h2>
+            <p style="font-size:12px; color:#64748b; margin:4px 0 0 0;">Visualização de cobranças geradas no gateway Asaas</p>
+          </div>
+          <button class="botaoPadrao" onclick="window.atualizarFaturasFinanceiro()" style="width:auto; padding:10px 18px; font-size:13px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); box-shadow:none;">🔄 Atualizar Status</button>
+        </div>
+
+        <!-- Tabela -->
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:13px;">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.08); color:#64748b; font-weight:600; text-transform:uppercase; font-size:11px;">
+                <th style="padding:12px 16px;">Fatura / Descrição</th>
+                <th style="padding:12px 16px;">Tipo</th>
+                <th style="padding:12px 16px;">Valor</th>
+                <th style="padding:12px 16px;">Vencimento</th>
+                <th style="padding:12px 16px;">Status</th>
+                <th style="padding:12px 16px; text-align:right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="financeiroTabelaFaturas">
+              <!-- JS Injected Rows -->
+              <tr>
+                <td colspan="6" style="padding:40px; text-align:center; color:#64748b; font-style:italic;">
+                  Nenhuma fatura encontrada ou carregando dados...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE PAGAMENTO PREMIUM ASAAS -->
+    <div id="modalPagarAsaas" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2,4,9,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+      <div class="info-box" style="width:100%; max-width:550px; border-radius:24px; border:1px solid rgba(229,184,92,0.15); padding:30px; box-shadow:0 25px 50px rgba(0,0,0,0.8); background: #050811; display:flex; flex-direction:column; gap:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:15px;">
+          <div>
+            <span style="font-size:10px; color:#e5b85c; font-weight:800; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;">Portal de Pagamentos</span>
+            <h2 id="modalPagarDescricao" style="color:#ffffff; font-size:18px; font-weight:700; margin:0;">Mensalidade - Courvan</h2>
+          </div>
+          <button onclick="window.fecharModalPagar()" style="background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer;">&times;</button>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(229,184,92,0.04); border:1px solid rgba(229,184,92,0.1); padding:16px; border-radius:14px;">
+          <span style="font-size:14px; color:#cbd5e1; font-weight:500;">Valor a Pagar:</span>
+          <span id="modalPagarValor" style="font-size:24px; font-weight:800; color:#e5b85c;">R$ 500,00</span>
+        </div>
+
+        <!-- Tabs de Método de Pagamento -->
+        <div style="display:flex; gap:8px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
+          <button class="doc-tab-btn active" id="btnTabPagarPix" onclick="window.alternarTabPagar('pix')" style="flex:1; font-size:12px; padding:8px 0; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;">⚡ Pix</button>
+          <button class="doc-tab-btn" id="btnTabPagarBoleto" onclick="window.alternarTabPagar('boleto')" style="flex:1; font-size:12px; padding:8px 0; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;">🧾 Boleto</button>
+          <button class="doc-tab-btn" id="btnTabPagarCartao" onclick="window.alternarTabPagar('cartao')" style="flex:1; font-size:12px; padding:8px 0; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;">💳 Cartão</button>
+        </div>
+
+        <!-- Área PIX -->
+        <div id="areaPagarPix" style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:15px; padding:10px 0;">
+          <p style="font-size:13px; color:#cbd5e1; margin:0;">Escaneie o QR Code abaixo com o aplicativo do seu banco para pagar instantaneamente:</p>
+          <div style="background:#ffffff; padding:12px; border-radius:16px; border:2px solid #e5b85c;">
+            <img id="pagarPixQrCode" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgZmlsbD0id2hpdGUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+UVIgQ29kZTwvdGV4dD48L3N2Zz4=" style="width:160px; height:160px; display:block;">
+          </div>
+          <div style="width:100%;">
+            <label style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px; text-align:left;">Código Pix Copia e Cola:</label>
+            <div style="display:flex; gap:8px;">
+              <input id="pagarPixCopyPaste" class="inputPadrao" readonly style="margin-bottom:0; font-family:monospace; font-size:11px; padding:10px;" value="00020126360014br.gov.bcb.pix01147297550729785204000053039865802BR5917CourvanLicitacoes6009BeloHoriz62070503001">
+              <button class="botaoPadrao" onclick="window.copiarTextoPagar('pagarPixCopyPaste')" style="width:auto; padding:0 15px; font-size:12px;">Copiar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Área BOLETO -->
+        <div id="areaPagarBoleto" style="display:none; flex-direction:column; gap:15px; padding:10px 0;">
+          <p style="font-size:13px; color:#cbd5e1; margin:0;">Copie a linha digitável do boleto para pagamento no seu banco ou faça o download:</p>
+          <div>
+            <label style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px;">Linha Digitável:</label>
+            <div style="display:flex; gap:8px;">
+              <input id="pagarBoletoCodigo" class="inputPadrao" readonly style="margin-bottom:0; font-family:monospace; font-size:11px; padding:10px;" value="00190.00009 02624.770002 00000.000000 7 90000000050000">
+              <button class="botaoPadrao" onclick="window.copiarTextoPagar('pagarBoletoCodigo')" style="width:auto; padding:0 15px; font-size:12px;">Copiar</button>
+            </div>
+          </div>
+          <a id="pagarBoletoLink" href="#" target="_blank" class="botaoPadrao" style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(255,255,255,0.05); color:#ffffff; border:1px solid rgba(255,255,255,0.1); box-shadow:none;">
+            📥 Visualizar PDF do Boleto
+          </a>
+        </div>
+
+        <!-- Área CARTÃO -->
+        <div id="areaPagarCartao" style="display:none; flex-direction:column; gap:12px; padding:10px 0;">
+          <p style="font-size:13px; color:#cbd5e1; margin-bottom:6px;">Insira os dados do cartão de crédito para processamento via Asaas:</p>
+          <div style="display:grid; grid-template-columns:1fr; gap:10px;">
+            <input class="inputPadrao" placeholder="Número do Cartão" style="margin-bottom:0; font-family:monospace;">
+            <input class="inputPadrao" placeholder="Nome Impresso no Cartão" style="margin-bottom:0;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <input class="inputPadrao" placeholder="MM/AA" style="margin-bottom:0; font-family:monospace;">
+              <input class="inputPadrao" placeholder="CVC" style="margin-bottom:0; font-family:monospace;">
+            </div>
+          </div>
+          <button class="botaoPadrao" onclick="window.processarPagamentoCartaoSimulado()" style="margin-top:8px;">💳 Confirmar Pagamento Cartão</button>
+        </div>
+
+        <!-- Simulador Integrado Asaas Sandbox -->
+        <div style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:15px; margin-top:5px; text-align:center;">
+          <div style="font-size:10px; color:#e5b85c; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">⚡ Simulador de Sandbox Asaas</div>
+          <button onclick="window.simularPagamentoWebhookFatura()" class="botaoPadrao" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-size:12px; padding:10px; border:none; box-shadow:0 4px 10px rgba(16,185,129,0.2);">
+            Simular Pagamento Confirmado (Webhook Asaas)
+          </button>
         </div>
       </div>
     </div>
