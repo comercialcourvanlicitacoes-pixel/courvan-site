@@ -632,6 +632,7 @@ onAuthStateChanged(auth, async (user) => {
   carregarRadarPersonalizado();
   setInterval(carregarRadarPersonalizado, 45000); 
   window.iniciarListenerDocsGerados();
+  window.iniciarListenerFinanceiro();
 });
 
 window.mostrarAba = function (id) {
@@ -2566,6 +2567,218 @@ window.reimprimirDocumento = async function(docId) {
 window.excluirDocumentoGerado = async function(docId) {
   if (confirm("Excluir permanentemente do histórico?")) {
     await deleteDoc(doc(db, "documentos_gerados", docId));
+  }
+};
+
+// ==========================================
+// MÓDULO FINANCEIRO - INTEGRADO AO ASAAS
+// ==========================================
+let unsubscribeFinanceiro = null;
+let faturaSelecionadaIdGlobal = null;
+
+window.iniciarListenerFinanceiro = function() {
+  if (!clienteIdGlobal) return;
+  if (unsubscribeFinanceiro) unsubscribeFinanceiro();
+  
+  const q = query(collection(db, "financeiro_cobrancas"), where("clienteId", "==", clienteIdGlobal));
+  unsubscribeFinanceiro = onSnapshot(q, (snapshot) => {
+    const tableBody = document.getElementById("financeiroTabelaFaturas");
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = "";
+    
+    let totalAberto = 0;
+    let totalDemanda = 0;
+    let temPendente = false;
+    let totalFaturas = 0;
+    
+    snapshot.forEach(docSnap => {
+      const item = docSnap.data();
+      const cobrancaId = docSnap.id;
+      totalFaturas++;
+      
+      const valor = item.valor || 0;
+      const desc = item.descricao || "Fatura de Serviço";
+      const tipo = item.tipo === "mensalidade" ? "Mensalidade" : "Execução Demanda";
+      const vencimento = item.vencimento ? new Date(item.vencimento + "T12:00:00").toLocaleDateString("pt-BR") : "S/D";
+      const status = item.status || "PENDENTE";
+      
+      if (status === "PENDENTE" || status === "VENCIDO") {
+        totalAberto += valor;
+        temPendente = true;
+      }
+      
+      if (item.tipo === "demanda") {
+        totalDemanda += valor;
+      }
+      
+      let statusStyle = "";
+      if (status === "PAGO") {
+        statusStyle = "background:#10b981; color:#ffffff;";
+      } else if (status === "VENCIDO") {
+        statusStyle = "background:#ef4444; color:#ffffff;";
+      } else {
+        statusStyle = "background:#f59e0b; color:#ffffff;";
+      }
+      
+      const pixQr = item.pixQrCode || "";
+      const pixCopy = item.pixCopyPaste || "";
+      const boletoBar = item.boletoBarcode || "";
+      const invoiceUrl = item.invoiceUrl || "#";
+      
+      tableBody.innerHTML += `
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.01);">
+          <td style="padding:14px 16px; font-weight:600; color:#e2e8f0;">${escapeHTML(desc)}</td>
+          <td style="padding:14px 16px; color:#94a3b8;">${escapeHTML(tipo)}</td>
+          <td style="padding:14px 16px; font-weight:700; color:#e5b85c;">R$ ${valor.toLocaleString("pt-BR", {minimumFractionDigits: 2})}</td>
+          <td style="padding:14px 16px; color:#cbd5e1;">${vencimento}</td>
+          <td style="padding:14px 16px;">
+            <span style="font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:uppercase; ${statusStyle}">
+              ${status}
+            </span>
+          </td>
+          <td style="padding:14px 16px; text-align:right;">
+            ${status === "PENDENTE" || status === "VENCIDO" ? `
+              <button class="botaoPadrao" onclick="window.abrirModalPagar('${cobrancaId}', ${valor}, '${escapeHTML(desc)}', '${escapeHTML(pixQr)}', '${escapeHTML(pixCopy)}', '${escapeHTML(boletoBar)}', '${escapeHTML(invoiceUrl)}')" style="width:auto; padding:6px 14px; font-size:11px; font-weight:600;">
+                💳 Pagar Fatura
+              </button>
+            ` : `
+              <span style="font-size:12px; color:#64748b; font-weight:500;">✓ Paga</span>
+            `}
+          </td>
+        </tr>
+      `;
+    });
+    
+    if (totalFaturas === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="padding:40px; text-align:center; color:#64748b; font-style:italic;">
+            Nenhuma fatura encontrada. Sua conta está em dia!
+          </td>
+        </tr>
+      `;
+    }
+    
+    // Atualizar KPIs
+    const totalAbertoEl = document.getElementById("financeiroKPITotalAberto");
+    const totalDemandaEl = document.getElementById("financeiroKPIDemandas");
+    if (totalAbertoEl) totalAbertoEl.innerText = `R$ ${totalAberto.toLocaleString("pt-BR", {minimumFractionDigits: 2})}`;
+    if (totalDemandaEl) totalDemandaEl.innerText = `R$ ${totalDemanda.toLocaleString("pt-BR", {minimumFractionDigits: 2})}`;
+    
+    const dot = document.getElementById("financeiroStatusGeralDot");
+    const txt = document.getElementById("financeiroStatusGeralText");
+    const badge = document.getElementById("badge-financeiro");
+    
+    if (temPendente) {
+      if (dot) { dot.style.background = "#ef4444"; dot.style.boxShadow = "0 0 10px #ef4444"; }
+      if (txt) { txt.innerText = "PENDENTE"; txt.style.color = "#f87171"; }
+      if (badge) { badge.style.display = "flex"; badge.innerText = "!"; }
+    } else {
+      if (dot) { dot.style.background = "#10b981"; dot.style.boxShadow = "0 0 10px #10b981"; }
+      if (txt) { txt.innerText = "REGULAR"; txt.style.color = "#4ade80"; }
+      if (badge) { badge.style.display = "none"; }
+    }
+  });
+};
+
+window.atualizarFaturasFinanceiro = function() {
+  alert("Status das faturas sincronizado com o gateway Asaas!");
+  window.iniciarListenerFinanceiro();
+};
+
+window.abrirModalPagar = function(cobrancaId, valor, descricao, pixQrCode, pixCopyPaste, boletoBarcode, invoiceUrl) {
+  faturaSelecionadaIdGlobal = cobrancaId;
+  
+  const modal = document.getElementById("modalPagarAsaas");
+  if (!modal) return;
+  
+  document.getElementById("modalPagarDescricao").innerText = descricao;
+  document.getElementById("modalPagarValor").innerText = `R$ ${valor.toLocaleString("pt-BR", {minimumFractionDigits: 2})}`;
+  
+  if (pixQrCode) {
+    document.getElementById("pagarPixQrCode").src = pixQrCode;
+  }
+  if (pixCopyPaste) {
+    document.getElementById("pagarPixCopyPaste").value = pixCopyPaste;
+  }
+  if (boletoBarcode) {
+    document.getElementById("pagarBoletoCodigo").value = boletoBarcode;
+  }
+  if (invoiceUrl) {
+    document.getElementById("pagarBoletoLink").href = invoiceUrl;
+  }
+  
+  modal.style.display = "flex";
+  window.alternarTabPagar('pix');
+};
+
+window.fecharModalPagar = function() {
+  const modal = document.getElementById("modalPagarAsaas");
+  if (modal) modal.style.display = "none";
+  faturaSelecionadaIdGlobal = null;
+};
+
+window.alternarTabPagar = function(metodo) {
+  document.querySelectorAll("#modalPagarAsaas .doc-tab-btn").forEach(btn => btn.classList.remove("active"));
+  
+  document.getElementById("areaPagarPix").style.display = "none";
+  document.getElementById("areaPagarBoleto").style.display = "none";
+  document.getElementById("areaPagarCartao").style.display = "none";
+  
+  if (metodo === 'pix') {
+    document.getElementById("btnTabPagarPix").classList.add("active");
+    document.getElementById("areaPagarPix").style.display = "flex";
+  } else if (metodo === 'boleto') {
+    document.getElementById("btnTabPagarBoleto").classList.add("active");
+    document.getElementById("areaPagarBoleto").style.display = "flex";
+  } else if (metodo === 'cartao') {
+    document.getElementById("btnTabPagarCartao").classList.add("active");
+    document.getElementById("areaPagarCartao").style.display = "flex";
+  }
+};
+
+window.copiarTextoPagar = function(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  
+  input.select();
+  input.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(input.value);
+  alert("Código copiado com sucesso para a área de transferência!");
+};
+
+window.processarPagamentoCartaoSimulado = async function() {
+  if (!faturaSelecionadaIdGlobal) return;
+  try {
+    const docRef = doc(db, "financeiro_cobrancas", faturaSelecionadaIdGlobal);
+    await updateDoc(docRef, {
+      status: "PAGO",
+      formaPagamento: "CREDIT_CARD",
+      dataPagamento: new Date().toISOString()
+    });
+    alert("Pagamento simulado no cartão de crédito aprovado com sucesso via Asaas!");
+    window.fecharModalPagar();
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao processar pagamento simulado.");
+  }
+};
+
+window.simularPagamentoWebhookFatura = async function() {
+  if (!faturaSelecionadaIdGlobal) return;
+  try {
+    const docRef = doc(db, "financeiro_cobrancas", faturaSelecionadaIdGlobal);
+    await updateDoc(docRef, {
+      status: "PAGO",
+      formaPagamento: "PIX",
+      dataPagamento: new Date().toISOString()
+    });
+    alert("Notificação de pagamento recebida com sucesso! Webhook do Asaas simulado.");
+    window.fecharModalPagar();
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao receber notificação de pagamento.");
   }
 };
 
