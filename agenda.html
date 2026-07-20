@@ -992,7 +992,29 @@ window.sincronizarGoogleAgendaDireto = async function() {
       
       const startObj = ev.start;
       if (!startObj) continue;
-      const ymd = startObj.toISOString().split("T")[0];
+      
+      // Safe, timezone-independent parsing of date string via ev.startStr (which has format YYYY-MM-DD)
+      // or fallback to startObj
+      let ymd = "";
+      if (ev.startStr) {
+        ymd = ev.startStr.split("T")[0];
+      } else {
+        const year = startObj.getFullYear();
+        const month = String(startObj.getMonth() + 1).padStart(2, "0");
+        const day = String(startObj.getDate()).padStart(2, "0");
+        ymd = `${year}-${month}-${day}`;
+      }
+      
+      // Calculate next day for exclusive end date of all-day event
+      const parts = ymd.split("-");
+      const startLocalDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      const endLocalDate = new Date(startLocalDate);
+      endLocalDate.setDate(endLocalDate.getDate() + 1);
+      
+      const endYear = endLocalDate.getFullYear();
+      const endMonth = String(endLocalDate.getMonth() + 1).padStart(2, "0");
+      const endDay = String(endLocalDate.getDate()).padStart(2, "0");
+      const endYmd = `${endYear}-${endMonth}-${endDay}`;
       
       // Duplication check
       let eventExists = false;
@@ -1005,6 +1027,9 @@ window.sincronizarGoogleAgendaDireto = async function() {
           if (checkData.items && checkData.items.length > 0) {
             eventExists = true;
           }
+        } else {
+          const errText = await checkRes.text();
+          console.warn("Could not query duplication check:", errText);
         }
       } catch (e) {
         console.warn("Could not check duplication:", e);
@@ -1019,7 +1044,7 @@ window.sincronizarGoogleAgendaDireto = async function() {
         summary: title,
         description: description,
         start: { date: ymd },
-        end: { date: ymd }
+        end: { date: endYmd }
       };
       
       const insertRes = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`, {
@@ -1033,6 +1058,9 @@ window.sincronizarGoogleAgendaDireto = async function() {
       
       if (insertRes.ok) {
         successCount++;
+      } else {
+        const errText = await insertRes.text();
+        console.error("Erro ao inserir evento no Google Agenda:", errText);
       }
     }
     
