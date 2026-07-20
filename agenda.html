@@ -891,11 +891,7 @@ window.gerarUrlGoogleAgenda = function(titulo, descricao, dataStr) {
 };
 
 window.copiarLinkInscricao = function() {
-  const activeClienteId = window.currentClienteIdGlobal;
-  if (!activeClienteId) {
-    alert("Nenhum cliente ativo para gerar link de inscrição.");
-    return;
-  }
+  const activeClienteId = window.currentClienteIdGlobal || "admin";
   
   const feedUrl = window.location.origin + "/api/feed/" + activeClienteId;
   
@@ -918,12 +914,6 @@ window.copiarLinkInscricao = function() {
 };
 
 window.sincronizarGoogleAgendaDireto = async function() {
-  const activeClienteId = window.currentClienteIdGlobal;
-  if (!activeClienteId) {
-    alert("Por favor, acesse o calendário através de um painel de cliente antes de sincronizar.");
-    return;
-  }
-  
   // Obter todos os eventos
   if (!window.currentCalendarInstance) {
     alert("O calendário não está carregado.");
@@ -955,7 +945,8 @@ window.sincronizarGoogleAgendaDireto = async function() {
       throw new Error("Não foi possível obter o token do Google.");
     }
     
-    btn.innerHTML = `⏳ Preparando agenda "Courvan"...`;
+    const calName = "Courvan - " + (window.currentClienteNomeGlobal || "Licitações");
+    btn.innerHTML = `⏳ Preparando agenda "${calName}"...`;
     
     let calendarId = "primary";
     
@@ -965,7 +956,7 @@ window.sincronizarGoogleAgendaDireto = async function() {
       });
       const listData = await listRes.json();
       
-      const existingCal = listData.items && listData.items.find(c => c.summary === "Courvan - Licitações");
+      const existingCal = listData.items && listData.items.find(c => c.summary === calName);
       if (existingCal) {
         calendarId = existingCal.id;
       } else {
@@ -975,7 +966,7 @@ window.sincronizarGoogleAgendaDireto = async function() {
             "Authorization": `Bearer ${accessToken}`,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ summary: "Courvan - Licitações" })
+          body: JSON.stringify({ summary: calName })
         });
         if (createRes.ok) {
           const createData = await createRes.json();
@@ -1045,15 +1036,117 @@ window.sincronizarGoogleAgendaDireto = async function() {
       }
     }
     
-    alert(`Sucesso! ${successCount} eventos sincronizados na sua agenda "Courvan - Licitações" do Google!`);
+    alert(`Sucesso! ${successCount} eventos sincronizados na sua agenda "${calName}" do Google!`);
     btn.innerHTML = originalText;
     btn.disabled = false;
   } catch (error) {
     console.error("Google sync error:", error);
-    alert("Erro ao sincronizar com Google Agenda: " + error.message);
+    if (error.code === "auth/operation-not-allowed" || (error.message && error.message.includes("operation-not-allowed"))) {
+      window.mostrarModalErroGoogleAuth();
+    } else {
+      alert("Erro ao sincronizar com Google Agenda: " + error.message);
+    }
     btn.innerHTML = originalText;
     btn.disabled = false;
   }
+};
+
+window.mostrarModalErroGoogleAuth = function() {
+  const existing = document.getElementById("modalErroGoogleAuth");
+  if (existing) {
+    existing.remove();
+  }
+
+  if (!document.getElementById("modalGoogleAuthStyles")) {
+    const style = document.createElement("style");
+    style.id = "modalGoogleAuthStyles";
+    style.innerHTML = `
+      @keyframes gAuthFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes gAuthSlideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const modal = document.createElement("div");
+  modal.id = "modalErroGoogleAuth";
+  modal.style.position = "fixed";
+  modal.style.top = "0";
+  modal.style.left = "0";
+  modal.style.width = "100%";
+  modal.style.height = "100%";
+  modal.style.backgroundColor = "rgba(15, 23, 42, 0.85)";
+  modal.style.backdropFilter = "blur(8px)";
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modal.style.zIndex = "99999";
+  modal.style.padding = "20px";
+  modal.style.animation = "gAuthFadeIn 0.2s ease-out forwards";
+
+  modal.innerHTML = `
+    <div style="background: #1e293b; border: 1px solid rgba(229, 184, 92, 0.3); border-radius: 16px; max-width: 600px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden; animation: gAuthSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <!-- Header -->
+      <div style="background: rgba(229, 184, 92, 0.1); padding: 20px; border-bottom: 1px solid rgba(229, 184, 92, 0.15); display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 28px;">⚙️</span>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #e5b85c; font-family: sans-serif;">Configuração Necessária no Firebase</h3>
+            <p style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8; font-family: sans-serif;">O provedor de login do Google precisa ser ativado no console do seu Firebase.</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('modalErroGoogleAuth').remove()" style="background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; padding: 4px; line-height: 1;">&times;</button>
+      </div>
+
+      <!-- Content -->
+      <div style="padding: 24px; color: #f1f5f9; font-family: sans-serif; font-size: 13.5px; line-height: 1.6; max-height: 60vh; overflow-y: auto;">
+        <p style="margin: 0 0 16px 0; color: #cbd5e1;">Para utilizar a sincronização direta, você precisa habilitar o provedor Google no console do seu Firebase:</p>
+        
+        <ol style="margin: 0 0 24px 0; padding-left: 20px; color: #e2e8f0; display: flex; flex-direction: column; gap: 10px;">
+          <li>Acesse o <strong>Console do Firebase</strong> pelo link: <a href="https://console.firebase.google.com/" target="_blank" style="color: #e5b85c; text-decoration: underline; font-weight: 600;">console.firebase.google.com</a></li>
+          <li>Clique no seu projeto <strong>"courvan-sistema"</strong>.</li>
+          <li>No menu lateral esquerdo, vá em <strong>Build (Construção)</strong> ➔ <strong>Authentication</strong>.</li>
+          <li>Acesse a aba <strong>Sign-in method (Método de login)</strong> na barra superior.</li>
+          <li>Clique em <strong>Add new provider (Adicionar novo provedor)</strong> e selecione <strong>Google</strong>.</li>
+          <li>Ative a chave de ativação, configure um email de suporte no campo correspondente e clique em <strong>Save (Salvar)</strong>.</li>
+        </ol>
+
+        <!-- Divider -->
+        <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 20px 0;">
+
+        <!-- Alternative Method -->
+        <div style="background: rgba(229, 184, 92, 0.05); border: 1px solid rgba(229, 184, 92, 0.15); padding: 16px; border-radius: 10px;">
+          <h4 style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #e5b85c; display: flex; align-items: center; gap: 8px;">
+            <span>💡</span> Alternativa Instantânea (Sem Configuração):
+          </h4>
+          <p style="margin: 0; font-size: 12.5px; color: #cbd5e1; line-height: 1.5;">
+            Você pode sincronizar sua agenda <strong>agora mesmo</strong> usando o link de assinatura automática!
+          </p>
+          <div style="margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button onclick="document.getElementById('modalErroGoogleAuth').remove(); window.copiarLinkInscricao();" style="padding: 8px 14px; background: rgba(229, 184, 92, 0.15); border: 1px solid rgba(229, 184, 92, 0.3); color: #e5b85c; border-radius: 8px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(229, 184, 92, 0.25)'" onmouseout="this.style.background='rgba(229, 184, 92, 0.15)'">
+              🔗 Copiar Link de Inscrição (iCal)
+            </button>
+            <span style="font-size: 11px; color: #94a3b8;">Sincroniza automaticamente em segundo plano.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="background: #0f172a; padding: 16px 24px; display: flex; justify-content: flex-end; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+        <button onclick="document.getElementById('modalErroGoogleAuth').remove()" style="padding: 10px 20px; background: #334155; border: none; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">
+          Entendido, fechar
+        </button>
+      </div>
+    </div>
+  </div>
+  `;
+  
+  document.body.appendChild(modal);
 };
 
 /* =========================
@@ -1083,6 +1176,28 @@ async function iniciarCalendario(clienteId){
 
   });
 
+  window.currentClienteNomeGlobal = clienteId ? (clientesMap[clienteId] || "Cliente") : "Geral";
+
+  // Agrupamento robusto por empresa para carregar eventos de todas as "pastas" da mesma empresa
+  let clientIds = clienteId ? [clienteId] : [];
+  if (clienteId) {
+    const thisClienteDoc = clientesSnap.docs.find(d => d.id === clienteId);
+    if (thisClienteDoc) {
+      const thisClienteData = thisClienteDoc.data();
+      const nomeEmpresa = (thisClienteData.empresa || "").trim();
+      if (nomeEmpresa) {
+        const docsMesmaEmpresa = clientesSnap.docs.filter(d => {
+          const emp = (d.data().empresa || "").trim();
+          return emp.toLowerCase() === nomeEmpresa.toLowerCase();
+        });
+        if (docsMesmaEmpresa.length > 0) {
+          clientIds = docsMesmaEmpresa.map(d => d.id);
+          window.currentClienteNomeGlobal = nomeEmpresa;
+        }
+      }
+    }
+  }
+
   // QUERY
   let q;
 
@@ -1095,6 +1210,7 @@ async function iniciarCalendario(clienteId){
         "status",
         "in",
         [
+          "aviso",
           "andamento",
           "vencida",
           "perdida"
@@ -1104,28 +1220,38 @@ async function iniciarCalendario(clienteId){
 
   }else{
 
-    // CLIENTE
-    q = query(
-
-      collection(db, "licitacoes"),
-
-      where(
-        "clienteId",
-        "==",
-        clienteId
-      ),
-
-      where(
-        "status",
-        "in",
-        [
-          "andamento",
-          "vencida",
-          "perdida"
-        ]
-      )
-
-    );
+    // CLIENTE (com suporte a múltiplos IDs da mesma empresa / "pastas")
+    if (clientIds.length > 1) {
+      q = query(
+        collection(db, "licitacoes"),
+        where("clienteId", "in", clientIds),
+        where(
+          "status",
+          "in",
+          [
+            "aviso",
+            "andamento",
+            "vencida",
+            "perdida"
+          ]
+        )
+      );
+    } else {
+      q = query(
+        collection(db, "licitacoes"),
+        where("clienteId", "==", clienteId),
+        where(
+          "status",
+          "in",
+          [
+            "aviso",
+            "andamento",
+            "vencida",
+            "perdida"
+          ]
+        )
+      );
+    }
 
   }
 
@@ -1208,7 +1334,11 @@ async function iniciarCalendario(clienteId){
   if (!clienteId) {
     qDocs = query(collection(db, "documentos"));
   } else {
-    qDocs = query(collection(db, "documentos"), where("clienteId", "==", clienteId));
+    if (clientIds.length > 1) {
+      qDocs = query(collection(db, "documentos"), where("clienteId", "in", clientIds));
+    } else {
+      qDocs = query(collection(db, "documentos"), where("clienteId", "==", clienteId));
+    }
   }
 
   onSnapshot(qDocs, (snapshotDocs) => {
