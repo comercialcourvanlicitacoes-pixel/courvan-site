@@ -3671,7 +3671,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
             overflow-wrap:anywhere;
             white-space:pre-wrap;
           ">
-            ${window.formatarMentionsNoTexto(m.texto)}
+            ${window.formatarMentionsNoTexto(m.texto, isMe)}
           </div>
 
           ${htmlAnexo}
@@ -3704,8 +3704,14 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
 
           ${htmlReacoes}
 
-          <div style="font-size:11px; opacity:0.6; text-align:right;">
-            ${m.editado ? '<span style="font-style: italic; opacity: 0.8; margin-right: 6px;">(editado)</span>' : ''} ${dataFormatada}
+          <div style="font-size:11px; opacity:0.6; text-align:right; display:flex; align-items:center; justify-content:flex-end; gap:4px;">
+            ${m.editado ? '<span style="font-style: italic; opacity: 0.8; margin-right: 6px;">(editado)</span>' : ''} 
+            <span>${dataFormatada}</span>
+            ${isMe ? `
+              <span style="font-size: 13px; font-weight: 800; color: ${m.lido ? '#10b981' : '#060b13'}; opacity: ${m.lido ? '1' : '0.45'}; margin-left: 4px;" title="${m.lido ? 'Mensagem lida' : 'Enviada (não lida)'}">
+                ${m.lido ? '✓✓' : '✓'}
+              </span>
+            ` : ''}
           </div>
         </div>
 
@@ -3726,6 +3732,19 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
   if (chatAberto) {
     const tipoUsuario = isAdmin ? "admin" : "cliente";
     localStorage.setItem(`ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_chat`, Date.now());
+    
+    // Marcar mensagens recebidas do outro lado como lidas no Firestore
+    ultimoSnapMensagens.forEach(async (docSnap) => {
+      const m = docSnap.data();
+      const isFromOtherSide = isAdmin ? (m.autor !== "admin") : (m.autor === "admin");
+      if (isFromOtherSide && m.lido !== true) {
+        try {
+          await updateDoc(doc(db, "chats", clienteIdGlobal, "mensagens", docSnap.id), { lido: true });
+        } catch (err) {
+          console.error("Erro ao marcar mensagem como lida:", err);
+        }
+      }
+    });
   }
   
   // Filtra e contabiliza as mensagens não lidas de forma confiável
@@ -3918,7 +3937,8 @@ window.enviarMensagem = async () => {
         anexoUrl,
         anexoNome,
         anexoTipo,
-        data: serverTimestamp()
+        data: serverTimestamp(),
+        lido: false
       }
     );
 
@@ -4276,7 +4296,7 @@ document.addEventListener("click", function(e) {
   }
 });
 
-window.formatarMentionsNoTexto = function(texto) {
+window.formatarMentionsNoTexto = function(texto, isMe = false) {
   if (!texto) return "";
   const escaped = escapeHTML(texto);
   const list = window.obterUsuariosMencionaveis();
@@ -4287,7 +4307,11 @@ window.formatarMentionsNoTexto = function(texto) {
     const regexSafeName = nomeEscaped.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     const re = new RegExp("@" + regexSafeName + "\\b", "gi");
     
-    resultado = resultado.replace(re, `<span style="background: rgba(229, 184, 92, 0.25); color: #e5b85c; padding: 2px 6px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(229, 184, 92, 0.4); display: inline-block; font-size: 13px;">@${nomeEscaped}</span>`);
+    const style = isMe 
+      ? `background: #050811; color: #e5b85c; padding: 2px 6px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(229, 184, 92, 0.55); display: inline-block; font-size: 13px;`
+      : `background: rgba(229, 184, 92, 0.25); color: #e5b85c; padding: 2px 6px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(229, 184, 92, 0.4); display: inline-block; font-size: 13px;`;
+      
+    resultado = resultado.replace(re, `<span style="${style}">@${nomeEscaped}</span>`);
   });
   
   return resultado;
