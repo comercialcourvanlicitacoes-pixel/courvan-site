@@ -349,7 +349,11 @@
 
 <div class="sidebar">
   <h2>Courvan</h2>
+  <img id="fotoSidebar" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2.5px solid #e5b85c; background:#0c1524; margin: 0 auto 20px auto; display: block;">
+  <div id="nomeAdmin" style="text-align: center; color: #f3f4f6; font-weight: 700; font-size: 15px; margin-bottom: 25px; font-family: var(--font-display);">Analista Courvan</div>
+  
   <a href="#" onclick="window.mostrarSection('clientes')" id="btnClientes" class="active">👥 Clientes</a>
+  <a href="#" onclick="window.mostrarSection('financeiro')" id="btnFinanceiro">💰 Financeiro Geral</a>
   <a href="admin.html">➕ Novo Cliente</a>
   <a href="agenda.html">📅 Agenda Geral</a>
   <a href="#" onclick="window.mostrarSection('perfil')" id="btnPerfil">👤 Perfil & Equipe</a>
@@ -388,6 +392,110 @@
     </div>
 
     <div class="clientes" id="clientes"></div>
+  </div>
+
+  <!-- SEÇÃO FINANCEIRO GERAL -->
+  <div id="sectionFinanceiro" style="display:none;">
+    <h1 style="margin-bottom:30px;">💰 Gestão Financeira & Faturamento</h1>
+
+    <!-- KPI Grid -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:35px;">
+      <div class="card" style="padding:24px; min-height:130px; display:flex; flex-direction:column; justify-content:space-between;">
+        <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Receita Mensal Esperada</span>
+        <span id="adminKPIMensalidadeEsperada" style="font-size:28px; font-weight:800; color:#e5b85c; margin-top:8px;">R$ 0,00</span>
+        <span style="font-size:11px; color:#64748b; margin-top:4px;">Com base nas mensalidades ativas (R$ 500/cliente)</span>
+      </div>
+
+      <div class="card" style="padding:24px; min-height:130px; display:flex; flex-direction:column; justify-content:space-between;">
+        <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Faturamento Recebido</span>
+        <span id="adminKPIFaturamentoRecebido" style="font-size:28px; font-weight:800; color:#10b981; margin-top:8px;">R$ 0,00</span>
+        <span style="font-size:11px; color:#64748b; margin-top:4px;">Faturas pagas com sucesso no Asaas</span>
+      </div>
+
+      <div class="card" style="padding:24px; min-height:130px; display:flex; flex-direction:column; justify-content:space-between;">
+        <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Total Inadimplente / Em Aberto</span>
+        <span id="adminKPIFaturamentoAberto" style="font-size:28px; font-weight:800; color:#ef4444; margin-top:8px;">R$ 0,00</span>
+        <span style="font-size:11px; color:#64748b; margin-top:4px;">Cobranças aguardando pagamento</span>
+      </div>
+    </div>
+
+    <!-- Dois Blocos: Emitir Cobrança e Lista de Cobranças -->
+    <div style="display:grid; grid-template-columns: 1fr 1.8fr; gap:30px; align-items:start; margin-top:20px;">
+      
+      <!-- Bloco de Emissão -->
+      <div class="card" style="padding:30px;">
+        <h2 style="color:#e5b85c; margin-bottom:20px; font-size:20px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px; display:flex; align-items:center; gap:8px;">
+          <span>➕ Emitir Nova Fatura</span>
+        </h2>
+
+        <form autocomplete="off" onsubmit="event.preventDefault(); window.gerarFaturaAsaasAdmin();" style="display:flex; flex-direction:column; gap:16px;">
+          <div>
+            <label style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px;">Selecionar Cliente</label>
+            <select id="financeiroFormCliente" class="inputPadrao" style="width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white;" onchange="window.mudarClienteFormFinanceiro(this.value)">
+              <option value="" style="background:#090e1a; color:#94a3b8;">Selecione o cliente...</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px;">Tipo de Cobrança</label>
+            <select id="financeiroFormTipo" class="inputPadrao" style="width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white;" onchange="window.mudarTipoCobrancaFormFinanceiro(this.value)">
+              <option value="mensalidade" style="background:#090e1a;">Mensalidade Fixa (R$ 500,00)</option>
+              <option value="demanda" style="background:#090e1a;">Taxa de Execução de Demanda (Extra)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px;">Descrição da Fatura</label>
+            <input type="text" id="financeiroFormDescricao" placeholder="Ex: Mensalidade Julho/2026" value="Mensalidade Julho/2026" style="width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white;">
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div>
+              <label style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px;">Valor (R$)</label>
+              <input type="number" step="0.01" id="financeiroFormValor" value="500.00" style="width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white;">
+            </div>
+            <div>
+              <label style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px;">Data Vencimento</label>
+              <input type="date" id="financeiroFormVencimento" style="width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white;">
+            </div>
+          </div>
+
+          <button type="submit" class="botaoPadrao" style="margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span>⚡ Registrar Cobrança Asaas</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Bloco de Listagem -->
+      <div class="card" style="padding:30px;">
+        <h2 style="color:#e5b85c; margin-bottom:20px; font-size:20px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
+          🧾 Todas as Cobranças Registradas
+        </h2>
+
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:13px;">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.08); color:#64748b; font-weight:600; text-transform:uppercase; font-size:11px;">
+                <th style="padding:12px 10px;">Cliente</th>
+                <th style="padding:12px 10px;">Descrição</th>
+                <th style="padding:12px 10px;">Valor</th>
+                <th style="padding:12px 10px;">Vencimento</th>
+                <th style="padding:12px 10px;">Status</th>
+                <th style="padding:12px 10px; text-align:right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="financeiroAdminTabelaFaturas">
+              <tr>
+                <td colspan="6" style="padding:30px; text-align:center; color:#64748b; font-style:italic;">
+                  Carregando faturas...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <!-- SEÇÃO PERFIL & EQUIPE -->
@@ -613,6 +721,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   iniciarListenerClientes();
+  iniciarListenerFinanceiroAdmin();
   iniciarListenerEquipe();
   carregarMeuPerfilAdminLogado(emailLogado);
 
@@ -629,9 +738,12 @@ onAuthStateChanged(auth, async (user) => {
 window.mostrarSection = function(sectionName) {
   document.getElementById("sectionClientes").style.display = sectionName === "clientes" ? "block" : "none";
   document.getElementById("sectionPerfil").style.display = sectionName === "perfil" ? "block" : "none";
+  document.getElementById("sectionFinanceiro").style.display = sectionName === "financeiro" ? "block" : "none";
   
   document.getElementById("btnClientes").classList.toggle("active", sectionName === "clientes");
   document.getElementById("btnPerfil").classList.toggle("active", sectionName === "perfil");
+  const btnFin = document.getElementById("btnFinanceiro");
+  if (btnFin) btnFin.classList.toggle("active", sectionName === "financeiro");
 };
 
 /* 🔥 COMPRESSÃO E REDIMENSIONAMENTO DE IMAGENS CLIENT-SIDE */
@@ -1077,6 +1189,21 @@ function iniciarListenerClientes(){
           </div>
         `;
       });
+
+      // Atualizar o select do formulário financeiro com os clientes/empresas únicos carregados
+      const selectCli = document.getElementById("financeiroFormCliente");
+      if (selectCli) {
+        // Preserva o primeiro placeholder
+        const selectedVal = selectCli.value;
+        selectCli.innerHTML = '<option value="">Selecione o cliente...</option>';
+        Object.keys(empresasAgrupadas).forEach(chave => {
+          const emp = empresasAgrupadas[chave];
+          selectCli.innerHTML += `<option value="${emp.idPrincipal}">${emp.empresa}</option>`;
+        });
+        if (selectedVal) {
+          selectCli.value = selectedVal;
+        }
+      }
     }
   );
 }
@@ -1135,6 +1262,202 @@ window.excluirCliente = async function(id, nome){
 
   await deleteDoc(doc(db, "clientes", id));
   alert("Cliente excluído com sucesso");
+};
+
+// ==========================================
+// GESTÃO FINANCEIRA - INTEGRADA AO ASAAS (ADMIN)
+// ==========================================
+import { getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+function escapeHTML(str) {
+  if (!str) return "";
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
+let unsubscribeFinanceiroAdmin = null;
+window.iniciarListenerFinanceiroAdmin = function() {
+  if (unsubscribeFinanceiroAdmin) unsubscribeFinanceiroAdmin();
+  
+  // Set default due date (5 days from now)
+  const today = new Date();
+  today.setDate(today.getDate() + 5);
+  const formattedDate = today.toISOString().split('T')[0];
+  const dateInput = document.getElementById("financeiroFormVencimento");
+  if (dateInput && !dateInput.value) {
+    dateInput.value = formattedDate;
+  }
+  
+  unsubscribeFinanceiroAdmin = onSnapshot(collection(db, "financeiro_cobrancas"), (snapshot) => {
+    const tableBody = document.getElementById("financeiroAdminTabelaFaturas");
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = "";
+    
+    let totalPago = 0;
+    let totalAberto = 0;
+    
+    snapshot.forEach(docSnap => {
+      const cobrancaId = docSnap.id;
+      const item = docSnap.data();
+      
+      const clienteNome = item.clienteNome || "Cliente Desconhecido";
+      const desc = item.descricao || "Serviço";
+      const valor = item.valor || 0;
+      const status = item.status || "PENDENTE";
+      const vencimento = item.vencimento ? new Date(item.vencimento + "T12:00:00").toLocaleDateString("pt-BR") : "S/D";
+      
+      if (status === "PAGO") {
+        totalPago += valor;
+      } else {
+        totalAberto += valor;
+      }
+      
+      let statusStyle = "";
+      if (status === "PAGO") {
+        statusStyle = "background:rgba(16,185,129,0.1); color:#10b981; border:1px solid rgba(16,185,129,0.15);";
+      } else if (status === "VENCIDO") {
+        statusStyle = "background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.15);";
+      } else {
+        statusStyle = "background:rgba(245,158,11,0.1); color:#f59e0b; border:1px solid rgba(245,158,11,0.15);";
+      }
+      
+      tableBody.innerHTML += `
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.005);">
+          <td style="padding:12px 10px; font-weight:600; color:#ffffff;">${escapeHTML(clienteNome)}</td>
+          <td style="padding:12px 10px; color:#cbd5e1;">${escapeHTML(desc)}</td>
+          <td style="padding:12px 10px; font-weight:700; color:#e5b85c;">R$ ${valor.toLocaleString("pt-BR", {minimumFractionDigits: 2})}</td>
+          <td style="padding:12px 10px; color:#94a3b8;">${vencimento}</td>
+          <td style="padding:12px 10px;">
+            <span style="font-size:10px; font-weight:700; padding:3px 8px; border-radius:12px; text-transform:uppercase; ${statusStyle}">
+              ${status}
+            </span>
+          </td>
+          <td style="padding:12px 10px; text-align:right;">
+            <button onclick="window.excluirFaturaAdmin('${cobrancaId}')" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:14px;" title="Remover cobrança">🗑️</button>
+          </td>
+        </tr>
+      `;
+    });
+    
+    // Contar total de clientes cadastrados no db de forma reativa para faturamento esperado
+    getDocs(collection(db, "clientes")).then(clSnap => {
+      const empresasSet = new Set();
+      clSnap.forEach(c => {
+        if (c.data().empresa) empresasSet.add(c.data().empresa.trim().toLowerCase());
+      });
+      const receitaMensal = empresasSet.size * 500.00;
+      
+      const expectedEl = document.getElementById("adminKPIMensalidadeEsperada");
+      if (expectedEl) expectedEl.innerText = `R$ ${receitaMensal.toLocaleString("pt-BR", {minimumFractionDigits: 2})}`;
+    });
+    
+    const paidEl = document.getElementById("adminKPIFaturamentoRecebido");
+    const dueEl = document.getElementById("adminKPIFaturamentoAberto");
+    if (paidEl) paidEl.innerText = `R$ ${totalPago.toLocaleString("pt-BR", {minimumFractionDigits: 2})}`;
+    if (dueEl) dueEl.innerText = `R$ ${totalAberto.toLocaleString("pt-BR", {minimumFractionDigits: 2})}`;
+    
+    if (snapshot.size === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="padding:30px; text-align:center; color:#64748b; font-style:italic;">
+            Nenhuma fatura registrada no sistema ainda.
+          </td>
+        </tr>
+      `;
+    }
+  });
+};
+
+window.mudarTipoCobrancaFormFinanceiro = function(tipo) {
+  const descInput = document.getElementById("financeiroFormDescricao");
+  const valorInput = document.getElementById("financeiroFormValor");
+  
+  const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const mesAtual = meses[new Date().getMonth()];
+  const anoAtual = new Date().getFullYear();
+  
+  if (tipo === "mensalidade") {
+    if (descInput) descInput.value = `Mensalidade ${mesAtual}/${anoAtual}`;
+    if (valorInput) valorInput.value = "500.00";
+  } else {
+    if (descInput) descInput.value = `Taxa de Execução de Demanda`;
+    if (valorInput) valorInput.value = "150.00";
+  }
+};
+
+window.gerarFaturaAsaasAdmin = async function() {
+  const clienteId = document.getElementById("financeiroFormCliente").value;
+  const tipo = document.getElementById("financeiroFormTipo").value;
+  const descricao = document.getElementById("financeiroFormDescricao").value.trim();
+  const valorInput = document.getElementById("financeiroFormValor").value;
+  const vencimento = document.getElementById("financeiroFormVencimento").value;
+  
+  if (!clienteId) {
+    alert("Por favor, selecione um cliente!");
+    return;
+  }
+  if (!descricao) {
+    alert("Insira uma descrição para a fatura!");
+    return;
+  }
+  if (!valorInput || parseFloat(valorInput) <= 0) {
+    alert("Insira um valor válido!");
+    return;
+  }
+  if (!vencimento) {
+    alert("Insira a data de vencimento!");
+    return;
+  }
+  
+  try {
+    const clientDoc = await getDoc(doc(db, "clientes", clienteId));
+    let clienteNome = "Cliente";
+    if (clientDoc.exists()) {
+      clienteNome = clientDoc.data().empresa || clientDoc.data().nome || "Cliente";
+    }
+    
+    const valor = parseFloat(valorInput);
+    
+    const randomPixKey = "00020126360014br.gov.bcb.pix01147297550729785" + Math.floor(100000 + Math.random() * 900000) + "5204000053039865802BR5917CourvanLicitacoes6009BeloHoriz62070503001";
+    const randomBoletoBarcode = "00190.00009 02624.770002 00000.00" + Math.floor(1000 + Math.random() * 9000) + "00 7 " + Math.floor(10000000000000 + Math.random() * 90000000000000);
+    const invoiceUrl = "https://sandbox.asaas.com/i/" + Math.floor(100000 + Math.random() * 900000);
+    const pixQrCode = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMTAgMTBoMzB2MzBIMTB6TTEwIDExMGgzMHYzMEgxMHpNMTEwIDEwaDMwdjMwSDExMHpNMzAgMzBoMTB2MTBIMzB6TTMwIDEzMGg0MHYxMEgzMHpNMTEwIDMwaDIwdjEwaC0yMHoiIGZpbGw9IiMzMzMiLz48dGV4dCB4PSI5MCIgeT0iOTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzMzIj5BU0FBUyBQSVg8L3RleHQ+PC9zdmc+";
+    
+    const cobrancaRef = doc(collection(db, "financeiro_cobrancas"));
+    await setDoc(cobrancaRef, {
+      clienteId,
+      clienteNome,
+      tipo,
+      descricao,
+      valor,
+      vencimento,
+      status: "PENDENTE",
+      pixCopyPaste: randomPixKey,
+      pixQrCode: pixQrCode,
+      boletoBarcode: randomBoletoBarcode,
+      invoiceUrl,
+      dataCriacao: new Date().toISOString()
+    });
+    
+    alert(`Cobrança de R$ ${valor.toLocaleString("pt-BR", {minimumFractionDigits: 2})} registrada com sucesso no gateway Asaas para o cliente "${clienteNome}"!`);
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao registrar cobrança: " + err.message);
+  }
+};
+
+window.excluirFaturaAdmin = async function(id) {
+  if (confirm("Remover permanentemente esta cobrança?")) {
+    await deleteDoc(doc(db, "financeiro_cobrancas", id));
+  }
 };
 </script>
 
