@@ -1438,7 +1438,12 @@
     </div>
 
     <div id="dashboard" class="aba">
-      <h1>Dashboard do Cliente</h1>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
+        <h1 style="margin:0;">Dashboard do Cliente</h1>
+        <button id="btnExportarRelatorio" onclick="window.gerarRelatorioExecutivoPDF()" class="botaoPadrao" style="display:inline-flex; align-items:center; gap:8px; padding:12px 20px; font-size:13px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:12px; font-weight:700; cursor:pointer; box-shadow:0 4px 15px rgba(16,185,129,0.2); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(16,185,129,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(16,185,129,0.2)'">
+          🖨️ Exportar Relatório Executivo (A4 PDF)
+        </button>
+      </div>
 
       <div class="info-box" style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap; padding: 24px; background: linear-gradient(135deg, rgba(12, 39, 72, 0.4) 0%, rgba(6, 11, 19, 0.4) 100%); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; margin-bottom: 25px;">
         <div style="flex-shrink: 0; position: relative;">
@@ -1824,6 +1829,15 @@
         <input id="linkEdital" placeholder="Link do edital" class="inputPadrao">
         <button class="botaoPadrao" onclick="criarLicitacao()">Criar Licitação</button>
       </div>
+      
+      <!-- Campo de Busca de Licitações -->
+      <div style="margin-bottom: 25px; display: flex; gap: 12px; align-items: center; max-width: 600px;">
+        <div style="position: relative; flex: 1;">
+          <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 16px;">🔍</span>
+          <input id="searchLicitacoesInput" oninput="window.filtrarLicitacoesKanban()" placeholder="Pesquisar por órgão ou objeto..." class="inputPadrao" style="padding-left: 42px; margin: 0; width: 100%;">
+        </div>
+      </div>
+
       <div id="listaLicitacoes"></div>
     </div>
 
@@ -1935,13 +1949,137 @@
   </div>
 </div>
 
+<!-- Modal Detalhes da Licitação (Quadro Grande) -->
+<div id="modalDetalhesLicitacao" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(3, 7, 18, 0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:20px; transition: opacity 0.3s ease;">
+  <div style="background: #060b13; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; width: 100%; max-width: 1050px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+    
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; border-bottom:1px solid rgba(255,255,255,0.06); background: rgba(229, 184, 92, 0.02);">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span id="modalLicitacaoIcon" style="font-size:24px;">📢</span>
+        <div>
+          <h2 id="modalLicitacaoOrgao" style="margin:0; font-size:18px; color:#ffffff; font-weight:800; font-family:'Plus Jakarta Sans', sans-serif;"></h2>
+          <span id="modalLicitacaoStatusPill" style="display:inline-block; margin-top:4px; font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px; text-transform:uppercase; letter-spacing:0.5px;"></span>
+        </div>
+      </div>
+      <button onclick="window.fecharModalDetalhesLicitacao()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:bold; transition:all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'; this.style.color='#f87171'; this.style.borderColor='rgba(239, 68, 68, 0.3)';" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#94a3b8'; this.style.borderColor='rgba(255,255,255,0.1)';">✕</button>
+    </div>
+
+    <!-- Body / Columns -->
+    <div style="display:flex; flex:1; overflow:hidden; flex-wrap:wrap;">
+      
+      <!-- Left Column: Info & Actions -->
+      <div style="flex:1.2; min-width:320px; padding:24px; border-right:1px solid rgba(255,255,255,0.06); overflow-y:auto; display:flex; flex-direction:column; gap:20px; scrollbar-width:thin;">
+        
+        <div>
+          <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Objeto da Licitação</span>
+          <div id="modalLicitacaoObjeto" style="color:#cbd5e1; font-size:14px; line-height:1.6; white-space:pre-wrap; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); padding:16px; border-radius:12px; max-height:180px; overflow-y:auto; scrollbar-width:thin;"></div>
+        </div>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:140px;">
+            <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Valor Estimado</span>
+            <div id="modalLicitacaoValor" style="font-size:18px; font-weight:800; color:#e5b85c; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); padding:10px 14px; border-radius:10px;"></div>
+          </div>
+          
+          <div style="flex:1; min-width:140px;">
+            <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Data da Sessão</span>
+            <div id="modalLicitacaoSessao" style="font-size:13px; font-weight:700; color:#ffffff; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:10px 14px; border-radius:10px; display:flex; flex-direction:column; gap:4px;"></div>
+          </div>
+        </div>
+
+        <!-- Direct Actions -->
+        <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+          <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block;">Ações Rápidas</span>
+          
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a id="modalLicitacaoEditalLink" target="_blank" class="radar-btn" style="flex:1; text-align:center; padding:10px 14px; font-size:13px; text-decoration:none; border-radius:10px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px;">
+              🔗 Ver Edital
+            </a>
+            <button id="modalLicitacaoPixBtn" style="flex:1; padding:10px 14px; font-size:13px; border-radius:10px; border:none; color:#060b13; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+              💳 Gerar PIX
+            </button>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:4px;">
+            <button id="modalLicitacaoInteresseBtn" style="flex:1; padding:10px 14px; font-size:12px; border-radius:10px; font-weight:700; cursor:pointer; transition:0.2s;"></button>
+            <button id="modalLicitacaoSemInteresseBtn" style="flex:1; padding:10px 14px; font-size:12px; border-radius:10px; font-weight:700; cursor:pointer; transition:0.2s;"></button>
+          </div>
+        </div>
+
+        <!-- Status Transition Selector -->
+        <div>
+          <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:8px;">Etapa do Kanban</span>
+          <div style="display:flex; gap:8px;">
+            <select id="modalLicitacaoStatusSelect" class="inputPadrao" style="margin:0; flex:2; height:42px;">
+              <option value="aviso">📢 Aviso</option>
+              <option value="andamento">🟡 Em andamento</option>
+              <option value="vencida">🟢 Ganha (Vencida)</option>
+              <option value="perdida">🔴 Perdida</option>
+              <option value="descartada">⚫ Descartada</option>
+            </select>
+            <button id="modalLicitacaoExcluirBtn" style="background:rgba(239, 68, 68, 0.1); color:#f87171; border:1px solid rgba(239, 68, 68, 0.2); padding:0 16px; border-radius:10px; font-weight:700; cursor:pointer; transition:0.2s; flex:1;">🗑 Excluir</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Documents Upload, Attachments & History -->
+      <div style="flex:1.5; min-width:350px; display:flex; flex-direction:column; overflow:hidden; background: rgba(5, 11, 19, 0.3);">
+        
+        <!-- Tabs for Right Panel: Histórico & Anexos -->
+        <div style="display:flex; border-bottom:1px solid rgba(255,255,255,0.06); background: rgba(229, 184, 92, 0.01);">
+          <button id="tabModal-historico" onclick="window.alternarTabModal('historico')" style="flex:1; padding:16px; background:none; border:none; border-bottom:2px solid #e5b85c; color:#e5b85c; font-weight:700; font-size:14px; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:8px;">
+            💬 Histórico / Atualizações
+          </button>
+          <button id="tabModal-anexos" onclick="window.alternarTabModal('anexos')" style="flex:1; padding:16px; background:none; border:none; border-bottom:2px solid transparent; color:#94a3b8; font-weight:600; font-size:14px; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:8px;">
+            📎 Anexos & Arquivos <span id="modalAnexosCountBadge" style="background:rgba(255,255,255,0.08); font-size:11px; padding:2px 6px; border-radius:10px; color:#ffffff;">0</span>
+          </button>
+        </div>
+
+        <!-- Tab Content: Histórico -->
+        <div id="tabModalConteudo-historico" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding:20px;">
+          <div id="modalListaHistorico" style="flex:1; overflow-y:auto; margin-bottom:16px; padding-right:6px; scrollbar-width:thin;">
+            <!-- History cards go here -->
+          </div>
+          
+          <div style="display:flex; gap:8px; border-top:1px solid rgba(255,255,255,0.06); padding-top:16px;">
+            <textarea id="modalInputHistorico" class="inputPadrao" placeholder="Escreva uma nova atualização sobre esta licitação..." style="height:52px; resize:none; padding:10px 14px; font-size:13px; flex:1; margin:0;"></textarea>
+            <button id="modalBtnEnviarHistorico" class="botaoPadrao" style="width:52px; height:52px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:12px; flex-shrink:0;">➤</button>
+          </div>
+        </div>
+
+        <!-- Tab Content: Anexos -->
+        <div id="tabModalConteudo-anexos" style="flex:1; display:none; flex-direction:column; overflow:hidden; padding:20px;">
+          
+          <!-- Drag and drop zone -->
+          <div id="modalDropzoneAnexo" style="border: 2px dashed rgba(229, 184, 92, 0.3); background: rgba(229, 184, 92, 0.02); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 16px;" ondragover="event.preventDefault(); this.style.borderColor='#e5b85c'; this.style.background='rgba(229,184,92,0.06)';" ondragleave="this.style.borderColor='rgba(229, 184, 92, 0.3)'; this.style.background='rgba(229,184,92,0.02)';" ondrop="window.handleDropAnexoLicitacao(event)" onclick="document.getElementById('modalInputFileAnexo').click()">
+            <div style="font-size: 24px; margin-bottom: 8px;">📤</div>
+            <span style="font-size: 13px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 4px;">Arraste arquivos aqui ou clique para fazer upload</span>
+            <span style="font-size: 11px; color: #64748b;">Suporta PDF, Imagens, Documentos (máx. 1.5MB)</span>
+            <input type="file" id="modalInputFileAnexo" style="display:none;" onchange="window.handleUploadAnexoLicitacao(this)">
+          </div>
+
+          <!-- List of attachments -->
+          <div id="modalListaAnexos" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; scrollbar-width:thin;">
+            <!-- Attachment item cards go here -->
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
 <script type="module">
   
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc, getDoc, setDoc
+  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc, getDoc, setDoc, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut, updateEmail, createUserWithEmailAndPassword
@@ -2778,8 +2916,7 @@ localStorage.setItem(
 
 atualizarBadgePersistente(
   id,
-  0,
-  agora - 1
+  0
 );
 };
 
@@ -2799,23 +2936,54 @@ const ultimaVisualizacao = Number(
 
   let naoLidos = 0;
 
-  registros.forEach(item => {
-
-    let dataRegistro = 0;
-
-    if (item?.data?.seconds) {
-      dataRegistro = item.data.seconds * 1000;
+  if (nomeAba === "chat") {
+    const chatAberto = document.getElementById("chat") && document.getElementById("chat").style.display === "block";
+    if (chatAberto) {
+      naoLidos = 0;
+    } else if (Array.isArray(registros)) {
+      const emailLogado = auth.currentUser ? auth.currentUser.email.toLowerCase().trim() : "";
+      registros.forEach(m => {
+        const remetente = (m.remetenteEmail || "").toLowerCase().trim();
+        // Não conta se for do próprio usuário logado
+        if (remetente === emailLogado) return;
+        
+        // Só conta se não estiver marcada como lida e for posterior à última visualização
+        if (m.lido !== true) {
+          let dataRegistro = 0;
+          if (m?.data?.seconds) {
+            dataRegistro = m.data.seconds * 1000;
+          } else if (m?.dataCriacao?.seconds) {
+            dataRegistro = m.dataCriacao.seconds * 1000;
+          }
+          if (dataRegistro > ultimaVisualizacao) {
+            naoLidos++;
+          }
+        }
+      });
+    } else {
+      naoLidos = Number(registros) || 0;
     }
+  } else {
+    if (Array.isArray(registros)) {
+      registros.forEach(item => {
+        let dataRegistro = 0;
 
-    else if (item?.dataCriacao?.seconds) {
-      dataRegistro = item.dataCriacao.seconds * 1000;
+        if (item?.data?.seconds) {
+          dataRegistro = item.data.seconds * 1000;
+        }
+
+        else if (item?.dataCriacao?.seconds) {
+          dataRegistro = item.dataCriacao.seconds * 1000;
+        }
+
+        if (dataRegistro > ultimaVisualizacao) {
+          naoLidos++;
+        }
+      });
+    } else {
+      naoLidos = Number(registros) || 0;
     }
-
-    if (dataRegistro > ultimaVisualizacao) {
-      naoLidos++;
-    }
-
-  });
+  }
 
   if (naoLidos > 0) {
 
@@ -3144,17 +3312,36 @@ window.definirInteresseLicitacao = async function(id, interesseAtual) {
 };
 
   
+window.todasAsLicitacoes = [];
+window.termoBuscaLicitacoes = "";
+window.activeLicitacaoId = null;
+
 function listarLicitacoes() {
   const div = document.getElementById("listaLicitacoes");
   const q = query(collection(db, "licitacoes"), where("clienteId", "==", clienteIdGlobal));
   
   onSnapshot(q, (snapshot) => {
+    const docs = snapshot.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.dataCriacao?.seconds || 0) - (a.dataCriacao?.seconds || 0));
+
+    window.todasAsLicitacoes = docs;
+    
+    if (window.activeLicitacaoId) {
+      const activeLicitacao = docs.find(x => x.id === window.activeLicitacaoId);
+      if (activeLicitacao) {
+        window.atualizarModalLicitacaoUI(activeLicitacao);
+      } else {
+        window.fecharModalDetalhesLicitacao();
+      }
+    }
+
     div.innerHTML = `
       <div class="kanban-board" style="display: flex; gap: 18px; overflow-x: auto; padding-bottom: 24px; align-items: flex-start; scrollbar-width: thin; -webkit-overflow-scrolling: touch; margin-top: 15px;">
         
         <!-- COLUNA AVISOS -->
-        <div class="kanban-col" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(229, 184, 92, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5b85c; padding-bottom: 12px; margin-bottom: 4px;">
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'aviso')" ondragenter="window.dragEnterColuna(this, 'aviso')" ondragleave="window.dragLeaveColuna(this, 'aviso')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(229, 184, 92, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5b85c; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
             <span style="font-weight: 800; color: #e5b85c; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">📢 Avisos</span>
             <span id="badge-col-aviso" style="background: rgba(229, 184, 92, 0.2); color: #e5b85c; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(229,184,92,0.3);">0</span>
           </div>
@@ -3162,8 +3349,8 @@ function listarLicitacoes() {
         </div>
 
         <!-- COLUNA EM ANDAMENTO -->
-        <div class="kanban-col" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(252, 211, 77, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fcd34d; padding-bottom: 12px; margin-bottom: 4px;">
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'andamento')" ondragenter="window.dragEnterColuna(this, 'andamento')" ondragleave="window.dragLeaveColuna(this, 'andamento')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(252, 211, 77, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fcd34d; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
             <span style="font-weight: 800; color: #fcd34d; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">🟡 Em Andamento</span>
             <span id="badge-col-andamento" style="background: rgba(252, 211, 77, 0.2); color: #fcd34d; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(252,211,77,0.3);">0</span>
           </div>
@@ -3171,8 +3358,8 @@ function listarLicitacoes() {
         </div>
 
         <!-- COLUNA VENCIDAS (GANHAS) -->
-        <div class="kanban-col" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10b981; padding-bottom: 12px; margin-bottom: 4px;">
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'vencida')" ondragenter="window.dragEnterColuna(this, 'vencida')" ondragleave="window.dragLeaveColuna(this, 'vencida')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10b981; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
             <span style="font-weight: 800; color: #10b981; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">🟢 Ganhas</span>
             <span id="badge-col-vencida" style="background: rgba(16, 185, 129, 0.2); color: #10b981; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(16,185,129,0.3);">0</span>
           </div>
@@ -3180,8 +3367,8 @@ function listarLicitacoes() {
         </div>
 
         <!-- COLUNA PERDIDAS -->
-        <div class="kanban-col" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ef4444; padding-bottom: 12px; margin-bottom: 4px;">
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'perdida')" ondragenter="window.dragEnterColuna(this, 'perdida')" ondragleave="window.dragLeaveColuna(this, 'perdida')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ef4444; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
             <span style="font-weight: 800; color: #ef4444; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">🔴 Perdidas</span>
             <span id="badge-col-perdida" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(239,68,68,0.3);">0</span>
           </div>
@@ -3189,8 +3376,8 @@ function listarLicitacoes() {
         </div>
 
         <!-- COLUNA DESCARTADAS -->
-        <div class="kanban-col" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #94a3b8; padding-bottom: 12px; margin-bottom: 4px;">
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'descartada')" ondragenter="window.dragEnterColuna(this, 'descartada')" ondragleave="window.dragLeaveColuna(this, 'descartada')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #94a3b8; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
             <span style="font-weight: 800; color: #94a3b8; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">⚫ Descartadas</span>
             <span id="badge-col-descartada" style="background: rgba(148, 163, 184, 0.2); color: #94a3b8; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(148,163,184,0.3);">0</span>
           </div>
@@ -3200,156 +3387,154 @@ function listarLicitacoes() {
       </div>
     `;
 
-    const docs = snapshot.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => (b.dataCriacao?.seconds || 0) - (a.dataCriacao?.seconds || 0));
-
     atualizarBadgePersistente("licitacoes", docs);
     atualizarKpisDashboard(docs);
 
-    const counts = { aviso: 0, andamento: 0, vencida: 0, perdida: 0, descartada: 0 };
-    const statusOrder = ["aviso", "andamento", "vencida", "perdida", "descartada"];
-
-    // Populate Columns
-    docs.forEach((l) => {
-      const status = (l.status || "aviso").trim().toLowerCase();
-      const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
-      
-      if (counts[status] !== undefined) {
-        counts[status]++;
-      }
-
-      const linkLicitacao = obterLinkLicitacao(l);
-      const interesse = l.interesseCliente || "nao_avaliado";
-      const valorFormatado = Number(l.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-      // Determine colors for accent and cards
-      let accentColor = "#e5b85c";
-      if (status === "andamento") accentColor = "#fcd34d";
-      else if (status === "vencida") accentColor = "#10b981";
-      else if (status === "perdida") accentColor = "#ef4444";
-      else if (status === "descartada") accentColor = "#94a3b8";
-
-      // Date session formatting
-      let dataSessaoHtml = `<span style="color: #64748b; font-size: 12px; font-weight: 500;">Sessão não informada</span>`;
-      if (l.dataSessao) {
-        const dPartes = l.dataSessao.split("-");
-        const dataBr = dPartes.length === 3 ? `${dPartes[2]}/${dPartes[1]}/${dPartes[0]}` : l.dataSessao;
-        const formatInfo = window.formatarDataSessaoDashboard(l.dataSessao);
-        dataSessaoHtml = `
-          <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
-            <span style="color: #cbd5e1; font-size:12px; font-weight:600; display:flex; align-items:center; gap:4px;">📅 ${formatInfo.formatada}</span>
-            <div>${formatInfo.countdown}</div>
-          </div>
-        `;
-      }
-
-      // Left & Right Arrow shifts
-      const currentIndex = statusOrder.indexOf(status);
-      const hasLeft = currentIndex > 0;
-      const hasRight = currentIndex < statusOrder.length - 1;
-
-      const arrowLeftBtn = hasLeft ? `
-        <button onclick="window.moverStatusLicitacao('${l.id}', '${status}', 'esquerda')" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; border-radius: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'" title="Mover para esquerda">
-          ◀
-        </button>
-      ` : `<div style="width: 26px;"></div>`;
-
-      const arrowRightBtn = hasRight ? `
-        <button onclick="window.moverStatusLicitacao('${l.id}', '${status}', 'direita')" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; border-radius: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'" title="Mover para direita">
-          ▶
-        </button>
-      ` : `<div style="width: 26px;"></div>`;
-
-      grupo.innerHTML += `
-        <div id="card-licitacao-${l.id}" style="background: rgba(12, 21, 36, 0.7); border-radius:14px; border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid ${accentColor}; padding:16px; display:flex; flex-direction:column; gap:12px; position:relative; transition: all 0.25s ease-in-out; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='rgba(255,255,255,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.05)';">
-          
-          <!-- Card Header & Status Mover Arrows -->
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-            <h3 style="color:#ffffff; font-size:15px; font-weight:700; margin:0; line-height:1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-family:'Plus Jakarta Sans', sans-serif;" title="${l.orgao}">${l.orgao}</h3>
-            <div style="display:flex; gap:4px; align-items:center; flex-shrink:0;">
-              ${arrowLeftBtn}
-              ${arrowRightBtn}
-            </div>
-          </div>
-
-          <!-- Objeto & Valor -->
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <p style="color: #94a3b8; font-size:12px; margin:0; line-height:1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;" title="${l.objeto}">${l.objeto}</p>
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-top:4px;">
-              <span style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Valor Estimado:</span>
-              <span style="background:rgba(229,184,92,0.12); color:#e5b85c; padding:3px 8px; border-radius:6px; font-size:13px; font-weight:800; border:1px solid rgba(229,184,92,0.15);">${valorFormatado}</span>
-            </div>
-          </div>
-
-          <!-- Session Date and Countdown -->
-          <div style="border-top:1px solid rgba(255,255,255,0.04); padding-top:10px;">
-            ${dataSessaoHtml}
-          </div>
-
-          <!-- Interest Tags & Actions -->
-          <div style="display:flex; flex-direction:column; gap:8px; border-top:1px solid rgba(255,255,255,0.04); padding-top:10px; margin-top:2px;">
-            <div style="display:flex; gap: 6px; flex-wrap: wrap;">
-              <a href="${linkLicitacao || "#"}" target="_blank" class="radar-btn" style="flex:1; text-align:center; margin:0; padding:8px 10px; font-size:11px; background:${linkLicitacao ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.02)"}; border: 1px solid ${linkLicitacao ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.02)"}; color:${linkLicitacao ? "#ffffff" : "#64748b"}; opacity:${linkLicitacao ? "1" : "0.5"}; pointer-events:${linkLicitacao ? "auto" : "none"}; text-decoration:none; border-radius:8px; font-weight:600;">
-                🔗 ${linkLicitacao ? "Edital" : "Sem link"}
-              </a>
-
-              <button onclick="gerarPagamentoLicitacao('${l.id}','${l.orgao}',${Number(l.valor || 0)})" style="flex:1; padding:8px 10px; font-size:11px; border-radius:8px; border:none; background:linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%); color:#060b13; font-weight:800; cursor:pointer; box-shadow:0 2px 4px rgba(229,184,92,0.15);">
-                💳 Gerar PIX
-              </button>
-            </div>
-
-            <!-- Tenho/Sem Interesse Pills -->
-            <div style="display:flex; gap: 6px;">
-              <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="flex:1; padding:7px 8px; font-size:11px; border-radius:8px; border:1px solid ${interesse === "tenho_interesse" ? "#10b981" : "rgba(16,185,129,0.2)"}; background:${interesse === "tenho_interesse" ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.03)"}; color:${interesse === "tenho_interesse" ? "#34d399" : "#a7f3d0"}; font-weight:700; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(16,185,129,0.15)'" onmouseout="this.style.background='${interesse === "tenho_interesse" ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.03)"}'">
-                ${interesse === "tenho_interesse" ? "✓ Interessado" : "👍 Tenho Interesse"}
-              </button>
-              <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "sem_interesse" ? "remover" : "sem_interesse"}')" style="flex:1; padding:7px 8px; font-size:11px; border-radius:8px; border:1px solid ${interesse === "sem_interesse" ? "#ef4444" : "rgba(239,68,68,0.2)"}; background:${interesse === "sem_interesse" ? "rgba(239,68,68,0.25)" : "rgba(239,68,68,0.03)"}; color:${interesse === "sem_interesse" ? "#f87171" : "#fca5a5"}; font-weight:700; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.15)'" onmouseout="this.style.background='${interesse === "sem_interesse" ? "rgba(239,68,68,0.25)" : "rgba(239,68,68,0.03)"}'">
-                ${interesse === "sem_interesse" ? "✗ Recusado" : "👎 Sem Interesse"}
-              </button>
-            </div>
-          </div>
-
-          <!-- Quick Selector and Trash -->
-          <div style="display:flex; gap: 8px; align-items: center; border-top:1px solid rgba(255,255,255,0.04); padding-top:10px;">
-            <select onchange="alterarStatusLicitacao('${l.id}', this.value)" class="inputPadrao" style="padding: 6px 10px; font-size:12px; height:32px; flex: 2; margin:0; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
-              <option value="aviso" ${status === "aviso" ? "selected" : ""}>📢 Aviso</option>
-              <option value="andamento" ${status === "andamento" ? "selected" : ""}>🟡 Em andamento</option>
-              <option value="vencida" ${status === "vencida" ? "selected" : ""}>🟢 Vencida</option>
-              <option value="perdida" ${status === "perdida" ? "selected" : ""}>🔴 Perdida</option>
-              <option value="descartada" ${status === "descartada" ? "selected" : ""}>⚫ Descartada</option>
-            </select>
-            <button onclick="excluirLicitacao('${l.id}')" style="flex: 1; padding:7px 10px; font-size:12px; height:32px; border-radius:8px; background:rgba(239, 68, 68, 0.08); color:#f87171; border: 1px solid rgba(239, 68, 68, 0.15); font-weight:700; cursor:pointer; transition: 0.2s;" onmouseover="this.style.background='#ef4444'; this.style.color='white'; this.style.borderColor='#ef4444'" onmouseout="this.style.background='rgba(239, 68, 68, 0.08)'; this.style.color='#f87171'; this.style.borderColor='rgba(239, 68, 68, 0.15)'">🗑 Excluir</button>
-          </div>
-
-          <!-- Movimentações Accordion -->
-          <div style="margin-top:2px;">
-            <button class="botaoPadrao" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); color:#cbd5e1; width:100%; box-shadow:none; padding:8px 12px; font-size:11px; height:32px; border-radius:8px;" onclick="abrirMovimentacoesLicitacao('${l.id}')">
-              📝 Histórico (${l.totalMovimentacoes || 0})
-            </button>
-
-            <div id="movimentacoes-${l.id}" style="display:none; margin-top:10px; background:rgba(5, 11, 19, 0.7); border-radius:10px; padding:12px; border:1px solid rgba(255,255,255,.05);">
-              <div id="lista-movimentacoes-${l.id}" style="max-height:220px; overflow-y:auto; margin-bottom:10px; scrollbar-width: thin; -webkit-overflow-scrolling: touch;"></div>
-              
-              <div style="display:flex; gap:6px;">
-                <textarea id="input-movimentacao-${l.id}" class="inputPadrao" placeholder="Nova atualização..." style="height:48px; resize:none; padding:6px 10px; font-size:12px; flex:1; margin:0; background:rgba(255,255,255,0.03); border-radius:8px;"></textarea>
-                <button class="botaoPadrao" style="padding:0 12px; font-size:12px; height:48px; width:48px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;" onclick="enviarMovimentacaoLicitacao('${l.id}')">➤</button>
-              </div>
-            </div>
-          </div>
-          
-        </div>
-      `;
-    });
-
-    // Update count badges
-    Object.keys(counts).forEach(k => {
-      const b = document.getElementById(`badge-col-${k}`);
-      if (b) b.innerText = counts[k];
-    });
+    window.renderizarBoardLicitacoes();
   });
 }
+
+window.filtrarLicitacoesKanban = function() {
+  window.termoBuscaLicitacoes = document.getElementById("searchLicitacoesInput")?.value?.toLowerCase() || "";
+  window.renderizarBoardLicitacoes();
+};
+
+window.renderizarBoardLicitacoes = function() {
+  const queryTerm = window.termoBuscaLicitacoes || "";
+  const filteredDocs = window.todasAsLicitacoes.filter(l => {
+    if (!queryTerm) return true;
+    const orgao = (l.orgao || "").toLowerCase();
+    const objeto = (l.objeto || "").toLowerCase();
+    const valor = String(l.valor || "").toLowerCase();
+    return orgao.includes(queryTerm) || objeto.includes(queryTerm) || valor.includes(queryTerm);
+  });
+
+  const counts = { aviso: 0, andamento: 0, vencida: 0, perdida: 0, descartada: 0 };
+  const statusOrder = ["aviso", "andamento", "vencida", "perdida", "descartada"];
+
+  statusOrder.forEach(st => {
+    const gr = document.getElementById(`grupo-${st}`);
+    if (gr) gr.innerHTML = "";
+  });
+
+  filteredDocs.forEach((l) => {
+    const status = (l.status || "aviso").trim().toLowerCase();
+    const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
+    
+    if (counts[status] !== undefined) {
+      counts[status]++;
+    }
+
+    const linkLicitacao = obterLinkLicitacao(l);
+    const interesse = l.interesseCliente || "nao_avaliado";
+    const valorFormatado = Number(l.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+    let accentColor = "#e5b85c";
+    if (status === "andamento") accentColor = "#fcd34d";
+    else if (status === "vencida") accentColor = "#10b981";
+    else if (status === "perdida") accentColor = "#ef4444";
+    else if (status === "descartada") accentColor = "#94a3b8";
+
+    let dataSessaoHtml = `<span style="color: #64748b; font-size: 12px; font-weight: 500;">Sessão não informada</span>`;
+    if (l.dataSessao) {
+      const formatInfo = window.formatarDataSessaoDashboard(l.dataSessao);
+      dataSessaoHtml = `
+        <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+          <span style="color: #cbd5e1; font-size:12px; font-weight:600; display:flex; align-items:center; gap:4px;">📅 ${formatInfo.formatada}</span>
+          <div>${formatInfo.countdown}</div>
+        </div>
+      `;
+    }
+
+    const currentIndex = statusOrder.indexOf(status);
+    const hasLeft = currentIndex > 0;
+    const hasRight = currentIndex < statusOrder.length - 1;
+
+    const arrowLeftBtn = hasLeft ? `
+      <button onclick="window.moverStatusLicitacao('${l.id}', '${status}', 'esquerda')" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; border-radius: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'" title="Mover para esquerda">
+        ◀
+      </button>
+    ` : `<div style="width: 26px;"></div>`;
+
+    const arrowRightBtn = hasRight ? `
+      <button onclick="window.moverStatusLicitacao('${l.id}', '${status}', 'direita')" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; border-radius: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'" title="Mover para direita">
+        ▶
+      </button>
+    ` : `<div style="width: 26px;"></div>`;
+
+    grupo.innerHTML += `
+      <div id="card-licitacao-${l.id}" 
+        style="background: rgba(12, 21, 36, 0.7); border-radius:14px; border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid ${accentColor}; padding:16px; display:flex; flex-direction:column; gap:12px; position:relative; transition: all 0.25s ease-in-out; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; user-select: none;" 
+        onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='rgba(255,255,255,0.1)';" 
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.05)';" 
+        draggable="true" 
+        ondragstart="window.dragLicitacao(event, '${l.id}')" 
+        ondragend="window.dragEndLicitacao(event, '${l.id}')"
+        onclick="if (!event.target.closest('button, select, a, textarea, input')) { window.abrirModalDetalhesLicitacao('${l.id}'); }">
+        
+        <!-- Card Header & Status Mover Arrows -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <h3 style="color:#ffffff; font-size:15px; font-weight:700; margin:0; line-height:1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-family:'Plus Jakarta Sans', sans-serif;" title="${l.orgao}">${l.orgao}</h3>
+          <div style="display:flex; gap:4px; align-items:center; flex-shrink:0;">
+            ${arrowLeftBtn}
+            ${arrowRightBtn}
+          </div>
+        </div>
+
+        <!-- Objeto & Valor -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <p style="color: #94a3b8; font-size:12px; margin:0; line-height:1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;" title="${l.objeto}">${l.objeto}</p>
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-top:4px;">
+            <span style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Valor Estimado:</span>
+            <span style="background:rgba(229,184,92,0.12); color:#e5b85c; padding:3px 8px; border-radius:6px; font-size:13px; font-weight:800; border:1px solid rgba(229,184,92,0.15);">${valorFormatado}</span>
+          </div>
+        </div>
+
+        <!-- Session Date and Countdown -->
+        <div style="border-top:1px solid rgba(255,255,255,0.04); padding-top:10px;">
+          ${dataSessaoHtml}
+        </div>
+
+        <!-- Interest Tags & Actions -->
+        <div style="display:flex; flex-direction:column; gap:8px; border-top:1px solid rgba(255,255,255,0.04); padding-top:10px; margin-top:2px;">
+          <div style="display:flex; gap: 6px; flex-wrap: wrap;">
+            <a href="${linkLicitacao || "#"}" target="_blank" class="radar-btn" style="flex:1; text-align:center; margin:0; padding:8px 10px; font-size:11px; background:${linkLicitacao ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.02)"}; border: 1px solid ${linkLicitacao ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.02)"}; color:${linkLicitacao ? "#ffffff" : "#64748b"}; opacity:${linkLicitacao ? "1" : "0.5"}; pointer-events:${linkLicitacao ? "auto" : "none"}; text-decoration:none; border-radius:8px; font-weight:600;">
+              🔗 ${linkLicitacao ? "Edital" : "Sem link"}
+            </a>
+
+            <button onclick="gerarPagamentoLicitacao('${l.id}','${l.orgao}',${Number(l.valor || 0)})" style="flex:1; padding:8px 10px; font-size:11px; border-radius:8px; border:none; background:linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%); color:#060b13; font-weight:800; cursor:pointer; box-shadow:0 2px 4px rgba(229,184,92,0.15);">
+              💳 Gerar PIX
+            </button>
+          </div>
+
+          <!-- Tenho/Sem Interesse Pills -->
+          <div style="display:flex; gap: 6px;">
+            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="flex:1; padding:7px 8px; font-size:11px; border-radius:8px; border:1px solid ${interesse === "tenho_interesse" ? "#10b981" : "rgba(16,185,129,0.2)"}; background:${interesse === "tenho_interesse" ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.03)"}; color:${interesse === "tenho_interesse" ? "#34d399" : "#a7f3d0"}; font-weight:700; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(16,185,129,0.15)'" onmouseout="this.style.background='${interesse === "tenho_interesse" ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.03)"}'">
+              ${interesse === "tenho_interesse" ? "✓ Interessado" : "👍 Tenho Interesse"}
+            </button>
+            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "sem_interesse" ? "remover" : "sem_interesse"}')" style="flex:1; padding:7px 8px; font-size:11px; border-radius:8px; border:1px solid ${interesse === "sem_interesse" ? "#ef4444" : "rgba(239,68,68,0.2)"}; background:${interesse === "sem_interesse" ? "rgba(239,68,68,0.25)" : "rgba(239,68,68,0.03)"}; color:${interesse === "sem_interesse" ? "#f87171" : "#fca5a5"}; font-weight:700; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.15)'" onmouseout="this.style.background='${interesse === "sem_interesse" ? "rgba(239,68,68,0.25)" : "rgba(239,68,68,0.03)"}'">
+              ${interesse === "sem_interesse" ? "✗ Recusado" : "👎 Sem Interesse"}
+            </button>
+          </div>
+        </div>
+
+        <!-- Detailed Modal Trigger -->
+        <div style="margin-top:2px;">
+          <button class="botaoPadrao" style="background:rgba(229,184,92,0.06); border:1px solid rgba(229,184,92,0.15); color:#e5b85c; width:100%; box-shadow:none; padding:8px 12px; font-size:11px; height:32px; border-radius:8px; font-weight:700;" onclick="window.abrirModalDetalhesLicitacao('${l.id}')">
+            🔍 Ver Detalhes, Anexos & Histórico (${l.totalMovimentacoes || 0})
+          </button>
+        </div>
+        
+      </div>
+    `;
+  });
+
+  Object.keys(counts).forEach(k => {
+    const b = document.getElementById(`badge-col-${k}`);
+    if (b) b.innerText = counts[k];
+  });
+};
 
 // Global Mover Status Licitacao Arrow Handler
 window.moverStatusLicitacao = async function(id, statusAtual, direcao) {
@@ -3363,6 +3548,82 @@ window.moverStatusLicitacao = async function(id, statusAtual, direcao) {
 
   if (novoIndex >= 0 && novoIndex < statusOrder.length) {
     const novoStatus = statusOrder[novoIndex];
+    await window.alterarStatusLicitacao(id, novoStatus);
+  }
+};
+
+// Global Drag & Drop Handlers for Kanban
+window.dragLicitacao = function(ev, id) {
+  ev.dataTransfer.setData("text/plain", id);
+  const card = document.getElementById(`card-licitacao-${id}`);
+  if (card) {
+    card.style.opacity = "0.4";
+    card.style.cursor = "grabbing";
+  }
+};
+
+window.dragEndLicitacao = function(ev, id) {
+  const card = document.getElementById(`card-licitacao-${id}`);
+  if (card) {
+    card.style.opacity = "1";
+    card.style.cursor = "grab";
+  }
+};
+
+window.permitirDropLicitacao = function(ev) {
+  ev.preventDefault();
+};
+
+window.dragEnterColuna = function(el, status) {
+  const highlights = {
+    aviso: "rgba(229, 184, 92, 0.08)",
+    andamento: "rgba(252, 211, 77, 0.08)",
+    vencida: "rgba(16, 185, 129, 0.08)",
+    perdida: "rgba(239, 68, 68, 0.08)",
+    descartada: "rgba(148, 163, 184, 0.08)"
+  };
+  const borders = {
+    aviso: "rgba(229, 184, 92, 0.4)",
+    andamento: "rgba(252, 211, 77, 0.4)",
+    vencida: "rgba(16, 185, 129, 0.4)",
+    perdida: "rgba(239, 68, 68, 0.4)",
+    descartada: "rgba(148, 163, 184, 0.4)"
+  };
+  el.style.background = highlights[status] || "rgba(255, 255, 255, 0.02)";
+  el.style.borderColor = borders[status] || "rgba(255, 255, 255, 0.2)";
+};
+
+window.dragLeaveColuna = function(el, status) {
+  el.style.background = "rgba(5, 11, 19, 0.4)";
+  const borders = {
+    aviso: "rgba(229, 184, 92, 0.15)",
+    andamento: "rgba(252, 211, 77, 0.15)",
+    vencida: "rgba(16, 185, 129, 0.15)",
+    perdida: "rgba(239, 68, 68, 0.15)",
+    descartada: "rgba(148, 163, 184, 0.15)"
+  };
+  el.style.borderColor = borders[status] || "rgba(255, 255, 255, 0.05)";
+};
+
+window.dropLicitacao = async function(ev, novoStatus) {
+  ev.preventDefault();
+  const id = ev.dataTransfer.getData("text/plain");
+  
+  // Find closest column element
+  const col = ev.currentTarget;
+  if (col) {
+    col.style.background = "rgba(5, 11, 19, 0.4)";
+    const borders = {
+      aviso: "rgba(229, 184, 92, 0.15)",
+      andamento: "rgba(252, 211, 77, 0.15)",
+      vencida: "rgba(16, 185, 129, 0.15)",
+      perdida: "rgba(239, 68, 68, 0.15)",
+      descartada: "rgba(148, 163, 184, 0.15)"
+    };
+    col.style.borderColor = borders[novoStatus] || "rgba(255, 255, 255, 0.05)";
+  }
+  
+  if (id) {
     await window.alterarStatusLicitacao(id, novoStatus);
   }
 };
@@ -3437,163 +3698,7 @@ window.abrirComentarios = function(id) {
 };
 
 window.abrirMovimentacoesLicitacao = function(id) {
-
-  const div = document.getElementById(`movimentacoes-${id}`);
-
-  div.style.display =
-    div.style.display === "none"
-      ? "block"
-      : "none";
-
-  if (div.style.display === "block") {
-    iniciarMovimentacoesLicitacao(id);
-  }
-};
-
-function iniciarMovimentacoesLicitacao(id) {
-
-  const div =
-    document.getElementById(
-      `lista-movimentacoes-${id}`
-    );
-
-  onSnapshot(
-    query(
-      collection(
-        db,
-        "licitacoes",
-        id,
-        "movimentacoes"
-      ),
-      orderBy("data")
-    ),
-
-    snap => {
-
-      div.innerHTML = "";
-
-      snap.forEach(docItem => {
-
-        const m = docItem.data();
-
-        const isMe =
-          m.autor ===
-          (
-            window.isCourvanTeamAdmin
-              ? "admin"
-              : "cliente"
-          );
-
-        const dataMensagem =
-          m.data?.seconds
-            ? new Date(m.data.seconds * 1000)
-            : new Date();
-
-        const dataFormatada =
-          dataMensagem.toLocaleDateString("pt-BR") +
-          " às " +
-          dataMensagem.toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit"
-          });
-
-        div.innerHTML += `
-          <div style="
-            margin-bottom:14px;
-            display:flex;
-            justify-content:${isMe ? "flex-end" : "flex-start"};
-          ">
-
-            <div style="
-              max-width:80%;
-
-              background:${
-                isMe
-                  ? "linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%)"
-                  : "rgba(255,255,255,0.04)"
-              };
-
-              color:${isMe ? "#060b13" : "white"};
-
-              padding:14px;
-              border-radius:14px;
-              border-bottom-${isMe ? "right" : "left"}-radius:4px;
-            ">
-
-              <div style="
-                font-size:11px;
-                opacity:.7;
-                font-weight:700;
-                margin-bottom:6px;
-              ">
-                ${m.nome}
-              </div>
-
-              <div style="
-                font-size:14px;
-                line-height:1.5;
-                white-space:pre-wrap;
-                overflow-wrap:anywhere;
-              ">
-                ${m.texto}
-              </div>
-
-              <div style="
-                margin-top:8px;
-                font-size:11px;
-                opacity:.6;
-                text-align:right;
-              ">
-                ${dataFormatada}
-              </div>
-
-            </div>
-
-          </div>
-        `;
-      });
-
-      div.scrollTop = div.scrollHeight;
-    }
-  );
-}
-
-window.enviarMovimentacaoLicitacao = async function(id) {
-
-  const input =
-    document.getElementById(`input-movimentacao-${id}`);
-
-  if (!input.value.trim()) return;
-
-  const isAdmin = window.isCourvanTeamAdmin;
-
-  await addDoc(
-    collection(
-      db,
-      "licitacoes",
-      id,
-      "movimentacoes"
-    ),
-    {
-      texto: input.value,
-
-      autor: isAdmin
-        ? "admin"
-        : "cliente",
-
-      nome: isAdmin
-        ? "Equipe Courvan"
-        : document.getElementById("nome").innerText,
-
-      empresa: isAdmin
-        ? "Courvan"
-        : document.getElementById("empresa").innerText,
-
-      data: serverTimestamp()
-    }
-  );
-
-  input.value = "";
+  window.abrirModalDetalhesLicitacao(id);
 };
   
 window.enviarComentario = async (id) => {
@@ -3913,7 +4018,8 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
     // Marcar mensagens recebidas do outro lado como lidas no Firestore
     ultimoSnapMensagens.forEach(async (docSnap) => {
       const m = docSnap.data();
-      const isFromOtherSide = isAdmin ? (m.autor !== "admin") : (m.autor === "admin");
+      const remetenteLower = (m.remetenteEmail || "").toLowerCase().trim();
+      const isFromOtherSide = remetenteLower !== emailUsuarioLogado;
       if (isFromOtherSide && m.lido !== true) {
         try {
           await updateDoc(doc(db, "chats", clienteIdGlobal, "mensagens", docSnap.id), { lido: true });
