@@ -1537,9 +1537,20 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
           <div style="font-size:11px; opacity:0.6; text-align:right; display:flex; align-items:center; justify-content:flex-end; gap:4px;">
             <span>${dataFormatada}</span>
             ${isMe ? `
-              <span style="font-size: 13px; font-weight: 800; color: ${m.lido ? '#10b981' : '#060b13'}; opacity: ${m.lido ? '1' : '0.45'}; margin-left: 4px;" title="${m.lido ? 'Mensagem lida' : 'Enviada (não lida)'}">
-                ${m.lido ? '✓✓' : '✓'}
-              </span>
+              ${m.lido ? `
+                <span style="display: inline-flex; align-items: center; margin-left: 4px;" title="Mensagem lida">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                    <path d="M1.5 12.5L5.5 16.5L14.5 7.5" stroke="#1d4ed8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.5 12.5L12.5 16.5L21.5 7.5" stroke="#1d4ed8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              ` : `
+                <span style="display: inline-flex; align-items: center; margin-left: 4px; opacity: 0.55;" title="Enviada (não lida)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                    <path d="M5 12.5L9 16.5L18 7.5" stroke="#060b13" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              `}
             ` : ''}
           </div>
         </div>
