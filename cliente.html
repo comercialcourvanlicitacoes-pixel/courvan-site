@@ -198,12 +198,6 @@
     }
     
     @media(max-width: 1024px) {
-      .sidebar {
-        width: 100% !important;
-        height: auto !important;
-        position: relative !important;
-        padding: 20px !important;
-      }
       .sidebar .sidebar-label,
       .sidebar .sidebar-profile-info,
       .sidebar .notificacao-badge {
@@ -401,38 +395,126 @@
       margin-top: 35px;
     }
 
+    /* ==========================================
+       RESPONSIVE MOBILE OVERHAUL (DRAWER NAVIGATION)
+       ========================================== */
     @media(max-width:1024px){
-      .layout{flex-direction:column;}
-      .sidebar{
-        width:100% !important;
-        height: auto !important;
-        position: relative !important;
-        top: unset !important;
-        min-height: auto !important;
-        border-right: none !important;
-        border-bottom: 1px solid var(--border-color) !important;
-        padding: 25px 20px !important;
-        overflow-y: visible !important;
-        flex-direction: row !important;
-        flex-wrap: wrap !important;
-        align-items: center !important;
-        justify-content: space-between !important;
+      .layout {
+        flex-direction: column !important;
+        padding-top: 60px !important; /* Space for fixed header bar */
       }
-      .sidebar h2 { margin-bottom: 0 !important; }
-      .sidebar button { width: auto !important; padding: 10px 14px !important; font-size: 13px !important; }
-      .content{padding:25px 20px;}
+      
+      /* Sticky Top Bar on Mobile */
+      #mobile-header {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: #050811;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        z-index: 1001;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      /* Sidebar converted to drawer slide-out on Mobile */
+      .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -280px !important; /* Start hidden on left */
+        width: 280px !important;
+        height: 100vh !important;
+        z-index: 1003 !important;
+        background: linear-gradient(180deg, #050811 0%, #02040a 100%) !important;
+        box-shadow: 25px 0 50px rgba(0, 0, 0, 0.8) !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 30px 20px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-bottom: none !important;
+      }
+
+      /* Revealed Drawer State */
+      .sidebar.sidebar-open-mobile {
+        left: 0 !important;
+      }
+
+      .sidebar h2 {
+        margin-bottom: 25px !important;
+        display: flex !important;
+      }
+
+      .sidebar button {
+        width: 100% !important;
+        padding: 14px 18px !important;
+        font-size: 15px !important;
+      }
+
+      /* Content Panel Adaptive adjustments */
+      .content {
+        padding: 20px 16px !important;
+        min-height: calc(100vh - 60px) !important;
+      }
+
+      .aba {
+        padding: 24px 16px !important;
+        border-radius: 20px !important;
+      }
+
+      /* Chat input area layout fix on mobile */
+      #chat div[style*="display:flex; gap:10px; align-items:center;"],
+      #chat div[style*="display: flex; gap: 10px; align-items: center;"] {
+        gap: 6px !important;
+      }
+      
+      #chat div[style*="display:flex; gap:10px; align-items:center;"] .botaoPadrao,
+      #chat div[style*="display: flex; gap: 10px; align-items: center;"] .botaoPadrao {
+        padding: 12px 14px !important;
+        border-radius: 10px !important;
+        font-size: 13px !important;
+      }
+
+      #btnEnviarMensagem {
+        padding: 12px 16px !important;
+      }
+
+      #mensagemInput {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        border-radius: 10px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+      }
     }
 
-    @media(max-width: 640px) {
-      .sidebar {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 10px !important;
-      }
-      .sidebar h2 {
-        justify-content: center;
-        margin-bottom: 15px !important;
-      }
+    /* Backdrop Overlay for mobile menu */
+    #mobile-sidebar-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(3, 7, 18, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1002;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #mobile-sidebar-backdrop.active {
+      display: block !important;
+      opacity: 1 !important;
     }
 
     /* BADGE DE NOTIFICAÇÃO ANIMADA */
@@ -522,6 +604,23 @@
 
 <body>
 
+<!-- Backdrop para fechar o menu mobile ao clicar fora -->
+<div id="mobile-sidebar-backdrop" onclick="window.fecharSidebarMobile()"></div>
+
+<!-- Cabeçalho Mobile -->
+<div id="mobile-header" style="display: none;">
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <button id="mobile-menu-toggle" onclick="window.abrirSidebarMobile()" style="background: none; border: none; color: #cbd5e1; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; transition: color 0.2s;" onmouseover="this.style.color='#e5b85c'" onmouseout="this.style.color='#cbd5e1'">☰</button>
+    <div style="display: flex; flex-direction: column;">
+      <span style="font-family: var(--font-display); font-weight: 800; font-size: 16px; color: #e5b85c; letter-spacing: -0.5px; line-height: 1.2;">Courvan</span>
+      <span style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Painel do Cliente</span>
+    </div>
+  </div>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <img id="fotoMiniMobile" src="" style="width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #e5b85c; object-fit: cover; background: #0c1524;">
+  </div>
+</div>
+
 <div class="layout">
 
   <div class="sidebar">
@@ -570,7 +669,7 @@
       <span class="notificacao-badge" id="badge-licitacoes">0</span>
     </button>
     
-    <button onclick="window.location.href='agenda.html'">
+    <button onclick="window.irParaAgenda()">
       <span class="sidebar-icon">📅</span>
       <span class="sidebar-label">Agenda</span>
     </button>
@@ -578,6 +677,12 @@
     <button onclick="mostrarAba('geradores')">
       <span class="sidebar-icon">📄</span>
       <span class="sidebar-label">Gerador de Docs</span>
+    </button>
+    
+    <button onclick="mostrarAba('financeiro')">
+      <span class="sidebar-icon">💰</span>
+      <span class="sidebar-label">Financeiro</span>
+      <span class="notificacao-badge" id="badge-financeiro" style="display:none;">0</span>
     </button>
     
     <button onclick="mostrarAba('config')">
@@ -625,13 +730,16 @@
 
     <div id="geradores" class="aba" style="display:none;">
       <h1>📄 Central de Geradores de Documentos</h1>
-      <p style="font-size:14px; opacity:0.8; margin-bottom:20px;">Crie declarações unificadas e propostas comerciais customizadas, com papel timbrado e assinaturas de forma automatizada.</p>
+      <p style="font-size:14px; opacity:0.8; margin-bottom:20px;">Crie declarações unificadas, propostas comerciais, recursos, impugnações e defesas administrativas customizadas, com papel timbrado e assinaturas de forma automatizada.</p>
 
       <!-- Sub-Tabs dos Geradores -->
-      <div style="display:flex; gap:12px; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px; overflow-x:auto;">
+      <div style="display:flex; gap:12px; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch;">
         <button class="doc-tab-btn active" id="btnSubTabListar" onclick="window.alternarSubTabGerador('listar')">📁 Documentos Gerados</button>
-        <button class="doc-tab-btn" id="btnSubTabDeclaracao" onclick="window.alternarSubTabGerador('declaracao')">✍️ Gerador de Declaração Unificada</button>
-        <button class="doc-tab-btn" id="btnSubTabProposta" onclick="window.alternarSubTabGerador('proposta')">💰 Gerador de Proposta Comercial</button>
+        <button class="doc-tab-btn" id="btnSubTabDeclaracao" onclick="window.alternarSubTabGerador('declaracao')">✍️ Declaração Unificada</button>
+        <button class="doc-tab-btn" id="btnSubTabProposta" onclick="window.alternarSubTabGerador('proposta')">💰 Proposta Comercial</button>
+        <button class="doc-tab-btn" id="btnSubTabRecurso" onclick="window.alternarSubTabGerador('recurso')">⚖️ Recurso Administrativo</button>
+        <button class="doc-tab-btn" id="btnSubTabImpugnacao" onclick="window.alternarSubTabGerador('impugnacao')">🚫 Impugnação de Edital</button>
+        <button class="doc-tab-btn" id="btnSubTabDefesa" onclick="window.alternarSubTabGerador('defesa')">🛡️ Defesa Administrativa</button>
       </div>
 
       <!-- SUB-TAB LISTAR -->
@@ -858,10 +966,484 @@
           </div>
         </div>
       </div>
+
+      <!-- SUB-TAB RECURSO ADMINISTRATIVO -->
+      <div id="subTabGeradores-recurso" class="sub-tab-geradores" style="display:none;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:start;">
+          <!-- Formulário -->
+          <div class="info-box" style="border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:18px; font-size:18px;">⚖️ Novo Recurso Administrativo</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Dados Proponente -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">1. Dados do Recorrente</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="recEmpresa" class="inputPadrao" placeholder="Razão Social / Nome da Empresa">
+                  <input id="recCNPJ" class="inputPadrao" placeholder="CNPJ">
+                </div>
+                <input id="recEndereco" class="inputPadrao" placeholder="Endereço Completo">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                  <input id="recRepNome" class="inputPadrao" placeholder="Representante Legal">
+                  <input id="recRepCargo" class="inputPadrao" placeholder="Cargo (Ex: Diretor)">
+                </div>
+              </div>
+
+              <!-- Dados Destinatario -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">2. Identificação do Certame</h3>
+                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="recOrgao" class="inputPadrao" placeholder="Órgão Licitante (Ex: Pregoeiro / Comissão de Licitação)">
+                  <input id="recProcesso" class="inputPadrao" placeholder="Processo / Pregão Nº">
+                </div>
+                <input id="recObjeto" class="inputPadrao" placeholder="Objeto da Licitação (Resumo)">
+                <input id="recLote" class="inputPadrao" placeholder="Lote / Item Recorrido (Opcional)" style="margin-top:10px;">
+              </div>
+
+              <!-- Razões do Recurso -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">3. Teor do Recurso</h3>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Síntese dos Fatos</label>
+                  <textarea id="recFatos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Breve relato do ocorrido...">A empresa Recorrente participou do certame epigrafado, apresentando proposta e documentação adequadas. No entanto, o pregoeiro declarou a desclassificação/inabilitação indevida sob o fundamento de divergência formal em documento secundário, contrariando o princípio da ampla competitividade.</textarea>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fundamentação Jurídica</label>
+                  <textarea id="recFundamento" class="inputPadrao" style="height:120px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Fundamentos de direito...">A decisão combatida deve ser reformada, visto que o vício apontado é de natureza meramente formal, perfeitamente sanável por meio de diligência, conforme preconiza o art. 64 da Lei 14.133/2021. A inabilitação da melhor proposta com base em mero formalismo viola o interesse público de obtenção da proposta mais vantajosa, o princípio da razoabilidade e o princípio do formalismo moderado consagrado pela doutrina e jurisprudência pacífica do TCU.</textarea>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Pedidos e Requerimentos</label>
+                  <textarea id="recPedidos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Pedidos finais...">Diante do exposto, requer-se o recebimento e o total provimento deste Recurso Administrativo para reformar a decisão combatida, reabilitando a Recorrente no certame, dando-se continuidade aos atos de direito.</textarea>
+                </div>
+              </div>
+
+              <!-- Configuração Visual -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">4. Assinatura</h3>
+                
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:6px;">Formato da Assinatura</label>
+                  <div style="display:flex; gap:14px; margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="recAssinaturaTipo" value="desenhar" checked onchange="window.alternarAssinaturaTipo('recurso', 'desenhar')"> Desenhar na Tela
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="recAssinaturaTipo" value="upload" onchange="window.alternarAssinaturaTipo('recurso', 'upload')"> Enviar Imagem
+                    </label>
+                  </div>
+
+                  <!-- Canvas Desenho -->
+                  <div id="recAssinaturaDesenharArea">
+                    <canvas id="canvasAssinaturaRec" width="360" height="120" style="background:#0c1524; border:1px dashed rgba(255,255,255,0.15); border-radius:10px; cursor:crosshair; width:100%; display:block;"></canvas>
+                    <div style="margin-top:6px; display:flex; gap:8px;">
+                      <button class="botaoPadrao" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); font-size:12px; padding:6px 12px; width:auto;" onclick="window.limparCanvas('canvasAssinaturaRec')">Limpar Tela</button>
+                      <button class="botaoPadrao" style="font-size:12px; padding:6px 12px; width:auto;" onclick="window.salvarAssinaturaDesenho('recurso')">Confirmar Assinatura</button>
+                    </div>
+                  </div>
+
+                  <!-- Upload Imagem -->
+                  <div id="recAssinaturaUploadArea" style="display:none;">
+                    <input type="file" id="recAssinaturaInput" accept="image/*" onchange="window.handleUploadVisual('assinatura', this)" class="inputPadrao" style="padding:10px;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Local e Data -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">5. Local e Data</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="recCidade" class="inputPadrao" placeholder="Cidade (Ex: Belo Horizonte)">
+                  <input id="recData" type="date" class="inputPadrao">
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px;">
+                <button class="botaoPadrao" onclick="window.atualizarPreVisualizacaoRecurso()" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1);">Visualizar</button>
+                <button class="botaoPadrao" onclick="window.salvarEImprimirDocumento('recurso')" style="flex:1;">Salvar & Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-visualização -->
+          <div class="info-box" style="position:sticky; top:20px; border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
+            <div id="areaPreVisualizacaoRec" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
+              <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia do recurso em formato de folha A4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB IMPUGNAÇÃO DE EDITAL -->
+      <div id="subTabGeradores-impugnacao" class="sub-tab-geradores" style="display:none;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:start;">
+          <!-- Formulário -->
+          <div class="info-box" style="border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:18px; font-size:18px;">🚫 Nova Impugnação de Edital</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Dados Proponente -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">1. Dados da Impugnante</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="impEmpresa" class="inputPadrao" placeholder="Razão Social / Nome da Empresa">
+                  <input id="impCNPJ" class="inputPadrao" placeholder="CNPJ">
+                </div>
+                <input id="impEndereco" class="inputPadrao" placeholder="Endereço Completo">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                  <input id="impRepNome" class="inputPadrao" placeholder="Representante Legal">
+                  <input id="impRepCargo" class="inputPadrao" placeholder="Cargo (Ex: Sócio)">
+                </div>
+              </div>
+
+              <!-- Dados Destinatario -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">2. Destinatário e Edital</h3>
+                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="impOrgao" class="inputPadrao" placeholder="Órgão Licitante (Ex: Pregoeiro / Secretaria de Saúde)">
+                  <input id="impProcesso" class="inputPadrao" placeholder="Processo / Pregão Nº">
+                </div>
+                <input id="impObjeto" class="inputPadrao" placeholder="Objeto da Licitação (Resumo)">
+                <input id="impItem" class="inputPadrao" placeholder="Cláusula ou Item Impugnado (Ex: Cláusula 5.1 do Edital)" style="margin-top:10px;">
+              </div>
+
+              <!-- Conteúdo da Impugnação -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">3. Teor da Impugnação</h3>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fatos e Irregularidade Apontada</label>
+                  <textarea id="impFatos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Explicação da irregularidade no edital...">A empresa Impugnante, atuante no segmento licitado, ao analisar as disposições editalícias, identificou exigência abusiva e injustificada de comprovação de requisitos de habilitação técnica cumulatória, o que restringe o universo de proponentes e direciona o certame.</textarea>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fundamentação de Direito</label>
+                  <textarea id="impFundamento" class="inputPadrao" style="height:120px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Fundamentos jurídicos e legais...">A cláusula combatida contraria expressamente o art. 37, XXI da Constituição Federal e o art. 67 da Lei nº 14.133/2021, pois introduz critério de habilitação técnica excessivo e desarrazoado, não justificado pela complexidade do objeto. Exigir atestados com especificações desnecessárias atenta contra a ampla concorrência e a isonomia que devem reger a contratação pública.</textarea>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Pedidos de Alteração</label>
+                  <textarea id="impPedidos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Pedidos finais...">Requer-se o acolhimento da presente Impugnação de Edital para que seja alterada a redação da cláusula guerreada, suprimindo-se a exigência limitadora, com a consequente republicação do edital e devida reabertura dos prazos legais.</textarea>
+                </div>
+              </div>
+
+              <!-- Configuração Visual -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">4. Assinatura</h3>
+                
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:6px;">Formato da Assinatura</label>
+                  <div style="display:flex; gap:14px; margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="impAssinaturaTipo" value="desenhar" checked onchange="window.alternarAssinaturaTipo('impugnacao', 'desenhar')"> Desenhar na Tela
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="impAssinaturaTipo" value="upload" onchange="window.alternarAssinaturaTipo('impugnacao', 'upload')"> Enviar Imagem
+                    </label>
+                  </div>
+
+                  <!-- Canvas Desenho -->
+                  <div id="impAssinaturaDesenharArea">
+                    <canvas id="canvasAssinaturaImp" width="360" height="120" style="background:#0c1524; border:1px dashed rgba(255,255,255,0.15); border-radius:10px; cursor:crosshair; width:100%; display:block;"></canvas>
+                    <div style="margin-top:6px; display:flex; gap:8px;">
+                      <button class="botaoPadrao" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); font-size:12px; padding:6px 12px; width:auto;" onclick="window.limparCanvas('canvasAssinaturaImp')">Limpar Tela</button>
+                      <button class="botaoPadrao" style="font-size:12px; padding:6px 12px; width:auto;" onclick="window.salvarAssinaturaDesenho('impugnacao')">Confirmar Assinatura</button>
+                    </div>
+                  </div>
+
+                  <!-- Upload Imagem -->
+                  <div id="impAssinaturaUploadArea" style="display:none;">
+                    <input type="file" id="impAssinaturaInput" accept="image/*" onchange="window.handleUploadVisual('assinatura', this)" class="inputPadrao" style="padding:10px;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Local e Data -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">5. Local e Data</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="impCidade" class="inputPadrao" placeholder="Cidade (Ex: Belo Horizonte)">
+                  <input id="impData" type="date" class="inputPadrao">
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px;">
+                <button class="botaoPadrao" onclick="window.atualizarPreVisualizacaoImpugnacao()" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1);">Visualizar</button>
+                <button class="botaoPadrao" onclick="window.salvarEImprimirDocumento('impugnacao')" style="flex:1;">Salvar & Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-visualização -->
+          <div class="info-box" style="position:sticky; top:20px; border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
+            <div id="areaPreVisualizacaoImp" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
+              <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia da impugnação em formato de folha A4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB DEFESA ADMINISTRATIVA -->
+      <div id="subTabGeradores-defesa" class="sub-tab-geradores" style="display:none;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; align-items:start;">
+          <!-- Formulário -->
+          <div class="info-box" style="border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:18px; font-size:18px;">🛡️ Nova Defesa Prévia / Administrativa</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Dados Proponente -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">1. Dados da Defendente</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="defEmpresa" class="inputPadrao" placeholder="Razão Social / Nome da Empresa">
+                  <input id="defCNPJ" class="inputPadrao" placeholder="CNPJ">
+                </div>
+                <input id="defEndereco" class="inputPadrao" placeholder="Endereço Completo">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                  <input id="defRepNome" class="inputPadrao" placeholder="Representante Legal">
+                  <input id="defRepCargo" class="inputPadrao" placeholder="Cargo (Ex: Sócio-Administrador)">
+                </div>
+              </div>
+
+              <!-- Dados Destinatario -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">2. Destinatário e Notificação</h3>
+                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:10px;">
+                  <input id="defOrgao" class="inputPadrao" placeholder="Órgão / Autoridade Notificante (Ex: Secretário de Administração)">
+                  <input id="defProcesso" class="inputPadrao" placeholder="Processo Sancionador / Notificação Nº">
+                </div>
+                <input id="defObjeto" class="inputPadrao" placeholder="Objeto do Contrato / Licitação (Resumo)">
+                <input id="defInfracao" class="inputPadrao" placeholder="Suposta Infração Apontada (Ex: Atraso na entrega dos produtos)" style="margin-top:10px;">
+              </div>
+
+              <!-- Conteúdo da Defesa -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">3. Teor da Defesa</h3>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fatos e Esclarecimentos</label>
+                  <textarea id="defFatos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Explicação detalhada dos acontecimentos reais...">A empresa Defendente recebeu notificação de instauração de processo administrativo sancionador, para apuração de suposto atraso na entrega do objeto licitado, visando a aplicação de multa contratual e penalidades correlatas.</textarea>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Fundamentação de Defesa (Ausência de Culpa, etc.)</label>
+                  <textarea id="defFundamento" class="inputPadrao" style="height:120px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Fundamentos de exclusão de culpa, força maior, razoabilidade...">O atraso verificado decorreu de caso fortuito e força maior (art. 393 do Código Civil), consistente na comprovada escassez global de matérias-primas no mercado fornecedor, hipótese excludente de nexo de causalidade. A Defendente notificou tempestivamente a Administração solicitando prorrogação do prazo, demonstrando boa-fé e envidando todos os esforços possíveis para minimizar os impactos.</textarea>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Pedidos de Isenção / Absolvição</label>
+                  <textarea id="defPedidos" class="inputPadrao" style="height:100px; resize:vertical; font-family:inherit; font-size:13px;" placeholder="Pedidos finais...">Posto isto, requer-se o arquivamento do presente processo de aplicação de penalidade, sem imposição de multas ou qualquer sanção impeditiva, reconhecendo-se a ausência de culpa ou dolo da Defendente.</textarea>
+                </div>
+              </div>
+
+              <!-- Configuração Visual -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">4. Assinatura</h3>
+                
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:12px; color:#64748b; display:block; margin-bottom:6px;">Formato da Assinatura</label>
+                  <div style="display:flex; gap:14px; margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="defAssinaturaTipo" value="desenhar" checked onchange="window.alternarAssinaturaTipo('defesa', 'desenhar')"> Desenhar na Tela
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px;">
+                      <input type="radio" name="defAssinaturaTipo" value="upload" onchange="window.alternarAssinaturaTipo('defesa', 'upload')"> Enviar Imagem
+                    </label>
+                  </div>
+
+                  <!-- Canvas Desenho -->
+                  <div id="defAssinaturaDesenharArea">
+                    <canvas id="canvasAssinaturaDef" width="360" height="120" style="background:#0c1524; border:1px dashed rgba(255,255,255,0.15); border-radius:10px; cursor:crosshair; width:100%; display:block;"></canvas>
+                    <div style="margin-top:6px; display:flex; gap:8px;">
+                      <button class="botaoPadrao" style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); font-size:12px; padding:6px 12px; width:auto;" onclick="window.limparCanvas('canvasAssinaturaDef')">Limpar Tela</button>
+                      <button class="botaoPadrao" style="font-size:12px; padding:6px 12px; width:auto;" onclick="window.salvarAssinaturaDesenho('defesa')">Confirmar Assinatura</button>
+                    </div>
+                  </div>
+
+                  <!-- Upload Imagem -->
+                  <div id="defAssinaturaUploadArea" style="display:none;">
+                    <input type="file" id="defAssinaturaInput" accept="image/*" onchange="window.handleUploadVisual('assinatura', this)" class="inputPadrao" style="padding:10px;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Local e Data -->
+              <div>
+                <h3 style="font-size:13px; color:#94a3b8; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">5. Local e Data</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <input id="defCidade" class="inputPadrao" placeholder="Cidade (Ex: Belo Horizonte)">
+                  <input id="defData" type="date" class="inputPadrao">
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px;">
+                <button class="botaoPadrao" onclick="window.atualizarPreVisualizacaoDefesa()" style="flex:1; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1);">Visualizar</button>
+                <button class="botaoPadrao" onclick="window.salvarEImprimirDocumento('defesa')" style="flex:1;">Salvar & Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-visualização -->
+          <div class="info-box" style="position:sticky; top:20px; border-radius:20px; padding:24px;">
+            <h2 style="color:#e5b85c; margin-bottom:15px; font-size:18px;">📄 Pré-visualização do Documento (A4)</h2>
+            <div id="areaPreVisualizacaoDef" style="background:white; color:black; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); min-height:500px; font-family:Arial, sans-serif; font-size:11px; line-height:1.5; overflow-y:auto;">
+              <div style="text-align:center; color:#64748b; font-style:italic; padding-top:100px;">Clique em "Visualizar" para gerar a prévia da defesa em formato de folha A4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO FINANCEIRO -->
+    <div id="financeiro" class="aba" style="display:none;">
+      <h1 style="display:flex; align-items:center; gap:12px;">💰 Painel Financeiro & Faturamento</h1>
+      <p style="font-size:14px; opacity:0.8; margin-bottom:25px;">Acompanhe sua mensalidade recorrente e as taxas de execução de demandas do sistema integrado Asaas.</p>
+
+      <!-- KPI Grid -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:18px; margin-bottom:30px;">
+        <div class="info-box" style="padding:22px; border-radius:18px; display:flex; flex-direction:column; justify-content:space-between; min-height:120px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Status da Conta</span>
+          <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+            <div id="financeiroStatusGeralDot" style="width:12px; height:12px; border-radius:50%; background:#10b981; box-shadow:0 0 10px #10b981;"></div>
+            <span id="financeiroStatusGeralText" style="font-size:22px; font-weight:800; color:#ffffff;">REGULAR</span>
+          </div>
+          <span style="font-size:11px; color:#64748b; margin-top:6px;">Integração Asaas ativa e monitorada</span>
+        </div>
+
+        <div class="info-box" style="padding:22px; border-radius:18px; display:flex; flex-direction:column; justify-content:space-between; min-height:120px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Mensalidade Fixa</span>
+          <span style="font-size:26px; font-weight:800; color:#e5b85c; margin-top:8px;">R$ 500,00</span>
+          <span style="font-size:11px; color:#64748b; margin-top:6px;">Vencimento mensal recorrente</span>
+        </div>
+
+        <div class="info-box" style="padding:22px; border-radius:18px; display:flex; flex-direction:column; justify-content:space-between; min-height:120px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Demandas & Execuções</span>
+          <span id="financeiroKPIDemandas" style="font-size:26px; font-weight:800; color:#fcd34d; margin-top:8px;">R$ 0,00</span>
+          <span style="font-size:11px; color:#64748b; margin-top:6px;">Taxas por demanda realizada</span>
+        </div>
+
+        <div class="info-box" style="padding:22px; border-radius:18px; display:flex; flex-direction:column; justify-content:space-between; min-height:120px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Total em Aberto</span>
+          <span id="financeiroKPITotalAberto" style="font-size:26px; font-weight:800; color:#ef4444; margin-top:8px;">R$ 0,00</span>
+          <span style="font-size:11px; color:#64748b; margin-top:6px;">Faturas pendentes de pagamento</span>
+        </div>
+      </div>
+
+      <!-- Histórico de Cobranças -->
+      <div class="info-box" style="padding:30px; border-radius:24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 style="color:#e5b85c; font-size:20px; font-weight:700; margin:0;">Histórico de Faturas</h2>
+            <p style="font-size:12px; color:#64748b; margin:4px 0 0 0;">Visualização de cobranças geradas no gateway Asaas</p>
+          </div>
+          <button class="botaoPadrao" onclick="window.atualizarFaturasFinanceiro()" style="width:auto; padding:10px 18px; font-size:13px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); box-shadow:none;">🔄 Atualizar Status</button>
+        </div>
+
+        <!-- Tabela -->
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:13px;">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.08); color:#64748b; font-weight:600; text-transform:uppercase; font-size:11px;">
+                <th style="padding:12px 16px;">Fatura / Descrição</th>
+                <th style="padding:12px 16px;">Tipo</th>
+                <th style="padding:12px 16px;">Valor</th>
+                <th style="padding:12px 16px;">Vencimento</th>
+                <th style="padding:12px 16px;">Status</th>
+                <th style="padding:12px 16px; text-align:right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="financeiroTabelaFaturas">
+              <!-- JS Injected Rows -->
+              <tr>
+                <td colspan="6" style="padding:40px; text-align:center; color:#64748b; font-style:italic;">
+                  Nenhuma fatura encontrada ou carregando dados...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE PAGAMENTO PREMIUM ASAAS -->
+    <div id="modalPagarAsaas" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2,4,9,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+      <div class="info-box" style="width:100%; max-width:550px; border-radius:24px; border:1px solid rgba(229,184,92,0.15); padding:30px; box-shadow:0 25px 50px rgba(0,0,0,0.8); background: #050811; display:flex; flex-direction:column; gap:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:15px;">
+          <div>
+            <span style="font-size:10px; color:#e5b85c; font-weight:800; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;">Portal de Pagamentos</span>
+            <h2 id="modalPagarDescricao" style="color:#ffffff; font-size:18px; font-weight:700; margin:0;">Mensalidade - Courvan</h2>
+          </div>
+          <button onclick="window.fecharModalPagar()" style="background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer;">&times;</button>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(229,184,92,0.04); border:1px solid rgba(229,184,92,0.1); padding:16px; border-radius:14px;">
+          <span style="font-size:14px; color:#cbd5e1; font-weight:500;">Valor a Pagar:</span>
+          <span id="modalPagarValor" style="font-size:24px; font-weight:800; color:#e5b85c;">R$ 500,00</span>
+        </div>
+
+        <!-- Tabs de Método de Pagamento -->
+        <div style="display:flex; gap:8px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
+          <button class="doc-tab-btn active" id="btnTabPagarPix" onclick="window.alternarTabPagar('pix')" style="flex:1; font-size:12px; padding:8px 0; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;">⚡ Pix</button>
+          <button class="doc-tab-btn" id="btnTabPagarBoleto" onclick="window.alternarTabPagar('boleto')" style="flex:1; font-size:12px; padding:8px 0; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;">🧾 Boleto</button>
+          <button class="doc-tab-btn" id="btnTabPagarCartao" onclick="window.alternarTabPagar('cartao')" style="flex:1; font-size:12px; padding:8px 0; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;">💳 Cartão</button>
+        </div>
+
+        <!-- Área PIX -->
+        <div id="areaPagarPix" style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:15px; padding:10px 0;">
+          <p style="font-size:13px; color:#cbd5e1; margin:0;">Escaneie o QR Code abaixo com o aplicativo do seu banco para pagar instantaneamente:</p>
+          <div style="background:#ffffff; padding:12px; border-radius:16px; border:2px solid #e5b85c;">
+            <img id="pagarPixQrCode" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgZmlsbD0id2hpdGUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+UVIgQ29kZTwvdGV4dD48L3N2Zz4=" style="width:160px; height:160px; display:block;">
+          </div>
+          <div style="width:100%;">
+            <label style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px; text-align:left;">Código Pix Copia e Cola:</label>
+            <div style="display:flex; gap:8px;">
+              <input id="pagarPixCopyPaste" class="inputPadrao" readonly style="margin-bottom:0; font-family:monospace; font-size:11px; padding:10px;" value="00020126360014br.gov.bcb.pix01147297550729785204000053039865802BR5917CourvanLicitacoes6009BeloHoriz62070503001">
+              <button class="botaoPadrao" onclick="window.copiarTextoPagar('pagarPixCopyPaste')" style="width:auto; padding:0 15px; font-size:12px;">Copiar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Área BOLETO -->
+        <div id="areaPagarBoleto" style="display:none; flex-direction:column; gap:15px; padding:10px 0;">
+          <p style="font-size:13px; color:#cbd5e1; margin:0;">Copie a linha digitável do boleto para pagamento no seu banco ou faça o download:</p>
+          <div>
+            <label style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; display:block; margin-bottom:6px;">Linha Digitável:</label>
+            <div style="display:flex; gap:8px;">
+              <input id="pagarBoletoCodigo" class="inputPadrao" readonly style="margin-bottom:0; font-family:monospace; font-size:11px; padding:10px;" value="00190.00009 02624.770002 00000.000000 7 90000000050000">
+              <button class="botaoPadrao" onclick="window.copiarTextoPagar('pagarBoletoCodigo')" style="width:auto; padding:0 15px; font-size:12px;">Copiar</button>
+            </div>
+          </div>
+          <a id="pagarBoletoLink" href="#" target="_blank" class="botaoPadrao" style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(255,255,255,0.05); color:#ffffff; border:1px solid rgba(255,255,255,0.1); box-shadow:none;">
+            📥 Visualizar PDF do Boleto
+          </a>
+        </div>
+
+        <!-- Área CARTÃO -->
+        <div id="areaPagarCartao" style="display:none; flex-direction:column; gap:12px; padding:10px 0;">
+          <p style="font-size:13px; color:#cbd5e1; margin-bottom:6px;">Insira os dados do cartão de crédito para processamento via Asaas:</p>
+          <div style="display:grid; grid-template-columns:1fr; gap:10px;">
+            <input class="inputPadrao" placeholder="Número do Cartão" style="margin-bottom:0; font-family:monospace;">
+            <input class="inputPadrao" placeholder="Nome Impresso no Cartão" style="margin-bottom:0;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <input class="inputPadrao" placeholder="MM/AA" style="margin-bottom:0; font-family:monospace;">
+              <input class="inputPadrao" placeholder="CVC" style="margin-bottom:0; font-family:monospace;">
+            </div>
+          </div>
+          <button class="botaoPadrao" onclick="window.processarPagamentoCartaoSimulado()" style="margin-top:8px;">💳 Confirmar Pagamento Cartão</button>
+        </div>
+
+        <!-- Simulador Integrado Asaas Sandbox -->
+        <div style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:15px; margin-top:5px; text-align:center;">
+          <div style="font-size:10px; color:#e5b85c; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">⚡ Simulador de Sandbox Asaas</div>
+          <button onclick="window.simularPagamentoWebhookFatura()" class="botaoPadrao" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-size:12px; padding:10px; border:none; box-shadow:0 4px 10px rgba(16,185,129,0.2);">
+            Simular Pagamento Confirmado (Webhook Asaas)
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="dashboard" class="aba">
-      <h1>Dashboard do Cliente</h1>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
+        <h1 style="margin:0;">Dashboard do Cliente</h1>
+        <button id="btnExportarRelatorio" onclick="window.gerarRelatorioExecutivoPDF()" class="botaoPadrao" style="display:inline-flex; align-items:center; gap:8px; padding:12px 20px; font-size:13px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:12px; font-weight:700; cursor:pointer; box-shadow:0 4px 15px rgba(16,185,129,0.2); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(16,185,129,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(16,185,129,0.2)'">
+          🖨️ Exportar Relatório Executivo (A4 PDF)
+        </button>
+      </div>
 
       <div class="info-box" style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap; padding: 24px; background: linear-gradient(135deg, rgba(12, 39, 72, 0.4) 0%, rgba(6, 11, 19, 0.4) 100%); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; margin-bottom: 25px;">
         <div style="flex-shrink: 0; position: relative;">
@@ -888,54 +1470,140 @@
       </div>
 
       <div class="info-box" style="margin-top:20px;">
-        <h2 style="margin-bottom:16px;color:#e5b85c; font-size:18px;">Indicadores de Licitações</h2>
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">📚 Total de Licitações</p>
-            <p id="kpiTotalLicitacoes" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#e2e8f0;">0</p>
+        <h2 style="margin-bottom:16px;color:#e5b85c; font-size:18px; display:flex; align-items:center; gap:8px;">📊 Indicadores Estratégicos de Licitações</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;">
+          
+          <div style="background: rgba(5, 11, 19, 0.6); border:1px solid rgba(229,184,92,0.15); border-radius:16px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; transition: 0.3s; transform: translateY(0);" onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(229,184,92,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(229,184,92,0.15)'">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; font-weight: 500; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">📚 Total Monitorado</p>
+              <p id="kpiTotalLicitacoes" style="margin:8px 0 0; font-size:32px; font-weight:800; color:#ffffff; font-family:'Plus Jakarta Sans', sans-serif;">0</p>
+            </div>
+            <span style="font-size:11px; color:#64748b; margin-top:8px;">Oportunidades em seu portfólio</span>
           </div>
 
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">🏆 Licitações Ganhas</p>
-            <p id="kpiLicitacoesGanhas" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#10b981;">0</p>
+          <div style="background: rgba(5, 11, 19, 0.6); border:1px solid rgba(16,185,129,0.15); border-radius:16px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; transition: 0.3s; transform: translateY(0);" onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(16,185,129,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(16,185,129,0.15)'">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; font-weight: 500; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">🏆 Licitações Ganhas</p>
+              <p id="kpiLicitacoesGanhas" style="margin:8px 0 0; font-size:32px; font-weight:800; color:#10b981; font-family:'Plus Jakarta Sans', sans-serif;">0</p>
+            </div>
+            <span style="font-size:11px; color:#10b981; opacity:0.8; margin-top:8px;">Sucesso consolidado em disputas</span>
           </div>
 
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">💰 Valor Total Ganho</p>
-            <p id="kpiValorGanho" style="margin:6px 0 0; font-size:22px; font-weight:700; color:#e5b85c;">R$ 0,00</p>
+          <div style="background: rgba(5, 11, 19, 0.6); border:1px solid rgba(229,184,92,0.2); border-radius:16px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; transition: 0.3s; transform: translateY(0);" onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(229,184,92,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(229,184,92,0.2)'">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; font-weight: 500; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">💰 Capital Conquistado</p>
+              <p id="kpiValorGanho" style="margin:8px 0 0; font-size:26px; font-weight:800; color:#e5b85c; font-family:'Plus Jakarta Sans', sans-serif;">R$ 0,00</p>
+            </div>
+            <span style="font-size:11px; color:#64748b; margin-top:8px;">Valor total de contratos homologados</span>
           </div>
 
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">🎯 Taxa de Vitória</p>
-            <p id="kpiTaxaVitoria" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#3b82f6;">0%</p>
+          <!-- TAXA DE VITÓRIA COM MEDIDOR RADIAL -->
+          <div style="background: rgba(5, 11, 19, 0.6); border:1px solid rgba(59,130,246,0.15); border-radius:16px; padding:20px; display:flex; align-items:center; justify-content:space-between; transition: 0.3s; transform: translateY(0);" onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(59,130,246,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(59,130,246,0.15)'">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; font-weight: 500; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">🎯 Taxa de Vitória</p>
+              <p id="kpiTaxaVitoria" style="margin:8px 0 0; font-size:32px; font-weight:800; color:#3b82f6; font-family:'Plus Jakarta Sans', sans-serif;">0%</p>
+              <span style="font-size:11px; color:#64748b; display:block; margin-top:6px;">(Ganhas / Concluídas)</span>
+            </div>
+            <div style="position: relative; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+              <svg width="70" height="70" viewBox="0 0 36 36">
+                <path stroke="rgba(255,255,255,0.03)" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path id="gaugeTaxaVitoria" stroke="#3b82f6" stroke-width="3" stroke-dasharray="0, 100" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" style="transition: stroke-dasharray 0.8s ease;" />
+              </svg>
+              <span id="gaugeLabelTaxaVitoria" style="position: absolute; font-size: 11px; font-weight: 800; color: #3b82f6; font-family:'Plus Jakarta Sans', sans-serif;">0%</span>
+            </div>
           </div>
 
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">🧾 Ticket Médio (Ganhas)</p>
-            <p id="kpiTicketMedio" style="margin:6px 0 0; font-size:22px; font-weight:700; color:#fcd34d;">R$ 0,00</p>
+          <div style="background: rgba(5, 11, 19, 0.6); border:1px solid rgba(252,211,77,0.15); border-radius:16px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; transition: 0.3s; transform: translateY(0);" onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(252,211,77,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(252,211,77,0.15)'">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; font-weight: 500; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">🧾 Ticket Médio</p>
+              <p id="kpiTicketMedio" style="margin:8px 0 0; font-size:24px; font-weight:800; color:#fcd34d; font-family:'Plus Jakarta Sans', sans-serif;">R$ 0,00</p>
+            </div>
+            <span style="font-size:11px; color:#64748b; margin-top:8px;">Média de valor por licitação ganha</span>
           </div>
 
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">🚦 Pipeline Ativo (Aviso + Andamento)</p>
-            <p id="kpiPipelineAtivo" style="margin:6px 0 0; font-size:26px; font-weight:700; color:#f59e0b;">0</p>
+          <div style="background: rgba(5, 11, 19, 0.6); border:1px solid rgba(245,158,11,0.15); border-radius:16px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; transition: 0.3s; transform: translateY(0);" onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='rgba(245,158,11,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(245,158,11,0.15)'">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; font-weight: 500; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">🚦 Pipeline Ativo</p>
+              <p id="kpiPipelineAtivo" style="margin:8px 0 0; font-size:32px; font-weight:800; color:#f59e0b; font-family:'Plus Jakarta Sans', sans-serif;">0</p>
+            </div>
+            <span style="font-size:11px; color:#f59e0b; opacity:0.8; margin-top:8px;">Oportunidades em andamento / avisos</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DISTRIBUIÇÃO EM FUNIL DE PIPELINE -->
+      <div class="info-box" style="margin-top:20px; background: rgba(12, 39, 72, 0.15); border: 1px solid rgba(229, 184, 92, 0.08); border-radius: 20px; padding: 24px;">
+        <h2 style="margin-bottom:18px;color:#e5b85c; font-size:18px; display: flex; align-items: center; gap: 8px;">📊 Distribuição do Funil de Licitações</h2>
+        
+        <div style="height: 24px; display: flex; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);">
+          <div id="bar-aviso" style="width: 0%; background: #e5b85c; height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);" title="Avisos"></div>
+          <div id="bar-andamento" style="width: 0%; background: #fcd34d; height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);" title="Em Andamento"></div>
+          <div id="bar-vencida" style="width: 0%; background: #10b981; height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);" title="Ganhas"></div>
+          <div id="bar-perdida" style="width: 0%; background: #ef4444; height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);" title="Perdidas"></div>
+          <div id="bar-descartada" style="width: 0%; background: #94a3b8; height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);" title="Descartadas"></div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; font-size: 13px;">
+          <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);">
+            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #e5b85c; box-shadow: 0 0 8px rgba(229,184,92,0.4);"></span>
+            <span style="color: #94a3b8;">Avisos:</span>
+            <span id="pct-aviso" style="color: #e2e8f0; font-weight: bold; margin-left: auto;">0%</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);">
+            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #fcd34d; box-shadow: 0 0 8px rgba(252,211,77,0.4);"></span>
+            <span style="color: #94a3b8;">Andamento:</span>
+            <span id="pct-andamento" style="color: #e2e8f0; font-weight: bold; margin-left: auto;">0%</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);">
+            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.4);"></span>
+            <span style="color: #94a3b8;">Ganhas:</span>
+            <span id="pct-vencida" style="color: #e2e8f0; font-weight: bold; margin-left: auto;">0%</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);">
+            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.4);"></span>
+            <span style="color: #94a3b8;">Perdidas:</span>
+            <span id="pct-perdida" style="color: #e2e8f0; font-weight: bold; margin-left: auto;">0%</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);">
+            <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #94a3b8; box-shadow: 0 0 8px rgba(148,163,184,0.4);"></span>
+            <span style="color: #94a3b8;">Descartadas:</span>
+            <span id="pct-descartada" style="color: #e2e8f0; font-weight: bold; margin-left: auto;">0%</span>
           </div>
         </div>
       </div>
 
+      <!-- PRÓXIMAS SESSÕES AGENDA -->
+      <div class="info-box" style="margin-top:20px; background: rgba(12, 39, 72, 0.15); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 24px;">
+        <h2 style="margin-bottom:16px;color:#e5b85c; font-size:18px; display: flex; align-items: center; gap: 8px;">📅 Agenda de Próximas Sessões</h2>
+        <div id="dashboardUpcomingSessions">
+          <p style="color: #94a3b8; font-size: 13px; font-style: italic;">Carregando próximas sessões...</p>
+        </div>
+      </div>
+
       <div class="info-box" style="margin-top:20px;">
-        <h2 style="margin-bottom:16px;color:#e5b85c; font-size:18px;">Interesse nas Licitações</h2>
+        <h2 style="margin-bottom:16px;color:#e5b85c; font-size:18px; display:flex; align-items:center; gap:8px;">🎯 Grau de Interesse do Cliente</h2>
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">✅ Tenho Interesse</p>
-            <p id="kpiInteresseSim" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#10b981;">0</p>
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(16,185,129,0.15); border-radius:14px; padding:18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; color: #94a3b8;">✅ Tenho Interesse</p>
+              <p id="kpiInteresseSim" style="margin:6px 0 0; font-size:26px; font-weight:800; color:#10b981; font-family:'Plus Jakarta Sans', sans-serif;">0</p>
+            </div>
+            <span style="font-size: 24px;">📈</span>
           </div>
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">❌ Sem Interesse</p>
-            <p id="kpiInteresseNao" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#ef4444;">0</p>
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(239,68,68,0.15); border-radius:14px; padding:18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; color: #94a3b8;">❌ Sem Interesse</p>
+              <p id="kpiInteresseNao" style="margin:6px 0 0; font-size:26px; font-weight:800; color:#ef4444; font-family:'Plus Jakarta Sans', sans-serif;">0</p>
+            </div>
+            <span style="font-size: 24px;">📉</span>
           </div>
-          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(255,255,255,.05); border-radius:14px; padding:18px;">
-            <p style="margin:0; opacity:.8; font-size:13px;">🕓 Não Avaliadas</p>
-            <p id="kpiInteresseNeutro" style="margin:6px 0 0; font-size:24px; font-weight:700; color:#94a3b8;">0</p>
+          <div style="background: rgba(5, 11, 19, 0.5); border:1px solid rgba(148,163,184,0.15); border-radius:14px; padding:18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <p style="margin:0; opacity:.7; font-size:13px; color: #94a3b8;">🕓 Não Avaliadas</p>
+              <p id="kpiInteresseNeutro" style="margin:6px 0 0; font-size:26px; font-weight:800; color:#94a3b8; font-family:'Plus Jakarta Sans', sans-serif;">0</p>
+            </div>
+            <span style="font-size: 24px;">⚖️</span>
           </div>
         </div>
       </div>
@@ -994,11 +1662,10 @@
           <div>
             <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">CATEGORIA</label>
             <select id="categoriaDocumento" class="inputPadrao" onchange="window.onChangeCategoriaDoc()" style="margin-bottom:0;">
-              <option value="certidoes">📜 Certidões Regulatórias e Controle de Prazos</option>
-              <option value="habilitacao">💼 Habilitação Jurídica</option>
-              <option value="regularidade_fiscal">⚖️ Regularidade Fiscal e Trabalhista</option>
-              <option value="qualificacao_economica">📊 Qualificação Econômico-financeira</option>
+              <option value="certidoes">📜 Controle de Certidões</option>
               <option value="contratos">✍️ Contratos & Aditivos</option>
+              <option value="editais">📢 Editais & Propostas</option>
+              <option value="habilitacao">💼 Habilitação Jurídica & Fiscal</option>
               <option value="gdrive">🔗 Atalho do Google Drive</option>
               <option value="outros">📁 Outros Documentos</option>
             </select>
@@ -1042,11 +1709,10 @@
       <div style="display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; overflow-x: auto;" id="abasSubDocumentos">
         <button id="subDocTab-todos" onclick="window.filtrarSubDoc('todos')" class="doc-tab-btn active">📂 Todos os Documentos</button>
         <button id="subDocTab-prazos" onclick="window.filtrarSubDoc('prazos')" class="doc-tab-btn">📅 Controle de Prazos</button>
-        <button id="subDocTab-certidoes" onclick="window.filtrarSubDoc('certidoes')" class="doc-tab-btn">📜 Certidões Regulatórias & Prazos</button>
-        <button id="subDocTab-habilitacao" onclick="window.filtrarSubDoc('habilitacao')" class="doc-tab-btn">💼 Habilitação Jurídica</button>
-        <button id="subDocTab-regularidade_fiscal" onclick="window.filtrarSubDoc('regularidade_fiscal')" class="doc-tab-btn">⚖️ Regularidade Fiscal</button>
-        <button id="subDocTab-qualificacao_economica" onclick="window.filtrarSubDoc('qualificacao_economica')" class="doc-tab-btn">📊 Qualif. Econômica</button>
+        <button id="subDocTab-certidoes" onclick="window.filtrarSubDoc('certidoes')" class="doc-tab-btn">📜 Certidões Regulatórias</button>
         <button id="subDocTab-contratos" onclick="window.filtrarSubDoc('contratos')" class="doc-tab-btn">✍️ Contratos & Aditivos</button>
+        <button id="subDocTab-editais" onclick="window.filtrarSubDoc('editais')" class="doc-tab-btn">📢 Editais & Propostas</button>
+        <button id="subDocTab-habilitacao" onclick="window.filtrarSubDoc('habilitacao')" class="doc-tab-btn">💼 Habilitação</button>
         <button id="subDocTab-gdrive" onclick="window.filtrarSubDoc('gdrive')" class="doc-tab-btn">🔗 Google Drive Links</button>
       </div>
 
@@ -1122,12 +1788,18 @@
       </div>
 
       <!-- Seletor Inteligente de Destinatário -->
-      <div id="containerDestinatario" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: rgba(255, 255, 255, 0.015); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: rgba(255, 255, 255, 0.015); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap;">
         <span style="font-size: 13px; color: #64748b; font-weight: 500;">Enviar para:</span>
         <select id="chatDestinatario" class="inputPadrao" style="width: auto; padding: 6px 32px 6px 12px; font-size: 13px; border-radius: 8px; border-color: rgba(255,255,255,0.06); background: #0c1524; height: auto; margin-bottom: 0;">
           <option value="todos">📢 Todos do Grupo (Público)</option>
           <option value="courvan">🤝 Suporte Courvan (Privado)</option>
         </select>
+      </div>
+
+      <!-- Indicador de Modo de Edição -->
+      <div id="indicadorEdicao" style="display: none; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; background: rgba(229, 184, 92, 0.1); border: 1px solid rgba(229, 184, 92, 0.25); padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #e5b85c;">
+        <span>✏️ <strong>Editando mensagem...</strong></span>
+        <button onclick="window.cancelarEdicaoMensagem()" style="background: none; border: none; color: #ef4444; font-weight: bold; cursor: pointer; font-size: 12px;">Cancelar [X]</button>
       </div>
 
       <div style="display:flex; gap:10px; align-items:center;">
@@ -1157,6 +1829,15 @@
         <input id="linkEdital" placeholder="Link do edital" class="inputPadrao">
         <button class="botaoPadrao" onclick="criarLicitacao()">Criar Licitação</button>
       </div>
+      
+      <!-- Campo de Busca de Licitações -->
+      <div style="margin-bottom: 25px; display: flex; gap: 12px; align-items: center; max-width: 600px;">
+        <div style="position: relative; flex: 1;">
+          <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 16px;">🔍</span>
+          <input id="searchLicitacoesInput" oninput="window.filtrarLicitacoesKanban()" placeholder="Pesquisar por órgão ou objeto..." class="inputPadrao" style="padding-left: 42px; margin: 0; width: 100%;">
+        </div>
+      </div>
+
       <div id="listaLicitacoes"></div>
     </div>
 
@@ -1268,13 +1949,137 @@
   </div>
 </div>
 
+<!-- Modal Detalhes da Licitação (Quadro Grande) -->
+<div id="modalDetalhesLicitacao" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(3, 7, 18, 0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:20px; transition: opacity 0.3s ease;">
+  <div style="background: #060b13; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; width: 100%; max-width: 1050px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+    
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; border-bottom:1px solid rgba(255,255,255,0.06); background: rgba(229, 184, 92, 0.02);">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span id="modalLicitacaoIcon" style="font-size:24px;">📢</span>
+        <div>
+          <h2 id="modalLicitacaoOrgao" style="margin:0; font-size:18px; color:#ffffff; font-weight:800; font-family:'Plus Jakarta Sans', sans-serif;"></h2>
+          <span id="modalLicitacaoStatusPill" style="display:inline-block; margin-top:4px; font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px; text-transform:uppercase; letter-spacing:0.5px;"></span>
+        </div>
+      </div>
+      <button onclick="window.fecharModalDetalhesLicitacao()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:bold; transition:all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'; this.style.color='#f87171'; this.style.borderColor='rgba(239, 68, 68, 0.3)';" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#94a3b8'; this.style.borderColor='rgba(255,255,255,0.1)';">✕</button>
+    </div>
+
+    <!-- Body / Columns -->
+    <div style="display:flex; flex:1; overflow:hidden; flex-wrap:wrap;">
+      
+      <!-- Left Column: Info & Actions -->
+      <div style="flex:1.2; min-width:320px; padding:24px; border-right:1px solid rgba(255,255,255,0.06); overflow-y:auto; display:flex; flex-direction:column; gap:20px; scrollbar-width:thin;">
+        
+        <div>
+          <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Objeto da Licitação</span>
+          <div id="modalLicitacaoObjeto" style="color:#cbd5e1; font-size:14px; line-height:1.6; white-space:pre-wrap; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); padding:16px; border-radius:12px; max-height:180px; overflow-y:auto; scrollbar-width:thin;"></div>
+        </div>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:140px;">
+            <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Valor Estimado</span>
+            <div id="modalLicitacaoValor" style="font-size:18px; font-weight:800; color:#e5b85c; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); padding:10px 14px; border-radius:10px;"></div>
+          </div>
+          
+          <div style="flex:1; min-width:140px;">
+            <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Data da Sessão</span>
+            <div id="modalLicitacaoSessao" style="font-size:13px; font-weight:700; color:#ffffff; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:10px 14px; border-radius:10px; display:flex; flex-direction:column; gap:4px;"></div>
+          </div>
+        </div>
+
+        <!-- Direct Actions -->
+        <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+          <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block;">Ações Rápidas</span>
+          
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a id="modalLicitacaoEditalLink" target="_blank" class="radar-btn" style="flex:1; text-align:center; padding:10px 14px; font-size:13px; text-decoration:none; border-radius:10px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px;">
+              🔗 Ver Edital
+            </a>
+            <button id="modalLicitacaoPixBtn" style="flex:1; padding:10px 14px; font-size:13px; border-radius:10px; border:none; color:#060b13; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+              💳 Gerar PIX
+            </button>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:4px;">
+            <button id="modalLicitacaoInteresseBtn" style="flex:1; padding:10px 14px; font-size:12px; border-radius:10px; font-weight:700; cursor:pointer; transition:0.2s;"></button>
+            <button id="modalLicitacaoSemInteresseBtn" style="flex:1; padding:10px 14px; font-size:12px; border-radius:10px; font-weight:700; cursor:pointer; transition:0.2s;"></button>
+          </div>
+        </div>
+
+        <!-- Status Transition Selector -->
+        <div>
+          <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:8px;">Etapa do Kanban</span>
+          <div style="display:flex; gap:8px;">
+            <select id="modalLicitacaoStatusSelect" class="inputPadrao" style="margin:0; flex:2; height:42px;">
+              <option value="aviso">📢 Aviso</option>
+              <option value="andamento">🟡 Em andamento</option>
+              <option value="vencida">🟢 Ganha (Vencida)</option>
+              <option value="perdida">🔴 Perdida</option>
+              <option value="descartada">⚫ Descartada</option>
+            </select>
+            <button id="modalLicitacaoExcluirBtn" style="background:rgba(239, 68, 68, 0.1); color:#f87171; border:1px solid rgba(239, 68, 68, 0.2); padding:0 16px; border-radius:10px; font-weight:700; cursor:pointer; transition:0.2s; flex:1;">🗑 Excluir</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Documents Upload, Attachments & History -->
+      <div style="flex:1.5; min-width:350px; display:flex; flex-direction:column; overflow:hidden; background: rgba(5, 11, 19, 0.3);">
+        
+        <!-- Tabs for Right Panel: Histórico & Anexos -->
+        <div style="display:flex; border-bottom:1px solid rgba(255,255,255,0.06); background: rgba(229, 184, 92, 0.01);">
+          <button id="tabModal-historico" onclick="window.alternarTabModal('historico')" style="flex:1; padding:16px; background:none; border:none; border-bottom:2px solid #e5b85c; color:#e5b85c; font-weight:700; font-size:14px; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:8px;">
+            💬 Histórico / Atualizações
+          </button>
+          <button id="tabModal-anexos" onclick="window.alternarTabModal('anexos')" style="flex:1; padding:16px; background:none; border:none; border-bottom:2px solid transparent; color:#94a3b8; font-weight:600; font-size:14px; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:8px;">
+            📎 Anexos & Arquivos <span id="modalAnexosCountBadge" style="background:rgba(255,255,255,0.08); font-size:11px; padding:2px 6px; border-radius:10px; color:#ffffff;">0</span>
+          </button>
+        </div>
+
+        <!-- Tab Content: Histórico -->
+        <div id="tabModalConteudo-historico" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding:20px;">
+          <div id="modalListaHistorico" style="flex:1; overflow-y:auto; margin-bottom:16px; padding-right:6px; scrollbar-width:thin;">
+            <!-- History cards go here -->
+          </div>
+          
+          <div style="display:flex; gap:8px; border-top:1px solid rgba(255,255,255,0.06); padding-top:16px;">
+            <textarea id="modalInputHistorico" class="inputPadrao" placeholder="Escreva uma nova atualização sobre esta licitação..." style="height:52px; resize:none; padding:10px 14px; font-size:13px; flex:1; margin:0;"></textarea>
+            <button id="modalBtnEnviarHistorico" class="botaoPadrao" style="width:52px; height:52px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:12px; flex-shrink:0;">➤</button>
+          </div>
+        </div>
+
+        <!-- Tab Content: Anexos -->
+        <div id="tabModalConteudo-anexos" style="flex:1; display:none; flex-direction:column; overflow:hidden; padding:20px;">
+          
+          <!-- Drag and drop zone -->
+          <div id="modalDropzoneAnexo" style="border: 2px dashed rgba(229, 184, 92, 0.3); background: rgba(229, 184, 92, 0.02); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 16px;" ondragover="event.preventDefault(); this.style.borderColor='#e5b85c'; this.style.background='rgba(229,184,92,0.06)';" ondragleave="this.style.borderColor='rgba(229, 184, 92, 0.3)'; this.style.background='rgba(229,184,92,0.02)';" ondrop="window.handleDropAnexoLicitacao(event)" onclick="document.getElementById('modalInputFileAnexo').click()">
+            <div style="font-size: 24px; margin-bottom: 8px;">📤</div>
+            <span style="font-size: 13px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 4px;">Arraste arquivos aqui ou clique para fazer upload</span>
+            <span style="font-size: 11px; color: #64748b;">Suporta PDF, Imagens, Documentos (máx. 1.5MB)</span>
+            <input type="file" id="modalInputFileAnexo" style="display:none;" onchange="window.handleUploadAnexoLicitacao(this)">
+          </div>
+
+          <!-- List of attachments -->
+          <div id="modalListaAnexos" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; scrollbar-width:thin;">
+            <!-- Attachment item cards go here -->
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
 <script type="module">
   
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc, getDoc, setDoc
+  getFirestore, collection, query, where, getDocs, addDoc, doc, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc, getDoc, setDoc, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut, updateEmail, createUserWithEmailAndPassword
@@ -1799,7 +2604,7 @@ onAuthStateChanged(auth, async (user) => {
 
   // 🔥 AGRUPAMENTO ROBUSTO POR EMPRESA (Unificação de múltiplos documentos da mesma empresa)
   const nomeEmpresa = (dadosClienteGlobal.empresa || "").trim();
-  if (nomeEmpresa) {
+  if (nomeEmpresa && !clienteIdUrl) {
     const docsMesmaEmpresa = snapTodosClientes.docs.filter(d => {
       const emp = (d.data().empresa || "").trim();
       return emp.toLowerCase() === nomeEmpresa.toLowerCase();
@@ -2046,6 +2851,11 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 window.mostrarAba = function (id) {
+  // Fechar a sidebar no mobile se estiver aberta
+  if (typeof window.fecharSidebarMobile === "function") {
+    window.fecharSidebarMobile();
+  }
+
   // Destacar o botão ativo na sidebar
   document.querySelectorAll(".sidebar button").forEach(btn => {
     btn.classList.remove("active");
@@ -2070,7 +2880,11 @@ window.mostrarAba = function (id) {
 
   if (id === "chat") {
     setTimeout(() => {
-      window.scrollChatToBottom(true);
+      if (typeof window.renderizarMensagensDoChat === "function") {
+        window.renderizarMensagensDoChat(true);
+      } else {
+        window.scrollChatToBottom(true);
+      }
     }, 50);
   }
 
@@ -2102,8 +2916,7 @@ localStorage.setItem(
 
 atualizarBadgePersistente(
   id,
-  0,
-  agora - 1
+  0
 );
 };
 
@@ -2123,23 +2936,54 @@ const ultimaVisualizacao = Number(
 
   let naoLidos = 0;
 
-  registros.forEach(item => {
-
-    let dataRegistro = 0;
-
-    if (item?.data?.seconds) {
-      dataRegistro = item.data.seconds * 1000;
+  if (nomeAba === "chat") {
+    const chatAberto = document.getElementById("chat") && document.getElementById("chat").style.display === "block";
+    if (chatAberto) {
+      naoLidos = 0;
+    } else if (Array.isArray(registros)) {
+      const emailLogado = auth.currentUser ? auth.currentUser.email.toLowerCase().trim() : "";
+      registros.forEach(m => {
+        const remetente = (m.remetenteEmail || "").toLowerCase().trim();
+        // Não conta se for do próprio usuário logado
+        if (remetente === emailLogado) return;
+        
+        // Só conta se não estiver marcada como lida e for posterior à última visualização
+        if (m.lido !== true) {
+          let dataRegistro = 0;
+          if (m?.data?.seconds) {
+            dataRegistro = m.data.seconds * 1000;
+          } else if (m?.dataCriacao?.seconds) {
+            dataRegistro = m.dataCriacao.seconds * 1000;
+          }
+          if (dataRegistro > ultimaVisualizacao) {
+            naoLidos++;
+          }
+        }
+      });
+    } else {
+      naoLidos = Number(registros) || 0;
     }
+  } else {
+    if (Array.isArray(registros)) {
+      registros.forEach(item => {
+        let dataRegistro = 0;
 
-    else if (item?.dataCriacao?.seconds) {
-      dataRegistro = item.dataCriacao.seconds * 1000;
+        if (item?.data?.seconds) {
+          dataRegistro = item.data.seconds * 1000;
+        }
+
+        else if (item?.dataCriacao?.seconds) {
+          dataRegistro = item.dataCriacao.seconds * 1000;
+        }
+
+        if (dataRegistro > ultimaVisualizacao) {
+          naoLidos++;
+        }
+      });
+    } else {
+      naoLidos = Number(registros) || 0;
     }
-
-    if (dataRegistro > ultimaVisualizacao) {
-      naoLidos++;
-    }
-
-  });
+  }
 
   if (naoLidos > 0) {
 
@@ -2468,77 +3312,321 @@ window.definirInteresseLicitacao = async function(id, interesseAtual) {
 };
 
   
+window.todasAsLicitacoes = [];
+window.termoBuscaLicitacoes = "";
+window.activeLicitacaoId = null;
+
 function listarLicitacoes() {
   const div = document.getElementById("listaLicitacoes");
   const q = query(collection(db, "licitacoes"), where("clienteId", "==", clienteIdGlobal));
   
   onSnapshot(q, (snapshot) => {
-    div.innerHTML = `
-      <h2 style="margin-bottom:15px;color:#e5b85c;">📢 Avisos</h2><div id="grupo-aviso" style="display:grid; gap:15px;"></div>
-      <h2 style="margin:30px 0 15px;color:#fcd34d;">🟡 Em Andamento</h2><div id="grupo-andamento"></div>
-      <h2 style="margin:30px 0 15px;color:#10b981;">🟢 Vencidas</h2><div id="grupo-vencida"></div>
-      <h2 style="margin:30px 0 15px;color:#ef4444;">🔴 Perdidas</h2><div id="grupo-perdida"></div>
-      <h2 style="margin:30px 0 15px;color:#94a3b8;">⚫ Descartadas</h2><div id="grupo-descartada"></div>
-    `;
-
     const docs = snapshot.docs
       .map(d => ({ id: d.id, ...d.data() }))
-      .sort((a, b) =>
-        (b.dataCriacao?.seconds || 0) -
-        (a.dataCriacao?.seconds || 0)
-      );
+      .sort((a, b) => (b.dataCriacao?.seconds || 0) - (a.dataCriacao?.seconds || 0));
 
-    atualizarBadgePersistente(
-      "licitacoes",
-      docs
-    );
+    window.todasAsLicitacoes = docs;
+    
+    if (window.activeLicitacaoId) {
+      const activeLicitacao = docs.find(x => x.id === window.activeLicitacaoId);
+      if (activeLicitacao) {
+        window.atualizarModalLicitacaoUI(activeLicitacao);
+      } else {
+        window.fecharModalDetalhesLicitacao();
+      }
+    }
+
+    div.innerHTML = `
+      <div class="kanban-board" style="display: flex; gap: 18px; overflow-x: auto; padding-bottom: 24px; align-items: flex-start; scrollbar-width: thin; -webkit-overflow-scrolling: touch; margin-top: 15px;">
+        
+        <!-- COLUNA AVISOS -->
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'aviso')" ondragenter="window.dragEnterColuna(this, 'aviso')" ondragleave="window.dragLeaveColuna(this, 'aviso')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(229, 184, 92, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5b85c; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
+            <span style="font-weight: 800; color: #e5b85c; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">📢 Avisos</span>
+            <span id="badge-col-aviso" style="background: rgba(229, 184, 92, 0.2); color: #e5b85c; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(229,184,92,0.3);">0</span>
+          </div>
+          <div id="grupo-aviso" style="display: flex; flex-direction: column; gap: 14px; min-height: 150px;"></div>
+        </div>
+
+        <!-- COLUNA EM ANDAMENTO -->
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'andamento')" ondragenter="window.dragEnterColuna(this, 'andamento')" ondragleave="window.dragLeaveColuna(this, 'andamento')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(252, 211, 77, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fcd34d; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
+            <span style="font-weight: 800; color: #fcd34d; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">🟡 Em Andamento</span>
+            <span id="badge-col-andamento" style="background: rgba(252, 211, 77, 0.2); color: #fcd34d; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(252,211,77,0.3);">0</span>
+          </div>
+          <div id="grupo-andamento" style="display: flex; flex-direction: column; gap: 14px; min-height: 150px;"></div>
+        </div>
+
+        <!-- COLUNA VENCIDAS (GANHAS) -->
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'vencida')" ondragenter="window.dragEnterColuna(this, 'vencida')" ondragleave="window.dragLeaveColuna(this, 'vencida')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10b981; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
+            <span style="font-weight: 800; color: #10b981; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">🟢 Ganhas</span>
+            <span id="badge-col-vencida" style="background: rgba(16, 185, 129, 0.2); color: #10b981; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(16,185,129,0.3);">0</span>
+          </div>
+          <div id="grupo-vencida" style="display: flex; flex-direction: column; gap: 14px; min-height: 150px;"></div>
+        </div>
+
+        <!-- COLUNA PERDIDAS -->
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'perdida')" ondragenter="window.dragEnterColuna(this, 'perdida')" ondragleave="window.dragLeaveColuna(this, 'perdida')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ef4444; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
+            <span style="font-weight: 800; color: #ef4444; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">🔴 Perdidas</span>
+            <span id="badge-col-perdida" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(239,68,68,0.3);">0</span>
+          </div>
+          <div id="grupo-perdida" style="display: flex; flex-direction: column; gap: 14px; min-height: 150px;"></div>
+        </div>
+
+        <!-- COLUNA DESCARTADAS -->
+        <div class="kanban-col" ondragover="window.permitirDropLicitacao(event)" ondrop="window.dropLicitacao(event, 'descartada')" ondragenter="window.dragEnterColuna(this, 'descartada')" ondragleave="window.dragLeaveColuna(this, 'descartada')" style="flex: 1; min-width: 320px; max-width: 380px; background: rgba(5, 11, 19, 0.4); border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; transition: background 0.2s, border-color 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #94a3b8; padding-bottom: 12px; margin-bottom: 4px; pointer-events: none;">
+            <span style="font-weight: 800; color: #94a3b8; font-size: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">⚫ Descartadas</span>
+            <span id="badge-col-descartada" style="background: rgba(148, 163, 184, 0.2); color: #94a3b8; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(148,163,184,0.3);">0</span>
+          </div>
+          <div id="grupo-descartada" style="display: flex; flex-direction: column; gap: 14px; min-height: 150px;"></div>
+        </div>
+
+      </div>
+    `;
+
+    atualizarBadgePersistente("licitacoes", docs);
     atualizarKpisDashboard(docs);
 
-    docs.forEach((l) => {
-      const status = (l.status || "aviso").trim().toLowerCase();
-      const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
+    window.renderizarBoardLicitacoes();
+  });
+}
 
-      const linkLicitacao = obterLinkLicitacao(l);
-      const interesse = l.interesseCliente || "nao_avaliado";
+window.filtrarLicitacoesKanban = function() {
+  window.termoBuscaLicitacoes = document.getElementById("searchLicitacoesInput")?.value?.toLowerCase() || "";
+  window.renderizarBoardLicitacoes();
+};
 
-      grupo.innerHTML += `
-        <div style="background: rgba(255, 255, 255, 0.02); padding:26px; border-radius:20px; margin-bottom:18px; border: 1px solid rgba(255,255,255,0.04);">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; gap:12px;">
-            <h3 style="color:#e5b85c; font-size: 18px; margin: 0;">${l.orgao}</h3>
-            ${window.isCourvanTeamAdmin ? `
-              <button onclick="excluirLicitacao('${l.id}')" style="padding:6px 12px; border-radius:8px; background:rgba(239, 68, 68, 0.1); color:#f87171; border: 1px solid rgba(239, 68, 68, 0.2); font-size:12px; font-weight:600; cursor:pointer; transition: 0.2s;" onmouseover="this.style.background='#ef4444'; this.style.color='white'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'; this.style.color='#f87171'">🗑 Excluir</button>
-            ` : ""}
+window.renderizarBoardLicitacoes = function() {
+  const queryTerm = window.termoBuscaLicitacoes || "";
+  const filteredDocs = window.todasAsLicitacoes.filter(l => {
+    if (!queryTerm) return true;
+    const orgao = (l.orgao || "").toLowerCase();
+    const objeto = (l.objeto || "").toLowerCase();
+    const valor = String(l.valor || "").toLowerCase();
+    return orgao.includes(queryTerm) || objeto.includes(queryTerm) || valor.includes(queryTerm);
+  });
+
+  const counts = { aviso: 0, andamento: 0, vencida: 0, perdida: 0, descartada: 0 };
+  const statusOrder = ["aviso", "andamento", "vencida", "perdida", "descartada"];
+
+  statusOrder.forEach(st => {
+    const gr = document.getElementById(`grupo-${st}`);
+    if (gr) gr.innerHTML = "";
+  });
+
+  filteredDocs.forEach((l) => {
+    const status = (l.status || "aviso").trim().toLowerCase();
+    const grupo = document.getElementById(`grupo-${status}`) || document.getElementById("grupo-aviso");
+    
+    if (counts[status] !== undefined) {
+      counts[status]++;
+    }
+
+    const linkLicitacao = obterLinkLicitacao(l);
+    const interesse = l.interesseCliente || "nao_avaliado";
+    const valorFormatado = Number(l.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+    let accentColor = "#e5b85c";
+    if (status === "andamento") accentColor = "#fcd34d";
+    else if (status === "vencida") accentColor = "#10b981";
+    else if (status === "perdida") accentColor = "#ef4444";
+    else if (status === "descartada") accentColor = "#94a3b8";
+
+    let dataSessaoHtml = `<span style="color: #64748b; font-size: 12px; font-weight: 500;">Sessão não informada</span>`;
+    if (l.dataSessao) {
+      const formatInfo = window.formatarDataSessaoDashboard(l.dataSessao);
+      dataSessaoHtml = `
+        <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+          <span style="color: #cbd5e1; font-size:12px; font-weight:600; display:flex; align-items:center; gap:4px;">📅 ${formatInfo.formatada}</span>
+          <div>${formatInfo.countdown}</div>
+        </div>
+      `;
+    }
+
+    const currentIndex = statusOrder.indexOf(status);
+    const hasLeft = currentIndex > 0;
+    const hasRight = currentIndex < statusOrder.length - 1;
+
+    const arrowLeftBtn = hasLeft ? `
+      <button onclick="window.moverStatusLicitacao('${l.id}', '${status}', 'esquerda')" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; border-radius: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'" title="Mover para esquerda">
+        ◀
+      </button>
+    ` : `<div style="width: 26px;"></div>`;
+
+    const arrowRightBtn = hasRight ? `
+      <button onclick="window.moverStatusLicitacao('${l.id}', '${status}', 'direita')" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; border-radius: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'" title="Mover para direita">
+        ▶
+      </button>
+    ` : `<div style="width: 26px;"></div>`;
+
+    grupo.innerHTML += `
+      <div id="card-licitacao-${l.id}" 
+        style="background: rgba(12, 21, 36, 0.7); border-radius:14px; border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid ${accentColor}; padding:16px; display:flex; flex-direction:column; gap:12px; position:relative; transition: all 0.25s ease-in-out; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; user-select: none;" 
+        onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='rgba(255,255,255,0.1)';" 
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255,255,255,0.05)';" 
+        draggable="true" 
+        ondragstart="window.dragLicitacao(event, '${l.id}')" 
+        ondragend="window.dragEndLicitacao(event, '${l.id}')"
+        onclick="if (!event.target.closest('button, select, a, textarea, input')) { window.abrirModalDetalhesLicitacao('${l.id}'); }">
+        
+        <!-- Card Header & Status Mover Arrows -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <h3 style="color:#ffffff; font-size:15px; font-weight:700; margin:0; line-height:1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-family:'Plus Jakarta Sans', sans-serif;" title="${l.orgao}">${l.orgao}</h3>
+          <div style="display:flex; gap:4px; align-items:center; flex-shrink:0;">
+            ${arrowLeftBtn}
+            ${arrowRightBtn}
           </div>
-          <p style="color: #cbd5e1; margin-bottom: 8px;"><strong>Objeto:</strong> ${l.objeto}</p>
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:18px; font-size:14px; color:#cbd5e1;">
-            <div><strong>Valor Estimado:</strong> R$ ${Number(l.valor || 0).toLocaleString("pt-BR")}</div>
-            <div><strong>Sessão Pública:</strong> ${l.dataSessao || "Não informado"}</div>
-          </div>
+        </div>
 
-          <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;">
-            <button onclick="window.abrirModalLicitacao('${l.id}')" class="botaoPadrao" style="margin:0; padding:10px 16px; flex:2; min-width:180px; display:flex; align-items:center; justify-content:center; gap:8px;">
-              🔍 Ver Detalhes, Anexos & Histórico
-            </button>
-            <a href="${linkLicitacao || "#"}" target="_blank" class="radar-btn" style="margin:0; padding:10px 16px; background:${linkLicitacao ? "rgba(255,255,255,0.05)" : "#334155"}; opacity:${linkLicitacao ? "1" : "0.6"}; pointer-events:${linkLicitacao ? "auto" : "none"}; display:inline-flex; align-items:center; gap:4px; flex-shrink:0;">
-              🔗 Link
+        <!-- Objeto & Valor -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <p style="color: #94a3b8; font-size:12px; margin:0; line-height:1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;" title="${l.objeto}">${l.objeto}</p>
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-top:4px;">
+            <span style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Valor Estimado:</span>
+            <span style="background:rgba(229,184,92,0.12); color:#e5b85c; padding:3px 8px; border-radius:6px; font-size:13px; font-weight:800; border:1px solid rgba(229,184,92,0.15);">${valorFormatado}</span>
+          </div>
+        </div>
+
+        <!-- Session Date and Countdown -->
+        <div style="border-top:1px solid rgba(255,255,255,0.04); padding-top:10px;">
+          ${dataSessaoHtml}
+        </div>
+
+        <!-- Interest Tags & Actions -->
+        <div style="display:flex; flex-direction:column; gap:8px; border-top:1px solid rgba(255,255,255,0.04); padding-top:10px; margin-top:2px;">
+          <div style="display:flex; gap: 6px; flex-wrap: wrap;">
+            <a href="${linkLicitacao || "#"}" target="_blank" class="radar-btn" style="flex:1; text-align:center; margin:0; padding:8px 10px; font-size:11px; background:${linkLicitacao ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.02)"}; border: 1px solid ${linkLicitacao ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.02)"}; color:${linkLicitacao ? "#ffffff" : "#64748b"}; opacity:${linkLicitacao ? "1" : "0.5"}; pointer-events:${linkLicitacao ? "auto" : "none"}; text-decoration:none; border-radius:8px; font-weight:600;">
+              🔗 ${linkLicitacao ? "Edital" : "Sem link"}
             </a>
-            <button onclick="gerarPagamentoLicitacao('${l.id}', '${l.orgao}', ${Number(l.valor || 0)})" style="padding:10px 14px; border-radius:10px; border:none; background:linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%); color:#060b13; font-weight:700; cursor:pointer; flex-shrink:0;">
+
+            <button onclick="gerarPagamentoLicitacao('${l.id}','${l.orgao}',${Number(l.valor || 0)})" style="flex:1; padding:8px 10px; font-size:11px; border-radius:8px; border:none; background:linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%); color:#060b13; font-weight:800; cursor:pointer; box-shadow:0 2px 4px rgba(229,184,92,0.15);">
               💳 Gerar PIX
             </button>
           </div>
-          <div style="display:flex; gap:10px; margin-top:10px;">
-            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="flex:1; padding:10px; border-radius:10px; border:1px solid rgba(16,185,129,.4); background:${interesse === "tenho_interesse" ? "#065f46" : "rgba(6,95,70,.15)"}; color:#bbf7d0; font-weight:600; cursor:pointer;">
-              ✅ Tenho interesse
+
+          <!-- Tenho/Sem Interesse Pills -->
+          <div style="display:flex; gap: 6px;">
+            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "tenho_interesse" ? "remover" : "tenho_interesse"}')" style="flex:1; padding:7px 8px; font-size:11px; border-radius:8px; border:1px solid ${interesse === "tenho_interesse" ? "#10b981" : "rgba(16,185,129,0.2)"}; background:${interesse === "tenho_interesse" ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.03)"}; color:${interesse === "tenho_interesse" ? "#34d399" : "#a7f3d0"}; font-weight:700; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(16,185,129,0.15)'" onmouseout="this.style.background='${interesse === "tenho_interesse" ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.03)"}'">
+              ${interesse === "tenho_interesse" ? "✓ Interessado" : "👍 Tenho Interesse"}
             </button>
-            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "sem_interesse" ? "remover" : "sem_interesse"}')" style="flex:1; padding:10px; border-radius:10px; border:1px solid rgba(239,68,68,.4); background:${interesse === "sem_interesse" ? "#7f1d1d" : "rgba(127,29,29,.15)"}; color:#fecaca; font-weight:600; cursor:pointer;">
-              ❌ Sem interesse
+            <button onclick="definirInteresseLicitacao('${l.id}','${interesse === "sem_interesse" ? "remover" : "sem_interesse"}')" style="flex:1; padding:7px 8px; font-size:11px; border-radius:8px; border:1px solid ${interesse === "sem_interesse" ? "#ef4444" : "rgba(239,68,68,0.2)"}; background:${interesse === "sem_interesse" ? "rgba(239,68,68,0.25)" : "rgba(239,68,68,0.03)"}; color:${interesse === "sem_interesse" ? "#f87171" : "#fca5a5"}; font-weight:700; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.15)'" onmouseout="this.style.background='${interesse === "sem_interesse" ? "rgba(239,68,68,0.25)" : "rgba(239,68,68,0.03)"}'">
+              ${interesse === "sem_interesse" ? "✗ Recusado" : "👎 Sem Interesse"}
             </button>
           </div>
         </div>
-      `;
-    });
+
+        <!-- Detailed Modal Trigger -->
+        <div style="margin-top:2px;">
+          <button class="botaoPadrao" style="background:rgba(229,184,92,0.06); border:1px solid rgba(229,184,92,0.15); color:#e5b85c; width:100%; box-shadow:none; padding:8px 12px; font-size:11px; height:32px; border-radius:8px; font-weight:700;" onclick="window.abrirModalDetalhesLicitacao('${l.id}')">
+            🔍 Ver Detalhes, Anexos & Histórico (${l.totalMovimentacoes || 0})
+          </button>
+        </div>
+        
+      </div>
+    `;
   });
-}
+
+  Object.keys(counts).forEach(k => {
+    const b = document.getElementById(`badge-col-${k}`);
+    if (b) b.innerText = counts[k];
+  });
+};
+
+// Global Mover Status Licitacao Arrow Handler
+window.moverStatusLicitacao = async function(id, statusAtual, direcao) {
+  const statusOrder = ["aviso", "andamento", "vencida", "perdida", "descartada"];
+  const currentIndex = statusOrder.indexOf(statusAtual);
+  if (currentIndex === -1) return;
+
+  let novoIndex = currentIndex;
+  if (direcao === "esquerda") novoIndex = currentIndex - 1;
+  else if (direcao === "direita") novoIndex = currentIndex + 1;
+
+  if (novoIndex >= 0 && novoIndex < statusOrder.length) {
+    const novoStatus = statusOrder[novoIndex];
+    await window.alterarStatusLicitacao(id, novoStatus);
+  }
+};
+
+// Global Drag & Drop Handlers for Kanban
+window.dragLicitacao = function(ev, id) {
+  ev.dataTransfer.setData("text/plain", id);
+  const card = document.getElementById(`card-licitacao-${id}`);
+  if (card) {
+    card.style.opacity = "0.4";
+    card.style.cursor = "grabbing";
+  }
+};
+
+window.dragEndLicitacao = function(ev, id) {
+  const card = document.getElementById(`card-licitacao-${id}`);
+  if (card) {
+    card.style.opacity = "1";
+    card.style.cursor = "grab";
+  }
+};
+
+window.permitirDropLicitacao = function(ev) {
+  ev.preventDefault();
+};
+
+window.dragEnterColuna = function(el, status) {
+  const highlights = {
+    aviso: "rgba(229, 184, 92, 0.08)",
+    andamento: "rgba(252, 211, 77, 0.08)",
+    vencida: "rgba(16, 185, 129, 0.08)",
+    perdida: "rgba(239, 68, 68, 0.08)",
+    descartada: "rgba(148, 163, 184, 0.08)"
+  };
+  const borders = {
+    aviso: "rgba(229, 184, 92, 0.4)",
+    andamento: "rgba(252, 211, 77, 0.4)",
+    vencida: "rgba(16, 185, 129, 0.4)",
+    perdida: "rgba(239, 68, 68, 0.4)",
+    descartada: "rgba(148, 163, 184, 0.4)"
+  };
+  el.style.background = highlights[status] || "rgba(255, 255, 255, 0.02)";
+  el.style.borderColor = borders[status] || "rgba(255, 255, 255, 0.2)";
+};
+
+window.dragLeaveColuna = function(el, status) {
+  el.style.background = "rgba(5, 11, 19, 0.4)";
+  const borders = {
+    aviso: "rgba(229, 184, 92, 0.15)",
+    andamento: "rgba(252, 211, 77, 0.15)",
+    vencida: "rgba(16, 185, 129, 0.15)",
+    perdida: "rgba(239, 68, 68, 0.15)",
+    descartada: "rgba(148, 163, 184, 0.15)"
+  };
+  el.style.borderColor = borders[status] || "rgba(255, 255, 255, 0.05)";
+};
+
+window.dropLicitacao = async function(ev, novoStatus) {
+  ev.preventDefault();
+  const id = ev.dataTransfer.getData("text/plain");
+  
+  // Find closest column element
+  const col = ev.currentTarget;
+  if (col) {
+    col.style.background = "rgba(5, 11, 19, 0.4)";
+    const borders = {
+      aviso: "rgba(229, 184, 92, 0.15)",
+      andamento: "rgba(252, 211, 77, 0.15)",
+      vencida: "rgba(16, 185, 129, 0.15)",
+      perdida: "rgba(239, 68, 68, 0.15)",
+      descartada: "rgba(148, 163, 184, 0.15)"
+    };
+    col.style.borderColor = borders[novoStatus] || "rgba(255, 255, 255, 0.05)";
+  }
+  
+  if (id) {
+    await window.alterarStatusLicitacao(id, novoStatus);
+  }
+};
 
 window.criarLicitacao = async function () {
   const orgao = document.getElementById("orgao").value;
@@ -2610,163 +3698,7 @@ window.abrirComentarios = function(id) {
 };
 
 window.abrirMovimentacoesLicitacao = function(id) {
-
-  const div = document.getElementById(`movimentacoes-${id}`);
-
-  div.style.display =
-    div.style.display === "none"
-      ? "block"
-      : "none";
-
-  if (div.style.display === "block") {
-    iniciarMovimentacoesLicitacao(id);
-  }
-};
-
-function iniciarMovimentacoesLicitacao(id) {
-
-  const div =
-    document.getElementById(
-      `lista-movimentacoes-${id}`
-    );
-
-  onSnapshot(
-    query(
-      collection(
-        db,
-        "licitacoes",
-        id,
-        "movimentacoes"
-      ),
-      orderBy("data")
-    ),
-
-    snap => {
-
-      div.innerHTML = "";
-
-      snap.forEach(docItem => {
-
-        const m = docItem.data();
-
-        const isMe =
-          m.autor ===
-          (
-            window.isCourvanTeamAdmin
-              ? "admin"
-              : "cliente"
-          );
-
-        const dataMensagem =
-          m.data?.seconds
-            ? new Date(m.data.seconds * 1000)
-            : new Date();
-
-        const dataFormatada =
-          dataMensagem.toLocaleDateString("pt-BR") +
-          " às " +
-          dataMensagem.toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit"
-          });
-
-        div.innerHTML += `
-          <div style="
-            margin-bottom:14px;
-            display:flex;
-            justify-content:${isMe ? "flex-end" : "flex-start"};
-          ">
-
-            <div style="
-              max-width:80%;
-
-              background:${
-                isMe
-                  ? "linear-gradient(135deg,#e5b85c 0%, #d8a84e 100%)"
-                  : "rgba(255,255,255,0.04)"
-              };
-
-              color:${isMe ? "#060b13" : "white"};
-
-              padding:14px;
-              border-radius:14px;
-              border-bottom-${isMe ? "right" : "left"}-radius:4px;
-            ">
-
-              <div style="
-                font-size:11px;
-                opacity:.7;
-                font-weight:700;
-                margin-bottom:6px;
-              ">
-                ${m.nome}
-              </div>
-
-              <div style="
-                font-size:14px;
-                line-height:1.5;
-                white-space:pre-wrap;
-                overflow-wrap:anywhere;
-              ">
-                ${m.texto}
-              </div>
-
-              <div style="
-                margin-top:8px;
-                font-size:11px;
-                opacity:.6;
-                text-align:right;
-              ">
-                ${dataFormatada}
-              </div>
-
-            </div>
-
-          </div>
-        `;
-      });
-
-      div.scrollTop = div.scrollHeight;
-    }
-  );
-}
-
-window.enviarMovimentacaoLicitacao = async function(id) {
-
-  const input =
-    document.getElementById(`input-movimentacao-${id}`);
-
-  if (!input.value.trim()) return;
-
-  const isAdmin = window.isCourvanTeamAdmin;
-
-  await addDoc(
-    collection(
-      db,
-      "licitacoes",
-      id,
-      "movimentacoes"
-    ),
-    {
-      texto: input.value,
-
-      autor: isAdmin
-        ? "admin"
-        : "cliente",
-
-      nome: isAdmin
-        ? "Equipe Courvan"
-        : document.getElementById("nome").innerText,
-
-      empresa: isAdmin
-        ? "Courvan"
-        : document.getElementById("empresa").innerText,
-
-      data: serverTimestamp()
-    }
-  );
-
-  input.value = "";
+  window.abrirModalDetalhesLicitacao(id);
 };
   
 window.enviarComentario = async (id) => {
@@ -2825,7 +3757,7 @@ function iniciarChat() {
             visivel = true;
           }
           
-          if (visivel && remetente !== emailUsuarioLogado && autor !== meuTipo) {
+          if (visivel && remetente !== emailUsuarioLogado) {
             if (typeof window.tocarSomNotificacao === "function") {
               window.tocarSomNotificacao("chat");
             }
@@ -2875,6 +3807,10 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
     const dataMensagem = m.data?.seconds
       ? new Date(m.data.seconds * 1000)
       : new Date();
+
+    const isMeRealSender = remetente === emailUsuarioLogado;
+    const minutosPassados = (new Date().getTime() - dataMensagem.getTime()) / 60000;
+    const elegivelParaEdicao = isMeRealSender && minutosPassados <= 15;
 
     const dataFormatada =
       dataMensagem.toLocaleDateString("pt-BR") +
@@ -3006,7 +3942,7 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
             overflow-wrap:anywhere;
             white-space:pre-wrap;
           ">
-            ${escapeHTML(m.texto)}
+            ${window.formatarMentionsNoTexto(m.texto, isMe)}
           </div>
 
           ${htmlAnexo}
@@ -3018,6 +3954,14 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
             <button onclick="window.toggleReactionPicker('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
               😀 Reagir
             </button>
+            ${elegivelParaEdicao ? `
+              <button onclick="window.iniciarEdicaoMensagem('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:${isMe ? '#060b13' : '#e5b85c'}; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                ✏️ Editar
+              </button>
+              <button onclick="window.excluirMensagem('${mensagemId}')" style="margin-top:6px; background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:4px; transition:all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                🗑️ Excluir
+              </button>
+            ` : ""}
           </div>
 
           <!-- Reaction Picker Popover -->
@@ -3031,8 +3975,25 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
 
           ${htmlReacoes}
 
-          <div style="font-size:11px; opacity:0.6; text-align:right;">
-            ${dataFormatada}
+          <div style="font-size:11px; opacity:0.6; text-align:right; display:flex; align-items:center; justify-content:flex-end; gap:4px;">
+            ${m.editado ? '<span style="font-style: italic; opacity: 0.8; margin-right: 6px;">(editado)</span>' : ''} 
+            <span>${dataFormatada}</span>
+            ${isMe ? `
+              ${m.lido ? `
+                <span style="display: inline-flex; align-items: center; margin-left: 4px;" title="Mensagem lida pelo destinatário">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                    <path d="M2 12L7 17L17 7" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 12L12 15L22 5" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              ` : `
+                <span style="display: inline-flex; align-items: center; margin-left: 4px;" title="Mensagem enviada (não lida)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                    <path d="M5 12L10 17L20 7" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              `}
+            ` : ''}
           </div>
         </div>
 
@@ -3053,6 +4014,20 @@ window.renderizarMensagensDoChat = function(forcarScroll = false) {
   if (chatAberto) {
     const tipoUsuario = isAdmin ? "admin" : "cliente";
     localStorage.setItem(`ultima_visualizacao_${tipoUsuario}_${clienteIdGlobal}_chat`, Date.now());
+    
+    // Marcar mensagens recebidas do outro lado como lidas no Firestore
+    ultimoSnapMensagens.forEach(async (docSnap) => {
+      const m = docSnap.data();
+      const remetenteLower = (m.remetenteEmail || "").toLowerCase().trim();
+      const isFromOtherSide = remetenteLower !== emailUsuarioLogado;
+      if (isFromOtherSide && m.lido !== true) {
+        try {
+          await updateDoc(doc(db, "chats", clienteIdGlobal, "mensagens", docSnap.id), { lido: true });
+        } catch (err) {
+          console.error("Erro ao marcar mensagem como lida:", err);
+        }
+      }
+    });
   }
   
   // Filtra e contabiliza as mensagens não lidas de forma confiável
@@ -3095,27 +4070,6 @@ window.filtrarCanalChat = function(canal) {
       }
     }
   });
-
-  // Ajusta seletor de destinatário inteligente para evitar redundância
-  const containerDest = document.getElementById("containerDestinatario");
-  const selectDest = document.getElementById("chatDestinatario");
-  if (containerDest && selectDest) {
-    if (canal === "todos") {
-      selectDest.value = "todos";
-      containerDest.style.display = "none";
-    } else if (canal === "courvan") {
-      selectDest.value = "courvan";
-      containerDest.style.display = "none";
-    } else {
-      containerDest.style.display = "flex";
-      if (canal === "dms" && (selectDest.value === "todos" || selectDest.value === "courvan")) {
-        const primeiraOpcaoPrivada = Array.from(selectDest.options).find(opt => opt.value !== "todos" && opt.value !== "courvan");
-        if (primeiraOpcaoPrivada) {
-          selectDest.value = primeiraOpcaoPrivada.value;
-        }
-      }
-    }
-  }
   
   window.renderizarMensagensDoChat(true);
 };
@@ -3204,6 +4158,21 @@ window.enviarMensagem = async () => {
   if (picker) picker.style.display = "none";
 
   try {
+    if (window.mensagemEditandoId) {
+      const msgRef = doc(db, "chats", clienteIdGlobal, "mensagens", window.mensagemEditandoId);
+      await updateDoc(msgRef, {
+        texto: texto,
+        editado: true,
+        dataEdicao: serverTimestamp()
+      });
+      window.cancelarEdicaoMensagem();
+      if (btnEnviar) {
+        btnEnviar.disabled = false;
+        btnEnviar.innerText = "Enviar";
+      }
+      return;
+    }
+
     let anexoUrl = null;
     let anexoNome = null;
     let anexoTipo = null;
@@ -3251,7 +4220,8 @@ window.enviarMensagem = async () => {
         anexoUrl,
         anexoNome,
         anexoTipo,
-        data: serverTimestamp()
+        data: serverTimestamp(),
+        lido: false
       }
     );
 
@@ -3329,9 +4299,6 @@ window.enviarMensagem = async () => {
     }
 
     cancelarResposta();
-    if (typeof window.tocarSomNotificacao === "function") {
-      window.tocarSomNotificacao("chat");
-    }
   } catch (erro) {
     console.error(erro);
     alert(erro.message || "Erro ao enviar mensagem.");
@@ -3374,6 +4341,265 @@ document
 
 });
   
+window.abrirSidebarMobile = function() {
+  const sidebar = document.querySelector(".sidebar");
+  const backdrop = document.getElementById("mobile-sidebar-backdrop");
+  if (sidebar) sidebar.classList.add("sidebar-open-mobile");
+  if (backdrop) backdrop.classList.add("active");
+};
+
+window.fecharSidebarMobile = function() {
+  const sidebar = document.querySelector(".sidebar");
+  const backdrop = document.getElementById("mobile-sidebar-backdrop");
+  if (sidebar) sidebar.classList.remove("sidebar-open-mobile");
+  if (backdrop) backdrop.classList.remove("active");
+};
+
+// Sincroniza a foto do cabeçalho mobile com a foto do perfil carregada na sidebar em tempo real
+document.addEventListener("DOMContentLoaded", () => {
+  const fotoSidebar = document.getElementById("fotoSidebar");
+  const fotoMiniMobile = document.getElementById("fotoMiniMobile");
+  if (fotoSidebar && fotoMiniMobile) {
+    const observer = new MutationObserver(() => {
+      fotoMiniMobile.src = fotoSidebar.src;
+    });
+    observer.observe(fotoSidebar, { attributes: true, attributeFilter: ["src"] });
+    if (fotoSidebar.src) {
+      fotoMiniMobile.src = fotoSidebar.src;
+    }
+  }
+});
+
+window.mensagemEditandoId = null;
+
+window.irParaAgenda = function() {
+  if (clienteIdGlobal) {
+    window.location.href = 'agenda.html?id=' + clienteIdGlobal;
+  } else {
+    window.location.href = 'agenda.html';
+  }
+};
+
+window.iniciarEdicaoMensagem = function(mensagemId) {
+  const m = mensagensCarregadas[mensagemId];
+  if (!m) return;
+  window.mensagemEditandoId = mensagemId;
+  const input = document.getElementById("mensagemInput");
+  if (input) {
+    input.value = m.texto;
+    input.focus();
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 150) + "px";
+  }
+  const indicador = document.getElementById("indicadorEdicao");
+  if (indicador) {
+    indicador.style.display = "flex";
+  }
+};
+
+window.cancelarEdicaoMensagem = function() {
+  window.mensagemEditandoId = null;
+  const input = document.getElementById("mensagemInput");
+  if (input) {
+    input.value = "";
+    input.style.height = "50px";
+  }
+  const indicador = document.getElementById("indicadorEdicao");
+  if (indicador) {
+    indicador.style.display = "none";
+  }
+};
+
+window.excluirMensagem = async function(mensagemId) {
+  if (!confirm("Deseja realmente excluir esta mensagem para todos os usuários?")) return;
+  try {
+    const msgRef = doc(db, "chats", clienteIdGlobal, "mensagens", mensagemId);
+    await deleteDoc(msgRef);
+    console.log("Mensagem excluída com sucesso:", mensagemId);
+  } catch (error) {
+    console.error("Erro ao excluir mensagem:", error);
+    alert("Erro ao excluir mensagem: " + error.message);
+  }
+};
+
+window.obterUsuariosMencionaveis = function() {
+  const lista = [];
+  
+  lista.push({ nome: "Equipe Courvan", email: "comercial.courvanlicitacoes@gmail.com" });
+  
+  const localExtrairNome = function(email) {
+    if (!email) return "Colaborador";
+    const parteLocal = email.split('@')[0];
+    return parteLocal
+      .split(/[\._\-]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  if (dadosClienteGlobal) {
+    if (dadosClienteGlobal.nome) {
+      lista.push({ nome: dadosClienteGlobal.nome, email: dadosClienteGlobal.email });
+    }
+    
+    if (dadosClienteGlobal.usuariosMulti) {
+      dadosClienteGlobal.usuariosMulti.forEach(u => {
+        if (u.nome && u.email) {
+          lista.push({ nome: u.nome, email: u.email });
+        }
+      });
+    }
+    
+    if (dadosClienteGlobal.emailsAutorizados) {
+      dadosClienteGlobal.emailsAutorizados.forEach(email => {
+        if (email) {
+          const emailLower = email.toLowerCase().trim();
+          if (!lista.some(item => item.email.toLowerCase().trim() === emailLower)) {
+            const userObj = dadosClienteGlobal.usuariosMulti?.find(u => u.email.toLowerCase().trim() === emailLower);
+            const nome = userObj ? userObj.nome : localExtrairNome(emailLower);
+            lista.push({ nome: nome, email: emailLower });
+          }
+        }
+      });
+    }
+  }
+  
+  const unicos = [];
+  const emailsVistos = new Set();
+  lista.forEach(item => {
+    const emailLower = item.email ? item.email.toLowerCase().trim() : "";
+    if (emailLower && !emailsVistos.has(emailLower)) {
+      emailsVistos.add(emailLower);
+      unicos.push(item);
+    }
+  });
+  
+  return unicos;
+};
+
+document.getElementById("mensagemInput")?.addEventListener("input", function(e) {
+  const texto = this.value;
+  const cursorPosition = this.selectionStart;
+  const textoAteCursor = texto.substring(0, cursorPosition);
+  
+  const match = textoAteCursor.match(/@([a-zA-Z0-9._]*)$/);
+  
+  if (match) {
+    const termoBusca = match[1].toLowerCase();
+    const lista = window.obterUsuariosMencionaveis();
+    
+    const filtrados = lista.filter(u => 
+      u.nome.toLowerCase().includes(termoBusca) || 
+      u.email.toLowerCase().includes(termoBusca)
+    );
+    
+    if (filtrados.length > 0) {
+      window.mostrarDropdownMencoes(filtrados, match.index, cursorPosition);
+    } else {
+      window.esconderDropdownMencoes();
+    }
+  } else {
+    window.esconderDropdownMencoes();
+  }
+});
+
+window.mostrarDropdownMencoes = function(usuarios, indexArroba, indexCursor) {
+  let div = document.getElementById("mencoesDropdown");
+  if (!div) {
+    div = document.createElement("div");
+    div.id = "mencoesDropdown";
+    div.style.cssText = `
+      position: absolute;
+      background: #0c1524;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      max-height: 180px;
+      overflow-y: auto;
+      width: 280px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 100;
+      padding: 6px 0;
+    `;
+    const container = document.getElementById("mensagemInput").parentElement;
+    container.style.position = "relative";
+    container.appendChild(div);
+  }
+  
+  div.style.bottom = "60px";
+  div.style.left = "10px";
+  div.style.display = "block";
+  
+  div.innerHTML = usuarios.map(u => `
+    <div 
+      onclick="window.selecionarMencao('${u.nome}', ${indexArroba}, ${indexCursor})"
+      style="
+        padding: 8px 14px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #cbd5e1;
+        transition: all 0.15s;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      "
+      onmouseover="this.style.background='rgba(255,255,255,0.06)'; this.style.color='white'"
+      onmouseout="this.style.background='none'; this.style.color='#cbd5e1'"
+    >
+      <span style="font-weight: 600;">@${escapeHTML(u.nome)}</span>
+      <span style="font-size: 11px; opacity: 0.6;">${escapeHTML(u.email)}</span>
+    </div>
+  `).join("");
+};
+
+window.esconderDropdownMencoes = function() {
+  const div = document.getElementById("mencoesDropdown");
+  if (div) div.style.display = "none";
+};
+
+window.selecionarMencao = function(nome, indexArroba, indexCursor) {
+  const input = document.getElementById("mensagemInput");
+  if (!input) return;
+  const texto = input.value;
+  
+  const antesArroba = texto.substring(0, indexArroba);
+  const depoisCursor = texto.substring(indexCursor);
+  
+  input.value = antesArroba + "@" + nome + " " + depoisCursor;
+  window.esconderDropdownMencoes();
+  input.focus();
+  
+  const novaPosicao = indexArroba + nome.length + 2;
+  input.setSelectionRange(novaPosicao, novaPosicao);
+};
+
+document.addEventListener("click", function(e) {
+  const div = document.getElementById("mencoesDropdown");
+  const input = document.getElementById("mensagemInput");
+  if (div && e.target !== div && !div.contains(e.target) && e.target !== input) {
+    window.esconderDropdownMencoes();
+  }
+});
+
+window.formatarMentionsNoTexto = function(texto, isMe = false) {
+  if (!texto) return "";
+  const escaped = escapeHTML(texto);
+  const list = window.obterUsuariosMencionaveis();
+  let resultado = escaped;
+  
+  list.forEach(u => {
+    const nomeEscaped = escapeHTML(u.nome);
+    const regexSafeName = nomeEscaped.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const re = new RegExp("@" + regexSafeName + "\\b", "gi");
+    
+    const style = isMe 
+      ? `background: #050811; color: #e5b85c; padding: 2px 6px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(229, 184, 92, 0.55); display: inline-block; font-size: 13px;`
+      : `background: rgba(229, 184, 92, 0.25); color: #e5b85c; padding: 2px 6px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(229, 184, 92, 0.4); display: inline-block; font-size: 13px;`;
+      
+    resultado = resultado.replace(re, `<span style="${style}">@${nomeEscaped}</span>`);
+  });
+  
+  return resultado;
+};
+
 let documentosGlobais = [];
 let subDocFiltroAtivo = "todos";
 
@@ -3610,11 +4836,10 @@ window.renderizarDocumentos = function() {
       }
 
       const categoriasMapa = {
-        certidoes: "📜 Certidões Regulatórias e Controle de Prazos",
+        certidoes: "📜 Controle de Certidões",
         contratos: "✍️ Contratos & Aditivos",
-        habilitacao: "💼 Habilitação Jurídica",
-        regularidade_fiscal: "⚖️ Regularidade Fiscal e Trabalhista",
-        qualificacao_economica: "📊 Qualificação Econômico-financeira",
+        editais: "📢 Editais & Propostas",
+        habilitacao: "💼 Habilitação Jurídica & Fiscal",
         gdrive: "🔗 Google Drive",
         outros: "📁 Outros Documentos"
       };
@@ -4066,6 +5291,8 @@ function atualizarKpisDashboard(licitacoes = []) {
   let valorGanho = 0;
   let totalConcluidas = 0; // vencida + perdida + descartada
 
+  const sessoesFuturas = [];
+
   licitacoes.forEach(l => {
     const status = (l.status || "aviso").trim().toLowerCase();
     if (porStatus[status] !== undefined) porStatus[status]++;
@@ -4081,6 +5308,11 @@ function atualizarKpisDashboard(licitacoes = []) {
 
     if (status === "vencida" || status === "perdida" || status === "descartada") {
       totalConcluidas++;
+    }
+
+    // Capture sessions that have a date
+    if (l.dataSessao) {
+      sessoesFuturas.push(l);
     }
   });
 
@@ -4104,7 +5336,170 @@ function atualizarKpisDashboard(licitacoes = []) {
   setText("kpiInteresseSim", String(interesseSim));
   setText("kpiInteresseNao", String(interesseNao));
   setText("kpiInteresseNeutro", String(interesseNeutro));
+
+  // --- DYNAMIC WIN RATE GAUGE ---
+  const strokeDash = `${taxaVitoria.toFixed(1)}, 100`;
+  const gaugePath = document.getElementById("gaugeTaxaVitoria");
+  if (gaugePath) {
+    gaugePath.setAttribute("stroke-dasharray", strokeDash);
+  }
+  const gaugeLabel = document.getElementById("gaugeLabelTaxaVitoria");
+  if (gaugeLabel) {
+    gaugeLabel.innerText = `${taxaVitoria.toFixed(0)}%`;
+  }
+
+  // --- DYNAMIC FUNNEL BAR CHART ---
+  if (total > 0) {
+    const pctAviso = (porStatus.aviso / total) * 100;
+    const pctAndamento = (porStatus.andamento / total) * 100;
+    const pctVencida = (porStatus.vencida / total) * 100;
+    const pctPerdida = (porStatus.perdida / total) * 100;
+    const pctDescartada = (porStatus.descartada / total) * 100;
+
+    const setWidth = (id, widthVal) => {
+      const el = document.getElementById(id);
+      if (el) el.style.width = `${widthVal}%`;
+    };
+
+    setWidth("bar-aviso", pctAviso);
+    setWidth("bar-andamento", pctAndamento);
+    setWidth("bar-vencida", pctVencida);
+    setWidth("bar-perdida", pctPerdida);
+    setWidth("bar-descartada", pctDescartada);
+
+    setText("pct-aviso", `${pctAviso.toFixed(1)}%`);
+    setText("pct-andamento", `${pctAndamento.toFixed(1)}%`);
+    setText("pct-vencida", `${pctVencida.toFixed(1)}%`);
+    setText("pct-perdida", `${pctPerdida.toFixed(1)}%`);
+    setText("pct-descartada", `${pctDescartada.toFixed(1)}%`);
+  } else {
+    ["bar-aviso", "bar-andamento", "bar-vencida", "bar-perdida", "bar-descartada"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.width = "0%";
+    });
+    ["pct-aviso", "pct-andamento", "pct-vencida", "pct-perdida", "pct-descartada"].forEach(id => {
+      setText(id, "0%");
+    });
+  }
+
+  // --- UPCOMING SESSIONS AGENDA ---
+  const divSessoes = document.getElementById("dashboardUpcomingSessions");
+  if (divSessoes) {
+    // Sort upcoming sessions chronologically by date
+    sessoesFuturas.sort((a, b) => {
+      return a.dataSessao.localeCompare(b.dataSessao);
+    });
+
+    // Limit to top 5 sessions
+    const topSessoes = sessoesFuturas.slice(0, 5);
+
+    if (topSessoes.length === 0) {
+      divSessoes.innerHTML = `
+        <div style="padding: 24px; text-align: center; color: #64748b; font-size: 14px; background: rgba(5, 11, 19, 0.2); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.06);">
+          📅 Nenhuma sessão agendada para os seus processos cadastrados.
+        </div>
+      `;
+    } else {
+      let htmlSessoes = `
+        <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); color: #64748b; font-weight: 600;">
+                <th style="padding: 10px 8px;">Órgão</th>
+                <th style="padding: 10px 8px;">Objeto</th>
+                <th style="padding: 10px 8px;">Valor Estimado</th>
+                <th style="padding: 10px 8px;">Data da Sessão</th>
+                <th style="padding: 10px 8px; text-align: center;">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      topSessoes.forEach(s => {
+        const formatInfo = window.formatarDataSessaoDashboard(s.dataSessao);
+        const valorFormatado = Number(s.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        const objetoCurto = s.objeto.length > 55 ? s.objeto.substring(0, 52) + "..." : s.objeto;
+        
+        htmlSessoes += `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.03); color: #e2e8f0; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.01)'" onmouseout="this.style.background='none'">
+            <td style="padding: 12px 8px; font-weight: 700; color: #e5b85c; white-space: nowrap; max-width: 160px; overflow: hidden; text-overflow: ellipsis;" title="${s.orgao}">${s.orgao}</td>
+            <td style="padding: 12px 8px; color: #cbd5e1;" title="${s.objeto}">${objetoCurto}</td>
+            <td style="padding: 12px 8px; font-weight: 600;">${valorFormatado}</td>
+            <td style="padding: 12px 8px; white-space: nowrap;">
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span>${formatInfo.formatada}</span>
+                ${formatInfo.countdown}
+              </div>
+            </td>
+            <td style="padding: 12px 8px; text-align: center; white-space: nowrap;">
+              <button onclick="window.mostrarAbaAndFocusCard('${s.id}')" class="radar-btn" style="padding: 6px 12px; margin: 0; font-size: 11px; background: rgba(229,184,92,0.1); border: 1px solid rgba(229,184,92,0.25); color: #e5b85c; cursor: pointer;">
+                🔍 Ver no Quadro
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      htmlSessoes += `
+            </tbody>
+          </table>
+        </div>
+      `;
+      divSessoes.innerHTML = htmlSessoes;
+    }
+  }
 }
+
+// Function to format the YYYY-MM-DD date to DD/MM/YYYY and calc countdown
+window.formatarDataSessaoDashboard = function(dateStr) {
+  if (!dateStr) return { formatada: "Não informado", countdown: "" };
+  const partes = dateStr.split("-");
+  if (partes.length !== 3) return { formatada: dateStr, countdown: "" };
+  const formatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+  
+  // Calculate days remaining
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const dataSessao = new Date(partes[0], partes[1] - 1, partes[2]);
+  dataSessao.setHours(0, 0, 0, 0);
+  
+  const diffTime = dataSessao.getTime() - hoje.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  let countdown = "";
+  if (diffDays === 0) {
+    countdown = `<span style="background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; border: 1px solid rgba(239, 68, 68, 0.3);">SESSÃO HOJE ⚡</span>`;
+  } else if (diffDays === 1) {
+    countdown = `<span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; border: 1px solid rgba(245, 158, 11, 0.3);">AMANHÃ 🕒</span>`;
+  } else if (diffDays > 1) {
+    countdown = `<span style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; border: 1px solid rgba(16, 185, 129, 0.25);">Em ${diffDays} dias 📅</span>`;
+  } else {
+    countdown = `<span style="background: rgba(255, 255, 255, 0.05); color: #94a3b8; padding: 2px 8px; border-radius: 6px; font-size: 11px; border: 1px solid rgba(255, 255, 255, 0.1);">Realizada</span>`;
+  }
+  
+  return { formatada, countdown };
+};
+
+// Navigate to 'licitacoes' and focus + highlight specific card
+window.mostrarAbaAndFocusCard = function(id) {
+  window.mostrarAba('licitacoes');
+  setTimeout(() => {
+    const el = document.getElementById(`card-licitacao-${id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Apply beautiful golden pulse glow effect
+      el.style.borderColor = '#e5b85c';
+      el.style.boxShadow = '0 0 20px rgba(229, 184, 92, 0.4)';
+      el.style.transform = 'scale(1.02)';
+      
+      setTimeout(() => {
+        el.style.borderColor = 'rgba(255,255,255,0.06)';
+        el.style.boxShadow = 'none';
+        el.style.transform = 'translateY(0)';
+      }, 3000);
+    }
+  }, 250);
+};
 
  window.gerarPagamentoLicitacao = async function (
   licitacaoId,
@@ -4217,13 +5612,93 @@ window.alternarSubTabGerador = function(subTab) {
   const bListar = document.getElementById("btnSubTabListar");
   const bDec = document.getElementById("btnSubTabDeclaracao");
   const bProp = document.getElementById("btnSubTabProposta");
+  const bRec = document.getElementById("btnSubTabRecurso");
+  const bImp = document.getElementById("btnSubTabImpugnacao");
+  const bDef = document.getElementById("btnSubTabDefesa");
   
   if (bListar) bListar.classList.toggle("active", subTab === "listar");
   if (bDec) bDec.classList.toggle("active", subTab === "declaracao");
   if (bProp) bProp.classList.toggle("active", subTab === "proposta");
+  if (bRec) bRec.classList.toggle("active", subTab === "recurso");
+  if (bImp) bImp.classList.toggle("active", subTab === "impugnacao");
+  if (bDef) bDef.classList.toggle("active", subTab === "defesa");
   
+  // Pre-fill fields automatically if active client data exists
+  if (dadosClienteGlobal) {
+    if (subTab === "declaracao") {
+      const elEmp = document.getElementById("decEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("decCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("decEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elRep = document.getElementById("decRepNome");
+      if (elRep && !elRep.value) elRep.value = dadosClienteGlobal.nome || "";
+      const elCid = document.getElementById("decCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("decData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    } else if (subTab === "proposta") {
+      const elEmp = document.getElementById("propEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("propCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("propEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elCid = document.getElementById("propCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("propData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    } else if (subTab === "recurso") {
+      const elEmp = document.getElementById("recEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("recCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("recEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elRep = document.getElementById("recRepNome");
+      if (elRep && !elRep.value) elRep.value = dadosClienteGlobal.nome || "";
+      const elCid = document.getElementById("recCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("recData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    } else if (subTab === "impugnacao") {
+      const elEmp = document.getElementById("impEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("impCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("impEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elRep = document.getElementById("impRepNome");
+      if (elRep && !elRep.value) elRep.value = dadosClienteGlobal.nome || "";
+      const elCid = document.getElementById("impCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("impData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    } else if (subTab === "defesa") {
+      const elEmp = document.getElementById("defEmpresa");
+      if (elEmp && !elEmp.value) elEmp.value = dadosClienteGlobal.empresa || "";
+      const elCNPJ = document.getElementById("defCNPJ");
+      if (elCNPJ && !elCNPJ.value) elCNPJ.value = dadosClienteGlobal.cpfCnpj || "";
+      const elEnd = document.getElementById("defEndereco");
+      if (elEnd && !elEnd.value) elEnd.value = dadosClienteGlobal.cidade || "";
+      const elRep = document.getElementById("defRepNome");
+      if (elRep && !elRep.value) elRep.value = dadosClienteGlobal.nome || "";
+      const elCid = document.getElementById("defCidade");
+      if (elCid && !elCid.value) elCid.value = (dadosClienteGlobal.cidade || "").split("-")[0].trim() || "Belo Horizonte";
+      const elDat = document.getElementById("defData");
+      if (elDat && !elDat.value) elDat.value = new Date().toISOString().substring(0, 10);
+    }
+  }
+
   if (subTab === "declaracao") {
     setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaDec"), 150);
+  } else if (subTab === "recurso") {
+    setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaRec"), 150);
+  } else if (subTab === "impugnacao") {
+    setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaImp"), 150);
+  } else if (subTab === "defesa") {
+    setTimeout(() => window.inicializarCanvasAssinatura("canvasAssinaturaDef"), 150);
   }
 };
 
@@ -4321,8 +5796,14 @@ window.handleUploadVisual = async function(tipo, input) {
       if (tipo === "timbrado") {
         window.atualizarPreVisualizacaoDeclaracao();
         window.atualizarPreVisualizacaoProposta();
+        if (typeof window.atualizarPreVisualizacaoRecurso === "function") window.atualizarPreVisualizacaoRecurso();
+        if (typeof window.atualizarPreVisualizacaoImpugnacao === "function") window.atualizarPreVisualizacaoImpugnacao();
+        if (typeof window.atualizarPreVisualizacaoDefesa === "function") window.atualizarPreVisualizacaoDefesa();
       } else {
         window.atualizarPreVisualizacaoDeclaracao();
+        if (typeof window.atualizarPreVisualizacaoRecurso === "function") window.atualizarPreVisualizacaoRecurso();
+        if (typeof window.atualizarPreVisualizacaoImpugnacao === "function") window.atualizarPreVisualizacaoImpugnacao();
+        if (typeof window.atualizarPreVisualizacaoDefesa === "function") window.atualizarPreVisualizacaoDefesa();
       }
     } catch (e) {
       console.error(e);
@@ -4332,13 +5813,26 @@ window.handleUploadVisual = async function(tipo, input) {
 };
 
 window.salvarAssinaturaDesenho = function(tipo) {
-  const canvasId = tipo === "declaracao" ? "canvasAssinaturaDec" : "";
+  let canvasId = "";
+  if (tipo === "declaracao") canvasId = "canvasAssinaturaDec";
+  else if (tipo === "recurso") canvasId = "canvasAssinaturaRec";
+  else if (tipo === "impugnacao") canvasId = "canvasAssinaturaImp";
+  else if (tipo === "defesa") canvasId = "canvasAssinaturaDef";
+
   const canvas = document.getElementById(canvasId);
   if (canvas) {
     const base64 = canvas.toDataURL("image/png");
     window.tempVisuals.assinaturaDec = base64;
     alert("Assinatura desenhada confirmada com sucesso!");
-    window.atualizarPreVisualizacaoDeclaracao();
+    if (tipo === "declaracao") {
+      window.atualizarPreVisualizacaoDeclaracao();
+    } else if (tipo === "recurso") {
+      window.atualizarPreVisualizacaoRecurso();
+    } else if (tipo === "impugnacao") {
+      window.atualizarPreVisualizacaoImpugnacao();
+    } else if (tipo === "defesa") {
+      window.atualizarPreVisualizacaoDefesa();
+    }
   }
 };
 
@@ -4346,6 +5840,15 @@ window.alternarAssinaturaTipo = function(tipo, modo) {
   if (tipo === "declaracao") {
     document.getElementById("decAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
     document.getElementById("decAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
+  } else if (tipo === "recurso") {
+    document.getElementById("recAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
+    document.getElementById("recAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
+  } else if (tipo === "impugnacao") {
+    document.getElementById("impAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
+    document.getElementById("impAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
+  } else if (tipo === "defesa") {
+    document.getElementById("defAssinaturaDesenharArea").style.display = modo === "desenhar" ? "block" : "none";
+    document.getElementById("defAssinaturaUploadArea").style.display = modo === "upload" ? "block" : "none";
   }
 };
 
@@ -4587,15 +6090,276 @@ window.atualizarPreVisualizacaoProposta = function() {
   return fullA4Content;
 };
 
-window.salvarEImprimirDocumento = async function(tipo) {
-  const isDec = tipo === "declaracao";
-  const nomeDoc = isDec ? "Declaração Unificada" : "Proposta Comercial";
+window.atualizarPreVisualizacaoRecurso = function() {
+  const empresa = document.getElementById("recEmpresa").value.trim() || "NOME DA EMPRESA LTDA";
+  const cnpj = document.getElementById("recCNPJ").value.trim() || "00.000.000/0001-00";
+  const endereco = document.getElementById("recEndereco").value.trim() || "Endereço da Empresa, Cidade/UF";
+  const repNome = document.getElementById("recRepNome").value.trim() || "REPRESENTANTE LEGAL";
+  const repCargo = document.getElementById("recRepCargo").value.trim() || "Sócio-Administrador";
   
-  let htmlConteudo = "";
-  if (isDec) {
-    htmlConteudo = window.atualizarPreVisualizacaoDeclaracao();
+  const orgao = document.getElementById("recOrgao").value.trim() || "ILUSTRÍSSIMO SENHOR PREGOEIRO / COMISSÃO DE CONTRATAÇÃO";
+  const processo = document.getElementById("recProcesso").value.trim() || "PREGÃO ELETRÔNICO Nº 01/2026";
+  const objeto = document.getElementById("recObjeto").value.trim() || "Prestação de serviços especializados.";
+  const lote = document.getElementById("recLote").value.trim() || "";
+  
+  const fatos = document.getElementById("recFatos").value.trim() || "";
+  const fundamento = document.getElementById("recFundamento").value.trim() || "";
+  const pedidos = document.getElementById("recPedidos").value.trim() || "";
+  
+  const cidade = document.getElementById("recCidade").value.trim() || "Belo Horizonte";
+  const dataInput = document.getElementById("recData").value;
+  
+  let dataFormatada = "";
+  if (dataInput) {
+    const d = new Date(dataInput + "T12:00:00");
+    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    dataFormatada = `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
   } else {
+    dataFormatada = "___ de _________________ de 202___";
+  }
+
+  const headerHTML = window.tempVisuals.timbrado 
+    ? `<div style="text-align:center; margin-bottom:25px;"><img src="${window.tempVisuals.timbrado}" style="max-height:110px; max-width:100%; object-fit:contain;"></div>`
+    : `<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:30px;"><h2 style="font-size:20px; font-weight:800; text-transform:uppercase; margin:0;">RECURSO ADMINISTRATIVO</h2></div>`;
+  
+  const assinaturaHTML = window.tempVisuals.assinaturaDec
+    ? `<div style="text-align:center; margin-top:25px;"><img src="${window.tempVisuals.assinaturaDec}" style="max-height:80px; max-width:250px; object-fit:contain; display:block; margin:0 auto 5px auto;"><div style="border-top:1px solid #333; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`
+    : `<div style="text-align:center; margin-top:55px;"><div style="border-top:1px dashed #777; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`;
+
+  const fullA4Content = `
+    <div style="background:white; color:black; padding:40px; font-family:'Times New Roman', Times, serif; font-size:12px; line-height:1.6; min-height:600px; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      ${headerHTML}
+      
+      <div style="text-align:left; font-size:12px; margin-bottom:20px;">
+        <strong>AO ${orgao.toUpperCase()}</strong><br>
+        <strong>REF:</strong> ${processo}<br>
+        <strong>OBJETO:</strong> ${objeto}
+        ${lote ? `<br><strong>LOTE/ITEM:</strong> ${lote}` : ""}
+      </div>
+      
+      <p style="text-align:justify; margin-bottom:15px;">
+        <strong>${empresa.toUpperCase()}</strong>, inscrita no CNPJ sob o nº <strong>${cnpj}</strong>, com sede à <strong>${endereco}</strong>, representada por seu ${repCargo}, Sr(a). <strong>${repNome}</strong>, vem, tempestiva e respeitosamente, perante Vossa Senhoria, interpor o presente:
+      </p>
+
+      <div style="text-align:center; font-weight:bold; font-size:14px; margin: 20px 0; text-transform:uppercase; text-decoration:underline;">RECURSO ADMINISTRATIVO</div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>I. DA SÍNTESE DOS FATOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fatos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>II. DA FUNDAMENTAÇÃO JURÍDICA</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fundamento.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>III. DOS PEDIDOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${pedidos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <p style="margin-bottom:15px; text-align:justify;">Termos em que, pede e espera deferimento.</p>
+
+      <div style="text-align:right; margin-top:25px; font-size:12px; font-style:italic;">
+        ${cidade}, ${dataFormatada}.
+      </div>
+
+      ${assinaturaHTML}
+    </div>
+  `;
+
+  const elPreview = document.getElementById("areaPreVisualizacaoRec");
+  if (elPreview) elPreview.innerHTML = fullA4Content;
+  return fullA4Content;
+};
+
+window.atualizarPreVisualizacaoImpugnacao = function() {
+  const empresa = document.getElementById("impEmpresa").value.trim() || "NOME DA EMPRESA LTDA";
+  const cnpj = document.getElementById("impCNPJ").value.trim() || "00.000.000/0001-00";
+  const endereco = document.getElementById("impEndereco").value.trim() || "Endereço da Empresa, Cidade/UF";
+  const repNome = document.getElementById("impRepNome").value.trim() || "REPRESENTANTE LEGAL";
+  const repCargo = document.getElementById("impRepCargo").value.trim() || "Sócio-Administrador";
+  
+  const orgao = document.getElementById("impOrgao").value.trim() || "ILUSTRÍSSIMO SENHOR PREGOEIRO / SUBSCRITOR DO EDITAL";
+  const processo = document.getElementById("impProcesso").value.trim() || "PREGÃO ELETRÔNICO Nº 01/2026";
+  const objeto = document.getElementById("impObjeto").value.trim() || "Prestação de serviços ou fornecimento.";
+  const item = document.getElementById("impItem").value.trim() || "";
+  
+  const fatos = document.getElementById("impFatos").value.trim() || "";
+  const fundamento = document.getElementById("impFundamento").value.trim() || "";
+  const pedidos = document.getElementById("impPedidos").value.trim() || "";
+  
+  const cidade = document.getElementById("impCidade").value.trim() || "Belo Horizonte";
+  const dataInput = document.getElementById("impData").value;
+  
+  let dataFormatada = "";
+  if (dataInput) {
+    const d = new Date(dataInput + "T12:00:00");
+    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    dataFormatada = `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  } else {
+    dataFormatada = "___ de _________________ de 202___";
+  }
+
+  const headerHTML = window.tempVisuals.timbrado 
+    ? `<div style="text-align:center; margin-bottom:25px;"><img src="${window.tempVisuals.timbrado}" style="max-height:110px; max-width:100%; object-fit:contain;"></div>`
+    : `<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:30px;"><h2 style="font-size:20px; font-weight:800; text-transform:uppercase; margin:0;">IMPUGNAÇÃO DE EDITAL</h2></div>`;
+  
+  const signatureImage = window.tempVisuals.assinaturaDec;
+  const assinaturaHTML = signatureImage
+    ? `<div style="text-align:center; margin-top:25px;"><img src="${signatureImage}" style="max-height:80px; max-width:250px; object-fit:contain; display:block; margin:0 auto 5px auto;"><div style="border-top:1px solid #333; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`
+    : `<div style="text-align:center; margin-top:55px;"><div style="border-top:1px dashed #777; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`;
+
+  const fullA4Content = `
+    <div style="background:white; color:black; padding:40px; font-family:'Times New Roman', Times, serif; font-size:12px; line-height:1.6; min-height:600px; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      ${headerHTML}
+      
+      <div style="text-align:left; font-size:12px; margin-bottom:20px;">
+        <strong>AO ${orgao.toUpperCase()}</strong><br>
+        <strong>REF:</strong> ${processo}<br>
+        <strong>OBJETO:</strong> ${objeto}
+        ${item ? `<br><strong>ELEMENTO IMPUGNADO:</strong> ${item}` : ""}
+      </div>
+      
+      <p style="text-align:justify; margin-bottom:15px;">
+        <strong>${empresa.toUpperCase()}</strong>, inscrita no CNPJ sob o nº <strong>${cnpj}</strong>, com sede à <strong>${endereco}</strong>, representada por seu ${repCargo}, Sr(a). <strong>${repNome}</strong>, vem, tempestiva e respeitosamente, perante Vossa Senhoria, apresentar:
+      </p>
+
+      <div style="text-align:center; font-weight:bold; font-size:14px; margin: 20px 0; text-transform:uppercase; text-decoration:underline;">IMPUGNAÇÃO AO EDITAL</div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>I. DOS FATOS E ADMISSIBILIDADE</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fatos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>II. DOS FUNDAMENTOS JURÍDICOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fundamento.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>III. DOS PEDIDOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${pedidos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <p style="margin-bottom:15px; text-align:justify;">Termos em que, pede acolhimento e deferimento.</p>
+
+      <div style="text-align:right; margin-top:25px; font-size:12px; font-style:italic;">
+        ${cidade}, ${dataFormatada}.
+      </div>
+
+      ${assinaturaHTML}
+    </div>
+  `;
+
+  const elPreview = document.getElementById("areaPreVisualizacaoImp");
+  if (elPreview) elPreview.innerHTML = fullA4Content;
+  return fullA4Content;
+};
+
+window.atualizarPreVisualizacaoDefesa = function() {
+  const empresa = document.getElementById("defEmpresa").value.trim() || "NOME DA EMPRESA LTDA";
+  const cnpj = document.getElementById("defCNPJ").value.trim() || "00.000.000/0001-00";
+  const endereco = document.getElementById("defEndereco").value.trim() || "Endereço da Empresa, Cidade/UF";
+  const repNome = document.getElementById("defRepNome").value.trim() || "REPRESENTANTE LEGAL";
+  const repCargo = document.getElementById("defRepCargo").value.trim() || "Sócio-Administrador";
+  
+  const orgao = document.getElementById("defOrgao").value.trim() || "ILUSTRÍSSIMO SENHOR DIRIGENTE / AUTORIDADE SANÇÃO";
+  const processo = document.getElementById("defProcesso").value.trim() || "PROCESSO ADMINISTRATIVO SANCIONADOR Nº 01/2026";
+  const objeto = document.getElementById("defObjeto").value.trim() || "Contrato decorrente de licitação.";
+  const infracao = document.getElementById("defInfracao").value.trim() || "";
+  
+  const fatos = document.getElementById("defFatos").value.trim() || "";
+  const fundamento = document.getElementById("defFundamento").value.trim() || "";
+  const pedidos = document.getElementById("defPedidos").value.trim() || "";
+  
+  const city = document.getElementById("defCidade").value.trim() || "Belo Horizonte";
+  const dataInput = document.getElementById("defData").value;
+  
+  let dataFormatada = "";
+  if (dataInput) {
+    const d = new Date(dataInput + "T12:00:00");
+    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    dataFormatada = `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  } else {
+    dataFormatada = "___ de _________________ de 202___";
+  }
+
+  const headerHTML = window.tempVisuals.timbrado 
+    ? `<div style="text-align:center; margin-bottom:25px;"><img src="${window.tempVisuals.timbrado}" style="max-height:110px; max-width:100%; object-fit:contain;"></div>`
+    : `<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:30px;"><h2 style="font-size:20px; font-weight:800; text-transform:uppercase; margin:0;">DEFESA ADMINISTRATIVA</h2></div>`;
+  
+  const signatureImage = window.tempVisuals.assinaturaDec;
+  const assinaturaHTML = signatureImage
+    ? `<div style="text-align:center; margin-top:25px;"><img src="${signatureImage}" style="max-height:80px; max-width:250px; object-fit:contain; display:block; margin:0 auto 5px auto;"><div style="border-top:1px solid #333; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`
+    : `<div style="text-align:center; margin-top:55px;"><div style="border-top:1px dashed #777; display:inline-block; width:280px; padding-top:4px;"><strong>${empresa}</strong><br><span style="font-size:10px; color:#555;">Por: ${repNome} (${repCargo})</span></div></div>`;
+
+  const fullA4Content = `
+    <div style="background:white; color:black; padding:40px; font-family:'Times New Roman', Times, serif; font-size:12px; line-height:1.6; min-height:600px; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      ${headerHTML}
+      
+      <div style="text-align:left; font-size:12px; margin-bottom:20px;">
+        <strong>AO ${orgao.toUpperCase()}</strong><br>
+        <strong>REF:</strong> ${processo}<br>
+        <strong>CONTRATO / OBJETO:</strong> ${objeto}
+        ${infracao ? `<br><strong>INFRAÇÃO APONTADA:</strong> ${infracao}` : ""}
+      </div>
+      
+      <p style="text-align:justify; margin-bottom:15px;">
+        <strong>${empresa.toUpperCase()}</strong>, inscrita no CNPJ sob o nº <strong>${cnpj}</strong>, com sede à <strong>${endereco}</strong>, representada por seu ${repCargo}, Sr(a). <strong>${repNome}</strong>, vem, tempestiva e respeitosamente, perante Vossa Senhoria, apresentar:
+      </p>
+
+      <div style="text-align:center; font-weight:bold; font-size:14px; margin: 20px 0; text-transform:uppercase; text-decoration:underline;">DEFESA ADMINISTRATIVA</div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>I. DOS ESCLARECIMENTOS DE FATO</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fatos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>II. DOS RAZÕES DE DIREITO</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${fundamento.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <div style="margin-bottom:15px; text-align:justify;">
+        <strong>III. DOS PEDIDOS</strong><br>
+        <p style="text-indent:25px; margin-top:5px;">${pedidos.replace(/\n/g, "<br>")}</p>
+      </div>
+
+      <p style="margin-bottom:15px; text-align:justify;">Termos em que, pede acolhimento e o deferimento da presente peça defensiva.</p>
+
+      <div style="text-align:right; margin-top:25px; font-size:12px; font-style:italic;">
+        ${city}, ${dataFormatada}.
+      </div>
+
+      ${assinaturaHTML}
+    </div>
+  `;
+
+  const elPreview = document.getElementById("areaPreVisualizacaoDef");
+  if (elPreview) elPreview.innerHTML = fullA4Content;
+  return fullA4Content;
+};
+
+window.salvarEImprimirDocumento = async function(tipo) {
+  let nomeDoc = "";
+  let htmlConteudo = "";
+  
+  if (tipo === "declaracao") {
+    nomeDoc = "Declaração Unificada";
+    htmlConteudo = window.atualizarPreVisualizacaoDeclaracao();
+  } else if (tipo === "proposta") {
+    nomeDoc = "Proposta Comercial";
     htmlConteudo = window.atualizarPreVisualizacaoProposta();
+  } else if (tipo === "recurso") {
+    nomeDoc = "Recurso Administrativo";
+    htmlConteudo = window.atualizarPreVisualizacaoRecurso();
+  } else if (tipo === "impugnacao") {
+    nomeDoc = "Impugnação de Edital";
+    htmlConteudo = window.atualizarPreVisualizacaoImpugnacao();
+  } else if (tipo === "defesa") {
+    nomeDoc = "Defesa Administrativa";
+    htmlConteudo = window.atualizarPreVisualizacaoDefesa();
   }
   
   try {
@@ -4653,7 +6417,13 @@ window.iniciarListenerDocsGerados = function() {
         if (item.dataCriacao && item.dataCriacao.seconds) {
           dataStr = new Date(item.dataCriacao.seconds * 1000).toLocaleDateString("pt-BR") + " " + new Date(item.dataCriacao.seconds * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
         }
-        const tipoLabel = item.tipo === "declaracao" ? "✍️ Declaração" : "💰 Proposta";
+        
+        let tipoLabel = "📄 Documento";
+        if (item.tipo === "declaracao") tipoLabel = "✍️ Declaração";
+        else if (item.tipo === "proposta") tipoLabel = "💰 Proposta";
+        else if (item.tipo === "recurso") tipoLabel = "⚖️ Recurso";
+        else if (item.tipo === "impugnacao") tipoLabel = "🚫 Impugnação";
+        else if (item.tipo === "defesa") tipoLabel = "🛡️ Defesa";
         
         listDiv.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:16px 20px; border-radius:15px; border:1px solid rgba(255,255,255,0.04);">
@@ -4707,410 +6477,12 @@ window.excluirDocumentoGerado = async function(docId) {
   }
 };
 
-// ==========================================================================
-// MODAL DE DETALHES, ANEXOS E HISTÓRICO DA LICITAÇÃO
-// ==========================================================================
-let licitacaoAtivaId = null;
-let unsubAnexosLicitacao = null;
-let unsubHistoricoLicitacao = null;
-let currentTabLicitacao = "detalhes";
-
-window.abrirModalLicitacao = async function(id) {
-  licitacaoAtivaId = id;
-  currentTabLicitacao = "detalhes";
-  
-  const modal = document.getElementById("modalLicitacao");
-  if (!modal) return;
-  modal.style.display = "flex";
-  
-  try {
-    const docRef = doc(db, "licitacoes", id);
-    const snap = await getDoc(docRef);
-    if (!snap.exists()) {
-      alert("Licitação não encontrada.");
-      window.fecharModalLicitacao();
-      return;
-    }
-    
-    const l = snap.data();
-    
-    document.getElementById("modalLicitacaoOrgao").innerText = l.orgao || "Órgão Público";
-    
-    const badgeStatus = document.getElementById("modalLicitacaoStatusBadge");
-    const status = (l.status || "aviso").toLowerCase();
-    badgeStatus.innerText = status;
-    
-    if (status === "aviso") {
-      badgeStatus.style.background = "rgba(229,184,92,0.15)";
-      badgeStatus.style.color = "#e5b85c";
-      badgeStatus.style.border = "1.5px solid rgba(229,184,92,0.25)";
-    } else if (status === "andamento") {
-      badgeStatus.style.background = "rgba(252,211,77,0.15)";
-      badgeStatus.style.color = "#fcd34d";
-      badgeStatus.style.border = "1.5px solid rgba(252,211,77,0.25)";
-    } else if (status === "vencida") {
-      badgeStatus.style.background = "rgba(16,185,129,0.15)";
-      badgeStatus.style.color = "#10b981";
-      badgeStatus.style.border = "1.5px solid rgba(16,185,129,0.25)";
-    } else if (status === "perdida") {
-      badgeStatus.style.background = "rgba(239,68,68,0.15)";
-      badgeStatus.style.color = "#ef4444";
-      badgeStatus.style.border = "1.5px solid rgba(239,68,68,0.25)";
-    } else {
-      badgeStatus.style.background = "rgba(148,163,184,0.15)";
-      badgeStatus.style.color = "#94a3b8";
-      badgeStatus.style.border = "1.5px solid rgba(148,163,184,0.25)";
-    }
-    
-    window.renderDetalhesLicitacao(l);
-    window.carregarAnexosLicitacao(id);
-    window.carregarHistoricoLicitacao(id);
-    window.setTabLicitacao("detalhes");
-    
-  } catch (err) {
-    console.error("Erro ao carregar detalhes do modal:", err);
-    alert("Erro ao carregar detalhes.");
-  }
-};
-
-window.fecharModalLicitacao = function() {
-  const modal = document.getElementById("modalLicitacao");
-  if (modal) modal.style.display = "none";
-  
-  licitacaoAtivaId = null;
-  if (unsubAnexosLicitacao) {
-    unsubAnexosLicitacao();
-    unsubAnexosLicitacao = null;
-  }
-  if (unsubHistoricoLicitacao) {
-    unsubHistoricoLicitacao();
-    unsubHistoricoLicitacao = null;
-  }
-};
-
-window.setTabLicitacao = function(tabName) {
-  currentTabLicitacao = tabName;
-  
-  const abas = ["detalhes", "anexos", "historico"];
-  abas.forEach(t => {
-    const btn = document.getElementById(`tabLicitacao-${t}`);
-    const content = document.getElementById(`contentLicitacao-${t}`);
-    if (btn) {
-      if (t === tabName) {
-        btn.style.borderBottom = "2px solid #e5b85c";
-        btn.style.color = "#e5b85c";
-        btn.style.opacity = "1";
-      } else {
-        btn.style.borderBottom = "2px solid transparent";
-        btn.style.color = "#94a3b8";
-        btn.style.opacity = "0.7";
-      }
-    }
-    if (content) {
-      content.style.display = (t === tabName) ? "block" : "none";
-    }
-  });
-};
-
-window.renderDetalhesLicitacao = function(l) {
-  const container = document.getElementById("contentLicitacao-detalhes");
-  if (!container) return;
-  
-  const status = (l.status || "aviso").toLowerCase();
-  const link = l.linkEdital || l.link || "";
-  
-  container.innerHTML = `
-    <div style="display:grid; grid-template-columns:1fr; gap:16px;">
-      <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); padding:20px; border-radius:16px;">
-        <h4 style="color:#e5b85c; margin:0 0 12px 0; font-size:15px; font-weight:700;">📋 Informações Gerais</h4>
-        
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:15px; font-size:14px;">
-          <div>
-            <span style="color:#64748b; font-weight:600; display:block; margin-bottom:2px; font-size:12px; text-transform:uppercase;">Órgão Público</span>
-            <span style="color:#ffffff; font-weight:600;">${escapeHTML(l.orgao || "")}</span>
-          </div>
-          <div>
-            <span style="color:#64748b; font-weight:600; display:block; margin-bottom:2px; font-size:12px; text-transform:uppercase;">Valor Estimado</span>
-            <span style="color:#e5b85c; font-weight:700;">R$ ${Number(l.valor || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-          </div>
-          <div>
-            <span style="color:#64748b; font-weight:600; display:block; margin-bottom:2px; font-size:12px; text-transform:uppercase;">Data/Hora da Sessão</span>
-            <span style="color:#ffffff; font-weight:600;">${escapeHTML(l.dataSessao || "Não informado")}</span>
-          </div>
-          <div>
-            <span style="color:#64748b; font-weight:600; display:block; margin-bottom:2px; font-size:12px; text-transform:uppercase;">Edital / Link</span>
-            ${link ? `<a href="${link}" target="_blank" style="color:#3b82f6; text-decoration:underline; font-weight:600; display:block; margin-top:2px;">🔗 Abrir Link do Edital</a>` : `<span style="color:#94a3b8;">Link indisponível</span>`}
-          </div>
-        </div>
-        
-        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.04); padding-top:15px;">
-          <span style="color:#64748b; font-weight:600; display:block; margin-bottom:4px; font-size:12px; text-transform:uppercase;">Objeto da Licitação</span>
-          <p style="color:#cbd5e1; line-height:1.6; margin:0; font-size:14px;">${escapeHTML(l.objeto || "")}</p>
-        </div>
-      </div>
-      
-      <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); padding:20px; border-radius:16px; display:flex; gap:15px; align-items:center; flex-wrap:wrap; justify-content:space-between;">
-        <div>
-          <h4 style="color:#e5b85c; margin:0 0 4px 0; font-size:15px; font-weight:700;">🚦 Alterar Status</h4>
-          <p style="color:#64748b; font-size:12px; margin:0;">Mude a etapa ou classificação desta licitação.</p>
-        </div>
-        
-        <select onchange="window.alterarStatusLicitacao('${licitacaoAtivaId}', this.value); document.getElementById('modalLicitacaoStatusBadge').innerText=this.value;" class="inputPadrao" style="margin:0; width:auto; min-width:200px; padding:10px 14px; background:#0c1524; border-radius:10px;">
-          <option value="aviso" ${status === "aviso" ? "selected" : ""}>📢 Aviso</option>
-          <option value="andamento" ${status === "andamento" ? "selected" : ""}>🟡 Em andamento</option>
-          <option value="vencida" ${status === "vencida" ? "selected" : ""}>🟢 Vencida</option>
-          <option value="perdida" ${status === "perdida" ? "selected" : ""}>🔴 Perdida</option>
-          <option value="descartada" ${status === "descartada" ? "selected" : ""}>⚫ Descartada</option>
-        </select>
-      </div>
-    </div>
-  `;
-};
-
-window.carregarAnexosLicitacao = function(id) {
-  const container = document.getElementById("contentLicitacao-anexos");
-  if (!container) return;
-  
-  if (unsubAnexosLicitacao) unsubAnexosLicitacao();
-  
-  container.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:16px;">
-      <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); padding:16px; border-radius:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-        <div style="flex:1; min-width:200px;">
-          <input type="text" id="novoAnexoLicitacaoNome" placeholder="Nome do anexo (ex: Proposta Final, Planilha)" class="inputPadrao" style="margin-bottom:0; padding:10px;">
-        </div>
-        <div style="flex:1; min-width:200px; display:flex; gap:8px;">
-          <input type="file" id="novoAnexoLicitacaoArquivo" class="inputPadrao" style="margin-bottom:0; padding:8px; font-size:12px;">
-          <button onclick="window.enviarAnexoLicitacao()" class="botaoPadrao" id="btnSalvarAnexoLicitacao" style="width:auto; padding:12px 20px;">Salvar</button>
-        </div>
-      </div>
-      
-      <div id="listaAnexosLicitacao" style="display:flex; flex-direction:column; gap:10px;">
-        <p style="color:#64748b; font-style:italic; font-size:13px; text-align:center; padding:20px;">Carregando anexos...</p>
-      </div>
-    </div>
-  `;
-  
-  unsubAnexosLicitacao = onSnapshot(
-    query(collection(db, "licitacoes", id, "anexos"), orderBy("data", "desc")),
-    snap => {
-      const listDiv = document.getElementById("listaAnexosLicitacao");
-      if (!listDiv) return;
-      
-      listDiv.innerHTML = "";
-      if (snap.empty) {
-        listDiv.innerHTML = `<p style="color:#64748b; font-style:italic; font-size:13px; text-align:center; padding:20px; border:1px dashed rgba(255,255,255,0.04); border-radius:12px;">Nenhum anexo enviado para esta licitação.</p>`;
-        return;
-      }
-      
-      snap.forEach(docSnap => {
-        const item = docSnap.data();
-        const aId = docSnap.id;
-        
-        let fileIcon = "📄";
-        if (item.tipo && item.tipo.includes("image")) fileIcon = "🖼️";
-        else if (item.tipo && item.tipo.includes("pdf")) fileIcon = "📕";
-        
-        const dataStr = item.data?.seconds ? new Date(item.data.seconds * 1000).toLocaleDateString("pt-BR") : "";
-        
-        listDiv.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); gap:12px;">
-            <div style="display:flex; align-items:center; gap:12px; overflow:hidden;">
-              <span style="font-size:20px; background:rgba(255,255,255,0.03); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;">${fileIcon}</span>
-              <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                <span style="font-size:14px; font-weight:600; color:#ffffff; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(item.nome)}</span>
-                <span style="font-size:11px; color:#64748b; display:block;">Enviado em ${dataStr}</span>
-              </div>
-            </div>
-            <div style="display:flex; gap:8px; flex-shrink:0;">
-              <button onclick="window.abrirArquivoBase64('${item.link}', '${item.nome}', 'arquivo')" class="doc-tab-btn" style="padding:6px 12px; font-size:12px; background:#e5b85c; color:#06101e; border:none; font-weight:700; margin:0;">📥 Abrir</button>
-              <button onclick="window.excluirAnexoLicitacao('${aId}')" class="doc-tab-btn" style="padding:6px 10px; font-size:12px; background:rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15); margin:0;">🗑️</button>
-            </div>
-          </div>
-        `;
-      });
-    }
-  );
-};
-
-window.enviarAnexoLicitacao = async function() {
-  const nomeInput = document.getElementById("novoAnexoLicitacaoNome");
-  const fileInput = document.getElementById("novoAnexoLicitacaoArquivo");
-  const nome = nomeInput ? nomeInput.value.trim() : "";
-  const file = fileInput ? fileInput.files[0] : null;
-  
-  if (!nome || !file) {
-    alert("Informe o nome do anexo e selecione um arquivo.");
-    return;
-  }
-  
-  const btn = document.getElementById("btnSalvarAnexoLicitacao");
-  if (btn) {
-    btn.disabled = true;
-    btn.innerText = "Salvando...";
-  }
-  
-  try {
-    const base64 = await window.lerArquivoComoBase64(file);
-    if (base64.length > 1300000) {
-      alert("O arquivo excede o limite de 1.2MB. Use um arquivo menor.");
-      if (btn) {
-        btn.disabled = false;
-        btn.innerText = "Salvar";
-      }
-      return;
-    }
-    
-    await addDoc(collection(db, "licitacoes", licitacaoAtivaId, "anexos"), {
-      nome,
-      link: base64,
-      tipo: file.type,
-      tamanho: file.size,
-      data: serverTimestamp()
-    });
-    
-    nomeInput.value = "";
-    fileInput.value = "";
-    alert("Anexo enviado com sucesso!");
-    
-  } catch (err) {
-    console.error("Erro ao salvar anexo da licitação:", err);
-    alert("Erro ao salvar anexo.");
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = "Salvar";
-    }
-  }
-};
-
-window.excluirAnexoLicitacao = async function(aId) {
-  if (!confirm("Tem certeza que deseja excluir este anexo?")) return;
-  try {
-    await deleteDoc(doc(db, "licitacoes", licitacaoAtivaId, "anexos", aId));
-    alert("Anexo excluído!");
-  } catch (err) {
-    console.error("Erro ao excluir anexo:", err);
-    alert("Erro ao excluir.");
-  }
-};
-
-window.carregarHistoricoLicitacao = function(id) {
-  const container = document.getElementById("contentLicitacao-historico");
-  if (!container) return;
-  
-  if (unsubHistoricoLicitacao) unsubHistoricoLicitacao();
-  
-  container.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:16px;">
-      <div id="listaHistoricoLicitacao" style="max-height:350px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:10px 0;">
-        <p style="color:#64748b; font-style:italic; font-size:13px; text-align:center;">Carregando histórico...</p>
-      </div>
-      
-      <div style="display:flex; gap:10px; border-top:1px solid rgba(255,255,255,0.04); padding-top:15px;">
-        <textarea id="novoHistoricoLicitacaoTexto" class="inputPadrao" placeholder="Registrar nova atualização..." style="height:80px; resize:none; margin:0; flex:1; padding-top:12px;"></textarea>
-        <button onclick="window.enviarHistoricoLicitacao()" class="botaoPadrao" style="width:auto; padding:0 24px; display:flex; align-items:center; justify-content:center; font-size:16px;">➤</button>
-      </div>
-    </div>
-  `;
-  
-  unsubHistoricoLicitacao = onSnapshot(
-    query(collection(db, "licitacoes", id, "movimentacoes"), orderBy("data")),
-    snap => {
-      const listDiv = document.getElementById("listaHistoricoLicitacao");
-      if (!listDiv) return;
-      
-      listDiv.innerHTML = "";
-      if (snap.empty) {
-        listDiv.innerHTML = `<p style="color:#64748b; font-style:italic; font-size:13px; text-align:center; padding:20px; border:1px dashed rgba(255,255,255,0.04); border-radius:12px;">Nenhum registro no histórico desta licitação.</p>`;
-        return;
-      }
-      
-      snap.forEach(docSnap => {
-        const m = docSnap.data();
-        const isMe = m.autor === (window.isCourvanTeamAdmin ? "admin" : "cliente");
-        const dataStr = m.data?.seconds ? new Date(m.data.seconds * 1000).toLocaleString("pt-BR") : "";
-        
-        listDiv.innerHTML += `
-          <div style="background:${isMe ? 'rgba(229,184,92,0.03)' : 'rgba(255,255,255,0.01)'}; border:1px solid ${isMe ? 'rgba(229,184,92,0.1)' : 'rgba(255,255,255,0.03)'}; padding:14px; border-radius:12px; position:relative;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-size:12px; font-weight:700; color:${isMe ? '#e5b85c' : '#ffffff'};">${escapeHTML(m.nome || "Usuário")} (${escapeHTML(m.empresa || "Courvan")})</span>
-              <span style="font-size:11px; color:#64748b;">${dataStr}</span>
-            </div>
-            <p style="margin:0; font-size:13.5px; color:#cbd5e1; line-height:1.4; white-space:pre-wrap;">${escapeHTML(m.texto)}</p>
-          </div>
-        `;
-      });
-      
-      setTimeout(() => {
-        listDiv.scrollTop = listDiv.scrollHeight;
-      }, 50);
-    }
-  );
-};
-
-window.enviarHistoricoLicitacao = async function() {
-  const input = document.getElementById("novoHistoricoLicitacaoTexto");
-  const texto = input ? input.value.trim() : "";
-  if (!texto) return;
-  
-  const isAdmin = window.isCourvanTeamAdmin;
-  
-  try {
-    await addDoc(collection(db, "licitacoes", licitacaoAtivaId, "movimentacoes"), {
-      texto,
-      autor: isAdmin ? "admin" : "cliente",
-      nome: isAdmin ? "Equipe Courvan" : document.getElementById("nome").innerText,
-      empresa: isAdmin ? "Courvan" : document.getElementById("empresa").innerText,
-      data: serverTimestamp()
-    });
-    
-    input.value = "";
-  } catch (err) {
-    console.error("Erro ao salvar histórico da licitação:", err);
-    alert("Erro ao registrar no histórico.");
-  }
-};
-
 // Start default listing tab
 setTimeout(() => {
   window.alternarSubTabGerador("listar");
 }, 1000);
 
 </script>
-
-<!-- Modal de Detalhes da Licitação -->
-<div id="modalLicitacao" style="display:none; position:fixed; inset:0; background:rgba(6,11,19,0.85); backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center; padding:20px;">
-  <div style="background:#0c1524; border:1.5px solid rgba(229,184,92,0.2); border-radius:24px; width:100%; max-width:800px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 20px 50px rgba(0,0,0,0.6); overflow:hidden; animation: fadeIn 0.25s ease;">
-    <!-- Modal Header -->
-    <div style="padding:20px 24px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; background:rgba(229,184,92,0.02);">
-      <div style="overflow:hidden; flex:1; padding-right:16px;">
-        <h2 id="modalLicitacaoOrgao" style="color:#e5b85c; margin:0; font-size:18px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Órgão Público</h2>
-        <span id="modalLicitacaoStatusBadge" style="margin-top:6px; display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; padding:2px 8px; border-radius:6px;">STATUS</span>
-      </div>
-      <button onclick="window.fecharModalLicitacao()" style="background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer; transition:0.2s; padding:4px;" onmouseover="this.style.color='#f3f4f6'" onmouseout="this.style.color='#94a3b8'">×</button>
-    </div>
-    
-    <!-- Modal Tabs -->
-    <div style="display:flex; border-bottom:1px solid rgba(255,255,255,0.06); background:rgba(5,11,19,0.3); padding:0 12px; overflow-x:auto;">
-      <button id="tabLicitacao-detalhes" onclick="window.setTabLicitacao('detalhes')" class="doc-tab-btn" style="border-radius:0; border-bottom:2px solid transparent; margin:0; padding:15px 16px; font-weight:600; font-size:13px; cursor:pointer; background:none; border:none;">📋 Detalhes</button>
-      <button id="tabLicitacao-anexos" onclick="window.setTabLicitacao('anexos')" class="doc-tab-btn" style="border-radius:0; border-bottom:2px solid transparent; margin:0; padding:15px 16px; font-weight:600; font-size:13px; cursor:pointer; background:none; border:none;">📎 Anexos (Documentos)</button>
-      <button id="tabLicitacao-historico" onclick="window.setTabLicitacao('historico')" class="doc-tab-btn" style="border-radius:0; border-bottom:2px solid transparent; margin:0; padding:15px 16px; font-weight:600; font-size:13px; cursor:pointer; background:none; border:none;">📜 Histórico & Movimentações</button>
-    </div>
-    
-    <!-- Modal Content -->
-    <div style="flex:1; overflow-y:auto; padding:24px; color:#cbd5e1; background:#070d18;" id="modalLicitacaoCorpo">
-      <!-- Detalhes Tab -->
-      <div id="contentLicitacao-detalhes" style="display:block;"></div>
-      
-      <!-- Anexos Tab -->
-      <div id="contentLicitacao-anexos" style="display:none;"></div>
-      
-      <!-- Histórico Tab -->
-      <div id="contentLicitacao-historico" style="display:none;"></div>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
