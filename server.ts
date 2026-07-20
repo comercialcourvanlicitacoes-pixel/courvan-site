@@ -91,20 +91,59 @@ app.get("/api/feed/:clienteId", async (req, res) => {
   }
   
   try {
-    // Fetch client name for description
-    const clienteDoc = await dbAdmin.collection("clientes").doc(clienteId).get();
-    const clienteNome = clienteDoc.exists ? clienteDoc.data()?.nome || "Cliente" : "Cliente";
+    const isGeral = clienteId === "admin" || clienteId === "geral";
+    
+    // Fetch all clients to map their names and handle company grouping
+    const todosClientesSnap = await dbAdmin.collection("clientes").get();
+    const clientesMap: Record<string, string> = {};
+    todosClientesSnap.forEach((docItem: any) => {
+      clientesMap[docItem.id] = docItem.data()?.nome || "Desconhecido";
+    });
+
+    let clientIds = [clienteId];
+    let clienteNome = isGeral ? "Geral Admin" : "Cliente";
+
+    if (!isGeral) {
+      const clienteDoc = await dbAdmin.collection("clientes").doc(clienteId).get();
+      if (clienteDoc.exists) {
+        const clienteData = clienteDoc.data();
+        clienteNome = clienteData?.nome || "Cliente";
+        const nomeEmpresa = (clienteData?.empresa || "").trim();
+        if (nomeEmpresa) {
+          const docsMesmaEmpresa = todosClientesSnap.docs.filter((d: any) => {
+            const emp = (d.data().empresa || "").trim();
+            return emp.toLowerCase() === nomeEmpresa.toLowerCase();
+          });
+          if (docsMesmaEmpresa.length > 0) {
+            clientIds = docsMesmaEmpresa.map((d: any) => d.id);
+            clienteNome = nomeEmpresa;
+          }
+        }
+      }
+    }
 
     // Query active licitacoes
-    const licSnap = await dbAdmin.collection("licitacoes")
-      .where("clienteId", "==", clienteId)
-      .where("status", "in", ["andamento", "vencida", "perdida"])
-      .get();
+    let licQuery: any = dbAdmin.collection("licitacoes");
+    if (!isGeral) {
+      if (clientIds.length === 1) {
+        licQuery = licQuery.where("clienteId", "==", clientIds[0]);
+      } else {
+        licQuery = licQuery.where("clienteId", "in", clientIds);
+      }
+    }
+    licQuery = licQuery.where("status", "in", ["aviso", "andamento", "vencida", "perdida"]);
+    const licSnap = await licQuery.get();
       
     // Query documentos
-    const docSnap = await dbAdmin.collection("documentos")
-      .where("clienteId", "==", clienteId)
-      .get();
+    let docQuery: any = dbAdmin.collection("documentos");
+    if (!isGeral) {
+      if (clientIds.length === 1) {
+        docQuery = docQuery.where("clienteId", "==", clientIds[0]);
+      } else {
+        docQuery = docQuery.where("clienteId", "in", clientIds);
+      }
+    }
+    const docSnap = await docQuery.get();
       
     let icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Courvan//Courvan Agenda//PT\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Courvan - " + clienteNome + "\r\nREFRESH-INTERVAL;VALUE=DURATION:PT4H\r\n";
     
@@ -114,8 +153,9 @@ app.get("/api/feed/:clienteId", async (req, res) => {
       if (!l.dataSessao) return;
       
       const uid = docItem.id + "@courvan.com.br";
+      const eventClienteNome = clientesMap[l.clienteId] || clienteNome;
       const summary = `Licitação: ${l.orgao || "Órgão"}`;
-      const description = `Objeto: ${l.objeto || ""}\\nValor: ${l.valor || ""}\\nStatus: ${l.status || ""}\\nCliente: ${clienteNome}`;
+      const description = `Objeto: ${l.objeto || ""}\\nValor: ${l.valor || ""}\\nStatus: ${l.status || ""}\\nCliente: ${eventClienteNome}`;
       
       let dateStr = l.dataSessao;
       let ymd = "";
@@ -140,8 +180,9 @@ app.get("/api/feed/:clienteId", async (req, res) => {
       if (!d.vencimento) return;
       
       const uid = docItem.id + "@courvan.com.br";
+      const eventClienteNome = clientesMap[d.clienteId] || clienteNome;
       const summary = `📄 Vencimento: ${d.nome || "Documento"}`;
-      const description = `Categoria: ${d.categoria || ""}\\nStatus do Documento: ${d.statusDocumento || ""}\\nCliente: ${clienteNome}`;
+      const description = `Categoria: ${d.categoria || ""}\\nStatus do Documento: ${d.statusDocumento || ""}\\nCliente: ${eventClienteNome}`;
       
       let dateStr = d.vencimento; // Expecting YYYY-MM-DD
       const ymd = dateStr.replace(/-/g, "").substring(0, 8);
