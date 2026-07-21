@@ -1870,30 +1870,31 @@ window.obterQueryStringProposta = function() {
   const empresa = document.getElementById("propostaNomeEmpresa").value.trim() || "Empresa Parceira";
   const params = new URLSearchParams();
   params.set("empresa", empresa);
-  params.set("vStart", document.getElementById("propostaValorStart").value);
-  params.set("sStart", document.getElementById("propostaSetupStart").value);
+  params.set("vStart", document.getElementById("propostaValorStart").value || "490");
+  params.set("sStart", document.getElementById("propostaSetupStart").value || "300");
   if (document.getElementById("propostaServicosStart").value) {
-    params.set("servStart", encodeURIComponent(document.getElementById("propostaServicosStart").value));
+    params.set("servStart", document.getElementById("propostaServicosStart").value);
   }
-  params.set("vEssencial", document.getElementById("propostaValorEssencial").value);
-  params.set("sEssencial", document.getElementById("propostaSetupEssencial").value);
-  params.set("eEssencial", document.getElementById("propostaExitoEssencial").value);
+  params.set("vEssencial", document.getElementById("propostaValorEssencial").value || "1200");
+  params.set("sEssencial", document.getElementById("propostaSetupEssencial").value || "600");
+  params.set("eEssencial", document.getElementById("propostaExitoEssencial").value || "2,5% sobre o valor");
   if (document.getElementById("propostaServicosEssencial").value) {
-    params.set("servEssencial", encodeURIComponent(document.getElementById("propostaServicosEssencial").value));
+    params.set("servEssencial", document.getElementById("propostaServicosEssencial").value);
   }
-  params.set("vCorp", document.getElementById("propostaValorCorporate").value);
-  params.set("sCorp", document.getElementById("propostaSetupCorporate").value);
-  params.set("eCorp", document.getElementById("propostaExitoCorporate").value);
+  params.set("vCorp", document.getElementById("propostaValorCorporate").value || "2500");
+  params.set("sCorp", document.getElementById("propostaSetupCorporate").value || "1000");
+  params.set("eCorp", document.getElementById("propostaExitoCorporate").value || "2,0% sobre o valor");
   if (document.getElementById("propostaServicosCorporate").value) {
-    params.set("servCorp", encodeURIComponent(document.getElementById("propostaServicosCorporate").value));
+    params.set("servCorp", document.getElementById("propostaServicosCorporate").value);
   }
-  params.set("descAtivo", document.getElementById("propostaDescontoAtivo").checked ? "1" : "0");
-  if (document.getElementById("propostaDescontoAtivo").checked) {
-    params.set("descTit", document.getElementById("propostaDescontoTitulo").value);
-    params.set("descVal", document.getElementById("propostaDescontoValor").value);
-    params.set("descDesc", document.getElementById("propostaDescontoDesc").value);
+  const descAtivo = document.getElementById("propostaDescontoAtivo").checked;
+  params.set("descAtivo", descAtivo ? "1" : "0");
+  if (descAtivo) {
+    params.set("descTit", document.getElementById("propostaDescontoTitulo").value || "");
+    params.set("descVal", document.getElementById("propostaDescontoValor").value || "");
+    params.set("descDesc", document.getElementById("propostaDescontoDesc").value || "");
   }
-  params.set("vigencia", document.getElementById("propostaVigencia").value);
+  params.set("vigencia", document.getElementById("propostaVigencia").value || "");
   if (document.getElementById("propostaObservacao").value.trim()) {
     params.set("obs", document.getElementById("propostaObservacao").value.trim());
   }
@@ -1902,22 +1903,22 @@ window.obterQueryStringProposta = function() {
 
 window.visualizarPropostaCliente = function() {
   const clienteId = document.getElementById("propostaSelectCliente").value;
+  const query = window.obterQueryStringProposta();
+  let url = "proposta.html?" + query + "&modo=apresentacao";
   if (clienteId) {
-    window.open("proposta.html?clienteId=" + encodeURIComponent(clienteId) + "&modo=apresentacao", "_blank");
-  } else {
-    const query = window.obterQueryStringProposta();
-    window.open("proposta.html?" + query + "&modo=apresentacao", "_blank");
+    url = "proposta.html?clienteId=" + encodeURIComponent(clienteId) + "&" + query + "&modo=apresentacao";
   }
+  window.open(url, "_blank");
 };
 
 window.copiarLinkPropostaCliente = function() {
   const clienteId = document.getElementById("propostaSelectCliente").value;
+  const query = window.obterQueryStringProposta();
   let url = "";
   if (clienteId) {
-    url = window.location.origin + "/proposta.html?clienteId=" + encodeURIComponent(clienteId);
+    url = window.location.origin + "/proposta.html?clienteId=" + encodeURIComponent(clienteId) + "&" + query + "&modo=apresentacao";
   } else {
-    const query = window.obterQueryStringProposta();
-    url = window.location.origin + "/proposta.html?" + query;
+    url = window.location.origin + "/proposta.html?" + query + "&modo=apresentacao";
   }
   
   navigator.clipboard.writeText(url).then(() => {
