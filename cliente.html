@@ -1662,11 +1662,12 @@
           <div>
             <label style="font-size:11px; color:#64748b; font-weight:700; display:block; margin-bottom:6px; letter-spacing: 0.5px;">CATEGORIA</label>
             <select id="categoriaDocumento" class="inputPadrao" onchange="window.onChangeCategoriaDoc()" style="margin-bottom:0;">
-              <option value="certidoes">📜 Controle de Certidões</option>
-              <option value="contratos">✍️ Contratos & Aditivos</option>
-              <option value="editais">📢 Editais & Propostas</option>
-              <option value="habilitacao">💼 Habilitação Jurídica & Fiscal</option>
-              <option value="gdrive">🔗 Atalho do Google Drive</option>
+              <option value="habilitacao_juridica">💼 Habilitação Jurídica</option>
+              <option value="regularidade_fiscal">📜 Regularidade Fiscal e Trabalhista</option>
+              <option value="qualificacao_economica">📊 Qualificação Econômico-Financeira</option>
+              <option value="qualificacao_tecnica">🛠️ Qualificação Técnica</option>
+              <option value="contratos_aditivos">✍️ Contratos e Aditivos</option>
+              <option value="gdrive_links">🔗 Google Drive Links</option>
               <option value="outros">📁 Outros Documentos</option>
             </select>
           </div>
@@ -1708,12 +1709,12 @@
       <!-- NAVEGAÇÃO DE SUB-ACESSOS -->
       <div style="display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; overflow-x: auto;" id="abasSubDocumentos">
         <button id="subDocTab-todos" onclick="window.filtrarSubDoc('todos')" class="doc-tab-btn active">📂 Todos os Documentos</button>
-        <button id="subDocTab-prazos" onclick="window.filtrarSubDoc('prazos')" class="doc-tab-btn">📅 Controle de Prazos</button>
-        <button id="subDocTab-certidoes" onclick="window.filtrarSubDoc('certidoes')" class="doc-tab-btn">📜 Certidões Regulatórias</button>
-        <button id="subDocTab-contratos" onclick="window.filtrarSubDoc('contratos')" class="doc-tab-btn">✍️ Contratos & Aditivos</button>
-        <button id="subDocTab-editais" onclick="window.filtrarSubDoc('editais')" class="doc-tab-btn">📢 Editais & Propostas</button>
-        <button id="subDocTab-habilitacao" onclick="window.filtrarSubDoc('habilitacao')" class="doc-tab-btn">💼 Habilitação</button>
-        <button id="subDocTab-gdrive" onclick="window.filtrarSubDoc('gdrive')" class="doc-tab-btn">🔗 Google Drive Links</button>
+        <button id="subDocTab-habilitacao_juridica" onclick="window.filtrarSubDoc('habilitacao_juridica')" class="doc-tab-btn">💼 Habilitação Jurídica</button>
+        <button id="subDocTab-regularidade_fiscal" onclick="window.filtrarSubDoc('regularidade_fiscal')" class="doc-tab-btn">📜 Regularidade Fiscal e Trabalhista</button>
+        <button id="subDocTab-qualificacao_economica" onclick="window.filtrarSubDoc('qualificacao_economica')" class="doc-tab-btn">📊 Qualificação Econômico-Financeira</button>
+        <button id="subDocTab-qualificacao_tecnica" onclick="window.filtrarSubDoc('qualificacao_tecnica')" class="doc-tab-btn">🛠️ Qualificação Técnica</button>
+        <button id="subDocTab-contratos_aditivos" onclick="window.filtrarSubDoc('contratos_aditivos')" class="doc-tab-btn">✍️ Contratos e Aditivos</button>
+        <button id="subDocTab-gdrive_links" onclick="window.filtrarSubDoc('gdrive_links')" class="doc-tab-btn">🔗 Google Drive Links</button>
       </div>
 
       <!-- PAINEL DE GESTÃO DE PRAZOS (EXIBIDO DINAMICAMENTE) -->
@@ -1788,7 +1789,7 @@
       </div>
 
       <!-- Seletor Inteligente de Destinatário -->
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: rgba(255, 255, 255, 0.015); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap;">
+      <div style="display: none !important; align-items: center; gap: 8px; margin-bottom: 12px; background: rgba(255, 255, 255, 0.015); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); flex-wrap: wrap;">
         <span style="font-size: 13px; color: #64748b; font-weight: 500;">Enviar para:</span>
         <select id="chatDestinatario" class="inputPadrao" style="width: auto; padding: 6px 32px 6px 12px; font-size: 13px; border-radius: 8px; border-color: rgba(255,255,255,0.06); background: #0c1524; height: auto; margin-bottom: 0;">
           <option value="todos">📢 Todos do Grupo (Público)</option>
@@ -3476,6 +3477,11 @@ window.renderizarBoardLicitacoes = function() {
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
           <h3 style="color:#ffffff; font-size:15px; font-weight:700; margin:0; line-height:1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-family:'Plus Jakarta Sans', sans-serif;" title="${l.orgao}">${l.orgao}</h3>
           <div style="display:flex; gap:4px; align-items:center; flex-shrink:0;">
+            ${status === "descartada" ? `
+              <button onclick="event.stopPropagation(); window.excluirLicitacao('${l.id}')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; border-radius: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.3)'" onmouseout="this.style.background='rgba(239,68,68,0.15)'" title="Excluir licitação">
+                🗑
+              </button>
+            ` : ""}
             ${arrowLeftBtn}
             ${arrowRightBtn}
           </div>
@@ -3641,8 +3647,431 @@ window.criarLicitacao = async function () {
   document.getElementById("orgao").value = ""; document.getElementById("objeto").value = "";
 };
 
-window.alterarStatusLicitacao = async (id, status) => await updateDoc(doc(db, "licitacoes", id), { status });
-window.excluirLicitacao = async (id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, "licitacoes", id)); };
+window.alterarStatusLicitacao = async (id, status) => {
+  await updateDoc(doc(db, "licitacoes", id), { status });
+};
+
+window.excluirLicitacao = async (id) => {
+  const lic = window.todasAsLicitacoes.find(x => x.id === id);
+  if (!lic) return;
+  if (lic.status !== "descartada") {
+    alert("Você só pode excluir licitações que estejam na etapa 'Descartada'.");
+    return;
+  }
+  if (confirm("Deseja realmente excluir permanentemente esta licitação?")) {
+    await deleteDoc(doc(db, "licitacoes", id));
+  }
+};
+
+window.modalLicitacaoIdAtiva = null;
+window.unsubscribeModalHistorico = null;
+window.unsubscribeModalAnexos = null;
+
+window.abrirModalDetalhesLicitacao = function(id) {
+  if (window.unsubscribeModalHistorico) { window.unsubscribeModalHistorico(); window.unsubscribeModalHistorico = null; }
+  if (window.unsubscribeModalAnexos) { window.unsubscribeModalAnexos(); window.unsubscribeModalAnexos = null; }
+
+  window.modalLicitacaoIdAtiva = id;
+
+  const lic = window.todasAsLicitacoes.find(x => x.id === id);
+  if (!lic) {
+    alert("Licitação não encontrada.");
+    return;
+  }
+
+  document.getElementById("modalLicitacaoOrgao").innerText = lic.orgao || "Órgão não informado";
+  document.getElementById("modalLicitacaoObjeto").innerText = lic.objeto || "Sem objeto informado";
+  
+  const valFormated = Number(lic.valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  document.getElementById("modalLicitacaoValor").innerText = valFormated;
+
+  const sessaoEl = document.getElementById("modalLicitacaoSessao");
+  if (lic.dataSessao) {
+    const formatInfo = window.formatarDataSessaoDashboard(lic.dataSessao);
+    sessaoEl.innerHTML = `
+      <span style="font-size:14px; color:#ffffff;">${formatInfo.formatada}</span>
+      <div style="margin-top:2px;">${formatInfo.countdown}</div>
+    `;
+  } else {
+    sessaoEl.innerHTML = `<span style="color:#64748b; font-size:13px;">Não informada</span>`;
+  }
+
+  const statusPill = document.getElementById("modalLicitacaoStatusPill");
+  const statusLabels = {
+    aviso: { text: "📢 Aviso", bg: "rgba(229, 184, 92, 0.15)", color: "#e5b85c" },
+    andamento: { text: "🟡 Em andamento", bg: "rgba(252, 211, 77, 0.15)", color: "#fcd34d" },
+    vencida: { text: "🟢 Ganha (Vencida)", bg: "rgba(16, 185, 129, 0.15)", color: "#10b981" },
+    perdida: { text: "🔴 Perdida", bg: "rgba(239, 68, 68, 0.15)", color: "#ef4444" },
+    descartada: { text: "⚫ Descartada", bg: "rgba(148, 163, 184, 0.15)", color: "#94a3b8" }
+  };
+  const stInfo = statusLabels[lic.status] || { text: lic.status, bg: "rgba(255,255,255,0.05)", color: "#ffffff" };
+  statusPill.innerText = stInfo.text;
+  statusPill.style.background = stInfo.bg;
+  statusPill.style.color = stInfo.color;
+
+  const statusSelect = document.getElementById("modalLicitacaoStatusSelect");
+  if (statusSelect) {
+    statusSelect.value = lic.status || "aviso";
+    statusSelect.onchange = async function() {
+      const newStatus = this.value;
+      await window.alterarStatusLicitacao(id, newStatus);
+      const newStInfo = statusLabels[newStatus] || { text: newStatus, bg: "rgba(255,255,255,0.05)", color: "#ffffff" };
+      statusPill.innerText = newStInfo.text;
+      statusPill.style.background = newStInfo.bg;
+      statusPill.style.color = newStInfo.color;
+      const btnExcluir = document.getElementById("modalLicitacaoExcluirBtn");
+      if (btnExcluir) {
+        btnExcluir.style.display = newStatus === "descartada" ? "block" : "none";
+      }
+    };
+  }
+
+  const btnExcluir = document.getElementById("modalLicitacaoExcluirBtn");
+  if (btnExcluir) {
+    btnExcluir.style.display = lic.status === "descartada" ? "block" : "none";
+    btnExcluir.onclick = async function() {
+      if (confirm("Deseja realmente excluir permanentemente esta licitação?")) {
+        await deleteDoc(doc(db, "licitacoes", id));
+        window.fecharModalDetalhesLicitacao();
+      }
+    };
+  }
+
+  const editalLink = document.getElementById("modalLicitacaoEditalLink");
+  const linkEd = obterLinkLicitacao(lic);
+  if (linkEd) {
+    editalLink.href = linkEd;
+    editalLink.style.display = "flex";
+    editalLink.style.pointerEvents = "auto";
+    editalLink.style.opacity = "1";
+    editalLink.style.background = "rgba(255, 255, 255, 0.08)";
+    editalLink.style.borderColor = "rgba(255, 255, 255, 0.15)";
+    editalLink.style.color = "#ffffff";
+    editalLink.innerHTML = "🔗 Ver Edital";
+  } else {
+    editalLink.href = "#";
+    editalLink.style.pointerEvents = "none";
+    editalLink.style.opacity = "0.4";
+    editalLink.innerHTML = "🔗 Sem link de Edital";
+  }
+
+  const pixBtn = document.getElementById("modalLicitacaoPixBtn");
+  if (pixBtn) {
+    pixBtn.style.background = "linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%)";
+    pixBtn.onclick = function() {
+      window.gerarPagamentoLicitacao(lic.id, lic.orgao, Number(lic.valor || 0));
+    };
+  }
+
+  const intBtn = document.getElementById("modalLicitacaoInteresseBtn");
+  const noIntBtn = document.getElementById("modalLicitacaoSemInteresseBtn");
+  const interesse = lic.interesseCliente || "nao_avaliado";
+
+  if (intBtn && noIntBtn) {
+    intBtn.style.border = interesse === "tenho_interesse" ? "1px solid #10b981" : "1px solid rgba(16,185,129,0.2)";
+    intBtn.style.background = interesse === "tenho_interesse" ? "rgba(16,185,129,0.25)" : "rgba(16,185,129,0.03)";
+    intBtn.style.color = interesse === "tenho_interesse" ? "#34d399" : "#a7f3d0";
+    intBtn.innerText = interesse === "tenho_interesse" ? "✓ Interessado" : "👍 Tenho Interesse";
+    intBtn.onclick = async function() {
+      const nextMode = interesse === "tenho_interesse" ? "remover" : "tenho_interesse";
+      await window.definirInteresseLicitacao(id, nextMode);
+      lic.interesseCliente = nextMode === "remover" ? "nao_avaliado" : "tenho_interesse";
+      window.abrirModalDetalhesLicitacao(id);
+    };
+
+    noIntBtn.style.border = interesse === "sem_interesse" ? "1px solid #ef4444" : "1px solid rgba(239,68,68,0.2)";
+    noIntBtn.style.background = interesse === "sem_interesse" ? "rgba(239,68,68,0.25)" : "rgba(239,68,68,0.03)";
+    noIntBtn.style.color = interesse === "sem_interesse" ? "#f87171" : "#fca5a5";
+    noIntBtn.innerText = interesse === "sem_interesse" ? "✗ Recusado" : "👎 Sem Interesse";
+    noIntBtn.onclick = async function() {
+      const nextMode = interesse === "sem_interesse" ? "remover" : "sem_interesse";
+      await window.definirInteresseLicitacao(id, nextMode);
+      lic.interesseCliente = nextMode === "remover" ? "nao_avaliado" : "sem_interesse";
+      window.abrirModalDetalhesLicitacao(id);
+    };
+  }
+
+  window.alternarTabModal("historico");
+
+  const qHistorico = query(collection(db, "licitacoes", id, "atualizacoes"), orderBy("data", "asc"));
+  window.unsubscribeModalHistorico = onSnapshot(qHistorico, (snap) => {
+    const listDiv = document.getElementById("modalListaHistorico");
+    if (!listDiv) return;
+    listDiv.innerHTML = "";
+    if (snap.empty) {
+      listDiv.innerHTML = `
+        <div style="text-align: center; padding: 30px; color: #64748b; font-style: italic;">
+          Nenhuma atualização ou comentário ainda. Digite abaixo para iniciar o histórico.
+        </div>
+      `;
+    } else {
+      snap.forEach(docSnap => {
+        const item = docSnap.data();
+        const dataStr = item.data?.seconds 
+          ? new Date(item.data.seconds * 1000).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+          : "Recentemente";
+        
+        const isMe = item.remetenteEmail === auth.currentUser.email.toLowerCase();
+        
+        listDiv.innerHTML += `
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 700; font-size: 13px; color: ${isMe ? '#e5b85c' : '#cbd5e1'};">${escapeHTML(item.nome || item.remetenteEmail)}</span>
+              <span style="font-size: 11px; color: #64748b;">${dataStr}</span>
+            </div>
+            <p style="color: #cbd5e1; font-size: 13px; line-height: 1.4; margin: 0; white-space: pre-wrap;">${escapeHTML(item.texto)}</p>
+          </div>
+        `;
+      });
+      setTimeout(() => { listDiv.scrollTop = listDiv.scrollHeight; }, 50);
+    }
+  });
+
+  const qAnexos = query(collection(db, "licitacoes", id, "anexos"), orderBy("data", "desc"));
+  window.unsubscribeModalAnexos = onSnapshot(qAnexos, (snap) => {
+    const listDiv = document.getElementById("modalListaAnexos");
+    const badge = document.getElementById("modalAnexosCountBadge");
+    if (badge) badge.innerText = snap.size;
+    if (!listDiv) return;
+    listDiv.innerHTML = "";
+    if (snap.empty) {
+      listDiv.innerHTML = `
+        <div style="text-align: center; padding: 30px; color: #64748b; font-style: italic;">
+          Nenhum anexo vinculado a este card ainda.
+        </div>
+      `;
+    } else {
+      snap.forEach(docSnap => {
+        const item = docSnap.data();
+        const docId = docSnap.id;
+        const dataStr = item.data?.seconds 
+          ? new Date(item.data.seconds * 1000).toLocaleDateString("pt-BR")
+          : "Recentemente";
+        const sizeKb = item.tamanho ? (item.tamanho / 1024).toFixed(1) + " KB" : "Unknown size";
+        
+        let icon = "📄";
+        if (item.tipo && item.tipo.includes("pdf")) icon = "📕";
+        else if (item.tipo && item.tipo.includes("image")) icon = "🖼️";
+
+        listDiv.innerHTML += `
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1;">
+              <span style="font-size: 20px;">${icon}</span>
+              <div style="overflow: hidden;">
+                <h4 style="margin: 0; color: #ffffff; font-size: 13px; font-weight: 600; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" title="${item.nome}">${escapeHTML(item.nome)}</h4>
+                <span style="font-size: 11px; color: #64748b;">${sizeKb} • por ${escapeHTML(item.remetenteEmail)} em ${dataStr}</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+              <button onclick="window.abrirArquivoBase64('${item.link}', '${item.nome}')" class="radar-btn" style="padding: 6px 12px; font-size: 11px; font-weight: 700; margin: 0; background: rgba(229,184,92,0.15); color: #e5b85c; border: 1px solid rgba(229,184,92,0.25); cursor: pointer;">
+                Abrir
+              </button>
+              <button onclick="window.excluirAnexoLicitacao('${docId}')" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.15); color: #f87171; border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 700; cursor: pointer;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">
+                🗑
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+  });
+
+  const btnSendHist = document.getElementById("modalBtnEnviarHistorico");
+  if (btnSendHist) {
+    btnSendHist.onclick = window.enviarComentarioLicitacao;
+  }
+  const inputHist = document.getElementById("modalInputHistorico");
+  if (inputHist) {
+    inputHist.onkeydown = function(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        window.enviarComentarioLicitacao();
+      }
+    };
+  }
+
+  const modal = document.getElementById("modalDetalhesLicitacao");
+  if (modal) {
+    modal.style.display = "flex";
+    modal.style.opacity = "1";
+  }
+};
+
+window.fecharModalDetalhesLicitacao = function() {
+  const modal = document.getElementById("modalDetalhesLicitacao");
+  if (modal) {
+    modal.style.opacity = "0";
+    setTimeout(() => { modal.style.display = "none"; }, 300);
+  }
+  window.modalLicitacaoIdAtiva = null;
+  if (window.unsubscribeModalHistorico) { window.unsubscribeModalHistorico(); window.unsubscribeModalHistorico = null; }
+  if (window.unsubscribeModalAnexos) { window.unsubscribeModalAnexos(); window.unsubscribeModalAnexos = null; }
+};
+
+window.alternarTabModal = function(tabName) {
+  const btnHist = document.getElementById("tabModal-historico");
+  const btnAnexos = document.getElementById("tabModal-anexos");
+  const contHist = document.getElementById("tabModalConteudo-historico");
+  const contAnexos = document.getElementById("tabModalConteudo-anexos");
+
+  if (!btnHist || !btnAnexos || !contHist || !contAnexos) return;
+
+  if (tabName === "historico") {
+    btnHist.style.borderBottom = "2px solid #e5b85c";
+    btnHist.style.color = "#e5b85c";
+    btnHist.style.fontWeight = "700";
+    
+    btnAnexos.style.borderBottom = "2px solid transparent";
+    btnAnexos.style.color = "#94a3b8";
+    btnAnexos.style.fontWeight = "600";
+    
+    contHist.style.display = "flex";
+    contAnexos.style.display = "none";
+  } else {
+    btnAnexos.style.borderBottom = "2px solid #e5b85c";
+    btnAnexos.style.color = "#e5b85c";
+    btnAnexos.style.fontWeight = "700";
+    
+    btnHist.style.borderBottom = "2px solid transparent";
+    btnHist.style.color = "#94a3b8";
+    btnHist.style.fontWeight = "600";
+    
+    contAnexos.style.display = "flex";
+    contHist.style.display = "none";
+  }
+};
+
+window.enviarComentarioLicitacao = async function() {
+  const input = document.getElementById("modalInputHistorico");
+  const texto = input?.value?.trim();
+  const licId = window.modalLicitacaoIdAtiva;
+  if (!texto || !licId) return;
+
+  const btn = document.getElementById("modalBtnEnviarHistorico");
+  if (btn) btn.disabled = true;
+
+  try {
+    const user = auth.currentUser;
+    const emailLogado = user.email.toLowerCase();
+    
+    let nomeUsuario = "Usuário";
+    const nomeEl = document.getElementById("nome");
+    if (nomeEl && nomeEl.innerText) {
+      nomeUsuario = nomeEl.innerText;
+    } else if (window.isCourvanTeamAdmin) {
+      nomeUsuario = "Equipe Courvan";
+    }
+
+    await addDoc(collection(db, "licitacoes", licId, "atualizacoes"), {
+      texto,
+      nome: nomeUsuario,
+      remetenteEmail: emailLogado,
+      data: serverTimestamp()
+    });
+
+    const licRef = doc(db, "licitacoes", licId);
+    const lic = window.todasAsLicitacoes.find(x => x.id === licId);
+    const newTotal = (lic?.totalMovimentacoes || 0) + 1;
+    await updateDoc(licRef, { totalMovimentacoes: newTotal });
+
+    if (input) input.value = "";
+  } catch (err) {
+    console.error("Erro ao enviar comentário:", err);
+    alert("Erro ao enviar comentário: " + err.message);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+};
+
+window.excluirAnexoLicitacao = async function(docId) {
+  const licId = window.modalLicitacaoIdAtiva;
+  if (!licId || !docId) return;
+  if (!confirm("Tem certeza que deseja excluir este anexo?")) return;
+
+  try {
+    await deleteDoc(doc(db, "licitacoes", licId, "anexos", docId));
+    
+    const licRef = doc(db, "licitacoes", licId);
+    const lic = window.todasAsLicitacoes.find(x => x.id === licId);
+    const newTotal = Math.max(0, (lic?.totalMovimentacoes || 0) - 1);
+    await updateDoc(licRef, { totalMovimentacoes: newTotal });
+  } catch (err) {
+    console.error("Erro ao excluir anexo:", err);
+    alert("Erro ao excluir anexo: " + err.message);
+  }
+};
+
+window.handleUploadAnexoLicitacao = async function(input) {
+  const licId = window.modalLicitacaoIdAtiva;
+  if (!licId) return;
+
+  const files = input.files;
+  if (!files || files.length === 0) return;
+
+  const file = files[0];
+  await window.processarAnexoLicitacaoFile(file, licId);
+  input.value = "";
+};
+
+window.handleDropAnexoLicitacao = async function(ev) {
+  ev.preventDefault();
+  const licId = window.modalLicitacaoIdAtiva;
+  if (!licId) return;
+
+  const zone = document.getElementById("modalDropzoneAnexo");
+  if (zone) {
+    zone.style.borderColor = 'rgba(229, 184, 92, 0.3)';
+    zone.style.background = 'rgba(229,184,92,0.02)';
+  }
+
+  const files = ev.dataTransfer.files;
+  if (files && files.length > 0) {
+    await window.processarAnexoLicitacaoFile(files[0], licId);
+  }
+};
+
+window.processarAnexoLicitacaoFile = async function(file, licId) {
+  const zone = document.getElementById("modalDropzoneAnexo");
+  if (!zone) return;
+  const oldHTML = zone.innerHTML;
+  
+  zone.innerHTML = `
+    <div style="font-size: 24px; margin-bottom: 8px;">🔄</div>
+    <span style="font-size: 13px; font-weight: 600; color: #e5b85c; display: block; margin-bottom: 4px;">Carregando arquivo...</span>
+    <span style="font-size: 11px; color: #64748b;">Processando "${escapeHTML(file.name)}"</span>
+  `;
+  
+  try {
+    const base64 = await window.lerArquivoComoBase64(file);
+    if (base64.length > 1600000) {
+      alert("O arquivo excede o limite máximo de 1.2MB para envio direto. Por favor, utilize um arquivo menor.");
+      zone.innerHTML = oldHTML;
+      return;
+    }
+
+    const emailLogado = auth.currentUser.email.toLowerCase();
+
+    await addDoc(collection(db, "licitacoes", licId, "anexos"), {
+      nome: file.name,
+      link: base64,
+      tipo: file.type,
+      tamanho: file.size,
+      remetenteEmail: emailLogado,
+      data: serverTimestamp()
+    });
+
+    const licRef = doc(db, "licitacoes", licId);
+    const lic = window.todasAsLicitacoes.find(x => x.id === licId);
+    const newTotal = (lic?.totalMovimentacoes || 0) + 1;
+    await updateDoc(licRef, { totalMovimentacoes: newTotal });
+
+  } catch (err) {
+    console.error("Erro ao fazer upload do anexo:", err);
+    alert("Erro ao fazer upload do anexo: " + err.message);
+  } finally {
+    zone.innerHTML = oldHTML;
+  }
+};
 
 async function listarDemandas() {
   if (!clienteIdGlobal) return;
