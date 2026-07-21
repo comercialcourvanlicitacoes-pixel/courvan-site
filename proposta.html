@@ -10,10 +10,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="assets/logo.png">
 
-  <!-- Google Fonts - Playfair Display & Inter -->
+  <!-- Google Fonts - Playfair Display, Plus Jakarta Sans & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -25,14 +25,23 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-dark);
-      color: #f1f5f9;
+      color: #f8fafc;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
     .font-display {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    /* Hover Drawer Sidebar Mechanics */
+    #sidebarProposta {
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s ease;
+    }
+    #sidebarProposta.force-open {
+      transform: translateX(0) !important;
     }
 
     /* Custom Scrollbar */
@@ -205,34 +214,56 @@
   <!-- Presenter Deck Grid -->
   <div class="flex-1 flex flex-col lg:flex-row">
     
-    <!-- Sidebar Navigation for Presentation Slide Mode -->
-    <aside id="sidebarProposta" class="no-print w-full lg:w-72 bg-[#080c14]/50 border-r border-white/[0.06] p-5 space-y-3 flex flex-col">
-      <div class="mb-3 px-1">
-        <h2 class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Navegação da Proposta</h2>
+    <!-- Off-Canvas Hover Drawer Sidebar Navigation -->
+    <aside id="sidebarProposta" class="no-print fixed top-16 left-0 bottom-0 z-50 w-80 bg-[#080c14]/95 backdrop-blur-2xl border-r border-amber-400/30 p-6 flex flex-col justify-between shadow-2xl shadow-black/80 transition-all duration-300 ease-out transform -translate-x-[calc(100%-16px)] hover:translate-x-0 group">
+      
+      <!-- Collapsed Edge Indicator Handle Tab -->
+      <div onclick="toggleSidebarDeck()" title="Passe o mouse ou clique para ver o menu" class="absolute top-1/2 -right-8 -translate-y-1/2 bg-[#0c111d] border border-l-0 border-amber-400/40 text-amber-400 px-2 py-5 rounded-r-2xl shadow-2xl flex flex-col items-center justify-center cursor-pointer group-hover:opacity-0 transition-opacity">
+        <i class="fa-solid fa-chevron-right text-xs animate-pulse mb-1.5"></i>
+        <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-300 [writing-mode:vertical-lr] rotate-180">Navegação</span>
       </div>
-      <nav class="space-y-1.5 flex-1" id="menuNavegacao">
-        <button onclick="irParaSlide(0)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-3 bg-amber-400/10 text-amber-400 border border-amber-400/30 shadow-md">
-          <span class="text-xs font-bold text-amber-400">01</span> Capa
-        </button>
-        <button onclick="irParaSlide(1)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.02] border border-transparent transition-all flex items-center gap-3">
-          <span class="text-xs font-bold text-slate-500">02</span> O Desafio do Mercado
-        </button>
-        <button onclick="irParaSlide(2)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.02] border border-transparent transition-all flex items-center gap-3">
-          <span class="text-xs font-bold text-slate-500">03</span> A Solução Courvan
-        </button>
-        <button onclick="irParaSlide(3)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.02] border border-transparent transition-all flex items-center gap-3">
-          <span class="text-xs font-bold text-slate-500">04</span> Método de Trabalho
-        </button>
-        <button onclick="irParaSlide(4)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.02] border border-transparent transition-all flex items-center gap-3">
-          <span class="text-xs font-bold text-slate-500">05</span> Nossos Planos
-        </button>
-        <button onclick="irParaSlide(5)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.02] border border-transparent transition-all flex items-center gap-3">
-          <span class="text-xs font-bold text-slate-500">06</span> Nosso Compromisso
-        </button>
-      </nav>
-      <div class="pt-4 border-t border-white/[0.06] text-[10px] text-slate-500 px-1 space-y-1">
-        <p>Apresentação Interativa v2.5</p>
-        <p class="text-amber-400/90 font-semibold">Courvan Inteligência de Negócios</p>
+
+      <div class="space-y-5">
+        <div class="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-amber-400/10 flex items-center justify-center text-amber-400 text-xs">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-extrabold uppercase tracking-widest text-amber-400">Navegação da Proposta</h2>
+              <p class="text-[10px] text-slate-400">Passe o mouse para navegar</p>
+            </div>
+          </div>
+          <button onclick="toggleSidebarDeck()" class="text-slate-400 hover:text-white text-xs p-1.5 rounded-lg hover:bg-slate-800 transition-all">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="space-y-2 flex-1" id="menuNavegacao">
+          <button onclick="irParaSlide(0)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-3 bg-amber-400/10 text-amber-400 border border-amber-400/30 shadow-md">
+            <span class="text-xs font-extrabold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md">01</span> Capa
+          </button>
+          <button onclick="irParaSlide(1)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.04] border border-transparent transition-all flex items-center gap-3">
+            <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-md">02</span> O Desafio do Mercado
+          </button>
+          <button onclick="irParaSlide(2)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.04] border border-transparent transition-all flex items-center gap-3">
+            <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-md">03</span> A Solução Courvan
+          </button>
+          <button onclick="irParaSlide(3)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.04] border border-transparent transition-all flex items-center gap-3">
+            <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-md">04</span> Método de Trabalho
+          </button>
+          <button onclick="irParaSlide(4)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.04] border border-transparent transition-all flex items-center gap-3">
+            <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-md">05</span> Nossos Planos
+          </button>
+          <button onclick="irParaSlide(5)" class="slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.04] border border-transparent transition-all flex items-center gap-3">
+            <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-md">06</span> Nosso Compromisso
+          </button>
+        </nav>
+      </div>
+
+      <div class="pt-4 border-t border-white/[0.08] text-xs text-slate-400 space-y-1">
+        <p class="font-semibold text-slate-300">Apresentação Interativa v2.5</p>
+        <p class="text-amber-400 font-extrabold uppercase tracking-wider text-[11px]">Courvan Inteligência de Negócios</p>
       </div>
     </aside>
 
@@ -243,27 +274,27 @@
       <div id="deckProposta" class="w-full max-w-none xl:max-w-[1650px] flex-1 flex flex-col justify-center my-auto">
         
         <!-- PÁGINA 1: CAPA -->
-        <div id="slide-0" class="print-page slide-deck-item active w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.06] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+        <div id="slide-0" class="print-page slide-deck-item active w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.08] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
           <!-- Background decoration -->
           <div class="absolute -top-40 -right-40 w-96 h-96 bg-amber-400/5 rounded-full blur-3xl pointer-events-none"></div>
           <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
           <!-- Capa Logo Section - Centralized -->
           <div class="flex flex-col items-center justify-center flex-1 text-center my-6 space-y-8">
-            <div class="p-6 bg-[#04060a]/60 rounded-full border border-white/[0.08] shadow-2xl relative group">
-              <div class="absolute inset-0 rounded-full bg-amber-400/10 blur-md opacity-70 group-hover:opacity-100 transition-opacity"></div>
-              <img src="assets/logo.png" alt="Courvan Licitações Logo" class="h-28 w-auto object-contain mx-auto relative z-10">
+            <div class="p-6 bg-[#04060a]/80 rounded-full border border-amber-400/20 shadow-2xl relative group">
+              <div class="absolute inset-0 rounded-full bg-amber-400/10 blur-lg opacity-70 group-hover:opacity-100 transition-opacity"></div>
+              <img src="assets/logo.png" alt="Courvan Licitações Logo" class="h-28 sm:h-32 w-auto object-contain mx-auto relative z-10">
             </div>
             
             <div class="space-y-4 max-w-4xl">
-              <span class="bg-amber-400/10 text-amber-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-amber-400/20 inline-block">
-                Assessoria e Inteligência Jurídica
+              <span class="bg-amber-400/10 text-amber-400 px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold uppercase tracking-widest border border-amber-400/30 inline-block shadow-sm">
+                Assessoria e Inteligência Jurídica em Licitações
               </span>
-              <h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1] pt-2 max-w-4xl mx-auto uppercase">
+              <h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] pt-2 max-w-4xl mx-auto uppercase">
                 Proposta de Assessoria Jurídica e Inteligência em Licitações
               </h1>
-              <div class="h-1 w-20 bg-gradient-to-r from-amber-500 to-amber-300 mx-auto my-4 rounded-full"></div>
-              <p class="font-display text-lg sm:text-xl md:text-2xl italic text-amber-400/90 font-light max-w-3xl mx-auto">
+              <div class="h-1 w-24 bg-gradient-to-r from-amber-500 to-amber-300 mx-auto my-4 rounded-full"></div>
+              <p class="font-display text-xl sm:text-2xl md:text-3xl italic text-amber-300/90 font-light max-w-3xl mx-auto">
                 Tecnologia e Direito Aplicados ao Crescimento da sua Empresa.
               </p>
             </div>
@@ -272,14 +303,14 @@
           <!-- Bottom Meta info -->
           <div class="border-t border-white/[0.08] pt-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 w-full relative z-10">
             <div class="space-y-1.5">
-              <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Desenvolvido exclusivamente para:</p>
-              <h3 id="nomeClienteDisplay" class="text-lg md:text-xl font-bold text-white tracking-wide border-b border-dashed border-amber-400/30 pb-1.5">
+              <p class="text-xs text-amber-400/80 uppercase tracking-widest font-extrabold">Desenvolvido exclusivamente para:</p>
+              <h3 id="nomeClienteDisplay" class="text-xl sm:text-2xl font-extrabold text-white tracking-wide border-b border-dashed border-amber-400/40 pb-1.5">
                 [Nome da Empresa do Cliente]
               </h3>
             </div>
             <div class="text-left md:text-right space-y-1.5">
-              <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Data de Emissão</p>
-              <p id="dataAtualDisplay" class="text-sm font-semibold text-slate-200">
+              <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Data de Emissão</p>
+              <p id="dataAtualDisplay" class="text-base font-semibold text-slate-100">
                 [Data Atual]
               </p>
               <p class="text-xs text-amber-400 font-extrabold uppercase tracking-widest">Courvan Licitações</p>
@@ -288,93 +319,93 @@
         </div>
 
         <!-- PÁGINA 2: O DESAFIO DO MERCADO -->
-        <div id="slide-1" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.06] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+        <div id="slide-1" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.08] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
           
           <div class="space-y-8 w-full">
             <div class="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <div class="flex items-center gap-2">
-                <span class="text-amber-400 font-bold text-lg font-display">02.</span>
-                <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">O Cenário Atual das Compras Públicas</span>
+              <div class="flex items-center gap-2.5">
+                <span class="text-amber-400 font-bold text-xl font-display">02.</span>
+                <span class="text-xs sm:text-sm uppercase tracking-widest text-slate-300 font-bold">O Cenário Atual das Compras Públicas</span>
               </div>
-              <span class="text-xs text-amber-400 font-bold tracking-widest">COURVAN</span>
+              <span class="text-xs text-amber-400 font-extrabold tracking-widest">COURVAN</span>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div class="lg:col-span-7 space-y-5">
-                <h2 class="font-display text-3xl sm:text-4xl font-bold text-amber-400 leading-tight">
+                <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-400 leading-tight">
                   O cenário atual das compras públicas
                 </h2>
-                <p class="text-slate-200 text-base leading-relaxed font-light">
+                <p class="text-slate-100 text-base sm:text-lg leading-relaxed font-normal">
                   Embora o mercado de contratações públicas represente a via mais sólida e estratégica para escalar o faturamento de uma empresa, a participação em certames governamentais exige superar barreiras de alta complexidade:
                 </p>
-                <div class="h-[1px] w-20 bg-gradient-to-r from-amber-500 to-transparent"></div>
-                <p class="text-slate-400 text-sm leading-relaxed">
+                <div class="h-[2px] w-24 bg-gradient-to-r from-amber-500 to-transparent"></div>
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
                   Participar de licitações sem uma estratégia jurídica e tecnológica estruturada costuma resultar em perda de tempo, recursos e, principalmente, de lucratividade nas disputas.
                 </p>
               </div>
               <div class="lg:col-span-5">
-                <img src="assets/proposta1.png" alt="Desafio de Licitações" class="print-img w-full rounded-2xl border border-white/[0.08] shadow-2xl object-cover max-h-[220px]">
+                <img src="assets/proposta1.png" alt="Desafio de Licitações" class="print-img w-full rounded-2xl border border-white/[0.08] shadow-2xl object-cover max-h-[240px]">
               </div>
             </div>
 
             <!-- Custom list with discreet grid of cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
               
-              <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/[0.04] space-y-3 hover:border-amber-400/20 transition-all duration-300">
-                <div class="w-10 h-10 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400 shadow-inner">
-                  <i class="fa-solid fa-triangle-exclamation text-base"></i>
+              <div class="bg-slate-900/60 p-6 rounded-2xl border border-white/[0.06] space-y-3.5 hover:border-amber-400/30 transition-all duration-300">
+                <div class="w-11 h-11 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400 shadow-inner">
+                  <i class="fa-solid fa-triangle-exclamation text-lg"></i>
                 </div>
-                <h4 class="font-bold text-slate-100 text-base">Burocracia e Erros Técnicos</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Editais complexos que desclassificam excelentes marcas por meros formalismos ou preenchimentos incorretos.</p>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg">Burocracia e Erros Técnicos</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">Editais complexos que desclassificam excelentes marcas por meros formalismos ou preenchimentos incorretos.</p>
               </div>
 
-              <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/[0.04] space-y-3 hover:border-amber-400/20 transition-all duration-300">
-                <div class="w-10 h-10 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400 shadow-inner">
-                  <i class="fa-solid fa-scale-unbalanced-flip text-base"></i>
+              <div class="bg-slate-900/60 p-6 rounded-2xl border border-white/[0.06] space-y-3.5 hover:border-amber-400/30 transition-all duration-300">
+                <div class="w-11 h-11 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400 shadow-inner">
+                  <i class="fa-solid fa-scale-unbalanced-flip text-lg"></i>
                 </div>
-                <h4 class="font-bold text-slate-100 text-base">Concorrência Desleal</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Disputas acirradas com empresas que sacrificam a margem de lucro ou utilizam artifícios irregulares para vencer.</p>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg">Concorrência Desleal</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">Disputas acirradas com empresas que sacrificam a margem de lucro ou utilizam artifícios irregulares para vencer.</p>
               </div>
 
-              <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/[0.04] space-y-3 hover:border-amber-400/20 transition-all duration-300">
-                <div class="w-10 h-10 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400 shadow-inner">
-                  <i class="fa-solid fa-gavel text-base"></i>
+              <div class="bg-slate-900/60 p-6 rounded-2xl border border-white/[0.06] space-y-3.5 hover:border-amber-400/30 transition-all duration-300">
+                <div class="w-11 h-11 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400 shadow-inner">
+                  <i class="fa-solid fa-gavel text-lg"></i>
                 </div>
-                <h4 class="font-bold text-slate-100 text-base">Ausência de Proteção Especializada</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Editais direcionados ou decisões parciais de pregoeiros que comprometem a isonomia e impedem uma disputa justa.</p>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg">Ausência de Proteção Especializada</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">Editais direcionados ou decisões parciais de pregoeiros que comprometem a isonomia e impedem uma disputa justa.</p>
               </div>
 
             </div>
           </div>
 
-          <div class="border-t border-white/[0.08] pt-6 flex justify-between items-center text-xs text-slate-500 w-full">
+          <div class="border-t border-white/[0.08] pt-6 flex justify-between items-center text-xs text-slate-400 w-full">
             <p>Courvan Licitações &bull; Proposta Comercial</p>
-            <p>Pág. 2 de 6</p>
+            <p class="font-semibold text-slate-300">Pág. 2 de 6</p>
           </div>
         </div>
 
         <!-- PÁGINA 3: A SOLUÇÃO COURVAN -->
-        <div id="slide-2" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.06] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+        <div id="slide-2" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.08] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
           
           <div class="space-y-8 w-full">
             <div class="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <div class="flex items-center gap-2">
-                <span class="text-amber-400 font-bold text-lg font-display">03.</span>
-                <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Tecnologia Própria + Segurança Jurídica</span>
+              <div class="flex items-center gap-2.5">
+                <span class="text-amber-400 font-bold text-xl font-display">03.</span>
+                <span class="text-xs sm:text-sm uppercase tracking-widest text-slate-300 font-bold">Tecnologia Própria + Segurança Jurídica</span>
               </div>
-              <span class="text-xs text-amber-400 font-bold tracking-widest">COURVAN</span>
+              <span class="text-xs text-amber-400 font-extrabold tracking-widest">COURVAN</span>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div class="lg:col-span-5">
-                <img src="assets/proposta2.png" alt="SaaS Courvan Software" class="print-img w-full rounded-2xl border border-white/[0.08] shadow-2xl object-cover max-h-[220px]">
+                <img src="assets/proposta2.png" alt="SaaS Courvan Software" class="print-img w-full rounded-2xl border border-white/[0.08] shadow-2xl object-cover max-h-[240px]">
               </div>
               <div class="lg:col-span-7 space-y-4">
-                <span class="text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20 inline-block">A Solução Courvan</span>
-                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white leading-tight">
+                <span class="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3.5 py-1.5 rounded-full border border-amber-400/20 inline-block shadow-sm">A Solução Courvan</span>
+                <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
                   Inteligência de Dados e Proteção Jurídica Unificadas
                 </h2>
-                <p class="text-slate-200 text-sm leading-relaxed font-light">
+                <p class="text-slate-200 text-sm sm:text-base leading-relaxed font-normal">
                   A Courvan Licitações não é apenas uma assessoria operacional comum. Nós unimos mais de uma década de sólida experiência jurídica em contratações públicas a uma plataforma de software proprietária, desenvolvida especificamente para blindar as operações da sua empresa em todo o território nacional.
                 </p>
               </div>
@@ -382,81 +413,81 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
               
-              <div class="p-6 rounded-2xl bg-slate-900/40 border border-white/[0.04] space-y-3 hover:border-amber-400/20 transition-all duration-300">
-                <span class="text-amber-400 font-extrabold text-[10px] uppercase tracking-widest block">01 / Inteligência Avançada</span>
-                <h4 class="font-bold text-slate-100 text-sm">Mapeamento e Filtro de Dados</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Cruzamento de dados estratégicos, histórico de concorrentes e análise comportamental prévia de órgãos públicos.</p>
+              <div class="p-6 rounded-2xl bg-slate-900/60 border border-white/[0.06] space-y-3.5 hover:border-amber-400/30 transition-all duration-300">
+                <span class="text-amber-400 font-extrabold text-xs uppercase tracking-widest block">01 / Inteligência Avançada</span>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg">Mapeamento e Filtro de Dados</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">Cruzamento de dados estratégicos, histórico de concorrentes e análise comportamental prévia de órgãos públicos.</p>
               </div>
 
-              <div class="p-6 rounded-2xl bg-slate-900/40 border border-white/[0.04] space-y-3 hover:border-amber-400/20 transition-all duration-300">
-                <span class="text-amber-400 font-extrabold text-[10px] uppercase tracking-widest block">02 / Rigor Técnico</span>
-                <h4 class="font-bold text-slate-100 text-sm">Gestão Eletrônica e Certidões</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Nosso software exclusivo previne perdas de prazos e desclassificações por inconformidade em documentos e certidões.</p>
+              <div class="p-6 rounded-2xl bg-slate-900/60 border border-white/[0.06] space-y-3.5 hover:border-amber-400/30 transition-all duration-300">
+                <span class="text-amber-400 font-extrabold text-xs uppercase tracking-widest block">02 / Rigor Técnico</span>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg">Gestão Eletrônica e Certidões</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">Nosso software exclusivo previne perdas de prazos e desclassificações por inconformidade em documentos e certidões.</p>
               </div>
 
-              <div class="p-6 rounded-2xl bg-slate-900/40 border border-white/[0.04] space-y-3 hover:border-amber-400/20 transition-all duration-300">
-                <span class="text-amber-400 font-extrabold text-[10px] uppercase tracking-widest block">03 / Segurança Institucional</span>
-                <h4 class="font-bold text-slate-100 text-sm">Atuação Recursal Estratégica</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Impugnações e recursos de alta complexidade fundamentados na Lei 14.133/21 e em julgados das Cortes de Contas.</p>
+              <div class="p-6 rounded-2xl bg-slate-900/60 border border-white/[0.06] space-y-3.5 hover:border-amber-400/30 transition-all duration-300">
+                <span class="text-amber-400 font-extrabold text-xs uppercase tracking-widest block">03 / Segurança Institucional</span>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg">Atuação Recursal Estratégica</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">Impugnações e recursos de alta complexidade fundamentados na Lei 14.133/21 e em julgados das Cortes de Contas.</p>
               </div>
 
             </div>
           </div>
 
-          <div class="border-t border-white/[0.08] pt-6 flex justify-between items-center text-xs text-slate-500 w-full">
+          <div class="border-t border-white/[0.08] pt-6 flex justify-between items-center text-xs text-slate-400 w-full">
             <p>Courvan Licitações &bull; Proposta Comercial</p>
-            <p>Pág. 3 de 6</p>
+            <p class="font-semibold text-slate-300">Pág. 3 de 6</p>
           </div>
         </div>
 
         <!-- PÁGINA 4: NOSSO MÉTODO DE TRABALHO -->
-        <div id="slide-3" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.06] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+        <div id="slide-3" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.08] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
           
           <div class="space-y-6 w-full">
             <div class="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <div class="flex items-center gap-2">
-                <span class="text-amber-400 font-bold text-lg font-display">04.</span>
-                <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Nosso Método de Trabalho</span>
+              <div class="flex items-center gap-2.5">
+                <span class="text-amber-400 font-bold text-xl font-display">04.</span>
+                <span class="text-xs sm:text-sm uppercase tracking-widest text-slate-300 font-bold">Nosso Método de Trabalho</span>
               </div>
-              <span class="text-xs text-amber-400 font-bold tracking-widest">COURVAN</span>
+              <span class="text-xs text-amber-400 font-extrabold tracking-widest">COURVAN</span>
             </div>
 
             <div class="text-center max-w-3xl mx-auto space-y-2 py-1">
-              <h2 class="font-display text-2xl sm:text-3xl font-bold text-amber-400">Como atuamos no dia a dia da sua empresa:</h2>
-              <p class="text-xs text-slate-400">Uma esteira processual de alta fidelidade, unindo rigor de engenharia jurídica, software proprietário e foco em resultados.</p>
+              <h2 class="font-display text-3xl sm:text-4xl font-bold text-amber-400">Como atuamos no dia a dia da sua empresa:</h2>
+              <p class="text-sm sm:text-base text-slate-300 font-normal">Uma esteira processual de alta fidelidade, unindo rigor de engenharia jurídica, software proprietário e foco em resultados.</p>
             </div>
 
             <!-- Infographic timeline style -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative pt-2">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 relative pt-3">
               
-              <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/[0.04] space-y-3 relative hover:border-amber-400/30 transition-all duration-300">
-                <div class="absolute -top-3.5 left-4 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shadow-lg shadow-amber-500/10">1</div>
-                <h4 class="font-bold text-slate-100 text-xs pt-2">Diagnóstico e Setup</h4>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
+              <div class="bg-slate-900/60 p-6 rounded-2xl border border-white/[0.06] space-y-3 relative hover:border-amber-400/30 transition-all duration-300">
+                <div class="absolute -top-3.5 left-5 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 w-8 h-8 rounded-lg font-extrabold text-sm flex items-center justify-center shadow-lg shadow-amber-500/20">1</div>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg pt-2">Diagnóstico e Setup</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                   Análise jurídica documental, cadastros nos principais portais e parametrização do software para as metas do seu segmento.
                 </p>
               </div>
 
-              <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/[0.04] space-y-3 relative hover:border-amber-400/30 transition-all duration-300">
-                <div class="absolute -top-3.5 left-4 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shadow-lg shadow-amber-500/10">2</div>
-                <h4 class="font-bold text-slate-100 text-xs pt-2">Monitoramento Ativo</h4>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
+              <div class="bg-slate-900/60 p-6 rounded-2xl border border-white/[0.06] space-y-3 relative hover:border-amber-400/30 transition-all duration-300">
+                <div class="absolute -top-3.5 left-5 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 w-8 h-8 rounded-lg font-extrabold text-sm flex items-center justify-center shadow-lg shadow-amber-500/20">2</div>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg pt-2">Monitoramento Ativo</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                   Varredura diária no banco de dados governamental. Filtramos apenas oportunidades que garantam excelente margem de lucro.
                 </p>
               </div>
 
-              <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/[0.04] space-y-3 relative hover:border-amber-400/30 transition-all duration-300">
-                <div class="absolute -top-3.5 left-4 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shadow-lg shadow-amber-500/10">3</div>
-                <h4 class="font-bold text-slate-100 text-xs pt-2">Análise e Disputa</h4>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
+              <div class="bg-slate-900/60 p-6 rounded-2xl border border-white/[0.06] space-y-3 relative hover:border-amber-400/30 transition-all duration-300">
+                <div class="absolute -top-3.5 left-5 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 w-8 h-8 rounded-lg font-extrabold text-sm flex items-center justify-center shadow-lg shadow-amber-500/20">3</div>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg pt-2">Análise e Disputa</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                   Estudo técnico detalhado do edital, formulação segura da proposta comercial e participação ativa em tempo real na fase de lances.
                 </p>
               </div>
 
-              <div class="bg-slate-900/40 p-5 rounded-2xl border border-white/[0.04] space-y-3 relative hover:border-amber-400/30 transition-all duration-300">
-                <div class="absolute -top-3.5 left-4 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shadow-lg shadow-amber-500/10">4</div>
-                <h4 class="font-bold text-slate-100 text-xs pt-2">Defesa e Habilitação</h4>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
+              <div class="bg-slate-900/60 p-6 rounded-2xl border border-white/[0.06] space-y-3 relative hover:border-amber-400/30 transition-all duration-300">
+                <div class="absolute -top-3.5 left-5 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 w-8 h-8 rounded-lg font-extrabold text-sm flex items-center justify-center shadow-lg shadow-amber-500/20">4</div>
+                <h4 class="font-extrabold text-slate-100 text-base sm:text-lg pt-2">Defesa e Habilitação</h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                   Auditoria documental implacável dos concorrentes. Defesa por recursos administrativos especializados se houver inconformidades.
                 </p>
               </div>
@@ -464,37 +495,37 @@
             </div>
 
             <!-- Optional image/visual block bottom -->
-            <div class="w-full h-20 rounded-2xl overflow-hidden relative border border-white/[0.06] shadow-xl">
-              <img src="assets/proposta3.png" alt="Esteira Operacional" class="w-full h-full object-cover opacity-30 filter brightness-75">
-              <div class="absolute inset-0 bg-gradient-to-r from-[#0c111d] via-[#0c111d]/75 to-transparent flex items-center px-6">
-                <p class="text-xs text-slate-300 font-semibold max-w-xl">
+            <div class="w-full h-20 rounded-2xl overflow-hidden relative border border-white/[0.08] shadow-xl">
+              <img src="assets/proposta3.png" alt="Esteira Operacional" class="w-full h-full object-cover opacity-35 filter brightness-75">
+              <div class="absolute inset-0 bg-gradient-to-r from-[#0c111d] via-[#0c111d]/85 to-transparent flex items-center px-6">
+                <p class="text-xs sm:text-sm text-slate-200 font-semibold max-w-2xl">
                   <i class="fa-solid fa-circle-check text-amber-400 mr-2"></i> Transparência e governança total: todo o pipeline, cronograma e resultados operacionais são acessíveis na plataforma.
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="border-t border-white/[0.08] pt-6 flex justify-between items-center text-xs text-slate-500 w-full">
+          <div class="border-t border-white/[0.08] pt-6 flex justify-between items-center text-xs text-slate-400 w-full">
             <p>Courvan Licitações &bull; Proposta Comercial</p>
-            <p>Pág. 4 de 6</p>
+            <p class="font-semibold text-slate-300">Pág. 4 de 6</p>
           </div>
         </div>
 
         <!-- PÁGINA 5: NOSSOS PLANOS -->
-        <div id="slide-4" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.06] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+        <div id="slide-4" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.08] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
           
           <div class="space-y-6 w-full">
             <div class="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <div class="flex items-center gap-2">
-                <span class="text-amber-400 font-bold text-lg font-display">05.</span>
-                <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Modelos de Parceria Comercial</span>
+              <div class="flex items-center gap-2.5">
+                <span class="text-amber-400 font-bold text-xl font-display">05.</span>
+                <span class="text-xs sm:text-sm uppercase tracking-widest text-slate-300 font-bold">Modelos de Parceria Comercial</span>
               </div>
-              <span class="text-xs text-amber-400 font-bold tracking-widest">COURVAN</span>
+              <span class="text-xs text-amber-400 font-extrabold tracking-widest">COURVAN</span>
             </div>
 
             <div>
-              <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mb-1.5">Opções de Investimento e Planos</h2>
-              <p class="text-slate-400 text-xs">
+              <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mb-2">Opções de Investimento e Planos</h2>
+              <p class="text-slate-300 text-sm sm:text-base font-normal">
                 Encontre o plano ideal para o momento de crescimento e a demanda de licitações da sua empresa:
               </p>
             </div>
@@ -503,49 +534,49 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-1 items-stretch">
               
               <!-- PLANO START -->
-              <div class="bg-slate-900/40 border border-white/[0.04] rounded-2xl p-6 flex flex-col justify-between hover:border-white/[0.08] transition-all duration-300">
+              <div class="bg-slate-900/60 border border-white/[0.06] rounded-2xl p-6 flex flex-col justify-between hover:border-white/[0.12] transition-all duration-300">
                 <div class="space-y-4">
                   <div class="flex justify-between items-start">
                     <div>
-                      <h3 class="text-white font-bold text-base">Plano Start</h3>
-                      <p class="text-[10px] text-amber-400 font-bold uppercase tracking-wider mt-0.5">Radar & Monitoramento</p>
+                      <h3 class="text-white font-extrabold text-lg sm:text-xl">Plano Start</h3>
+                      <p class="text-xs text-amber-400 font-extrabold uppercase tracking-wider mt-0.5">Radar & Monitoramento</p>
                     </div>
                   </div>
-                  <div class="pt-3 border-t border-white/[0.06]">
-                    <span class="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest block mb-2">Incluso no Plano:</span>
-                    <ul id="listServicosStart" class="text-[11px] text-slate-300 space-y-2">
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                  <div class="pt-3 border-t border-white/[0.08]">
+                    <span class="text-xs text-slate-400 font-extrabold uppercase tracking-widest block mb-2.5">Incluso no Plano:</span>
+                    <ul id="listServicosStart" class="text-xs sm:text-sm text-slate-200 space-y-2.5 font-medium">
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Monitoramento diário de editais.</span>
                       </li>
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Relatórios semanais com filtros inteligentes do seu segmento.</span>
                       </li>
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Acesso ao software de gestão de certidões Courvan.</span>
                       </li>
-                      <li class="flex items-start gap-2 text-slate-500">
-                        <i class="fa-solid fa-circle-xmark mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5 text-slate-500">
+                        <i class="fa-solid fa-circle-xmark mt-1 text-xs"></i>
                         <span>Sem participação operacional em pregões.</span>
                       </li>
                     </ul>
                   </div>
                 </div>
 
-                <div class="pt-5 mt-5 border-t border-white/[0.06] space-y-3.5">
+                <div class="pt-5 mt-5 border-t border-white/[0.08] space-y-3.5">
                   <div>
-                    <span class="text-[9px] text-slate-500 uppercase font-extrabold tracking-wider block">Mensalidade</span>
-                    <span class="text-2xl font-black text-white"><span id="valStartMensal">R$ 490,00</span><span class="text-xs font-normal text-slate-400"> / mês</span></span>
+                    <span class="text-xs text-slate-400 uppercase font-extrabold tracking-wider block">Mensalidade</span>
+                    <span class="text-3xl font-black text-white"><span id="valStartMensal">R$ 490,00</span><span class="text-xs font-normal text-slate-400"> / mês</span></span>
                   </div>
-                  <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 pt-1">
+                  <div class="grid grid-cols-2 gap-2 text-xs text-slate-300 pt-1">
                     <div>
-                      <span class="block text-slate-500 text-[9px] uppercase font-bold tracking-wider">Taxa de Setup</span>
+                      <span class="block text-slate-400 text-xs uppercase font-bold tracking-wider">Taxa de Setup</span>
                       <strong id="valStartSetup" class="text-white font-semibold">R$ 300,00 (Única)</strong>
                     </div>
                     <div>
-                      <span class="block text-slate-500 text-[9px] uppercase font-bold tracking-wider">Taxa de Êxito</span>
+                      <span class="block text-slate-400 text-xs uppercase font-bold tracking-wider">Taxa de Êxito</span>
                       <strong class="text-slate-400 font-medium">Não se aplica</strong>
                     </div>
                   </div>
@@ -553,103 +584,103 @@
               </div>
 
               <!-- PLANO ESSENCIAL (HIGHLIGHTED) -->
-              <div class="bg-gradient-to-b from-[#141b2a] to-[#0c111d] border-2 border-amber-400/60 rounded-2xl p-6 flex flex-col justify-between relative shadow-2xl shadow-amber-400/5 transform lg:-translate-y-1.5 transition-all duration-300">
-                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-400 text-slate-950 px-4 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest shadow-lg">
+              <div class="bg-gradient-to-b from-[#141b2a] to-[#0c111d] border-2 border-amber-400/80 rounded-2xl p-6 flex flex-col justify-between relative shadow-2xl shadow-amber-400/10 transform lg:-translate-y-1.5 transition-all duration-300">
+                <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-amber-400 text-slate-950 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-lg">
                   Recomendado
                 </div>
 
                 <div class="space-y-4">
                   <div class="flex justify-between items-start pt-1.5">
                     <div>
-                      <h3 class="text-white font-extrabold text-lg">Plano Essencial</h3>
-                      <p class="text-[10px] text-amber-400 font-black uppercase tracking-wider mt-0.5">Assessoria de Alta Performance</p>
+                      <h3 class="text-white font-extrabold text-xl sm:text-2xl">Plano Essencial</h3>
+                      <p class="text-xs text-amber-400 font-black uppercase tracking-wider mt-0.5">Assessoria de Alta Performance</p>
                     </div>
                   </div>
-                  <div class="pt-3 border-t border-amber-400/20">
-                    <span class="text-[9px] text-amber-300 font-extrabold uppercase tracking-widest block mb-2">Incluso no Plano:</span>
-                    <ul id="listServicosEssencial" class="text-[11px] text-slate-200 space-y-2">
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                  <div class="pt-3 border-t border-amber-400/30">
+                    <span class="text-xs text-amber-300 font-extrabold uppercase tracking-widest block mb-2.5">Incluso no Plano:</span>
+                    <ul id="listServicosEssencial" class="text-xs sm:text-sm text-slate-100 space-y-2.5 font-medium">
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span><strong>Todos os benefícios do Plano Start incluídos.</strong></span>
                       </li>
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Análise jurídica e de edital completa de cada disputa.</span>
                       </li>
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Disputa de lances ativa em até <strong>4 licitações / mês</strong>.</span>
                       </li>
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Apoio em impugnações e recursos administrativos.</span>
                       </li>
                     </ul>
                   </div>
                 </div>
 
-                <div class="pt-5 mt-5 border-t border-amber-400/20 space-y-3.5">
+                <div class="pt-5 mt-5 border-t border-amber-400/30 space-y-3.5">
                   <div>
-                    <span class="text-[9px] text-amber-300 uppercase font-extrabold tracking-wider block">Mensalidade</span>
-                    <span class="text-3xl font-black text-amber-400"><span id="valEssencialMensal">R$ 1.200,00</span><span class="text-xs font-normal text-slate-300"> / mês</span></span>
+                    <span class="text-xs text-amber-300 uppercase font-extrabold tracking-wider block">Mensalidade</span>
+                    <span class="text-3xl sm:text-4xl font-black text-amber-400"><span id="valEssencialMensal">R$ 1.200,00</span><span class="text-xs font-normal text-slate-300"> / mês</span></span>
                   </div>
-                  <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-300 pt-1">
+                  <div class="grid grid-cols-2 gap-2 text-xs text-slate-200 pt-1">
                     <div>
-                      <span class="block text-slate-400 text-[9px] uppercase font-bold tracking-wider">Taxa de Setup</span>
+                      <span class="block text-slate-400 text-xs uppercase font-bold tracking-wider">Taxa de Setup</span>
                       <strong id="valEssencialSetup" class="text-white font-semibold">R$ 600,00 (Única)</strong>
                     </div>
                     <div>
-                      <span class="block text-slate-400 text-[9px] uppercase font-bold tracking-wider">Taxa de Êxito</span>
-                      <strong id="valEssencialExito" class="text-amber-400 font-bold">2,5% sobre o valor</strong>
+                      <span class="block text-slate-400 text-xs uppercase font-bold tracking-wider">Taxa de Êxito</span>
+                      <strong id="valEssencialExito" class="text-amber-400 font-extrabold">2,5% sobre o valor</strong>
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- PLANO CORPORATE -->
-              <div class="bg-slate-900/40 border border-white/[0.04] rounded-2xl p-6 flex flex-col justify-between hover:border-white/[0.08] transition-all duration-300">
+              <div class="bg-slate-900/60 border border-white/[0.06] rounded-2xl p-6 flex flex-col justify-between hover:border-white/[0.12] transition-all duration-300">
                 <div class="space-y-4">
                   <div class="flex justify-between items-start">
                     <div>
-                      <h3 class="text-white font-bold text-base">Plano Corporate</h3>
-                      <p class="text-[10px] text-amber-400 font-bold uppercase tracking-wider mt-0.5">Operações de Larga Escala</p>
+                      <h3 class="text-white font-extrabold text-lg sm:text-xl">Plano Corporate</h3>
+                      <p class="text-xs text-amber-400 font-extrabold uppercase tracking-wider mt-0.5">Operações de Larga Escala</p>
                     </div>
                   </div>
-                  <div class="pt-3 border-t border-white/[0.06]">
-                    <span class="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest block mb-2">Incluso no Plano:</span>
-                    <ul id="listServicosCorporate" class="text-[11px] text-slate-300 space-y-2">
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                  <div class="pt-3 border-t border-white/[0.08]">
+                    <span class="text-xs text-slate-400 font-extrabold uppercase tracking-widest block mb-2.5">Incluso no Plano:</span>
+                    <ul id="listServicosCorporate" class="text-xs sm:text-sm text-slate-200 space-y-2.5 font-medium">
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span><strong>Todos os benefícios do Plano Essencial incluídos.</strong></span>
                       </li>
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Disputa de lances ativa em até <strong>8 licitações / mês</strong>.</span>
                       </li>
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Análise jurídica avançada de certames de alta complexidade.</span>
                       </li>
-                      <li class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
                         <span>Gerente de contas dedicado e suporte prioritário.</span>
                       </li>
                     </ul>
                   </div>
                 </div>
 
-                <div class="pt-5 mt-5 border-t border-white/[0.06] space-y-3.5">
+                <div class="pt-5 mt-5 border-t border-white/[0.08] space-y-3.5">
                   <div>
-                    <span class="text-[9px] text-slate-500 uppercase font-extrabold tracking-wider block">Mensalidade</span>
-                    <span class="text-2xl font-black text-white"><span id="valCorporateMensal">R$ 2.500,00</span><span class="text-xs font-normal text-slate-400"> / mês</span></span>
+                    <span class="text-xs text-slate-400 uppercase font-extrabold tracking-wider block">Mensalidade</span>
+                    <span class="text-3xl font-black text-white"><span id="valCorporateMensal">R$ 2.500,00</span><span class="text-xs font-normal text-slate-400"> / mês</span></span>
                   </div>
-                  <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 pt-1">
+                  <div class="grid grid-cols-2 gap-2 text-xs text-slate-300 pt-1">
                     <div>
-                      <span class="block text-slate-500 text-[9px] uppercase font-bold tracking-wider">Taxa de Setup</span>
+                      <span class="block text-slate-400 text-xs uppercase font-bold tracking-wider">Taxa de Setup</span>
                       <strong id="valCorporateSetup" class="text-white font-semibold">R$ 1.000,00 (Única)</strong>
                     </div>
                     <div>
-                      <span class="block text-slate-500 text-[9px] uppercase font-bold tracking-wider">Taxa de Êxito</span>
+                      <span class="block text-slate-400 text-xs uppercase font-bold tracking-wider">Taxa de Êxito</span>
                       <strong id="valCorporateExito" class="text-white font-semibold">2,0% sobre o valor</strong>
                     </div>
                   </div>
@@ -659,74 +690,74 @@
             </div>
 
             <!-- SESSÃO DE DESCONTO / CONDIÇÃO ESPECIAL (DINÂMICA) -->
-            <div id="boxDescontoEspecial" class="hidden bg-gradient-to-r from-amber-500/15 via-amber-400/20 to-emerald-500/15 border-2 border-amber-400/50 p-4 rounded-2xl shadow-xl space-y-2 relative overflow-hidden">
+            <div id="boxDescontoEspecial" class="hidden bg-gradient-to-r from-amber-500/15 via-amber-400/20 to-emerald-500/15 border-2 border-amber-400/50 p-5 rounded-2xl shadow-xl space-y-2.5 relative overflow-hidden">
               <div class="flex items-center justify-between">
-                <span class="bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-widest px-3 py-0.5 rounded-full shadow">
+                <span class="bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-black text-xs uppercase tracking-widest px-3 py-1 rounded-full shadow">
                   <i class="fa-solid fa-gift mr-1"></i> Condição Especial / Bonificação
                 </span>
-                <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">OFERTA DE FECHAMENTO</span>
+                <span class="text-xs text-amber-300 font-extrabold uppercase tracking-wider">OFERTA DE FECHAMENTO</span>
               </div>
-              <h4 id="dispDescontoTitulo" class="font-bold text-amber-300 text-sm md:text-base">🎁 Condição Especial de Fechamento Exclusiva</h4>
-              <p id="dispDescontoValor" class="text-xs text-white font-extrabold bg-slate-950/60 p-2.5 rounded-xl border border-amber-400/30">
+              <h4 id="dispDescontoTitulo" class="font-extrabold text-amber-300 text-base sm:text-lg">🎁 Condição Especial de Fechamento Exclusiva</h4>
+              <p id="dispDescontoValor" class="text-xs sm:text-sm text-white font-extrabold bg-slate-950/70 p-3 rounded-xl border border-amber-400/40 leading-relaxed">
                 Desconto Especial: De R$ 1.200 por R$ 900,00/mês no Plano Essencial + Isenção da Taxa de Setup
               </p>
-              <p id="dispDescontoDesc" class="text-[11px] text-slate-300 leading-relaxed italic">
+              <p id="dispDescontoDesc" class="text-xs text-slate-300 leading-relaxed italic">
                 Válido para assinatura e aceite da proposta até o final deste mês.
               </p>
             </div>
 
             <!-- Vigência box -->
-            <div class="bg-amber-400/5 border border-amber-400/15 p-4 rounded-2xl flex items-center justify-center gap-3">
-              <div class="text-amber-400 text-sm"><i class="fa-solid fa-calendar-days"></i></div>
-              <p class="text-xs text-slate-300">
-                <strong>Vigência contratual sugerida:</strong> <span id="dispVigencia">Contrato de 12 meses (prazo essencial para maturação de processos, organização documental e recorrência de vitórias).</span>
+            <div class="bg-amber-400/5 border border-amber-400/20 p-4 rounded-2xl flex items-center justify-center gap-3">
+              <div class="text-amber-400 text-base"><i class="fa-solid fa-calendar-days"></i></div>
+              <p class="text-xs sm:text-sm text-slate-200 font-medium">
+                <strong class="text-amber-400 font-extrabold">Vigência contratual sugerida:</strong> <span id="dispVigencia">Contrato de 12 meses (prazo essencial para maturação de processos, organização documental e recorrência de vitórias).</span>
               </p>
             </div>
 
             <!-- Observação Adicional Box (Opcional) -->
-            <div id="boxObservacaoAdicional" class="hidden bg-slate-900/60 border border-white/[0.08] p-3.5 rounded-2xl text-xs text-slate-300">
-              <span class="text-amber-400 font-bold block mb-1">📌 Observação Adicional:</span>
-              <p id="dispObservacao" class="italic text-slate-300"></p>
+            <div id="boxObservacaoAdicional" class="hidden bg-slate-900/60 border border-white/[0.08] p-4 rounded-2xl text-xs sm:text-sm text-slate-200">
+              <span class="text-amber-400 font-extrabold block mb-1">📌 Observação Adicional:</span>
+              <p id="dispObservacao" class="italic text-slate-300 leading-relaxed"></p>
             </div>
           </div>
 
-          <div class="border-t border-white/[0.08] pt-6 flex justify-between items-center text-xs text-slate-500 w-full">
+          <div class="border-t border-white/[0.08] pt-6 flex justify-between items-center text-xs text-slate-400 w-full">
             <p>Courvan Licitações &bull; Proposta Comercial</p>
-            <p>Pág. 5 de 6</p>
+            <p class="font-semibold text-slate-300">Pág. 5 de 6</p>
           </div>
         </div>
 
         <!-- PÁGINA 6: NOSSO COMPROMISSO TÉCNICO -->
-        <div id="slide-5" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.06] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+        <div id="slide-5" class="print-page slide-deck-item inactive w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.08] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
           
           <div class="space-y-8 w-full">
             <div class="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <div class="flex items-center gap-2">
-                <span class="text-amber-400 font-bold text-lg font-display">06.</span>
-                <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Por que escolher a Courvan?</span>
+              <div class="flex items-center gap-2.5">
+                <span class="text-amber-400 font-bold text-xl font-display">06.</span>
+                <span class="text-xs sm:text-sm uppercase tracking-widest text-slate-300 font-bold">Por que escolher a Courvan?</span>
               </div>
-              <span class="text-xs text-amber-400 font-bold tracking-widest">COURVAN</span>
+              <span class="text-xs text-amber-400 font-extrabold tracking-widest">COURVAN</span>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               <div class="lg:col-span-7 space-y-6">
-                <div class="relative pl-6 border-l-2 border-amber-400">
-                  <h3 class="font-display text-2xl sm:text-3xl font-bold text-amber-400 italic leading-snug">
+                <div class="relative pl-6 border-l-3 border-amber-400">
+                  <h3 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-300 italic leading-snug">
                     "Nós não cobramos preços irrisórios porque não entregamos um trabalho comum. Nós nos posicionamos como o departamento de licitações externo da sua empresa."
                   </h3>
                 </div>
-                <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
-                  <p class="font-light">
+                <div class="space-y-4 text-slate-200 text-base sm:text-lg leading-relaxed font-normal">
+                  <p>
                     Ao fechar conosco, você não contrata um digitador de propostas, mas sim uma estrutura jurídica capaz de combater direcionamentos, desqualificar concorrentes irregulares e forçar a administração pública a cumprir a lei, protegendo os seus contratos e a sua rentabilidade.
                   </p>
-                  <p class="font-semibold text-white pt-1">
+                  <p class="font-extrabold text-white pt-1">
                     Estamos à disposição para iniciar essa parceria e estruturar o seu novo canal de vendas para o governo.
                   </p>
                 </div>
               </div>
 
               <!-- Contact & signature panel with clean modern card style -->
-              <div class="lg:col-span-5 bg-slate-900/40 border border-white/[0.06] rounded-2xl p-6 space-y-6">
+              <div class="lg:col-span-5 bg-slate-900/60 border border-white/[0.08] rounded-2xl p-6 space-y-6">
                 <div>
                   <h4 class="text-slate-400 text-[10px] font-extrabold uppercase tracking-widest mb-3.5">Direção Técnica</h4>
                   <div class="flex items-center gap-3">
@@ -1114,7 +1145,7 @@
     function toggleSidebarDeck() {
       const sidebar = document.getElementById('sidebarProposta');
       if (sidebar) {
-        sidebar.classList.toggle('hidden');
+        sidebar.classList.toggle('force-open');
       }
     }
 
@@ -1182,11 +1213,11 @@
         if (idx === slideAtualIndex) {
           btn.className = "slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-3 bg-amber-400/10 text-amber-400 border border-amber-400/30 shadow-md";
           const numSpan = btn.querySelector('span');
-          if (numSpan) numSpan.className = "text-xs font-bold text-amber-400";
+          if (numSpan) numSpan.className = "text-xs font-extrabold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md";
         } else {
-          btn.className = "slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.02] border border-transparent transition-all flex items-center gap-3";
+          btn.className = "slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.04] border border-transparent transition-all flex items-center gap-3";
           const numSpan = btn.querySelector('span');
-          if (numSpan) numSpan.className = "text-xs font-bold text-slate-500";
+          if (numSpan) numSpan.className = "text-xs font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-md";
         }
       });
 
