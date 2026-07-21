@@ -75,7 +75,7 @@
       transform: scale(0.97) translateY(12px);
     }
 
-    /* Print styling - Optimized for luxury slide deck PDF export */
+    /* Print styling - Optimized for luxury multi-page slide deck PDF export */
     @media print {
       @page {
         size: A4 landscape;
@@ -86,14 +86,15 @@
         print-color-adjust: exact !important;
       }
       html, body {
-        width: 100vw !important;
-        height: 100vh !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #080c14 !important;
         color: #f8fafc !important;
         font-size: 11px !important;
-        overflow: hidden !important;
+        overflow: visible !important;
       }
       .no-print, header, section.no-print, #sidebarProposta, #deckControles, nav, button {
         display: none !important;
@@ -102,17 +103,20 @@
         padding: 0 !important;
         margin: 0 !important;
         background: #080c14 !important;
-        width: 100vw !important;
-        height: 100vh !important;
+        width: 100% !important;
+        height: auto !important;
         display: block !important;
+        overflow: visible !important;
       }
       #deckProposta {
-        width: 100vw !important;
-        max-width: 100vw !important;
+        width: 100% !important;
+        max-width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
+        display: block !important;
+        overflow: visible !important;
       }
-      div.print-page {
+      div.print-page, .slide-deck-item {
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
@@ -123,10 +127,10 @@
         box-sizing: border-box !important;
         padding: 8mm 12mm 6mm 12mm !important;
         margin: 0 !important;
-        page-break-before: always !important;
+        page-break-before: auto !important;
         page-break-after: always !important;
         page-break-inside: avoid !important;
-        break-before: page !important;
+        break-before: auto !important;
         break-after: page !important;
         break-inside: avoid !important;
         overflow: hidden !important;
@@ -137,9 +141,9 @@
         border-radius: 0 !important;
         box-shadow: none !important;
       }
-      div.print-page:first-of-type {
-        page-break-before: avoid !important;
-        break-before: avoid !important;
+      div.print-page:last-of-type, .slide-deck-item:last-of-type {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
       }
       
       /* Print typography & spacing adjustments for perfect fit */
@@ -969,6 +973,17 @@
         } catch (e) {
           console.error("Erro ao carregar proposta global do Firestore:", e);
         }
+
+        // Fallback para localStorage
+        if (!pData) {
+          const localAvulso = localStorage.getItem("proposta_avulsa_config");
+          if (localAvulso) {
+            try {
+              pData = JSON.parse(localAvulso);
+              if (pData && pData.empresa && !clienteNome) clienteNome = pData.empresa;
+            } catch(e) {}
+          }
+        }
       }
 
       // 3. Suporte a parâmetros via Query String na URL (Proposta Avulsa via Link)
@@ -1148,6 +1163,19 @@
       // Update indicators
       atualizarEstadoControles();
       configurarInteracaoAvancada();
+
+      // Verificar se iniciou em modo apresentação
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('modo') === 'apresentacao' || urlParams.get('modo') === 'present' || urlParams.get('presente') === '1') {
+        const badge = document.createElement('div');
+        badge.id = 'toastApresentacao';
+        badge.className = 'no-print fixed top-20 right-6 z-50 bg-amber-400/15 border border-amber-400/30 backdrop-blur-xl px-4 py-2.5 rounded-xl text-amber-300 text-xs font-semibold flex items-center gap-2.5 shadow-2xl animate-bounce';
+        badge.innerHTML = `<i class="fa-solid fa-desktop text-amber-400"></i> <span>Modo Apresentação • Use (← →) para navegar. Tecle 'F' para Tela Cheia</span>`;
+        document.body.appendChild(badge);
+        setTimeout(() => {
+          if (badge) badge.classList.remove('animate-bounce');
+        }, 3500);
+      }
     });
 
     function configurarInteracaoAvancada() {
@@ -1353,6 +1381,36 @@
         atualizarEstadoControles();
       }
     }
+
+    // Garantir que todos os slides fiquem totalmente visíveis e estilizados ao imprimir/gerar PDF
+    window.addEventListener('beforeprint', () => {
+      for (let i = 0; i < totalSlides; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        if (slide) {
+          slide.style.setProperty('display', 'flex', 'important');
+          slide.classList.remove('inactive', 'hidden');
+          slide.classList.add('active');
+        }
+      }
+    });
+
+    window.addEventListener('afterprint', () => {
+      if (modoVisualizacao === 'paginado') {
+        for (let i = 0; i < totalSlides; i++) {
+          const slide = document.getElementById(`slide-${i}`);
+          if (slide) {
+            slide.style.display = '';
+            if (i === slideAtualIndex) {
+              slide.classList.remove('inactive');
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+              slide.classList.add('inactive');
+            }
+          }
+        }
+      }
+    });
   </script>
 
 </body>
