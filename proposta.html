@@ -237,10 +237,10 @@
     </aside>
 
     <!-- Main Workspace for Presentation slides -->
-    <main class="flex-1 p-4 md:p-8 lg:p-12 xl:p-16 flex flex-col justify-center items-center bg-gradient-to-b from-[#080c14] to-[#04060a]">
+    <main class="flex-1 p-2 sm:p-4 md:p-6 lg:p-8 flex flex-col justify-center items-center bg-gradient-to-b from-[#080c14] to-[#04060a] w-full min-h-[calc(100vh-100px)]">
       
       <!-- Slide Wrapper Container -->
-      <div id="deckProposta" class="w-full max-w-5xl space-y-12">
+      <div id="deckProposta" class="w-full max-w-none xl:max-w-[1650px] flex-1 flex flex-col justify-center my-auto">
         
         <!-- PÁGINA 1: CAPA -->
         <div id="slide-0" class="print-page slide-deck-item active w-full min-h-[580px] bg-gradient-to-b from-[#0c111d] to-[#080b13] border border-white/[0.06] rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl">
@@ -513,7 +513,7 @@
                   </div>
                   <div class="pt-3 border-t border-white/[0.06]">
                     <span class="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest block mb-2">Incluso no Plano:</span>
-                    <ul class="text-[11px] text-slate-300 space-y-2">
+                    <ul id="listServicosStart" class="text-[11px] text-slate-300 space-y-2">
                       <li class="flex items-start gap-2">
                         <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
                         <span>Monitoramento diário de editais.</span>
@@ -567,7 +567,7 @@
                   </div>
                   <div class="pt-3 border-t border-amber-400/20">
                     <span class="text-[9px] text-amber-300 font-extrabold uppercase tracking-widest block mb-2">Incluso no Plano:</span>
-                    <ul class="text-[11px] text-slate-200 space-y-2">
+                    <ul id="listServicosEssencial" class="text-[11px] text-slate-200 space-y-2">
                       <li class="flex items-start gap-2">
                         <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
                         <span><strong>Todos os benefícios do Plano Start incluídos.</strong></span>
@@ -617,7 +617,7 @@
                   </div>
                   <div class="pt-3 border-t border-white/[0.06]">
                     <span class="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest block mb-2">Incluso no Plano:</span>
-                    <ul class="text-[11px] text-slate-300 space-y-2">
+                    <ul id="listServicosCorporate" class="text-[11px] text-slate-300 space-y-2">
                       <li class="flex items-start gap-2">
                         <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
                         <span><strong>Todos os benefícios do Plano Essencial incluídos.</strong></span>
@@ -826,6 +826,30 @@
       return "R$ " + num.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+    function renderizarListaServicos(elementId, textContent) {
+      const el = document.getElementById(elementId);
+      if (!el || !textContent || !textContent.trim()) return;
+
+      const linhas = textContent.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (linhas.length === 0) return;
+
+      el.innerHTML = linhas.map(linha => {
+        let isNegative = linha.toLowerCase().startsWith("sem ") || linha.toLowerCase().includes("não inclui") || linha.startsWith("[x]") || linha.startsWith("x ");
+        let cleanText = linha.replace(/^\[x\]|^x\s*|^\*\s*/i, "").trim();
+        if (isNegative) {
+          return `<li class="flex items-start gap-2 text-slate-500">
+            <i class="fa-solid fa-circle-xmark mt-0.5 text-xs"></i>
+            <span>${cleanText}</span>
+          </li>`;
+        } else {
+          return `<li class="flex items-start gap-2">
+            <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+            <span>${cleanText}</span>
+          </li>`;
+        }
+      }).join('');
+    }
+
     async function carregarDadosPropostaFirestore() {
       const urlParams = new URLSearchParams(window.location.search);
       const clienteId = urlParams.get('clienteId') || urlParams.get('id');
@@ -865,12 +889,18 @@
         if (!pData) pData = {};
         pData.valorStart = urlParams.get('vStart');
         pData.setupStart = urlParams.get('sStart');
+        if (urlParams.has('servStart')) pData.servicosStart = decodeURIComponent(urlParams.get('servStart'));
+        
         pData.valorEssencial = urlParams.get('vEssencial');
         pData.setupEssencial = urlParams.get('sEssencial');
         pData.exitoEssencial = urlParams.get('eEssencial');
+        if (urlParams.has('servEssencial')) pData.servicosEssencial = decodeURIComponent(urlParams.get('servEssencial'));
+
         pData.valorCorporate = urlParams.get('vCorp');
         pData.setupCorporate = urlParams.get('sCorp');
         pData.exitoCorporate = urlParams.get('eCorp');
+        if (urlParams.has('servCorp')) pData.servicosCorporate = decodeURIComponent(urlParams.get('servCorp'));
+
         pData.descontoAtivo = urlParams.get('descAtivo') === "1";
         if (pData.descontoAtivo) {
           pData.descontoTitulo = urlParams.get('descTit');
@@ -905,7 +935,7 @@
           if (inp) inp.value = pData.empresa;
         }
 
-        // Planos
+        // Planos e Serviços
         if (pData.valorStart !== undefined) {
           const el = document.getElementById('valStartMensal');
           if (el) el.innerText = fmtMoeda(pData.valorStart);
@@ -913,6 +943,9 @@
         if (pData.setupStart !== undefined) {
           const el = document.getElementById('valStartSetup');
           if (el) el.innerText = `${fmtMoeda(pData.setupStart)} (Única)`;
+        }
+        if (pData.servicosStart) {
+          renderizarListaServicos('listServicosStart', pData.servicosStart);
         }
 
         if (pData.valorEssencial !== undefined) {
@@ -927,6 +960,9 @@
           const el = document.getElementById('valEssencialExito');
           if (el) el.innerText = pData.exitoEssencial;
         }
+        if (pData.servicosEssencial) {
+          renderizarListaServicos('listServicosEssencial', pData.servicosEssencial);
+        }
 
         if (pData.valorCorporate !== undefined) {
           const el = document.getElementById('valCorporateMensal');
@@ -939,6 +975,9 @@
         if (pData.exitoCorporate) {
           const el = document.getElementById('valCorporateExito');
           if (el) el.innerText = pData.exitoCorporate;
+        }
+        if (pData.servicosCorporate) {
+          renderizarListaServicos('listServicosCorporate', pData.servicosCorporate);
         }
 
         // Sessão de Desconto
@@ -1012,15 +1051,15 @@
     });
 
     function configurarInteracaoAvancada() {
-      // 1. Teclado
+      // 1. Teclado (Setas para navegar entre slides)
       window.addEventListener('keydown', (e) => {
         // Ignora se estiver digitando no input do nome
         if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
 
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+        if (e.key === 'ArrowRight' || e.key === 'PageDown') {
           e.preventDefault();
           proximoSlide();
-        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
           e.preventDefault();
           slideAnterior();
         } else if (e.key === 'Home') {
@@ -1045,22 +1084,6 @@
         deckMain.addEventListener('touchend', (e) => {
           touchEndX = e.changedTouches[0].screenX;
           handleSwipe();
-        }, { passive: true });
-
-        // 3. Scroll Wheel Inteligente
-        deckMain.addEventListener('wheel', (e) => {
-          if (modoVisualizacao === 'continuo') return;
-          if (wheelLock) return;
-
-          if (e.deltaY > 25) {
-            wheelLock = true;
-            proximoSlide();
-            setTimeout(() => { wheelLock = false; }, 400);
-          } else if (e.deltaY < -25) {
-            wheelLock = true;
-            slideAnterior();
-            setTimeout(() => { wheelLock = false; }, 400);
-          }
         }, { passive: true });
       }
     }
