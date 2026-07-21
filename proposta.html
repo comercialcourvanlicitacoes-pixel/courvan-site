@@ -53,7 +53,7 @@
 
     /* Smooth transition for active/inactive slides */
     .slide-deck-item {
-      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .slide-deck-item.active {
       display: flex !important;
@@ -63,7 +63,7 @@
     .slide-deck-item.inactive {
       display: none !important;
       opacity: 0;
-      transform: scale(0.98) translateY(10px);
+      transform: scale(0.97) translateY(12px);
     }
 
     /* Print styling - Optimized for luxury slide deck PDF export */
@@ -77,30 +77,31 @@
         print-color-adjust: exact !important;
       }
       html, body {
-        width: 100% !important;
-        height: 100% !important;
+        width: 100vw !important;
+        height: 100vh !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #080c14 !important;
         color: #f8fafc !important;
-        font-size: 12px !important;
+        font-size: 11px !important;
+        overflow: hidden !important;
       }
-      .no-print, header, section.no-print, #sidebarProposta, #deckControles, nav {
+      .no-print, header, section.no-print, #sidebarProposta, #deckControles, nav, button {
         display: none !important;
       }
       main {
         padding: 0 !important;
         margin: 0 !important;
         background: #080c14 !important;
-        width: 100% !important;
+        width: 100vw !important;
+        height: 100vh !important;
         display: block !important;
       }
       #deckProposta {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
         margin: 0 !important;
         padding: 0 !important;
-        space-y: 0 !important;
       }
       div.print-page {
         display: flex !important;
@@ -111,7 +112,7 @@
         max-width: 100vw !important;
         max-height: 100vh !important;
         box-sizing: border-box !important;
-        padding: 12mm 16mm !important;
+        padding: 8mm 12mm 6mm 12mm !important;
         margin: 0 !important;
         page-break-before: always !important;
         page-break-after: always !important;
@@ -132,35 +133,48 @@
         break-before: avoid !important;
       }
       
-      /* Print typography & scaling rules */
-      .print-page h1 { font-size: 28px !important; line-height: 1.15 !important; }
-      .print-page h2 { font-size: 20px !important; line-height: 1.2 !important; }
-      .print-page h3 { font-size: 15px !important; }
-      .print-page h4 { font-size: 13px !important; }
-      .print-page p, .print-page span, .print-page li { font-size: 11px !important; line-height: 1.35 !important; }
+      /* Print typography & spacing adjustments for perfect fit */
+      .print-page h1 { font-size: 24px !important; line-height: 1.15 !important; }
+      .print-page h2 { font-size: 18px !important; line-height: 1.2 !important; }
+      .print-page h3 { font-size: 14px !important; }
+      .print-page h4 { font-size: 12px !important; }
+      .print-page p, .print-page span, .print-page li { font-size: 10px !important; line-height: 1.3 !important; }
 
-      .print-page .p-5, .print-page .p-6, .print-page .p-8, .print-page .p-14, .print-page .md\:p-14 {
-        padding: 12px 16px !important;
+      .print-page .p-4, .print-page .p-5, .print-page .p-6, .print-page .p-8, .print-page .p-14, .print-page .md\:p-14 {
+        padding: 8px 12px !important;
       }
 
+      .print-page .gap-8 { gap: 12px !important; }
+      .print-page .gap-6 { gap: 10px !important; }
+      .print-page .space-y-8 > * + * { margin-top: 12px !important; }
+      .print-page .space-y-6 > * + * { margin-top: 10px !important; }
+
       .print-img {
-        max-height: 90px !important;
+        max-height: 75px !important;
         object-fit: contain !important;
       }
     }
   </style>
 </head>
 <body class="flex flex-col min-h-screen">  <!-- Header Section (Navigation Back to Home) -->
-  <header class="no-print w-full px-6 py-4.5 border-b border-white/[0.06] bg-[#080c14]/90 backdrop-blur-lg sticky top-0 z-50 flex items-center justify-between shadow-lg">
-    <a class="text-amber-400 hover:text-amber-300 font-semibold text-sm transition-all flex items-center gap-2 group" href="index.html">
-      <i class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"></i> Voltar ao site principal
-    </a>
+  <header class="no-print w-full px-4 sm:px-6 py-3.5 border-b border-white/[0.06] bg-[#080c14]/90 backdrop-blur-lg sticky top-0 z-50 flex items-center justify-between gap-3 shadow-lg">
     <div class="flex items-center gap-3">
-      <button onclick="alternarModoVisualizacao()" id="btnModo" class="text-xs px-4 py-2 rounded-lg bg-slate-900/80 text-slate-300 hover:bg-slate-800 hover:text-white transition-all font-medium border border-white/[0.08] flex items-center gap-2 shadow-sm">
-        <i class="fa-solid fa-scroll text-amber-400/80"></i> Ver Tudo Contínuo
+      <a class="text-amber-400 hover:text-amber-300 font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 group" href="index.html">
+        <i class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"></i> <span class="hidden md:inline">Voltar ao site principal</span><span class="md:hidden">Voltar</span>
+      </a>
+      <button onclick="toggleSidebarDeck()" id="btnSidebar" class="text-xs px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 transition-all border border-white/[0.08] flex items-center gap-1.5">
+        <i class="fa-solid fa-bars text-amber-400"></i> <span class="hidden sm:inline">Menu Slides</span>
       </button>
-      <button onclick="window.print()" class="text-xs px-4.5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 hover:from-amber-400 hover:to-amber-300 transition-all font-bold flex items-center gap-2 shadow-lg shadow-amber-500/10 active:scale-95">
-        <i class="fa-solid fa-file-pdf"></i> Salvar PDF / Imprimir
+    </div>
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button onclick="alternarFullscreen()" id="btnFullscreen" class="text-xs px-3 py-1.5 rounded-lg bg-amber-400/10 text-amber-400 hover:bg-amber-400 hover:text-slate-950 transition-all font-semibold border border-amber-400/30 flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-expand"></i> <span class="hidden sm:inline">Tela Cheia</span>
+      </button>
+      <button onclick="alternarModoVisualizacao()" id="btnModo" class="text-xs px-3 py-1.5 rounded-lg bg-slate-900/80 text-slate-300 hover:bg-slate-800 hover:text-white transition-all font-medium border border-white/[0.08] flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-scroll text-amber-400/80"></i> <span class="hidden sm:inline">Ver Tudo Contínuo</span><span class="sm:hidden">Contínuo</span>
+      </button>
+      <button onclick="window.print()" class="text-xs px-3.5 py-1.5 sm:px-4.5 sm:py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 hover:from-amber-400 hover:to-amber-300 transition-all font-bold flex items-center gap-1.5 shadow-lg shadow-amber-500/10 active:scale-95">
+        <i class="fa-solid fa-file-pdf"></i> <span class="hidden sm:inline">Salvar PDF / Imprimir</span><span class="sm:hidden">PDF</span>
       </button>
     </div>
   </header>
@@ -760,23 +774,23 @@
       </div>
 
       <!-- Slide Controls (Only visible in Paginated Mode) -->
-      <div id="deckControles" class="no-print mt-8 flex items-center justify-between w-full max-w-5xl bg-slate-950/40 px-6 py-4.5 border border-white/[0.06] rounded-2xl gap-4">
-        <button onclick="slideAnterior()" class="px-4.5 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-30 disabled:pointer-events-none" id="btnPrev">
-          <i class="fa-solid fa-chevron-left"></i> Anterior
+      <div id="deckControles" class="no-print mt-6 flex items-center justify-between w-full max-w-5xl bg-slate-950/80 backdrop-blur border border-white/[0.08] px-4 sm:px-6 py-3.5 rounded-2xl gap-3 shadow-xl">
+        <button onclick="slideAnterior()" class="px-3.5 sm:px-4.5 py-2 sm:py-2.5 text-xs font-semibold rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-30 disabled:pointer-events-none" id="btnPrev">
+          <i class="fa-solid fa-chevron-left"></i> <span class="hidden sm:inline">Anterior</span>
         </button>
 
         <div class="flex items-center gap-2">
-          <!-- Dot Indicators dynamically active -->
-          <span class="slide-dot w-2 h-2 rounded-full bg-amber-400 transition-all duration-300"></span>
-          <span class="slide-dot w-2 h-2 rounded-full bg-slate-700 transition-all duration-300"></span>
-          <span class="slide-dot w-2 h-2 rounded-full bg-slate-700 transition-all duration-300"></span>
-          <span class="slide-dot w-2 h-2 rounded-full bg-slate-700 transition-all duration-300"></span>
-          <span class="slide-dot w-2 h-2 rounded-full bg-slate-700 transition-all duration-300"></span>
-          <span class="slide-dot w-2 h-2 rounded-full bg-slate-700 transition-all duration-300"></span>
+          <!-- Dot Indicators dynamically active & clickable -->
+          <button onclick="irParaSlide(0)" title="Capa" class="slide-dot w-2.5 h-2.5 rounded-full bg-amber-400 hover:scale-125 transition-all duration-300 cursor-pointer"></button>
+          <button onclick="irParaSlide(1)" title="Desafio do Mercado" class="slide-dot w-2.5 h-2.5 rounded-full bg-slate-700 hover:scale-125 transition-all duration-300 cursor-pointer"></button>
+          <button onclick="irParaSlide(2)" title="A Solução Courvan" class="slide-dot w-2.5 h-2.5 rounded-full bg-slate-700 hover:scale-125 transition-all duration-300 cursor-pointer"></button>
+          <button onclick="irParaSlide(3)" title="Método de Trabalho" class="slide-dot w-2.5 h-2.5 rounded-full bg-slate-700 hover:scale-125 transition-all duration-300 cursor-pointer"></button>
+          <button onclick="irParaSlide(4)" title="Nossos Planos" class="slide-dot w-2.5 h-2.5 rounded-full bg-slate-700 hover:scale-125 transition-all duration-300 cursor-pointer"></button>
+          <button onclick="irParaSlide(5)" title="Nosso Compromisso" class="slide-dot w-2.5 h-2.5 rounded-full bg-slate-700 hover:scale-125 transition-all duration-300 cursor-pointer"></button>
         </div>
 
-        <button onclick="proximoSlide()" class="px-5 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 hover:from-amber-400 hover:to-amber-300 shadow-md shadow-amber-500/10 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-30 disabled:pointer-events-none" id="btnNext">
-          Próximo <i class="fa-solid fa-chevron-right"></i>
+        <button onclick="proximoSlide()" class="px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 hover:from-amber-400 hover:to-amber-300 shadow-md shadow-amber-500/10 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-30 disabled:pointer-events-none" id="btnNext">
+          <span class="hidden sm:inline">Próximo</span> <i class="fa-solid fa-chevron-right"></i>
         </button>
       </div>
 
@@ -819,6 +833,7 @@
       let pData = null;
       let clienteNome = "";
 
+      // 1. Tenta carregar do cadastro de cliente especifico
       if (clienteId) {
         try {
           const docSnap = await getDoc(doc(db, "clientes", clienteId));
@@ -828,11 +843,45 @@
             pData = data.propostaData || null;
           }
         } catch (err) {
-          console.error("Erro ao carregar dados da proposta do Firestore:", err);
+          console.error("Erro ao carregar dados da proposta do cliente no Firestore:", err);
         }
       }
 
-      // Fallbacks para URL ou localStorage
+      // 2. Tenta carregar configuração global/avulsa do Firestore se não houver do cliente
+      if (!pData && !clienteId) {
+        try {
+          const globalSnap = await getDoc(doc(db, "config_proposta", "global"));
+          if (globalSnap.exists()) {
+            pData = globalSnap.data();
+            if (pData && pData.empresa) clienteNome = pData.empresa;
+          }
+        } catch (e) {
+          console.error("Erro ao carregar proposta global do Firestore:", e);
+        }
+      }
+
+      // 3. Suporte a parâmetros via Query String na URL (Proposta Avulsa via Link)
+      if (urlParams.has('vStart')) {
+        if (!pData) pData = {};
+        pData.valorStart = urlParams.get('vStart');
+        pData.setupStart = urlParams.get('sStart');
+        pData.valorEssencial = urlParams.get('vEssencial');
+        pData.setupEssencial = urlParams.get('sEssencial');
+        pData.exitoEssencial = urlParams.get('eEssencial');
+        pData.valorCorporate = urlParams.get('vCorp');
+        pData.setupCorporate = urlParams.get('sCorp');
+        pData.exitoCorporate = urlParams.get('eCorp');
+        pData.descontoAtivo = urlParams.get('descAtivo') === "1";
+        if (pData.descontoAtivo) {
+          pData.descontoTitulo = urlParams.get('descTit');
+          pData.descontoValor = urlParams.get('descVal');
+          pData.descontoDesc = urlParams.get('descDesc');
+        }
+        if (urlParams.has('vigencia')) pData.vigencia = urlParams.get('vigencia');
+        if (urlParams.has('obs')) pData.observacao = urlParams.get('obs');
+      }
+
+      // Fallbacks para Nome da Empresa na URL ou localStorage
       const empresaUrl = urlParams.get('empresa') || urlParams.get('cliente');
       if (empresaUrl) clienteNome = empresaUrl;
 
@@ -841,16 +890,16 @@
         if (empresaSalva) clienteNome = empresaSalva;
       }
 
-      // 1. Atualizar nome da empresa
+      // Atualizar nome da empresa na capa
       if (clienteNome) {
         window.personalizarProposta(clienteNome);
         const inp = document.getElementById('inputNomeCliente');
         if (inp) inp.value = clienteNome;
       }
 
-      // 2. Se houver proposta customizada salva no Firestore
+      // Atualizar dados na proposta
       if (pData) {
-        if (pData.empresa) {
+        if (pData.empresa && !clienteNome) {
           window.personalizarProposta(pData.empresa);
           const inp = document.getElementById('inputNomeCliente');
           if (inp) inp.value = pData.empresa;
@@ -895,7 +944,7 @@
         // Sessão de Desconto
         const boxDesconto = document.getElementById('boxDescontoEspecial');
         if (boxDesconto) {
-          if (pData.descontoAtivo === true) {
+          if (pData.descontoAtivo === true || pData.descontoAtivo === "1") {
             boxDesconto.classList.remove('hidden');
             if (pData.descontoTitulo) {
               const el = document.getElementById('dispDescontoTitulo');
@@ -942,6 +991,9 @@
     let slideAtualIndex = 0;
     const totalSlides = 6;
     let modoVisualizacao = 'paginado'; // 'paginado' ou 'continuo'
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let wheelLock = false;
 
     window.addEventListener('DOMContentLoaded', () => {
       // Auto-set today's date in Portuguese format
@@ -956,7 +1008,92 @@
 
       // Update indicators
       atualizarEstadoControles();
+      configurarInteracaoAvancada();
     });
+
+    function configurarInteracaoAvancada() {
+      // 1. Teclado
+      window.addEventListener('keydown', (e) => {
+        // Ignora se estiver digitando no input do nome
+        if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault();
+          proximoSlide();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+          e.preventDefault();
+          slideAnterior();
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          irParaSlide(0);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          irParaSlide(totalSlides - 1);
+        } else if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          alternarFullscreen();
+        }
+      });
+
+      // 2. Touch / Swipe para Mobile e Tablets
+      const deckMain = document.querySelector('main');
+      if (deckMain) {
+        deckMain.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        deckMain.addEventListener('touchend', (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        }, { passive: true });
+
+        // 3. Scroll Wheel Inteligente
+        deckMain.addEventListener('wheel', (e) => {
+          if (modoVisualizacao === 'continuo') return;
+          if (wheelLock) return;
+
+          if (e.deltaY > 25) {
+            wheelLock = true;
+            proximoSlide();
+            setTimeout(() => { wheelLock = false; }, 400);
+          } else if (e.deltaY < -25) {
+            wheelLock = true;
+            slideAnterior();
+            setTimeout(() => { wheelLock = false; }, 400);
+          }
+        }, { passive: true });
+      }
+    }
+
+    function handleSwipe() {
+      const diffX = touchEndX - touchStartX;
+      if (Math.abs(diffX) > 40) {
+        if (diffX < 0) {
+          proximoSlide();
+        } else {
+          slideAnterior();
+        }
+      }
+    }
+
+    function alternarFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn("Fullscreen não habilitado:", err);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    function toggleSidebarDeck() {
+      const sidebar = document.getElementById('sidebarProposta');
+      if (sidebar) {
+        sidebar.classList.toggle('hidden');
+      }
+    }
 
     function personalizarProposta(nome) {
       const display = document.getElementById('nomeClienteDisplay');
@@ -995,7 +1132,10 @@
       slideAtualIndex = index;
 
       // Scroll slide container smoothly into view
-      document.getElementById(`slide-${slideAtualIndex}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      const activeEl = document.getElementById(`slide-${slideAtualIndex}`);
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
 
       atualizarEstadoControles();
     }
@@ -1018,10 +1158,12 @@
       botoesMenu.forEach((btn, idx) => {
         if (idx === slideAtualIndex) {
           btn.className = "slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-3 bg-amber-400/10 text-amber-400 border border-amber-400/30 shadow-md";
-          btn.querySelector('span').className = "text-xs font-bold text-amber-400";
+          const numSpan = btn.querySelector('span');
+          if (numSpan) numSpan.className = "text-xs font-bold text-amber-400";
         } else {
           btn.className = "slide-nav-btn w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.02] border border-transparent transition-all flex items-center gap-3";
-          btn.querySelector('span').className = "text-xs font-bold text-slate-500";
+          const numSpan = btn.querySelector('span');
+          if (numSpan) numSpan.className = "text-xs font-bold text-slate-500";
         }
       });
 
@@ -1036,8 +1178,10 @@
       });
 
       // Prev/Next buttons disabled state
-      document.getElementById('btnPrev').disabled = (slideAtualIndex === 0);
-      document.getElementById('btnNext').disabled = (slideAtualIndex === totalSlides - 1);
+      const btnP = document.getElementById('btnPrev');
+      const btnN = document.getElementById('btnNext');
+      if (btnP) btnP.disabled = (slideAtualIndex === 0);
+      if (btnN) btnN.disabled = (slideAtualIndex === totalSlides - 1);
     }
 
     function alternarModoVisualizacao() {
@@ -1047,38 +1191,40 @@
 
       if (modoVisualizacao === 'paginado') {
         modoVisualizacao = 'continuo';
-        btn.innerHTML = `<i class="fa-solid fa-layer-group mr-1.5"></i> Ver em Slides`;
+        btn.innerHTML = `<i class="fa-solid fa-layer-group text-amber-400"></i> <span class="hidden sm:inline">Ver em Slides</span><span class="sm:hidden">Slides</span>`;
         
         // Hide sidebar & slide controls
-        sidebar.classList.add('lg:hidden');
-        controles.classList.add('hidden');
+        if (sidebar) sidebar.classList.add('hidden');
+        if (controles) controles.classList.add('hidden');
 
         // Show all slides
         for (let i = 0; i < totalSlides; i++) {
           const slide = document.getElementById(`slide-${i}`);
-          slide.classList.remove('inactive', 'hidden');
-          slide.classList.add('active');
-          // Adjust margins slightly for continuous mode
-          slide.classList.add('mb-10');
+          if (slide) {
+            slide.classList.remove('inactive', 'hidden');
+            slide.classList.add('active', 'mb-10');
+          }
         }
       } else {
         modoVisualizacao = 'paginado';
-        btn.innerHTML = `<i class="fa-solid fa-scroll mr-1.5"></i> Ver Tudo Contínuo`;
+        btn.innerHTML = `<i class="fa-solid fa-scroll text-amber-400/80"></i> <span class="hidden sm:inline">Ver Tudo Contínuo</span><span class="sm:hidden">Contínuo</span>`;
         
         // Show sidebar & slide controls
-        sidebar.classList.remove('lg:hidden');
-        controles.classList.remove('hidden');
+        if (sidebar) sidebar.classList.remove('hidden');
+        if (controles) controles.classList.remove('hidden');
 
         // Hide other slides except active one
         for (let i = 0; i < totalSlides; i++) {
           const slide = document.getElementById(`slide-${i}`);
-          slide.classList.remove('mb-10');
-          if (i === slideAtualIndex) {
-            slide.classList.remove('inactive');
-            slide.classList.add('active');
-          } else {
-            slide.classList.remove('active');
-            slide.classList.add('inactive');
+          if (slide) {
+            slide.classList.remove('mb-10');
+            if (i === slideAtualIndex) {
+              slide.classList.remove('inactive');
+              slide.classList.add('active');
+            } else {
+              slide.classList.remove('active');
+              slide.classList.add('inactive');
+            }
           }
         }
         atualizarEstadoControles();
