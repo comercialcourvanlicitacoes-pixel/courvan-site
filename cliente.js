@@ -633,6 +633,7 @@ onAuthStateChanged(auth, async (user) => {
   setInterval(carregarRadarPersonalizado, 45000); 
   window.iniciarListenerDocsGerados();
   window.iniciarListenerFinanceiro();
+  window.iniciarListenerCredenciais();
 });
 
 window.mostrarAba = function (id) {
@@ -2874,3 +2875,293 @@ window.simularPagamentoWebhookFatura = async function() {
 setTimeout(() => {
   window.alternarSubTabGerador("listar");
 }, 1000);
+
+// ==========================================
+// PORTAIS & CREDENCIAIS DE LICITAÇÃO
+// ==========================================
+window.todasAsCredenciais = [];
+window.unsubscribeCredenciais = null;
+window.credencialEmEdicaoId = null;
+window.filtroCredenciaisTexto = "";
+
+window.iniciarListenerCredenciais = function() {
+  if (window.unsubscribeCredenciais) {
+    window.unsubscribeCredenciais();
+    window.unsubscribeCredenciais = null;
+  }
+  if (!clienteIdGlobal) return;
+
+  const colRef = collection(db, "clientes", clienteIdGlobal, "credenciais");
+  window.unsubscribeCredenciais = onSnapshot(colRef, (snap) => {
+    window.todasAsCredenciais = [];
+    snap.forEach(docSnap => {
+      window.todasAsCredenciais.push({
+        id: docSnap.id,
+        ...docSnap.data()
+      });
+    });
+    // Ordenar em memória (mais recentes primeiro)
+    window.todasAsCredenciais.sort((a, b) => {
+      const tA = a.dataCriacao?.seconds || 0;
+      const tB = b.dataCriacao?.seconds || 0;
+      return tB - tA;
+    });
+    window.renderizarCredenciais();
+  }, (err) => {
+    console.error("Erro ao escutar credenciais:", err);
+  });
+};
+
+window.toggleVisibilidadeSenhaForm = function(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  if (input.type === "password") {
+    input.type = "text";
+    btn.innerText = "🙈";
+  } else {
+    input.type = "password";
+    btn.innerText = "👁️";
+  }
+};
+
+window.toggleRevelarSenha = function(id, senhaReal, btn) {
+  const textSpan = document.getElementById(`passText-${id}`);
+  if (!textSpan) return;
+
+  if (textSpan.innerText === "••••••••") {
+    textSpan.innerText = senhaReal;
+    textSpan.style.letterSpacing = "normal";
+    btn.innerText = "🙈";
+    btn.title = "Ocultar senha";
+  } else {
+    textSpan.innerText = "••••••••";
+    textSpan.style.letterSpacing = "3px";
+    btn.innerText = "👁️";
+    btn.title = "Mostrar senha";
+  }
+};
+
+window.copiarTexto = function(texto, btn) {
+  navigator.clipboard.writeText(texto).then(() => {
+    const originalText = btn.innerText;
+    btn.innerText = "✓";
+    btn.style.color = "#10b981";
+    setTimeout(() => {
+      btn.innerText = originalText;
+      btn.style.color = "#e5b85c";
+    }, 1500);
+  }).catch(err => {
+    console.error("Erro ao copiar: ", err);
+    alert("Erro ao copiar para a área de transferência.");
+  });
+};
+
+window.filtrarCredenciais = function(texto) {
+  window.filtroCredenciaisTexto = (texto || "").toLowerCase().trim();
+  window.renderizarCredenciais();
+};
+
+window.salvarCredencial = async function() {
+  if (!clienteIdGlobal) return;
+
+  const nomePortal = document.getElementById("credNomePortal").value.trim();
+  const linkPortal = document.getElementById("credLinkPortal").value.trim();
+  const login = document.getElementById("credLogin").value.trim();
+  const senha = document.getElementById("credSenha").value.trim();
+  const observacoes = document.getElementById("credObservacoes").value.trim();
+
+  if (!nomePortal) {
+    alert("Por favor, informe o Nome do Portal.");
+    return;
+  }
+  if (!login) {
+    alert("Por favor, informe o Login / Usuário.");
+    return;
+  }
+  if (!senha) {
+    alert("Por favor, informe a Senha.");
+    return;
+  }
+
+  const btn = document.getElementById("btnSalvarCredencial");
+  btn.disabled = true;
+  const originalText = btn.innerText;
+  btn.innerText = "Salvando...";
+
+  try {
+    if (window.credencialEmEdicaoId) {
+      // Atualizar credencial existente
+      const credRef = doc(db, "clientes", clienteIdGlobal, "credenciais", window.credencialEmEdicaoId);
+      await updateDoc(credRef, {
+        nomePortal,
+        linkPortal,
+        login,
+        senha,
+        observacoes,
+        dataAtualizacao: serverTimestamp()
+      });
+      window.cancelarEdicaoCredencial();
+    } else {
+      // Adicionar nova credencial
+      const colRef = collection(db, "clientes", clienteIdGlobal, "credenciais");
+      await addDoc(colRef, {
+        nomePortal,
+        linkPortal,
+        login,
+        senha,
+        observacoes,
+        dataCriacao: serverTimestamp(),
+        dataAtualizacao: serverTimestamp()
+      });
+      
+      // Limpar campos
+      document.getElementById("credNomePortal").value = "";
+      document.getElementById("credLinkPortal").value = "";
+      document.getElementById("credLogin").value = "";
+      document.getElementById("credSenha").value = "";
+      document.getElementById("credObservacoes").value = "";
+    }
+  } catch (err) {
+    console.error("Erro ao salvar credencial:", err);
+    alert("Erro ao salvar credencial: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerText = originalText;
+  }
+};
+
+window.iniciarEdicaoCredencial = function(id) {
+  const cred = window.todasAsCredenciais.find(c => c.id === id);
+  if (!cred) return;
+
+  window.credencialEmEdicaoId = id;
+  document.getElementById("credNomePortal").value = cred.nomePortal || "";
+  document.getElementById("credLinkPortal").value = cred.linkPortal || "";
+  document.getElementById("credLogin").value = cred.login || "";
+  document.getElementById("credSenha").value = cred.senha || "";
+  document.getElementById("credObservacoes").value = cred.observacoes || "";
+
+  // Mudar estado visual do formulário
+  document.getElementById("formCredencialTitle").innerText = "✏️ Editar Credencial";
+  document.getElementById("btnSalvarCredencial").innerText = "Salvar Alterações";
+  document.getElementById("btnCancelarEdicaoCred").style.display = "block";
+  
+  // Rolar suavemente para o formulário
+  document.getElementById("formCredencialBox").scrollIntoView({ behavior: "smooth" });
+};
+
+window.cancelarEdicaoCredencial = function() {
+  window.credencialEmEdicaoId = null;
+  document.getElementById("credNomePortal").value = "";
+  document.getElementById("credLinkPortal").value = "";
+  document.getElementById("credLogin").value = "";
+  document.getElementById("credSenha").value = "";
+  document.getElementById("credObservacoes").value = "";
+
+  document.getElementById("formCredencialTitle").innerText = "🔑 Nova Credencial";
+  document.getElementById("btnSalvarCredencial").innerText = "Salvar Credencial";
+  document.getElementById("btnCancelarEdicaoCred").style.display = "none";
+};
+
+window.excluirCredencial = async function(id) {
+  if (!clienteIdGlobal || !id) return;
+  if (!confirm("Tem certeza que deseja excluir permanentemente esta credencial?")) return;
+
+  try {
+    const credRef = doc(db, "clientes", clienteIdGlobal, "credenciais", id);
+    await deleteDoc(credRef);
+    if (window.credencialEmEdicaoId === id) {
+      window.cancelarEdicaoCredencial();
+    }
+  } catch (err) {
+    console.error("Erro ao excluir credencial:", err);
+    alert("Erro ao excluir credencial: " + err.message);
+  }
+};
+
+window.renderizarCredenciais = function() {
+  const listDiv = document.getElementById("listaCredenciaisPortais");
+  if (!listDiv) return;
+
+  listDiv.innerHTML = "";
+
+  const filtradas = window.todasAsCredenciais.filter(c => {
+    const nome = (c.nomePortal || "").toLowerCase();
+    const link = (c.linkPortal || "").toLowerCase();
+    const login = (c.login || "").toLowerCase();
+    const obs = (c.observacoes || "").toLowerCase();
+    return nome.includes(window.filtroCredenciaisTexto) || 
+           link.includes(window.filtroCredenciaisTexto) || 
+           login.includes(window.filtroCredenciaisTexto) || 
+           obs.includes(window.filtroCredenciaisTexto);
+  });
+
+  if (filtradas.length === 0) {
+    listDiv.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #64748b; font-style: italic; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.05); border-radius: 14px;">
+        Nenhuma credencial cadastrada ou correspondente à busca.
+      </div>
+    `;
+    return;
+  }
+
+  filtradas.forEach(c => {
+    const formattedLink = c.linkPortal ? (c.linkPortal.startsWith("http") ? c.linkPortal : "https://" + c.linkPortal) : "";
+    const linkHTML = formattedLink 
+      ? `<a href="${formattedLink}" target="_blank" style="color:#e5b85c; text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" title="Acessar portal">${escapeHTML(c.nomePortal)} ↗</a>` 
+      : escapeHTML(c.nomePortal);
+
+    const obsHTML = c.observacoes 
+      ? `
+        <div style="margin-top: 14px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.02); padding: 10px 12px; border-radius: 10px;">
+          <span style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Observações:</span>
+          <p style="color: #cbd5e1; font-size: 12px; line-height: 1.4; margin: 4px 0 0 0; white-space: pre-wrap; max-height: 90px; overflow-y: auto;">${escapeHTML(c.observacoes)}</p>
+        </div>
+      ` 
+      : "";
+
+    listDiv.innerHTML += `
+      <div class="info-box" style="margin: 0; background: linear-gradient(135deg, rgba(12, 39, 72, 0.25) 0%, rgba(6, 11, 19, 0.25) 100%); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; transition: 0.2s;" onmouseover="this.style.borderColor='rgba(229,184,92,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+            <h3 style="color: #ffffff; font-size: 16px; font-weight: 700; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;">
+              🌐 ${linkHTML}
+            </h3>
+          </div>
+          
+          <!-- Login -->
+          <div>
+            <span style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Login / Usuário:</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(5, 11, 19, 0.4); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); margin-top: 4px;">
+              <span id="loginText-${c.id}" style="color: #ffffff; font-size: 13px; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;">${escapeHTML(c.login)}</span>
+              <button onclick="window.copiarTexto('${c.login.replace(/'/g, "\\'")}', this)" style="background: none; border: none; color: #e5b85c; cursor: pointer; font-size: 14px; padding: 4px;" title="Copiar Login">📋</button>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <span style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Senha:</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(5, 11, 19, 0.4); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); margin-top: 4px;">
+              <span id="passText-${c.id}" style="color: #ffffff; font-size: 13px; font-family: monospace; letter-spacing: 3px;">••••••••</span>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <button onclick="window.toggleRevelarSenha('${c.id}', '${c.senha.replace(/'/g, "\\'")}', this)" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 14px; padding: 4px;" title="Mostrar Senha">👁️</button>
+                <button onclick="window.copiarTexto('${c.senha.replace(/'/g, "\\'")}', this)" style="background: none; border: none; color: #e5b85c; cursor: pointer; font-size: 14px; padding: 4px;" title="Copiar Senha">📋</button>
+              </div>
+            </div>
+          </div>
+
+          ${obsHTML}
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; margin-top: auto;">
+          <button class="radar-btn" onclick="window.iniciarEdicaoCredencial('${c.id}')" style="background: rgba(229,184,92,0.08); color: #e5b85c; border: 1px solid rgba(229,184,92,0.15); font-size: 11px; padding: 6px 12px; font-weight: 700; cursor: pointer; border-radius: 8px; text-decoration: none;">
+            ✏️ Editar
+          </button>
+          <button class="radar-btn" onclick="window.excluirCredencial('${c.id}')" style="background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15); font-size: 11px; padding: 6px 12px; font-weight: 700; cursor: pointer; border-radius: 8px; text-decoration: none;">
+            🗑️ Excluir
+          </button>
+        </div>
+      </div>
+    `;
+  });
+};
