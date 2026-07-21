@@ -1649,6 +1649,18 @@ window.filtrarCanalChat = function(canal) {
       }
     }
   });
+
+  const select = document.getElementById("chatDestinatario");
+  if (select) {
+    if (canal === "courvan") {
+      select.value = "courvan";
+    } else if (canal === "todos") {
+      select.value = "todos";
+    } else {
+      select.value = "todos";
+    }
+  }
+
   window.renderizarMensagensDoChat(true);
 };
 
@@ -1861,7 +1873,7 @@ window.onChangeCategoriaDoc = function() {
   const cat = document.getElementById("categoriaDocumento").value;
   const wrapperArquivo = document.getElementById("campoArquivoFisico");
   const wrapperLink = document.getElementById("campoLinkDrive");
-  if (cat === "gdrive") {
+  if (cat === "gdrive" || cat === "gdrive_links") {
     if (wrapperArquivo) wrapperArquivo.style.display = "none";
     if (wrapperLink) wrapperLink.style.display = "block";
   } else {
@@ -2035,7 +2047,21 @@ window.renderizarDocumentos = function() {
         }
       }
 
-      const categoriasMapa = { certidoes: "📜 Certidões", contratos: "✍️ Contratos", editais: "📢 Editais", habilitacao: "💼 Habilitação", gdrive: "🔗 Google Drive", outros: "📁 Outros" };
+      const categoriasMapa = {
+        habilitacao_juridica: "💼 Habilitação Jurídica",
+        regularidade_fiscal: "📜 Regularidade Fiscal e Trabalhista",
+        qualificacao_economica: "📊 Qualificação Econômico-Financeira",
+        qualificacao_tecnica: "🛠️ Qualificação Técnica",
+        contratos_aditivos: "✍️ Contratos e Aditivos",
+        gdrive_links: "🔗 Google Drive Links",
+        // Fallbacks para compatibilidade com registros antigos:
+        habilitacao: "💼 Habilitação Jurídica",
+        certidoes: "📜 Regularidade Fiscal e Trabalhista",
+        contratos: "✍️ Contratos e Aditivos",
+        editais: "🛠️ Qualificação Técnica",
+        gdrive: "🔗 Google Drive Links",
+        outros: "📁 Outros Documentos"
+      };
       const catTexto = categoriasMapa[d.categoria] || "📁 Documento";
       let fileIcon = "📄";
       if (d.categoria === "gdrive") fileIcon = "🔗";
@@ -2264,7 +2290,7 @@ window.adicionarDocumento = async () => {
     const statusDocumento = document.getElementById("statusDocumento").value;
     let linkFinal = "";
 
-    if (categoria === "gdrive") {
+    if (categoria === "gdrive" || categoria === "gdrive_links") {
       linkFinal = document.getElementById("linkExternoDocumento").value;
       if (!linkFinal) return alert("Cole o link");
     } else {
