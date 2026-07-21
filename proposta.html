@@ -116,7 +116,7 @@
         display: block !important;
         overflow: visible !important;
       }
-      div.print-page, .slide-deck-item {
+      div.print-page, .slide-deck-item, .slide-deck-item.inactive, .slide-deck-item.active {
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
@@ -866,23 +866,35 @@
       return "R$ " + num.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    function formatarTextoDescontoComPrecoRiscado(texto) {
-      if (!texto) return "";
+    function formatarTextoDescontoComPrecoRiscado(texto, originalPriceFallback) {
+      if (!texto) texto = "";
       let html = texto;
 
-      // Substitui variações de "De R$ 1.200" ou "De R$ 1.200,00" por badge riscado
-      html = html.replace(/(De\s+R\$\s*[\d\.\,]+)/gi, (match) => {
-        return `<span class="line-through text-slate-400 font-bold bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-700/60 mr-2 shadow-sm">${match}</span>`;
+      // 1. Se o texto não menciona "De R$" nem "por R$", mas tem um valor ou texto simples:
+      const temPrecoOriginal = /de:?\s*R\$/i.test(html) || /(?:R\$\s*[\d\.\,]+)\s*(?:por|para|->|=>)/i.test(html);
+      if (!temPrecoOriginal && originalPriceFallback) {
+        if (/por\s+R\$/i.test(html)) {
+          html = `De ${originalPriceFallback} ` + html;
+        } else if (/R\$\s*[\d\.\,]+/i.test(html)) {
+          html = html.replace(/(R\$\s*[\d\.\,]+(\/mês)?)/i, `De ${originalPriceFallback} por $1`);
+        } else {
+          html = `De ${originalPriceFallback} por ${html}`;
+        }
+      }
+
+      // 2. Destaca e RISCA o valor original: "De R$ 1.200", "De: R$ 1.200", "De R$ 1.200,00", ou "R$ 1.200,00 por"
+      html = html.replace(/(De:?\s*R\$\s*[\d\.\,]+|R\$\s*[\d\.\,]+(?=\s*(?:por|para|->|=>)))/gi, (match) => {
+        return `<span class="line-through decoration-amber-400 decoration-2 text-slate-300 font-bold bg-slate-900/90 px-2.5 py-1 rounded-lg border border-amber-400/30 mr-2 shadow-sm inline-block">${match}</span>`;
       });
 
-      // Substitui "por R$ 900" ou "por R$ 900,00" por badge destacado em amarelo
-      html = html.replace(/(por\s+R\$\s*[\d\.\,]+(\/mês)?)/gi, (match) => {
-        return `<span class="text-amber-300 font-black text-xl sm:text-2xl bg-amber-400/15 px-3 py-1 rounded-lg border border-amber-400/40 shadow-sm">${match}</span>`;
+      // 3. Destaca o novo valor com desconto: "por R$ 900", "por R$ 900,00", "para R$ 900,00"
+      html = html.replace(/((?:por|para|->|=>)\s*R\$\s*[\d\.\,]+(\/mês)?)/gi, (match) => {
+        return `<span class="text-amber-300 font-black text-xl sm:text-2xl bg-amber-400/15 px-3 py-1 rounded-lg border border-amber-400/40 shadow-sm inline-block">${match}</span>`;
       });
 
-      // Destaca isenções e bonificações
-      html = html.replace(/(\+\s*Isenção[^\.\,]*)/gi, (match) => {
-        return `<span class="inline-block bg-emerald-500/20 text-emerald-300 text-xs sm:text-sm font-extrabold px-3 py-1 rounded-lg border border-emerald-500/30 ml-2 shadow-sm"><i class="fa-solid fa-gift mr-1"></i>${match}</span>`;
+      // 4. Destaca isenção de taxa ou bonificação
+      html = html.replace(/(\+\s*Isenção[^\.\,]*|Isenção da Taxa[^\.\,]*|Setup Grátis)/gi, (match) => {
+        return `<span class="inline-block bg-emerald-500/20 text-emerald-300 text-xs sm:text-sm font-extrabold px-3 py-1 rounded-lg border border-emerald-500/30 ml-2 my-1 shadow-sm"><i class="fa-solid fa-gift mr-1"></i>${match}</span>`;
       });
 
       return html;
@@ -892,19 +904,20 @@
       const elValMensalContainer = document.getElementById('valEssencialMensalContainer');
       const elValSetup = document.getElementById('valEssencialSetup');
 
-      let originalValor = pData.valorEssencial ? fmtMoeda(pData.valorEssencial) : "R$ 1.200,00";
-      
+      let originalValor = (pData && pData.valorEssencial !== undefined) ? fmtMoeda(pData.valorEssencial) : "R$ 1.200,00";
+      if (!originalValor || originalValor === "R$ 0,00") originalValor = "R$ 1.200,00";
+
       // Se houver "De R$ X" no texto do desconto, usa ele como valor original
-      let matchOriginal = textoDesconto ? textoDesconto.match(/de\s+(R\$\s*[\d\.\,]+)/i) : null;
-      if (matchOriginal) {
+      let matchOriginal = textoDesconto ? (textoDesconto.match(/de:?\s*(R\$\s*[\d\.\,]+)/i) || textoDesconto.match(/(R\$\s*[\d\.\,]+)(?=\s*(?:por|para|->|=>))/i)) : null;
+      if (matchOriginal && matchOriginal[1]) {
         originalValor = matchOriginal[1];
       }
 
       // Tenta extrair o valor com desconto do texto
-      let matchDesconto = textoDesconto ? textoDesconto.match(/por\s+(R\$\s*[\d\.\,]+)/i) : null;
+      let matchDesconto = textoDesconto ? textoDesconto.match(/(?:por|para|->|=>)\s*(R\$\s*[\d\.\,]+)/i) : null;
       let valorComDesconto = "R$ 900,00";
 
-      if (matchDesconto) {
+      if (matchDesconto && matchDesconto[1]) {
         valorComDesconto = matchDesconto[1];
       } else if (textoDesconto) {
         const valores = textoDesconto.match(/R\$\s*[\d\.\,]+/gi);
@@ -918,7 +931,7 @@
       if (elValMensalContainer) {
         elValMensalContainer.innerHTML = `
           <div class="flex items-baseline gap-2.5 flex-wrap">
-            <span class="line-through text-slate-400 text-lg sm:text-2xl font-bold">${originalValor}</span>
+            <span class="line-through decoration-amber-400 decoration-2 text-slate-400 text-lg sm:text-2xl font-bold mr-1">${originalValor}</span>
             <span class="text-3xl sm:text-4xl font-black text-amber-300 drop-shadow">${valorComDesconto}</span>
             <span class="text-xs sm:text-sm font-normal text-slate-200">/ mês</span>
           </div>
@@ -928,8 +941,9 @@
       // Se menciona isenção de setup
       if (textoDesconto && (textoDesconto.toLowerCase().includes("isenção") || textoDesconto.toLowerCase().includes("isento") || textoDesconto.toLowerCase().includes("setup grátis"))) {
         if (elValSetup) {
-          let origSetup = pData.setupEssencial !== undefined ? fmtMoeda(pData.setupEssencial) : "R$ 600,00";
-          elValSetup.innerHTML = `<span class="line-through text-slate-400 text-xs mr-1">${origSetup}</span> <strong class="text-emerald-400 font-black">ISENTO (R$ 0,00)</strong>`;
+          let origSetup = (pData && pData.setupEssencial !== undefined) ? fmtMoeda(pData.setupEssencial) : "R$ 600,00";
+          if (!origSetup || origSetup === "R$ 0,00") origSetup = "R$ 600,00";
+          elValSetup.innerHTML = `<span class="line-through decoration-amber-400 decoration-2 text-slate-400 text-xs sm:text-sm mr-1 font-bold">${origSetup}</span> <strong class="text-emerald-400 font-black">ISENTO (R$ 0,00)</strong>`;
         }
       }
     }
@@ -1031,6 +1045,25 @@
         if (urlParams.has('obs')) pData.observacao = urlParams.get('obs');
       }
 
+      // Fallback padrão se não houver pData ainda
+      if (!pData) {
+        pData = {
+          valorStart: 490,
+          setupStart: 300,
+          valorEssencial: 1200,
+          setupEssencial: 600,
+          exitoEssencial: "2,5% sobre o valor",
+          valorCorporate: 2500,
+          setupCorporate: 1000,
+          exitoCorporate: "2,0% sobre o valor",
+          descontoAtivo: true,
+          descontoTitulo: "🎁 Condição Especial de Fechamento Exclusiva",
+          descontoValor: "Desconto Especial: De R$ 1.200 por R$ 900,00/mês no Plano Essencial + Isenção da Taxa de Setup",
+          descontoDesc: "Condição especial válida para assinatura e aceite da proposta até o final deste mês. Garantia de renovação nas mesmas bases contratuais.",
+          vigencia: "Contrato de 12 meses (prazo essencial para maturação de processos, organização documental e recorrência de vitórias)."
+        };
+      }
+
       // Fallbacks para Nome da Empresa na URL ou localStorage
       const empresaUrl = urlParams.get('empresa') || urlParams.get('cliente');
       if (empresaUrl) clienteNome = empresaUrl;
@@ -1118,7 +1151,8 @@
             const textoOferta = pData.descontoValor || "Desconto Especial: De R$ 1.200 por R$ 900,00/mês no Plano Essencial + Isenção da Taxa de Setup";
             const elVal = document.getElementById('dispDescontoValor');
             if (elVal) {
-              elVal.innerHTML = formatarTextoDescontoComPrecoRiscado(textoOferta);
+              const origValText = pData.valorEssencial ? fmtMoeda(pData.valorEssencial) : "R$ 1.200,00";
+              elVal.innerHTML = formatarTextoDescontoComPrecoRiscado(textoOferta, origValText);
             }
 
             if (pData.descontoDesc) {
@@ -1199,6 +1233,7 @@
                              urlParams.get('presente') === '1';
 
       if (isApresentacao) {
+        document.body.classList.add('modo-apresentacao');
         const secPersonalizador = document.getElementById('sectionPersonalizador');
         if (secPersonalizador) secPersonalizador.style.display = 'none';
       }
