@@ -657,7 +657,7 @@
               <span>⚡ Plano Start</span>
               <span style="font-size:10px; color:#64748b; font-weight:normal;">(Radar & Monitoramento)</span>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:10px;">
               <div>
                 <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Mensalidade (R$)</label>
                 <input type="number" step="0.01" id="propostaValorStart" value="490.00" style="width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:13px;">
@@ -667,6 +667,10 @@
                 <input type="number" step="0.01" id="propostaSetupStart" value="300.00" style="width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:13px;">
               </div>
             </div>
+            <div>
+              <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Serviços Inclusos (um item por linha)</label>
+              <textarea id="propostaServicosStart" rows="3" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:12px; resize:vertical;"></textarea>
+            </div>
           </div>
 
           <!-- PLANO ESSENCIAL -->
@@ -675,7 +679,7 @@
               <span>⭐ Plano Essencial (Recomendado)</span>
               <span style="font-size:9px; background:#e5b85c; color:#030712; font-weight:800; padding:2px 6px; border-radius:4px; text-transform:uppercase;">Principal</span>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
               <div>
                 <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Mensalidade (R$)</label>
                 <input type="number" step="0.01" id="propostaValorEssencial" value="1200.00" style="width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:13px;">
@@ -689,6 +693,10 @@
                 <input type="text" id="propostaExitoEssencial" value="2,5% sobre o valor" style="width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:13px;">
               </div>
             </div>
+            <div>
+              <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Serviços Inclusos (um item por linha)</label>
+              <textarea id="propostaServicosEssencial" rows="3" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:12px; resize:vertical;"></textarea>
+            </div>
           </div>
 
           <!-- PLANO CORPORATE -->
@@ -697,7 +705,7 @@
               <span>🚀 Plano Corporate</span>
               <span style="font-size:10px; color:#64748b; font-weight:normal;">(Operações de Larga Escala)</span>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
               <div>
                 <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Mensalidade (R$)</label>
                 <input type="number" step="0.01" id="propostaValorCorporate" value="2500.00" style="width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:13px;">
@@ -710,6 +718,10 @@
                 <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Taxa de Êxito</label>
                 <input type="text" id="propostaExitoCorporate" value="2,0% sobre o valor" style="width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:13px;">
               </div>
+            </div>
+            <div>
+              <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Serviços Inclusos (um item por linha)</label>
+              <textarea id="propostaServicosCorporate" rows="3" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:white; font-size:12px; resize:vertical;"></textarea>
             </div>
           </div>
 
@@ -1690,6 +1702,10 @@ window.carregarDadosPropostaCliente = async function(clienteId) {
   const statusTxt = document.getElementById("statusPropostaTexto");
   const dataTxt = document.getElementById("dataUltimaProposta");
   
+  const defStart = "Monitoramento diário de editais.\nRelatórios semanais com filtros inteligentes do seu segmento.\nAcesso ao software de gestão de certidões Courvan.\nSem participação operacional em pregões.";
+  const defEssencial = "Todos os benefícios do Plano Start incluídos.\nAnálise jurídica e de edital completa de cada disputa.\nDisputa de lances ativa em até 4 licitações / mês.\nApoio em impugnações e recursos administrativos.";
+  const defCorp = "Todos os benefícios do Plano Essencial incluídos.\nDisputa de lances ativa em até 8 licitações / mês.\nAnálise jurídica avançada de certames de alta complexidade.\nGerente de contas dedicado e suporte prioritário.";
+
   if (!clienteId) {
     // Tenta carregar dados globais/avulsos do localStorage se existirem
     const avulsoSalvo = localStorage.getItem("proposta_avulsa_config");
@@ -1701,12 +1717,17 @@ window.carregarDadosPropostaCliente = async function(clienteId) {
     document.getElementById("propostaNomeEmpresa").value = p.empresa || localStorage.getItem("proposta_nome_cliente") || "";
     document.getElementById("propostaValorStart").value = p.valorStart !== undefined ? p.valorStart : "490.00";
     document.getElementById("propostaSetupStart").value = p.setupStart !== undefined ? p.setupStart : "300.00";
+    document.getElementById("propostaServicosStart").value = p.servicosStart || defStart;
+    
     document.getElementById("propostaValorEssencial").value = p.valorEssencial !== undefined ? p.valorEssencial : "1200.00";
     document.getElementById("propostaSetupEssencial").value = p.setupEssencial !== undefined ? p.setupEssencial : "600.00";
     document.getElementById("propostaExitoEssencial").value = p.exitoEssencial || "2,5% sobre o valor";
+    document.getElementById("propostaServicosEssencial").value = p.servicosEssencial || defEssencial;
+
     document.getElementById("propostaValorCorporate").value = p.valorCorporate !== undefined ? p.valorCorporate : "2500.00";
     document.getElementById("propostaSetupCorporate").value = p.setupCorporate !== undefined ? p.setupCorporate : "1000.00";
     document.getElementById("propostaExitoCorporate").value = p.exitoCorporate || "2,0% sobre o valor";
+    document.getElementById("propostaServicosCorporate").value = p.servicosCorporate || defCorp;
     
     const descAtivo = p.descontoAtivo === true;
     document.getElementById("propostaDescontoAtivo").checked = descAtivo;
@@ -1734,12 +1755,17 @@ window.carregarDadosPropostaCliente = async function(clienteId) {
       document.getElementById("propostaNomeEmpresa").value = p.empresa || data.empresa || data.nome || "";
       document.getElementById("propostaValorStart").value = p.valorStart !== undefined ? p.valorStart : "490.00";
       document.getElementById("propostaSetupStart").value = p.setupStart !== undefined ? p.setupStart : "300.00";
+      document.getElementById("propostaServicosStart").value = p.servicosStart || defStart;
+
       document.getElementById("propostaValorEssencial").value = p.valorEssencial !== undefined ? p.valorEssencial : "1200.00";
       document.getElementById("propostaSetupEssencial").value = p.setupSetupStart !== undefined ? p.setupEssencial : (p.setupEssencial !== undefined ? p.setupEssencial : "600.00");
       document.getElementById("propostaExitoEssencial").value = p.exitoEssencial || "2,5% sobre o valor";
+      document.getElementById("propostaServicosEssencial").value = p.servicosEssencial || defEssencial;
+
       document.getElementById("propostaValorCorporate").value = p.valorCorporate !== undefined ? p.valorCorporate : "2500.00";
       document.getElementById("propostaSetupCorporate").value = p.setupCorporate !== undefined ? p.setupCorporate : "1000.00";
       document.getElementById("propostaExitoCorporate").value = p.exitoCorporate || "2,0% sobre o valor";
+      document.getElementById("propostaServicosCorporate").value = p.servicosCorporate || defCorp;
       
       const descAtivo = p.descontoAtivo === true;
       document.getElementById("propostaDescontoAtivo").checked = descAtivo;
@@ -1775,12 +1801,15 @@ window.salvarPropostaCliente = async function() {
     empresa: empresa,
     valorStart: parseFloat(document.getElementById("propostaValorStart").value) || 490,
     setupStart: parseFloat(document.getElementById("propostaSetupStart").value) || 300,
+    servicosStart: document.getElementById("propostaServicosStart").value.trim(),
     valorEssencial: parseFloat(document.getElementById("propostaValorEssencial").value) || 1200,
     setupEssencial: parseFloat(document.getElementById("propostaSetupEssencial").value) || 600,
     exitoEssencial: document.getElementById("propostaExitoEssencial").value.trim(),
+    servicosEssencial: document.getElementById("propostaServicosEssencial").value.trim(),
     valorCorporate: parseFloat(document.getElementById("propostaValorCorporate").value) || 2500,
     setupCorporate: parseFloat(document.getElementById("propostaSetupCorporate").value) || 1000,
     exitoCorporate: document.getElementById("propostaExitoCorporate").value.trim(),
+    servicosCorporate: document.getElementById("propostaServicosCorporate").value.trim(),
     descontoAtivo: document.getElementById("propostaDescontoAtivo").checked,
     descontoTitulo: document.getElementById("propostaDescontoTitulo").value.trim(),
     descontoValor: document.getElementById("propostaDescontoValor").value.trim(),
@@ -1818,12 +1847,21 @@ window.obterQueryStringProposta = function() {
   params.set("empresa", empresa);
   params.set("vStart", document.getElementById("propostaValorStart").value);
   params.set("sStart", document.getElementById("propostaSetupStart").value);
+  if (document.getElementById("propostaServicosStart").value) {
+    params.set("servStart", encodeURIComponent(document.getElementById("propostaServicosStart").value));
+  }
   params.set("vEssencial", document.getElementById("propostaValorEssencial").value);
   params.set("sEssencial", document.getElementById("propostaSetupEssencial").value);
   params.set("eEssencial", document.getElementById("propostaExitoEssencial").value);
+  if (document.getElementById("propostaServicosEssencial").value) {
+    params.set("servEssencial", encodeURIComponent(document.getElementById("propostaServicosEssencial").value));
+  }
   params.set("vCorp", document.getElementById("propostaValorCorporate").value);
   params.set("sCorp", document.getElementById("propostaSetupCorporate").value);
   params.set("eCorp", document.getElementById("propostaExitoCorporate").value);
+  if (document.getElementById("propostaServicosCorporate").value) {
+    params.set("servCorp", encodeURIComponent(document.getElementById("propostaServicosCorporate").value));
+  }
   params.set("descAtivo", document.getElementById("propostaDescontoAtivo").checked ? "1" : "0");
   if (document.getElementById("propostaDescontoAtivo").checked) {
     params.set("descTit", document.getElementById("propostaDescontoTitulo").value);
