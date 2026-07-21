@@ -66,80 +66,86 @@
       transform: scale(0.98) translateY(10px);
     }
 
-    /* Print styling - Optimized for high-end PDF exports */
+    /* Print styling - Optimized for luxury slide deck PDF export */
     @media print {
       @page {
         size: A4 landscape;
-        margin: 15mm 20mm 15mm 20mm;
+        margin: 0;
       }
-      body {
-        background: #ffffff !important;
-        color: #0f172a !important;
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
-      .no-print {
+      html, body {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #080c14 !important;
+        color: #f8fafc !important;
+        font-size: 12px !important;
+      }
+      .no-print, header, section.no-print, #sidebarProposta, #deckControles, nav {
         display: none !important;
       }
-      /* Overrides Tailwind's .hidden and .inactive and forces all pages to render side by side / sequentially */
+      main {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #080c14 !important;
+        width: 100% !important;
+        display: block !important;
+      }
+      #deckProposta {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        space-y: 0 !important;
+      }
       div.print-page {
         display: flex !important;
-        opacity: 1 !important;
-        transform: none !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        box-sizing: border-box !important;
+        padding: 12mm 16mm !important;
+        margin: 0 !important;
+        page-break-before: always !important;
         page-break-after: always !important;
         page-break-inside: avoid !important;
+        break-before: page !important;
+        break-after: page !important;
         break-inside: avoid !important;
-        background: #ffffff !important;
-        color: #0f172a !important;
-        box-shadow: none !important;
+        overflow: hidden !important;
+        opacity: 1 !important;
+        transform: none !important;
+        background: linear-gradient(180deg, #0c111d 0%, #080b13 100%) !important;
         border: none !important;
-        margin: 0 !important;
-        padding: 40px !important;
-        min-height: 100vh !important;
-        width: 100% !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
       }
-      .print-page * {
-        color: #0f172a !important;
-        border-color: #cbd5e1 !important;
+      div.print-page:first-of-type {
+        page-break-before: avoid !important;
+        break-before: avoid !important;
       }
-      .print-page .text-amber-400, 
-      .print-page .text-amber-300,
-      .print-page .text-amber-500,
-      .print-page .text-amber-600 {
-        color: #a16207 !important; /* Elegant dark gold for printing readability */
+      
+      /* Print typography & scaling rules */
+      .print-page h1 { font-size: 28px !important; line-height: 1.15 !important; }
+      .print-page h2 { font-size: 20px !important; line-height: 1.2 !important; }
+      .print-page h3 { font-size: 15px !important; }
+      .print-page h4 { font-size: 13px !important; }
+      .print-page p, .print-page span, .print-page li { font-size: 11px !important; line-height: 1.35 !important; }
+
+      .print-page .p-5, .print-page .p-6, .print-page .p-8, .print-page .p-14, .print-page .md\:p-14 {
+        padding: 12px 16px !important;
       }
-      .print-page .text-slate-500,
-      .print-page .text-slate-400,
-      .print-page .text-slate-300 {
-        color: #475569 !important; /* Beautiful Slate-600 for secondary text in print */
-      }
-      .print-page .text-slate-600 {
-        color: #334155 !important;
-      }
-      .print-page .bg-amber-400\/10 {
-        background: rgba(161, 98, 7, 0.06) !important;
-      }
-      .print-page .bg-amber-400 {
-        background-color: #a16207 !important;
-        color: white !important;
-      }
-      .print-page .bg-slate-900\/40, 
-      .print-page .bg-slate-900\/20, 
-      .print-page .bg-slate-800\/50, 
-      .print-page .bg-slate-950\/30, 
-      .print-page .bg-slate-950\/20, 
-      .print-page .bg-slate-900\/50, 
-      .print-page .bg-slate-950\/40,
-      .print-page .bg-slate-800\/40,
-      .print-page .bg-slate-800\/80 {
-        background: #f8fafc !important;
-        border: 1px solid #cbd5e1 !important;
-      }
+
       .print-img {
-        max-height: 220px !important;
+        max-height: 90px !important;
         object-fit: contain !important;
-      }
-      .print-page .grid, .print-page blockquote, .print-page .card {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
       }
     }
   </style>
@@ -517,12 +523,12 @@
                 <div class="pt-5 mt-5 border-t border-white/[0.06] space-y-3.5">
                   <div>
                     <span class="text-[9px] text-slate-500 uppercase font-extrabold tracking-wider block">Mensalidade</span>
-                    <span class="text-2xl font-black text-white">R$ 490,00<span class="text-xs font-normal text-slate-400"> / mês</span></span>
+                    <span class="text-2xl font-black text-white"><span id="valStartMensal">R$ 490,00</span><span class="text-xs font-normal text-slate-400"> / mês</span></span>
                   </div>
                   <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 pt-1">
                     <div>
                       <span class="block text-slate-500 text-[9px] uppercase font-bold tracking-wider">Taxa de Setup</span>
-                      <strong class="text-white font-semibold">R$ 300,00 (Única)</strong>
+                      <strong id="valStartSetup" class="text-white font-semibold">R$ 300,00 (Única)</strong>
                     </div>
                     <div>
                       <span class="block text-slate-500 text-[9px] uppercase font-bold tracking-wider">Taxa de Êxito</span>
@@ -571,16 +577,16 @@
                 <div class="pt-5 mt-5 border-t border-amber-400/20 space-y-3.5">
                   <div>
                     <span class="text-[9px] text-amber-300 uppercase font-extrabold tracking-wider block">Mensalidade</span>
-                    <span class="text-3xl font-black text-amber-400">R$ 1.200,00<span class="text-xs font-normal text-slate-300"> / mês</span></span>
+                    <span class="text-3xl font-black text-amber-400"><span id="valEssencialMensal">R$ 1.200,00</span><span class="text-xs font-normal text-slate-300"> / mês</span></span>
                   </div>
                   <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-300 pt-1">
                     <div>
                       <span class="block text-slate-400 text-[9px] uppercase font-bold tracking-wider">Taxa de Setup</span>
-                      <strong class="text-white font-semibold">R$ 600,00 (Única)</strong>
+                      <strong id="valEssencialSetup" class="text-white font-semibold">R$ 600,00 (Única)</strong>
                     </div>
                     <div>
                       <span class="block text-slate-400 text-[9px] uppercase font-bold tracking-wider">Taxa de Êxito</span>
-                      <strong class="text-amber-400 font-bold">2,5% sobre o valor</strong>
+                      <strong id="valEssencialExito" class="text-amber-400 font-bold">2,5% sobre o valor</strong>
                     </div>
                   </div>
                 </div>
@@ -621,16 +627,16 @@
                 <div class="pt-5 mt-5 border-t border-white/[0.06] space-y-3.5">
                   <div>
                     <span class="text-[9px] text-slate-500 uppercase font-extrabold tracking-wider block">Mensalidade</span>
-                    <span class="text-2xl font-black text-white">R$ 2.500,00<span class="text-xs font-normal text-slate-400"> / mês</span></span>
+                    <span class="text-2xl font-black text-white"><span id="valCorporateMensal">R$ 2.500,00</span><span class="text-xs font-normal text-slate-400"> / mês</span></span>
                   </div>
                   <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 pt-1">
                     <div>
                       <span class="block text-slate-500 text-[9px] uppercase font-bold tracking-wider">Taxa de Setup</span>
-                      <strong class="text-white font-semibold">R$ 1.000,00 (Única)</strong>
+                      <strong id="valCorporateSetup" class="text-white font-semibold">R$ 1.000,00 (Única)</strong>
                     </div>
                     <div>
                       <span class="block text-slate-500 text-[9px] uppercase font-bold tracking-wider">Taxa de Êxito</span>
-                      <strong class="text-white font-semibold">2,0% sobre o valor</strong>
+                      <strong id="valCorporateExito" class="text-white font-semibold">2,0% sobre o valor</strong>
                     </div>
                   </div>
                 </div>
@@ -638,12 +644,35 @@
 
             </div>
 
+            <!-- SESSÃO DE DESCONTO / CONDIÇÃO ESPECIAL (DINÂMICA) -->
+            <div id="boxDescontoEspecial" class="hidden bg-gradient-to-r from-amber-500/15 via-amber-400/20 to-emerald-500/15 border-2 border-amber-400/50 p-4 rounded-2xl shadow-xl space-y-2 relative overflow-hidden">
+              <div class="flex items-center justify-between">
+                <span class="bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-widest px-3 py-0.5 rounded-full shadow">
+                  <i class="fa-solid fa-gift mr-1"></i> Condição Especial / Bonificação
+                </span>
+                <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">OFERTA DE FECHAMENTO</span>
+              </div>
+              <h4 id="dispDescontoTitulo" class="font-bold text-amber-300 text-sm md:text-base">🎁 Condição Especial de Fechamento Exclusiva</h4>
+              <p id="dispDescontoValor" class="text-xs text-white font-extrabold bg-slate-950/60 p-2.5 rounded-xl border border-amber-400/30">
+                Desconto Especial: De R$ 1.200 por R$ 900,00/mês no Plano Essencial + Isenção da Taxa de Setup
+              </p>
+              <p id="dispDescontoDesc" class="text-[11px] text-slate-300 leading-relaxed italic">
+                Válido para assinatura e aceite da proposta até o final deste mês.
+              </p>
+            </div>
+
             <!-- Vigência box -->
             <div class="bg-amber-400/5 border border-amber-400/15 p-4 rounded-2xl flex items-center justify-center gap-3">
               <div class="text-amber-400 text-sm"><i class="fa-solid fa-calendar-days"></i></div>
               <p class="text-xs text-slate-300">
-                <strong>Vigência contratual sugerida:</strong> Contrato de 12 meses (prazo essencial para maturação de processos, organização documental e recorrência de vitórias).
+                <strong>Vigência contratual sugerida:</strong> <span id="dispVigencia">Contrato de 12 meses (prazo essencial para maturação de processos, organização documental e recorrência de vitórias).</span>
               </p>
+            </div>
+
+            <!-- Observação Adicional Box (Opcional) -->
+            <div id="boxObservacaoAdicional" class="hidden bg-slate-900/60 border border-white/[0.08] p-3.5 rounded-2xl text-xs text-slate-300">
+              <span class="text-amber-400 font-bold block mb-1">📌 Observação Adicional:</span>
+              <p id="dispObservacao" class="italic text-slate-300"></p>
             </div>
           </div>
 
@@ -759,30 +788,162 @@
     <p>&copy; 2026 Courvan Inteligência em Licitações &bull; Todos os direitos reservados</p>
   </footer>
 
+  <!-- Firebase Firestore for Dynamic Proposal Data Loading -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBoBoaz6huE9gfAtBR4qf1ItMWzSwCEvLs",
+      authDomain: "courvan-sistema.firebaseapp.com",
+      projectId: "courvan-sistema",
+      storageBucket: "courvan-sistema.appspot.com",
+      messagingSenderId: "729755072978",
+      appId: "1:729755072978:web:e76e98fd704c10da34f00b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    function fmtMoeda(val) {
+      if (val === undefined || val === null || val === "") return "";
+      const num = parseFloat(val);
+      if (isNaN(num)) return val;
+      return "R$ " + num.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    async function carregarDadosPropostaFirestore() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const clienteId = urlParams.get('clienteId') || urlParams.get('id');
+
+      let pData = null;
+      let clienteNome = "";
+
+      if (clienteId) {
+        try {
+          const docSnap = await getDoc(doc(db, "clientes", clienteId));
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            clienteNome = data.empresa || data.nome || "";
+            pData = data.propostaData || null;
+          }
+        } catch (err) {
+          console.error("Erro ao carregar dados da proposta do Firestore:", err);
+        }
+      }
+
+      // Fallbacks para URL ou localStorage
+      const empresaUrl = urlParams.get('empresa') || urlParams.get('cliente');
+      if (empresaUrl) clienteNome = empresaUrl;
+
+      if (!clienteNome) {
+        const empresaSalva = localStorage.getItem('proposta_nome_cliente');
+        if (empresaSalva) clienteNome = empresaSalva;
+      }
+
+      // 1. Atualizar nome da empresa
+      if (clienteNome) {
+        window.personalizarProposta(clienteNome);
+        const inp = document.getElementById('inputNomeCliente');
+        if (inp) inp.value = clienteNome;
+      }
+
+      // 2. Se houver proposta customizada salva no Firestore
+      if (pData) {
+        if (pData.empresa) {
+          window.personalizarProposta(pData.empresa);
+          const inp = document.getElementById('inputNomeCliente');
+          if (inp) inp.value = pData.empresa;
+        }
+
+        // Planos
+        if (pData.valorStart !== undefined) {
+          const el = document.getElementById('valStartMensal');
+          if (el) el.innerText = fmtMoeda(pData.valorStart);
+        }
+        if (pData.setupStart !== undefined) {
+          const el = document.getElementById('valStartSetup');
+          if (el) el.innerText = `${fmtMoeda(pData.setupStart)} (Única)`;
+        }
+
+        if (pData.valorEssencial !== undefined) {
+          const el = document.getElementById('valEssencialMensal');
+          if (el) el.innerText = fmtMoeda(pData.valorEssencial);
+        }
+        if (pData.setupEssencial !== undefined) {
+          const el = document.getElementById('valEssencialSetup');
+          if (el) el.innerText = `${fmtMoeda(pData.setupEssencial)} (Única)`;
+        }
+        if (pData.exitoEssencial) {
+          const el = document.getElementById('valEssencialExito');
+          if (el) el.innerText = pData.exitoEssencial;
+        }
+
+        if (pData.valorCorporate !== undefined) {
+          const el = document.getElementById('valCorporateMensal');
+          if (el) el.innerText = fmtMoeda(pData.valorCorporate);
+        }
+        if (pData.setupCorporate !== undefined) {
+          const el = document.getElementById('valCorporateSetup');
+          if (el) el.innerText = `${fmtMoeda(pData.setupCorporate)} (Única)`;
+        }
+        if (pData.exitoCorporate) {
+          const el = document.getElementById('valCorporateExito');
+          if (el) el.innerText = pData.exitoCorporate;
+        }
+
+        // Sessão de Desconto
+        const boxDesconto = document.getElementById('boxDescontoEspecial');
+        if (boxDesconto) {
+          if (pData.descontoAtivo === true) {
+            boxDesconto.classList.remove('hidden');
+            if (pData.descontoTitulo) {
+              const el = document.getElementById('dispDescontoTitulo');
+              if (el) el.innerText = pData.descontoTitulo;
+            }
+            if (pData.descontoValor) {
+              const el = document.getElementById('dispDescontoValor');
+              if (el) el.innerText = pData.descontoValor;
+            }
+            if (pData.descontoDesc) {
+              const el = document.getElementById('dispDescontoDesc');
+              if (el) el.innerText = pData.descontoDesc;
+            }
+          } else {
+            boxDesconto.classList.add('hidden');
+          }
+        }
+
+        // Vigência
+        if (pData.vigencia) {
+          const el = document.getElementById('dispVigencia');
+          if (el) el.innerText = pData.vigencia;
+        }
+
+        // Observação
+        const boxObs = document.getElementById('boxObservacaoAdicional');
+        if (boxObs) {
+          if (pData.observacao && pData.observacao.trim() !== "") {
+            boxObs.classList.remove('hidden');
+            const el = document.getElementById('dispObservacao');
+            if (el) el.innerText = pData.observacao;
+          } else {
+            boxObs.classList.add('hidden');
+          }
+        }
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', carregarDadosPropostaFirestore);
+  </script>
+
   <!-- Script for Interactive presentation deck -->
   <script>
     let slideAtualIndex = 0;
     const totalSlides = 6;
     let modoVisualizacao = 'paginado'; // 'paginado' ou 'continuo'
 
-    // Load custom client name from URL query params if present, or localStorage
     window.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      let empresaUrl = urlParams.get('empresa') || urlParams.get('cliente');
-      
-      if (empresaUrl) {
-        personalizarProposta(empresaUrl);
-        document.getElementById('inputNomeCliente').value = empresaUrl;
-      } else {
-        const empresaSalva = localStorage.getItem('proposta_nome_cliente');
-        if (empresaSalva) {
-          personalizarProposta(empresaSalva);
-          document.getElementById('inputNomeCliente').value = empresaSalva;
-        } else {
-          personalizarProposta("[Nome da Empresa do Cliente]");
-        }
-      }
-
       // Auto-set today's date in Portuguese format
       const dataAtual = new Date();
       const meses = [
@@ -790,7 +951,8 @@
         "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
       ];
       const dataFormatada = `${dataAtual.getDate()} de ${meses[dataAtual.getMonth()]} de ${dataAtual.getFullYear()}`;
-      document.getElementById('dataAtualDisplay').innerText = dataFormatada;
+      const dataEl = document.getElementById('dataAtualDisplay');
+      if (dataEl) dataEl.innerText = dataFormatada;
 
       // Update indicators
       atualizarEstadoControles();
@@ -798,12 +960,14 @@
 
     function personalizarProposta(nome) {
       const display = document.getElementById('nomeClienteDisplay');
-      if (nome && nome.trim() !== '') {
-        display.innerText = nome;
-        localStorage.setItem('proposta_nome_cliente', nome);
-      } else {
-        display.innerText = "[Nome da Empresa do Cliente]";
-        localStorage.removeItem('proposta_nome_cliente');
+      if (display) {
+        if (nome && nome.trim() !== '') {
+          display.innerText = nome;
+          localStorage.setItem('proposta_nome_cliente', nome);
+        } else {
+          display.innerText = "[Nome da Empresa do Cliente]";
+          localStorage.removeItem('proposta_nome_cliente');
+        }
       }
     }
 
