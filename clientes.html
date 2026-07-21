@@ -622,15 +622,15 @@
           </div>
 
           <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:16px; display:flex; flex-direction:column; gap:10px; margin-top:6px;">
-            <button onclick="window.salvarPropostaCliente()" class="botaoPadrao" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+            <button type="button" onclick="event.preventDefault(); window.salvarPropostaCliente()" class="botaoPadrao" style="display:flex; align-items:center; justify-content:center; gap:8px;">
               <span>💾 Salvar Proposta do Cliente</span>
             </button>
             
-            <button onclick="window.visualizarPropostaCliente()" class="botaoPadrao" style="background:rgba(255,255,255,0.05); color:#f3f4f6; border:1px solid rgba(255,255,255,0.1); box-shadow:none; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <button type="button" onclick="event.preventDefault(); window.visualizarPropostaCliente(event)" class="botaoPadrao" style="background:rgba(255,255,255,0.05); color:#f3f4f6; border:1px solid rgba(255,255,255,0.1); box-shadow:none; display:flex; align-items:center; justify-content:center; gap:8px;">
               <span>👁️ Visualizar Proposta em Nova Aba</span>
             </button>
 
-            <button onclick="window.copiarLinkPropostaCliente()" class="botaoPadrao" style="background:rgba(16,185,129,0.1); color:#10b981; border:1px solid rgba(16,185,129,0.2); box-shadow:none; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <button type="button" onclick="event.preventDefault(); window.copiarLinkPropostaCliente(event)" class="botaoPadrao" style="background:rgba(16,185,129,0.1); color:#10b981; border:1px solid rgba(16,185,129,0.2); box-shadow:none; display:flex; align-items:center; justify-content:center; gap:8px;">
               <span>📋 Copiar Link da Proposta</span>
             </button>
           </div>
@@ -1349,7 +1349,8 @@ function iniciarListenerClientes(){
 
             <div style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
               <button
-                onclick="window.open('proposta.html?clienteId=${emp.idPrincipal}&modo=apresentacao', '_blank')"
+                type="button"
+                onclick="event.stopPropagation(); event.preventDefault(); const win = window.open(window.location.origin + '/proposta.html?clienteId=${emp.idPrincipal}&modo=apresentacao', '_blank'); if (!win || win.closed || typeof win.closed === 'undefined') window.open(window.location.origin + '/proposta.html?clienteId=${emp.idPrincipal}&modo=apresentacao', '_self');"
                 style="
                   background: rgba(229, 184, 92, 0.15);
                   color: #fcd34d;
@@ -1901,25 +1902,31 @@ window.obterQueryStringProposta = function() {
   return params.toString();
 };
 
-window.visualizarPropostaCliente = function() {
-  const clienteId = document.getElementById("propostaSelectCliente").value;
-  const query = window.obterQueryStringProposta();
-  let url = "proposta.html?" + query + "&modo=apresentacao";
+window.visualizarPropostaCliente = function(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const clienteId = document.getElementById("propostaSelectCliente") ? document.getElementById("propostaSelectCliente").value : "";
+  const query = window.obterQueryStringProposta ? window.obterQueryStringProposta() : "";
+  let fullPath = "/proposta.html?" + query + "&modo=apresentacao";
   if (clienteId) {
-    url = "proposta.html?clienteId=" + encodeURIComponent(clienteId) + "&" + query + "&modo=apresentacao";
+    fullPath = "/proposta.html?clienteId=" + encodeURIComponent(clienteId) + "&" + query + "&modo=apresentacao";
   }
-  window.open(url, "_blank");
+  const url = window.location.origin + fullPath;
+  const newWin = window.open(url, "_blank");
+  if (!newWin || newWin.closed || typeof newWin.closed === "undefined") {
+    // Se pop-up for bloqueado pelo navegador, abre diretamente no navegador
+    window.open(url, "_self");
+  }
 };
 
-window.copiarLinkPropostaCliente = function() {
-  const clienteId = document.getElementById("propostaSelectCliente").value;
-  const query = window.obterQueryStringProposta();
-  let url = "";
+window.copiarLinkPropostaCliente = function(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const clienteId = document.getElementById("propostaSelectCliente") ? document.getElementById("propostaSelectCliente").value : "";
+  const query = window.obterQueryStringProposta ? window.obterQueryStringProposta() : "";
+  let fullPath = "/proposta.html?" + query + "&modo=apresentacao";
   if (clienteId) {
-    url = window.location.origin + "/proposta.html?clienteId=" + encodeURIComponent(clienteId) + "&" + query + "&modo=apresentacao";
-  } else {
-    url = window.location.origin + "/proposta.html?" + query + "&modo=apresentacao";
+    fullPath = "/proposta.html?clienteId=" + encodeURIComponent(clienteId) + "&" + query + "&modo=apresentacao";
   }
+  const url = window.location.origin + fullPath;
   
   navigator.clipboard.writeText(url).then(() => {
     alert("Link da proposta copiado para a área de transferência:\n\n" + url);
