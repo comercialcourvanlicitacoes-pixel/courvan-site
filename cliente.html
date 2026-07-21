@@ -5122,7 +5122,7 @@ window.onChangeCategoriaDoc = function() {
   const cat = document.getElementById("categoriaDocumento").value;
   const wrapperArquivo = document.getElementById("campoArquivoFisico");
   const wrapperLink = document.getElementById("campoLinkDrive");
-  if (cat === "gdrive") {
+  if (cat === "gdrive" || cat === "gdrive_links") {
     if (wrapperArquivo) wrapperArquivo.style.display = "none";
     if (wrapperLink) wrapperLink.style.display = "block";
   } else {
@@ -5343,13 +5343,19 @@ window.renderizarDocumentos = function() {
         editais: "📢 Editais & Propostas",
         habilitacao: "💼 Habilitação Jurídica & Fiscal",
         gdrive: "🔗 Google Drive",
+        gdrive_links: "🔗 Google Drive Links",
+        habilitacao_juridica: "💼 Habilitação Jurídica",
+        regularidade_fiscal: "📜 Regularidade Fiscal e Trabalhista",
+        qualificacao_economica: "📊 Qualificação Econômico-Financeira",
+        qualificacao_tecnica: "🛠️ Qualificação Técnica",
+        contratos_aditivos: "✍️ Contratos e Aditivos",
         outros: "📁 Outros Documentos"
       };
 
       const catTexto = categoriasMapa[d.categoria] || "📁 Documento";
 
       let fileIcon = "📄";
-      if (d.categoria === "gdrive") {
+      if (d.categoria === "gdrive" || d.categoria === "gdrive_links") {
         fileIcon = "🔗";
       } else if (d.tipo && d.tipo.includes("pdf")) {
         fileIcon = "📕";
@@ -5380,7 +5386,7 @@ window.renderizarDocumentos = function() {
 
           <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 14px;">
             <button onclick="window.abrirAnexoDocumento('${d.id}')" class="doc-tab-btn" style="margin: 0; padding: 10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #060b13; font-weight: 700; border: none; display: flex; align-items: center; gap: 6px; text-decoration: none; cursor: pointer;">
-              ${d.categoria === "gdrive" ? "🔗 Acessar Link" : "📥 Baixar / Abrir"}
+              ${(d.categoria === "gdrive" || d.categoria === "gdrive_links") ? "🔗 Acessar Link" : "📥 Baixar / Abrir"}
             </button>
             <button class="doc-tab-btn" style="background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}', '${d.arquivo || ""}')">
               🗑 Excluir
@@ -5476,7 +5482,7 @@ window.lerArquivoComoBase64 = (file) => {
 
 window.abrirArquivoBase64 = (base64OrLink, nomeOriginal, categoria) => {
   if (!base64OrLink) return;
-  if (categoria === "gdrive" || !base64OrLink.startsWith("data:")) {
+  if (categoria === "gdrive" || categoria === "gdrive_links" || !base64OrLink.startsWith("data:")) {
     window.open(base64OrLink, "_blank");
     return;
   }
@@ -5692,10 +5698,10 @@ window.adicionarDocumento = async () => {
     let tipoArquivo = "link";
     let tamanhoArquivo = 0;
 
-    if (categoria === "gdrive") {
+    if (categoria === "gdrive" || categoria === "gdrive_links") {
       linkFinal = document.getElementById("linkExternoDocumento").value;
       if (!linkFinal) {
-        alert("Por favor, cole o link do Google Drive.");
+        alert("Por favor, cole o link do Google Drive ou link externo.");
         return;
       }
     } else {
