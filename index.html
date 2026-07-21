@@ -1,207 +1,223 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-site-verification" content="tNEwtBvrkwrCSx0vSrD5pjySbxHF34J1PBx63RAcQKI" />
-  <title>Courvan Licitações | Assessoria Especializada em Licitações Públicas</title>
-  <meta name="description" content="Assessoria especializada em licitações. Venda para o governo com segurança, estratégia e baixo custo — sem mensalidade e sem risco.">
+  <title>Courvan Licitações | Assessoria Especializada & Inteligência em Licitações Públicas</title>
+  <meta name="description" content="Assessoria e Inteligência Jurídica em Licitações Públicas. Venda para o governo com máxima segurança, tecnologia proprietária e estratégias de alta rentabilidade.">
   
   <!-- Tailwind & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="assets/logo.png">
   
-  <!-- Google Fonts - Inter para um visual extremamente profissional -->
+  <!-- Google Fonts - Playfair Display & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --primary: #3182ce;
-      --secondary: #d8a84e;
-      --dark: #06101e;
-      --card-bg: #0b1e36;
-      --accent: #7dffae;
+      --primary: #d8a84e;
+      --primary-hover: #e5b85c;
+      --bg-dark: #060911;
+      --bg-card: #0c111d;
+      --bg-card-light: #161e2e;
     }
-    
-    * {
-      scroll-behavior: smooth;
-    }
-    
+
     body {
-      background-color: var(--dark);
-      color: #f3f4f6;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: #f8fafc;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
-    
-    .gradient-text {
-      background: linear-gradient(135deg, #f3d082 0%, #d8a84e 50%, #b3842c 100%);
+
+    .font-display {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .gradient-gold-text {
+      background: linear-gradient(135deg, #fceabb 0%, #d8a84e 50%, #af832f 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    .gradient-bg-hero {
-      background: radial-gradient(circle at top right, rgba(44, 82, 130, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at bottom left, rgba(12, 39, 72, 0.3) 0%, transparent 50%);
-    }
-    
-    .btn-primary {
+    .btn-gold {
       background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%);
-      color: #06101e;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #080c14;
+      font-weight: 800;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    
-    .btn-primary:hover {
+    .btn-gold:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(216, 168, 78, 0.35);
-      filter: brightness(1.05);
-    }
-    
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(216, 168, 78, 0.4);
-      color: #f3d082;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .btn-secondary:hover {
-      background: rgba(216, 168, 78, 0.1);
-      border-color: var(--secondary);
-      transform: translateY(-2px);
-    }
-    
-    .card-hover {
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      background: linear-gradient(145deg, #0d233f 0%, #081729 100%);
-      border: 1px solid rgba(255, 255, 255, 0.03);
-    }
-    
-    .card-hover:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(216, 168, 78, 0.05);
-      border-color: rgba(216, 168, 78, 0.3);
-    }
-    
-    .section-title {
-      position: relative;
-      display: inline-block;
-    }
-    
-    .section-title::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 0;
-      width: 45px;
-      height: 3px;
-      background: linear-gradient(90deg, var(--secondary), #f0d080);
-      border-radius: 2px;
-    }
-    
-    .hero-video-container {
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(216, 168, 78, 0.1);
-      border: 1px solid rgba(216, 168, 78, 0.15);
-    }
-    
-    .service-icon {
-      color: #f3d082;
-      font-size: 1.75rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, rgba(216, 168, 78, 0.15) 0%, rgba(216, 168, 78, 0.03) 100%);
-      width: 3.5rem;
-      height: 3.5rem;
-      border-radius: 16px;
-      border: 1px solid rgba(216, 168, 78, 0.25);
-      margin-bottom: 1.5rem;
-      transition: all 0.3s ease;
+      box-shadow: 0 10px 25px rgba(216, 168, 78, 0.3);
+      filter: brightness(1.08);
     }
 
-    .card-hover:hover .service-icon {
-      background: linear-gradient(135deg, rgba(216, 168, 78, 0.25) 0%, rgba(216, 168, 78, 0.05) 100%);
-      border-color: var(--secondary);
-      transform: scale(1.05);
+    .btn-outline-gold {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(216, 168, 78, 0.35);
+      color: #f3d082;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-outline-gold:hover {
+      background: rgba(216, 168, 78, 0.12);
+      border-color: #d8a84e;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .card-luxury {
+      background: linear-gradient(180deg, #0c111d 0%, #080b13 100%);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-luxury:hover {
+      border-color: rgba(216, 168, 78, 0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(216, 168, 78, 0.08);
+    }
+
+    .hero-video-box {
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(216, 168, 78, 0.15);
+      border: 1px solid rgba(216, 168, 78, 0.25);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #060911;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d8a84e;
     }
   </style>
 </head>
 
-<body class="antialiased selection:bg-[#d8a84e] selection:text-[#06101e]">
+<body class="antialiased selection:bg-[#d8a84e] selection:text-[#080c14] bg-[#060911]">
   
-  <!-- HEADER/NAV -->
-  <header class="sticky top-0 z-50 bg-[#06101e]/80 backdrop-blur-md border-b border-white/5 transition-all">
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+  <!-- HEADER / NAVBAR -->
+  <header class="sticky top-0 z-50 bg-[#060911]/90 backdrop-blur-xl border-b border-white/[0.08] shadow-2xl transition-all">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
       <div class="flex justify-between items-center">
-        <div class="flex items-center">
-          <a href="#inicio" class="flex items-center gap-2">
-            <img src="assets/logo.png" alt="Courvan" class="h-14 w-auto object-contain filter brightness-110 drop-shadow-md">
+        <!-- Logo -->
+        <a href="#inicio" class="flex items-center gap-3 group">
+          <img src="assets/logo.png" alt="Courvan Licitações" class="h-12 sm:h-14 w-auto object-contain transition-transform group-hover:scale-105">
+        </a>
+        
+        <!-- Desktop Nav Links -->
+        <div class="hidden lg:flex items-center gap-6">
+          <a href="#inicio" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Início</a>
+          <a href="#diferenciais" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Diferenciais</a>
+          <a href="#tecnologia" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Software</a>
+          <a href="#esteira" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Esteira</a>
+          <a href="#planos" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Planos</a>
+          <a href="#sobre" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Sobre</a>
+          <a href="#feedback" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Depoimentos</a>
+          <a href="blog/index.html" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Blog</a>
+          <a href="#contato" class="text-slate-300 hover:text-amber-400 font-medium text-xs uppercase tracking-wider transition-all">Contato</a>
+        </div>
+
+        <!-- Action CTA Buttons -->
+        <div class="hidden sm:flex items-center gap-3">
+          <a href="login.html" class="btn-gold px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 shadow-md">
+            <i class="fa-solid fa-lock text-xs"></i> Área do Cliente
           </a>
         </div>
         
-        <div class="hidden md:flex items-center gap-8">
-          <a href="#inicio" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Início</a>
-          <a href="#servicos" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Serviços</a>
-          <a href="#sobre" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Sobre</a>
-          <a href="blog/index.html" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Blog</a>
-          <a href="#contato" class="text-gray-300 hover:text-[var(--secondary)] transition font-medium text-sm tracking-wide">Contato</a>
-          <a href="login.html" class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-sm tracking-wide shadow-sm">
-            Área do Cliente
-          </a>
-        </div>
-        
-        <button class="md:hidden text-gray-300 p-2 focus:outline-none" onclick="toggleMobileMenu()">
-          <i class="fas fa-bars text-xl"></i>
+        <!-- Mobile Menu Toggle -->
+        <button class="lg:hidden text-amber-400 p-2 focus:outline-none" onclick="toggleMobileMenu()" aria-label="Abrir Menu">
+          <i class="fa-solid fa-bars text-xl"></i>
         </button>
       </div>
       
-      <!-- Mobile Menu -->
-      <div id="mobileMenu" class="hidden md:hidden mt-3 pb-4 space-y-2 border-t border-white/5 pt-3">
-        <a href="#inicio" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Início</a>
-        <a href="#servicos" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Serviços</a>
-        <a href="#sobre" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Sobre</a>
-        <a href="blog/index.html" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Blog</a>
-        <a href="#contato" class="block py-2 px-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-[var(--secondary)] font-medium">Contato</a>
-        <a href="login.html" class="block text-center mt-4 btn-primary py-3 rounded-xl font-semibold">Área do Cliente</a>
+      <!-- Mobile Dropdown Menu -->
+      <div id="mobileMenu" class="hidden lg:hidden mt-3 pb-4 space-y-2 border-t border-white/[0.08] pt-4">
+        <a href="#inicio" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Início</a>
+        <a href="#diferenciais" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Diferenciais</a>
+        <a href="#tecnologia" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Software & Tecnologia</a>
+        <a href="#esteira" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Esteira Operacional</a>
+        <a href="#planos" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Planos e Investimentos</a>
+        <a href="#sobre" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Sobre a Courvan</a>
+        <a href="#feedback" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Depoimentos</a>
+        <a href="blog/index.html" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Blog</a>
+        <a href="#contato" class="block py-2 px-3 rounded-lg text-slate-300 hover:bg-amber-400/10 hover:text-amber-400 text-sm font-medium">Contato</a>
+        <a href="login.html" class="block text-center mt-3 btn-gold py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider">
+          <i class="fa-solid fa-lock mr-1.5"></i> Área do Cliente
+        </a>
       </div>
     </nav>
   </header>
 
-  <!-- HERO -->
-  <section id="inicio" class="relative overflow-hidden pt-20 pb-24 gradient-bg-hero">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- HERO SECTION -->
+  <section id="inicio" class="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28 bg-gradient-to-b from-[#080c14] via-[#060911] to-[#04060a]">
+    <!-- Ambient Blur Background -->
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         
         <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
           <div class="space-y-4">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-semibold uppercase tracking-wider text-[var(--secondary)]">
-              <i class="fas fa-shield-halved text-xs"></i> Assessoria Especializada
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-xs font-extrabold uppercase tracking-widest text-amber-400 shadow-sm">
+              <i class="fa-solid fa-scale-balanced text-xs"></i> Inteligência Jurídica & Tecnologia em Licitações
             </span>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-              A forma mais <span class="gradient-text">inteligente</span> de vencer licitações
+            <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
+              A Inteligência que Impulsiona Empresas a <span class="gradient-gold-text">Dominar o Mercado de Licitações</span>
             </h1>
-            <p class="text-lg sm:text-xl text-gray-400 font-light max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              Venda para o governo com <strong class="text-white font-semibold">segurança</strong>, <strong class="text-white font-semibold">estratégia</strong> e <strong class="text-white font-semibold">baixo custo</strong> — sem mensalidade e sem risco.
+            <p class="text-base sm:text-lg text-slate-300 font-normal max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              Unimos <strong class="text-white font-bold">+10 anos de inteligência jurídica</strong> em contratações públicas a um <strong class="text-white font-bold">software de inteligência proprietário</strong> para blindar suas disputas, combater irregularidades e escalar a faturamento da sua marca junto ao Governo.
             </p>
           </div>
           
-          <div class="flex flex-wrap justify-center lg:justify-start gap-4">
-            <a href="https://wa.me/5531983213540" target="_blank" class="btn-primary px-8 py-4 rounded-xl font-bold flex items-center gap-3 text-base shadow-lg">
-              <i class="fab fa-whatsapp text-lg"></i> Fale Conosco
+          <div class="flex flex-wrap justify-center lg:justify-start gap-3.5 pt-2">
+            <a href="https://wa.me/5531983213540?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20reuni%C3%A3o%20estrat%C3%A9gica%20com%20a%20Courvan!" target="_blank" class="btn-gold px-7 py-3.5 rounded-xl text-sm font-extrabold flex items-center gap-2.5 shadow-xl shadow-amber-500/10">
+              <i class="fa-brands fa-whatsapp text-lg"></i> Falar com Especialista
             </a>
-            <a href="https://www.instagram.com/courvan_licitacoes" target="_blank" class="btn-secondary px-8 py-4 rounded-xl font-semibold flex items-center gap-3 text-base">
-              <i class="fab fa-instagram text-lg"></i> Instagram
+            <a href="https://www.instagram.com/courvan_licitacoes" target="_blank" class="px-5 py-3.5 rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-white hover:border-amber-400/40 text-sm font-semibold flex items-center gap-2 transition-all">
+              <i class="fa-brands fa-instagram text-lg text-amber-400"></i> Instagram
             </a>
+          </div>
+
+          <!-- Key Metrics Ticker Bar -->
+          <div class="pt-6 border-t border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto lg:mx-0 text-left">
+            <div>
+              <p class="text-xl sm:text-2xl font-black text-amber-400 font-display">+10 Anos</p>
+              <p class="text-[11px] text-slate-400 font-medium">Expertise em Direito Administrativo</p>
+            </div>
+            <div>
+              <p class="text-xl sm:text-2xl font-black text-amber-400 font-display">100%</p>
+              <p class="text-[11px] text-slate-400 font-medium">Conformidade Lei 14.133/21</p>
+            </div>
+            <div>
+              <p class="text-xl sm:text-2xl font-black text-amber-400 font-display">SaaS próprio</p>
+              <p class="text-[11px] text-slate-400 font-medium">Gestão Eletrônica de Certidões</p>
+            </div>
+            <div>
+              <p class="text-xl sm:text-2xl font-black text-amber-400 font-display">Nacional</p>
+              <p class="text-[11px] text-slate-400 font-medium">Atuação nos Principais Portais</p>
+            </div>
           </div>
         </div>
               
+        <!-- Right Video Player Showcase -->
         <div class="lg:col-span-5 flex justify-center lg:justify-end items-center w-full">
-          <div class="w-full max-w-[280px] sm:max-w-[320px] px-4 lg:px-0">
-            <div class="hero-video-container bg-black/40 aspect-[9/16] max-h-[550px]">
+          <div class="w-full max-w-[290px] sm:max-w-[330px] relative group">
+            <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-amber-500/20 via-amber-400/40 to-amber-600/20 blur-xl opacity-75 group-hover:opacity-100 transition duration-500"></div>
+            <div class="hero-video-box bg-slate-950 aspect-[9/16] max-h-[560px] relative z-10">
               <video autoplay muted loop playsinline controls class="w-full h-full object-cover block">
                 <source src="assets/video.mp4" type="video/mp4">
               </video>
@@ -213,204 +229,543 @@
     </div>
   </section>
 
-  <!-- SERVIÇOS -->
-  <section id="servicos" class="py-24 bg-[#040c17] relative">
+  <!-- DIFERENCIAIS COMPETITIVOS SECTION -->
+  <section id="diferenciais" class="py-20 md:py-28 bg-[#04060a] relative border-t border-white/[0.06]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="mb-16 text-center md:text-left">
-        <h2 class="section-title text-4xl font-extrabold text-white tracking-tight mb-4">Nossos Serviços</h2>
-        <p class="text-gray-400 text-lg max-w-2xl font-light">Soluções de ponta a ponta estruturadas para garantir o sucesso da sua empresa no mercado público.</p>
-      </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-        
-        <div class="card-hover p-8 rounded-2xl">
-          <div class="service-icon"><i class="fas fa-satellite-dish"></i></div>
-          <h3 class="text-xl font-bold text-white mb-3">Oportunidades</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Triagem analítica e envio direcionado e gratuito de licitações altamente alinhadas ao core business do seu negócio.</p>
-        </div>
-        
-        <div class="card-hover p-8 rounded-2xl">
-          <div class="service-icon"><i class="fas fa-chart-line"></i></div>
-          <h3 class="text-xl font-bold text-white mb-3">Análise de Editais</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Mapeamento minucioso de riscos ocultos, exigências complexas e estudo prévio de viabilidade comercial e técnica.</p>
-        </div>
-        
-        <div class="card-hover p-8 rounded-2xl">
-          <div class="service-icon"><i class="fas fa-folder-open"></i></div>
-          <h3 class="text-xl font-bold text-white mb-3">Preparação</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Montagem rigorosa de checklists, organização documental, cadastros em portais governamentais e envio seguro de propostas.</p>
-        </div>
-        
-        <div class="card-hover p-8 rounded-2xl">
-          <div class="service-icon"><i class="fas fa-cogs"></i></div>
-          <h3 class="text-xl font-bold text-white mb-3">Execução</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Monitoramento em tempo real de lances, suporte estratégico via chat e defesas imediatas durante o julgamento da sessão pública.</p>
-        </div>
-        
-        <div class="card-hover p-8 rounded-2xl">
-          <div class="service-icon"><i class="fas fa-balance-scale"></i></div>
-          <h3 class="text-xl font-bold text-white mb-3">Recursos</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Segurança jurídica com elaboração cirúrgica de recursos administrativos, contra-razões e impugnações a editais restritivos.</p>
-        </div>
-        
-        <div class="card-hover p-8 rounded-2xl">
-          <div class="service-icon"><i class="fas fa-file-contract"></i></div>
-          <h3 class="text-xl font-bold text-white mb-3">Gestão Contratual</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Assessoria contínua pós-certame: pedidos de reequilíbrio econômico-financeiro, prorrogações e gestão de penalidades.</p>
-        </div>
-        
+      <div class="mb-16 text-center max-w-3xl mx-auto space-y-3">
+        <span class="text-amber-400 text-xs font-extrabold uppercase tracking-widest bg-amber-400/10 px-3.5 py-1.5 rounded-full border border-amber-400/20 inline-block">
+          Posicionamento Institucional
+        </span>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+          Por que Grandes Marcas Escolhem a Courvan?
+        </h2>
+        <p class="text-slate-400 text-base font-normal">
+          Superamos o modelo tradicional de assessorias operacionais simples. Entregamos uma estrutura corporativa completa de inteligência de lances e blindagem de contratos.
+        </p>
       </div>
 
-      <!-- OFERTA PREMIUM (ANÁLISE DE EDITAL) -->
-      <div class="relative overflow-hidden bg-gradient-to-br from-[#0c233f] to-[#06101e] border border-amber-500/30 p-8 md:p-12 rounded-3xl shadow-2xl">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         
-        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-          <div class="max-w-2xl space-y-4">
-            <span class="inline-block bg-amber-500 text-[#06101e] text-xs font-black px-3 py-1 rounded-md uppercase tracking-wider">Oportunidade de Entrada</span>
-            <h3 class="text-3xl md:text-4xl font-extrabold text-white">Análise de Edital por <span class="text-[var(--secondary)]">R$ 100</span></h3>
-            <p class="text-gray-400 font-light leading-relaxed">Valide com precisão técnica e jurídica se vale a pena investir tempo e documentação para disputar determinada licitação.</p>
+        <div class="card-luxury p-8 rounded-3xl space-y-5 relative overflow-hidden">
+          <div class="w-14 h-14 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-2xl shadow-inner">
+            <i class="fa-solid fa-scale-unbalanced-flip"></i>
           </div>
-          
-          <div class="flex-shrink-0">
-            <a href="https://wa.me/5531983213540" target="_blank" class="btn-primary inline-flex px-8 py-4 rounded-xl font-bold text-center justify-center items-center gap-3 w-full lg:w-auto shadow-md">
-              Contratar Análise <i class="fas fa-arrow-right text-sm"></i>
-            </a>
+          <h3 class="text-xl font-bold text-white font-display">Combate ao Direcionamento</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Impugnamos editais com cláusulas direcionadas ou abusivas, abrindo caminho para que sua empresa dispute em condições de absoluta isonomia e justiça.
+          </p>
+          <div class="pt-3 border-t border-white/[0.06] text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-shield-check"></i> Proteção de Margem de Lucro
           </div>
         </div>
-        
-        <div class="grid md:grid-cols-2 gap-6 mt-10 pt-8 border-t border-white/10">
-          <ul class="space-y-3.5 text-gray-300 text-sm">
-            <li class="flex items-center gap-3">
-              <i class="fas fa-check text-amber-500 text-xs"></i>
-              <span>Análise completa das cláusulas restritivas do edital</span>
-            </li>
-            <li class="flex items-center gap-3">
-              <i class="fas fa-check text-amber-500 text-xs"></i>
-              <span>Checklist estruturado de documentos de habilitação</span>
-            </li>
-            <li class="flex items-center gap-3">
-              <i class="fas fa-check text-amber-500 text-xs"></i>
-              <span>Parametrização e cadastro da proposta inicial no portal</span>
-            </li>
-          </ul>
-          <ul class="space-y-3.5 text-gray-300 text-sm">
-            <li class="flex items-center gap-3">
-              <i class="fas fa-check text-amber-500 text-xs"></i>
-              <span>Orientação executiva sobre as fases do certame</span>
-            </li>
-            <li class="flex items-center gap-3">
-              <i class="fas fa-check text-amber-500 text-xs"></i>
-              <span>Esclarecimento técnico focado em 1 dúvida crítica</span>
-            </li>
-          </ul>
+
+        <div class="card-luxury p-8 rounded-3xl space-y-5 relative overflow-hidden">
+          <div class="w-14 h-14 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-2xl shadow-inner">
+            <i class="fa-solid fa-laptop-code"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white font-display">Plataforma Tecnológica Proprietária</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Nosso software exclusivo monitora certidões em tempo real, automatiza a validação de exigências de habilitação e zera o risco de desclassificação por erros formais.
+          </p>
+          <div class="pt-3 border-t border-white/[0.06] text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-check-double"></i> Alertas Diários de Oportunidades
+          </div>
         </div>
-        
-        <div class="mt-8 flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium px-4 py-2.5 rounded-xl max-w-max">
-          <i class="fas fa-circle-info text-sm"></i> <span>Atenção: Esta modalidade de entrada não inclui a operacionalização e lances em tempo real na fase de disputa.</span>
+
+        <div class="card-luxury p-8 rounded-3xl space-y-5 relative overflow-hidden">
+          <div class="w-14 h-14 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-2xl shadow-inner">
+            <i class="fa-solid fa-gavel"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white font-display">Atuação Recursal Combativa</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Auditamos rigorosamente a documentação e as propostas dos concorrentes. Se houver inconformidades ou irregularidades, entramos com recursos cirúrgicos para reverter o resultado.
+          </p>
+          <div class="pt-3 border-t border-white/[0.06] text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-file-contract"></i> Doutrina e Jurisprudência TCU
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TECNOLOGIA & SOFTWARE SHOWCASE SECTION -->
+  <section id="tecnologia" class="py-20 md:py-28 bg-[#060911] relative border-t border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-3xl mx-auto text-center space-y-4 mb-16">
+        <span class="text-amber-400 text-xs font-extrabold uppercase tracking-widest bg-amber-400/10 px-3.5 py-1.5 rounded-full border border-amber-400/20 inline-block">
+          Inteligência de Dados & Software SaaS
+        </span>
+        <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+          Tecnologia Proprietária a Serviço das Suas Vitórias
+        </h2>
+        <p class="text-slate-300 text-base leading-relaxed font-normal">
+          A Courvan desenvolveu um ecossistema de software exclusivo que integra dados do governo, monitoramento automatizado de prazos e esteira de documentos de habilitação.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="card-luxury p-8 rounded-3xl space-y-4 bg-slate-900/60 border border-white/[0.08]">
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <h4 class="text-white font-extrabold text-lg">Monitoramento & Varredura Automatizada</h4>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">Filtros personalizados por palavras-chave, NCM, regiões geográficas e estimativa de orçamento dos órgãos públicos nos principais portais governamentais do país.</p>
+        </div>
+
+        <div class="card-luxury p-8 rounded-3xl space-y-4 bg-slate-900/60 border border-white/[0.08]">
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <h4 class="text-white font-extrabold text-lg">Certidômetro & Controle de Validade</h4>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">Notificações preventivas para renovação de certidões CND, FGTS, Trabalhista, Estadual e Balanço Patrimonial antes do prazo limite, zerando desclassificações.</p>
+        </div>
+
+        <div class="card-luxury p-8 rounded-3xl space-y-4 bg-slate-900/60 border border-white/[0.08]">
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <h4 class="text-white font-extrabold text-lg">Dashboard de Performance & Gestão</h4>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">Painel gerencial completo para a diretoria acompanhar a fase, impugnações, recursos e lances de cada certame em tempo real com total transparência.</p>
         </div>
       </div>
 
     </div>
   </section>
 
-  <!-- SOBRE -->
-  <section id="sobre" class="py-24 bg-[#06101e] border-y border-white/5">
+  <!-- ESTEIRA OPERACIONAL DE ELITE SECTION -->
+  <section id="esteira" class="py-20 md:py-28 bg-[#04060a] relative border-t border-white/[0.06]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="mb-16 text-center max-w-3xl mx-auto space-y-3">
+        <span class="text-amber-400 text-xs font-extrabold uppercase tracking-widest bg-amber-400/10 px-3.5 py-1.5 rounded-full border border-amber-400/20 inline-block">
+          Metodologia Passo a Passo
+        </span>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+          Nossa Esteira Operacional de Elite
+        </h2>
+        <p class="text-slate-400 text-base font-normal">
+          Um fluxo rigoroso de trabalho desenhado para transformar oportunidades em contratos públicos vigentes.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Passo 1 -->
+        <div class="card-luxury p-8 rounded-3xl space-y-4 relative">
+          <span class="text-3xl font-black font-display text-amber-400/30 absolute top-6 right-6">01</span>
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-satellite-dish"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Triagem & Oportunidades</h3>
+          <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+            Varredura analítica diária nos diários oficiais e portais governamentais, filtrando certames de alta margem de lucro perfeitamente alinhados à sua capacidade produtiva.
+          </p>
+        </div>
+
+        <!-- Passo 2 -->
+        <div class="card-luxury p-8 rounded-3xl space-y-4 relative">
+          <span class="text-3xl font-black font-display text-amber-400/30 absolute top-6 right-6">02</span>
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-magnifying-glass-chart"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Inteligência de Edital & Riscos</h3>
+          <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+            Mapeamento completo de exigências técnicas, verificação prévia de viabilidade de preços e auditoria de requisitos de habilitação jurídica e fiscal.
+          </p>
+        </div>
+
+        <!-- Passo 3 -->
+        <div class="card-luxury p-8 rounded-3xl space-y-4 relative">
+          <span class="text-3xl font-black font-display text-amber-400/30 absolute top-6 right-6">03</span>
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-folder-tree"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Gestão e Certidões</h3>
+          <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+            Organização cirúrgica de certidões, atestados de capacidade técnica e cadastramento eletrônico da proposta dentro do portal oficial do certame.
+          </p>
+        </div>
+
+        <!-- Passo 4 -->
+        <div class="card-luxury p-8 rounded-3xl space-y-4 relative">
+          <span class="text-3xl font-black font-display text-amber-400/30 absolute top-6 right-6">04</span>
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-gavel"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Disputa Tática de Lances</h3>
+          <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+            Atuação ao vivo em tempo real na sessão pública de lances, com estratégias de negociação para garantir a primeira colocação preservando sua margem.
+          </p>
+        </div>
+
+        <!-- Passo 5 -->
+        <div class="card-luxury p-8 rounded-3xl space-y-4 relative">
+          <span class="text-3xl font-black font-display text-amber-400/30 absolute top-6 right-6">05</span>
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-scale-unbalanced-flip"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Blindagem & Recursos</h3>
+          <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+            Fiscalização da documentação dos concorrentes. Apresentação de recursos administrativos e razões para desclassificar licitantes irregulares.
+          </p>
+        </div>
+
+        <!-- Passo 6 -->
+        <div class="card-luxury p-8 rounded-3xl space-y-4 relative">
+          <span class="text-3xl font-black font-display text-amber-400/30 absolute top-6 right-6">06</span>
+          <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+            <i class="fa-solid fa-file-signature"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Gestão Contratual & Reequilíbrio</h3>
+          <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+            Acompanhamento na assinatura do contrato, pedidos de repactuação/reajuste econômico-financeiro e prorrogações da vigência contratual.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PLANOS E INVESTIMENTOS SECTION -->
+  <section id="planos" class="py-20 md:py-28 bg-[#04060a] relative border-t border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="mb-16 text-center max-w-3xl mx-auto space-y-3">
+        <span class="text-amber-400 text-xs font-extrabold uppercase tracking-widest bg-amber-400/10 px-3.5 py-1.5 rounded-full border border-amber-400/20 inline-block">
+          Planos Transparentes & Recorrência
+        </span>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+          Modelos de Parceria Comercial
+        </h2>
+        <p class="text-slate-400 text-base font-normal">
+          Estruturas de assessoria contínua adaptadas ao ritmo de expansão e volume de licitações da sua empresa.
+        </p>
+      </div>
+
+      <!-- Grid de 3 Planos -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+        
+        <!-- PLANO START -->
+        <div class="card-luxury rounded-3xl p-7 sm:p-8 flex flex-col justify-between space-y-6">
+          <div class="space-y-5">
+            <div>
+              <span class="text-xs font-extrabold text-amber-400 uppercase tracking-widest block mb-1">Radar & Monitoramento</span>
+              <h3 class="text-2xl font-black text-white">Plano Start</h3>
+            </div>
+
+            <div class="pt-4 border-t border-white/[0.08]">
+              <span class="text-xs text-slate-400 uppercase font-bold tracking-wider block mb-3">Serviços Inclusos:</span>
+              <ul class="space-y-3 text-sm text-slate-200">
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Monitoramento diário de editais no seu segmento.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Relatórios semanais com filtros inteligentes.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Acesso ao software de gestão de certidões Courvan.</span>
+                </li>
+                <li class="flex items-start gap-2.5 text-slate-500">
+                  <i class="fa-solid fa-circle-xmark mt-1 text-xs"></i>
+                  <span>Sem participação operacional em pregões.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-white/[0.08] space-y-4">
+            <div>
+              <span class="text-xs text-slate-400 uppercase font-bold tracking-wider block mb-1">Mensalidade</span>
+              <div class="text-3xl font-black text-white">
+                R$ 490,00 <span class="text-xs font-normal text-slate-400">/ mês</span>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 text-xs pt-1 border-t border-white/[0.04]">
+              <div>
+                <span class="block text-slate-400 font-bold uppercase tracking-wider text-[10px]">Taxa de Setup</span>
+                <strong class="text-white font-bold">R$ 300,00 (Única)</strong>
+              </div>
+              <div>
+                <span class="block text-slate-400 font-bold uppercase tracking-wider text-[10px]">Taxa de Êxito</span>
+                <strong class="text-slate-500 font-medium">Não se aplica</strong>
+              </div>
+            </div>
+
+            <a href="https://wa.me/5531983213540?text=Ol%C3%A1%2C%20tenho%20interesse%20no%20Plano%20Start%20da%20Courvan!" target="_blank" class="btn-outline-gold w-full py-3 rounded-xl font-extrabold text-xs text-center block">
+              Contratar Plano Start
+            </a>
+          </div>
+        </div>
+
+        <!-- PLANO ESSENCIAL (RECOMMENDED) -->
+        <div class="bg-gradient-to-b from-[#162032] to-[#0c111d] border-2 border-amber-400 rounded-3xl p-7 sm:p-8 flex flex-col justify-between space-y-6 relative shadow-2xl shadow-amber-400/10 lg:-translate-y-2">
+          <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-amber-400 text-slate-950 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-lg border border-amber-300">
+            <i class="fa-solid fa-star mr-1"></i> Mais Recomendado
+          </div>
+
+          <div class="space-y-5 pt-2">
+            <div>
+              <span class="text-xs font-black text-amber-300 uppercase tracking-widest block mb-1">Assessoria de Alta Performance</span>
+              <h3 class="text-2xl sm:text-3xl font-black text-white">Plano Essencial</h3>
+            </div>
+
+            <div class="pt-4 border-t border-amber-400/30">
+              <span class="text-xs text-amber-300 uppercase font-bold tracking-wider block mb-3">Serviços Inclusos:</span>
+              <ul class="space-y-3 text-sm text-slate-100">
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span><strong class="text-amber-300">Todos os benefícios do Plano Start incluídos.</strong></span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Análise jurídica e de edital completa de cada disputa.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Disputa de lances ativa em até <strong>4 licitações / mês</strong>.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Apoio em impugnações e recursos administrativos.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-amber-400/30 space-y-4">
+            <div>
+              <span class="text-xs text-amber-300 uppercase font-bold tracking-wider block mb-1">Mensalidade</span>
+              <div class="text-3xl sm:text-4xl font-black text-white">
+                R$ 1.200,00 <span class="text-xs font-normal text-slate-300">/ mês</span>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 text-xs pt-1 border-t border-amber-400/20">
+              <div>
+                <span class="block text-slate-300 font-bold uppercase tracking-wider text-[10px]">Taxa de Setup</span>
+                <strong class="text-amber-300 font-black">R$ 600,00 (Única)</strong>
+              </div>
+              <div>
+                <span class="block text-slate-300 font-bold uppercase tracking-wider text-[10px]">Taxa de Êxito</span>
+                <strong class="text-amber-300 font-black">2,5% sobre o valor</strong>
+              </div>
+            </div>
+
+            <a href="https://wa.me/5531983213540?text=Ol%C3%A1%2C%20tenho%20interesse%20no%20Plano%20Essencial%20da%20Courvan!" target="_blank" class="btn-gold w-full py-3.5 rounded-xl font-extrabold text-xs text-center block shadow-lg">
+              Contratar Plano Essencial
+            </a>
+          </div>
+        </div>
+
+        <!-- PLANO CORPORATE -->
+        <div class="card-luxury rounded-3xl p-7 sm:p-8 flex flex-col justify-between space-y-6">
+          <div class="space-y-5">
+            <div>
+              <span class="text-xs font-extrabold text-amber-400 uppercase tracking-widest block mb-1">Operações de Larga Escala</span>
+              <h3 class="text-2xl font-black text-white">Plano Corporate</h3>
+            </div>
+
+            <div class="pt-4 border-t border-white/[0.08]">
+              <span class="text-xs text-slate-400 uppercase font-bold tracking-wider block mb-3">Serviços Inclusos:</span>
+              <ul class="space-y-3 text-sm text-slate-200">
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span><strong class="text-amber-300">Todos os benefícios do Plano Essencial.</strong></span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Disputa de lances ativa em até <strong>8 licitações / mês</strong>.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Análise jurídica de certames de alta complexidade.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-check text-amber-400 mt-1 text-xs"></i>
+                  <span>Gerente de contas dedicado e suporte prioritário.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-white/[0.08] space-y-4">
+            <div>
+              <span class="text-xs text-slate-400 uppercase font-bold tracking-wider block mb-1">Mensalidade</span>
+              <div class="text-3xl font-black text-white">
+                R$ 2.500,00 <span class="text-xs font-normal text-slate-400">/ mês</span>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 text-xs pt-1 border-t border-white/[0.04]">
+              <div>
+                <span class="block text-slate-400 font-bold uppercase tracking-wider text-[10px]">Taxa de Setup</span>
+                <strong class="text-white font-bold">R$ 1.000,00 (Única)</strong>
+              </div>
+              <div>
+                <span class="block text-slate-400 font-bold uppercase tracking-wider text-[10px]">Taxa de Êxito</span>
+                <strong class="text-white font-bold">2,0% sobre o valor</strong>
+              </div>
+            </div>
+
+            <a href="https://wa.me/5531983213540?text=Ol%C3%A1%2C%20tenho%20interesse%20no%20Plano%20Corporate%20da%20Courvan!" target="_blank" class="btn-outline-gold w-full py-3 rounded-xl font-extrabold text-xs text-center block">
+              Contratar Plano Corporate
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SOBRE A COURVAN SECTION -->
+  <section id="sobre" class="py-20 md:py-28 bg-[#060911] relative border-t border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
       <div class="mb-16 text-center md:text-left">
-        <h2 class="section-title text-4xl font-extrabold text-white tracking-tight mb-4">Sobre a Courvan</h2>
-        <p class="text-gray-400 text-lg font-light">Sua estrutura estratégica corporativa frente ao mercado governamental.</p>
+        <span class="text-amber-400 text-xs font-extrabold uppercase tracking-widest bg-amber-400/10 px-3.5 py-1.5 rounded-full border border-amber-400/20 inline-block mb-3">
+          Estrutura de Elite
+        </span>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+          Sobre a Courvan Licitações
+        </h2>
+        <p class="text-slate-400 text-base font-normal max-w-2xl mt-2">
+          Seu departamento de licitações externo com suporte jurídico de excelência e software especializado.
+        </p>
       </div>
       
       <div class="grid lg:grid-cols-12 gap-12 items-center">
-        <div class="lg:col-span-7 space-y-6 text-gray-400 font-light leading-relaxed text-base">
+        <div class="lg:col-span-7 space-y-6 text-slate-300 font-normal leading-relaxed text-sm sm:text-base">
           <p>
-            A <strong class="text-white font-semibold">Courvan Assessoria em Licitações</strong> opera como um braço de inteligência focado na captação de negócios públicos, análise técnica detalhada e excelência na execução de processos licitatórios de ponta a ponta.
+            A <strong class="text-white font-bold">Courvan Licitações</strong> opera como uma estrutura de inteligência e assessoria jurídica focada em captação de oportunidades, defesa administrativa e vitória em processos licitatórios em todo o Brasil.
           </p>
           
           <p>
-            Apoiamos empresas de múltiplos segmentos corporativos que almejam transacionar com o poder público sob o pilar de máxima segurança jurídica, conformidade e clareza processual. Nosso trabalho remove a burocracia complexa para o empresário.
+            Apoiamos empresas que desejam vender para o governo sob o pilar de máxima segurança jurídica, total conformidade com a Nova Lei de Licitações (Lei 14.133/21) e transparência processual.
           </p>
           
           <p>
-            Estruturamos a participação do cliente desde a triagem inicial até o acompanhamento estrito das obrigações contratuais, mitigando riscos operacionais e maximizando de forma agressiva e limpa a previsibilidade de resultados comerciais lucrativos.
+            Diferente de assessorias meramente operacionais, unimos advogados com vasta bagagem em direito administrativo a um software proprietário de controle de certidões e editais, eliminando o risco de erros técnicos que desclassificam boas empresas.
           </p>
-          
-          <p>
-            Nascemos com a sólida missão de <strong class="text-white font-semibold">desmistificar o acesso aos contratos públicos</strong>, convertendo o ecossistema de compras governamentais em um canal escalável, seguro e altamente lucrativo.
-          </p>
+
+          <div class="pt-2">
+            <blockquote class="border-l-4 border-amber-400 pl-4 py-1 italic text-amber-300 font-display text-base sm:text-lg">
+              "Nós não entregamos um trabalho comum. Nós nos posicionamos como o departamento de licitações externo da sua empresa para combater direcionamentos, desqualificar concorrentes irregulares e forçar a administração pública a cumprir a lei."
+            </blockquote>
+          </div>
         </div>
         
-        <div class="lg:col-span-5 bg-gradient-to-br from-[#0d233f] to-[#081729] rounded-2xl p-8 md:p-10 text-gray-300 shadow-2xl border border-white/5 relative overflow-hidden">
-          <div class="absolute -bottom-10 -right-10 text-white/5 text-9xl font-black pointer-events-none select-none">
-            <i class="fas fa-bullseye"></i>
+        <!-- Pillar Card Box -->
+        <div class="lg:col-span-5 card-luxury rounded-3xl p-8 md:p-10 space-y-6 relative overflow-hidden shadow-2xl">
+          <div class="space-y-3">
+            <span class="text-xs font-extrabold text-amber-400 uppercase tracking-widest block">Compromisso Institucional</span>
+            <h3 class="text-2xl font-extrabold text-white font-display">Nossa Missão</h3>
+            <p class="text-slate-300 text-sm leading-relaxed font-normal">
+              Desmistificar e profissionalizar o acesso aos contratos públicos, alavancando a taxa de conversão em licitações através de rigor estratégico, tecnologia própria e ética inegociável.
+            </p>
           </div>
           
-          <h3 class="text-2xl font-bold text-white mb-5 flex items-center gap-3">
-            <i class="fas fa-bullseye text-[var(--secondary)]"></i> Nossa Missão
-          </h3>
-          <p class="text-base leading-relaxed text-gray-300 font-medium">
-            Simplificar e profissionalizar o processo licitatório nacional, alavancando a taxa de conversão em contratações públicas através de absoluto rigor estratégico e transparência comercial.
-          </p>
-          
-          <div class="mt-8 pt-8 border-t border-white/10">
-            <p class="text-xs font-bold text-[var(--secondary)] mb-4 uppercase tracking-wider">Pilares Corporativos</p>
-            <div class="grid grid-cols-2 gap-y-4 gap-x-2 font-semibold text-white text-sm">
-              <div class="flex items-center gap-2.5"><i class="fas fa-shield text-amber-500 text-xs"></i> Transparência</div>
-              <div class="flex items-center gap-2.5"><i class="fas fa-gavel text-amber-500 text-xs"></i> Excelência</div>
-              <div class="flex items-center gap-2.5"><i class="fas fa-lightbulb text-amber-500 text-xs"></i> Inovação</div>
-              <div class="flex items-center gap-2.5"><i class="fas fa-handshake text-amber-500 text-xs"></i> Confiabilidade</div>
+          <div class="pt-6 border-t border-white/[0.08] space-y-3">
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block">Pilares Corporativos</span>
+            <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm font-bold text-white">
+              <div class="flex items-center gap-2.5 bg-slate-900/80 p-3 rounded-xl border border-white/[0.06]">
+                <i class="fa-solid fa-shield-halved text-amber-400 text-sm"></i> Transparência
+              </div>
+              <div class="flex items-center gap-2.5 bg-slate-900/80 p-3 rounded-xl border border-white/[0.06]">
+                <i class="fa-solid fa-gavel text-amber-400 text-sm"></i> Excelência
+              </div>
+              <div class="flex items-center gap-2.5 bg-slate-900/80 p-3 rounded-xl border border-white/[0.06]">
+                <i class="fa-solid fa-laptop-code text-amber-400 text-sm"></i> Inovação
+              </div>
+              <div class="flex items-center gap-2.5 bg-slate-900/80 p-3 rounded-xl border border-white/[0.06]">
+                <i class="fa-solid fa-handshake-simple text-amber-400 text-sm"></i> Confiabilidade
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </section>
 
-  <!-- FEEDBACK -->
-  <section id="feedback" class="py-24 bg-[#040c17]">
+  <!-- TESTIMONIALS / FEEDBACK SECTION -->
+  <section id="feedback" class="py-20 md:py-28 bg-[#04060a] relative border-t border-white/[0.06]">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="mb-16 text-center">
-        <h2 class="section-title text-4xl font-extrabold text-white tracking-tight mb-4">Feedback de Clientes</h2>
-        <p class="text-gray-400 text-lg font-light">
-          Resultados reais e parcerias consolidadas com quem confia na Courvan
+      <div class="mb-16 text-center max-w-2xl mx-auto space-y-3">
+        <span class="text-amber-400 text-xs font-extrabold uppercase tracking-widest bg-amber-400/10 px-3.5 py-1.5 rounded-full border border-amber-400/20 inline-block">
+          Casos de Sucesso
+        </span>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+          Depoimentos de Clientes
+        </h2>
+        <p class="text-slate-400 text-base font-normal">
+          Resultados consolidados e parcerias de longo prazo com empresas que confiam na Courvan.
         </p>
       </div>
 
       <div class="grid md:grid-cols-2 gap-8">
 
         <!-- Cliente 1 -->
-        <div class="bg-[#0d233f]/60 border border-white/5 rounded-2xl p-8 shadow-xl flex flex-col justify-between backdrop-blur-sm">
-          <div class="flex flex-col items-center text-center">
-            <div class="w-24 h-24 rounded-2xl bg-white p-3 mb-6 shadow-md flex items-center justify-center">
-              <img src="assets/logoexpressosousa.png" alt="Logo Expresso Sousa" class="w-full h-full object-contain">
+        <div class="card-luxury rounded-3xl p-8 flex flex-col justify-between space-y-6">
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <div class="w-20 h-20 rounded-2xl bg-white p-3 shadow-md flex items-center justify-center">
+                <img src="assets/logoexpressosousa.png" alt="Logo Expresso Sousa" class="w-full h-full object-contain">
+              </div>
+              <div class="flex text-amber-400 text-sm gap-1">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
             </div>
 
-            <p class="text-lg text-gray-300 leading-relaxed font-light italic">
+            <p class="text-base text-slate-200 leading-relaxed font-normal italic">
               “Nossa experiência com a Courvan foi sensacional, muita agilidade e dedicação no processo. Equipe nota 10.”
             </p>
           </div>
-          <div class="text-center mt-6">
-            <div class="h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full mb-4"></div>
-            <p class="text-[var(--secondary)] font-bold tracking-wide text-sm uppercase">Expresso Sousa</p>
+
+          <div class="pt-4 border-t border-white/[0.08]">
+            <p class="text-amber-400 font-black tracking-wide text-sm uppercase">Expresso Sousa</p>
+            <p class="text-xs text-slate-400">Cliente Corporativo em Contratações Públicas</p>
           </div>
         </div>
 
         <!-- Cliente 2 -->
-        <div class="bg-[#0d233f]/60 border border-white/5 rounded-2xl p-8 shadow-xl flex flex-col justify-between backdrop-blur-sm">
-          <div class="flex flex-col items-center text-center">
-            <div class="w-24 h-24 rounded-2xl bg-white p-3 mb-6 shadow-md flex items-center justify-center">
-              <img src="assets/logocpa.png" alt="CPA Poços Artesianos" class="w-full h-full object-contain">
+        <div class="card-luxury rounded-3xl p-8 flex flex-col justify-between space-y-6">
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <div class="w-20 h-20 rounded-2xl bg-white p-3 shadow-md flex items-center justify-center">
+                <img src="assets/logocpa.png" alt="CPA Poços Artesianos" class="w-full h-full object-contain">
+              </div>
+              <div class="flex text-amber-400 text-sm gap-1">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
             </div>
 
-            <p class="text-lg text-gray-300 leading-relaxed font-light italic">
+            <p class="text-base text-slate-200 leading-relaxed font-normal italic">
               “Atendimento extremamente profissional e suporte rápido em todas as etapas. Empresa séria, organizada e comprometida com resultados. A Courvan trouxe mais segurança e organização para os processos da nossa empresa.”
             </p>
           </div>
-          <div class="text-center mt-6">
-            <div class="h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full mb-4"></div>
-            <p class="text-[var(--secondary)] font-bold tracking-wide text-sm uppercase">CPA Poços Artesianos</p>
+
+          <div class="pt-4 border-t border-white/[0.08]">
+            <p class="text-amber-400 font-black tracking-wide text-sm uppercase">CPA Poços Artesianos</p>
+            <p class="text-xs text-slate-400">Cliente Corporativo do Setor de Infraestrutura</p>
           </div>
         </div>
 
@@ -419,70 +774,72 @@
     </div>
   </section>
 
-  <!-- CONTATO -->
-  <section id="contato" class="py-24 bg-gradient-to-b from-[#06101e] to-[#0c233f] border-t border-white/5">
+  <!-- CONTATO SECTION -->
+  <section id="contato" class="py-20 md:py-28 bg-gradient-to-b from-[#060911] to-[#080c14] border-t border-white/[0.06]">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <span class="text-xs font-bold text-[var(--secondary)] uppercase tracking-wider block mb-2">Canais de Atendimento</span>
-        <h2 class="text-4xl font-extrabold text-white tracking-tight mb-4">Inicie sua Jornada Conosco</h2>
-        <p class="text-gray-400 font-light text-lg">Estamos de prontidão para desenhar a melhor engenharia de lances para a sua empresa.</p>
+      <div class="text-center mb-14 space-y-2">
+        <span class="text-xs font-extrabold text-amber-400 uppercase tracking-widest block">Atendimento Estratégico</span>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">Fale com um Especialista</h2>
+        <p class="text-slate-400 font-normal text-sm sm:text-base">Estamos prontos para desenhar a melhor estratégia e inteligência de lances para sua empresa.</p>
       </div>
       
-      <form action="https://formspree.io/f/mqenkele" method="POST" class="space-y-5 bg-black/20 p-6 md:p-10 rounded-2xl border border-white/5 shadow-2xl mb-16">
+      <!-- Formspree Form -->
+      <form action="https://formspree.io/f/mqenkele" method="POST" class="space-y-5 card-luxury p-6 sm:p-10 rounded-3xl shadow-2xl mb-14">
         <div class="grid md:grid-cols-2 gap-5">
-          <div class="space-y-1">
-            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-1">Nome Completo</label>
-            <input type="text" name="nome" placeholder="Ex: João Silva" required class="w-full px-5 py-3.5 rounded-xl bg-[#06101e] border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-1 focus:ring-[var(--secondary)] transition shadow-sm">
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-slate-300 uppercase tracking-wider pl-1">Nome Completo</label>
+            <input type="text" name="nome" placeholder="Ex: João Silva" required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 transition text-sm">
           </div>
-          <div class="space-y-1">
-            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-1">E-mail Corporativo</label>
-            <input type="email" name="email" placeholder="Ex: joao@empresa.com" required class="w-full px-5 py-3.5 rounded-xl bg-[#06101e] border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-1 focus:ring-[var(--secondary)] transition shadow-sm">
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-slate-300 uppercase tracking-wider pl-1">E-mail Corporativo</label>
+            <input type="email" name="email" placeholder="Ex: joao@empresa.com" required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 transition text-sm">
           </div>
         </div>
         
-        <div class="space-y-1">
-          <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-1">Telefone / WhatsApp</label>
-          <input type="text" name="telefone" placeholder="Ex: (31) 99999-9999" class="w-full px-5 py-3.5 rounded-xl bg-[#06101e] border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-1 focus:ring-[var(--secondary)] transition shadow-sm">
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-300 uppercase tracking-wider pl-1">Telefone / WhatsApp</label>
+          <input type="text" name="telefone" placeholder="Ex: (31) 99999-9999" class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 transition text-sm">
         </div>
         
-        <div class="space-y-1">
-          <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider pl-1">Mensagem ou Detalhes da Demanda</label>
-          <textarea name="mensagem" rows="4" placeholder="Descreva brevemente seu segmento de atuação ou anexe informações relevantes..." required class="w-full px-5 py-3.5 rounded-xl bg-[#06101e] border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-[var(--secondary)] focus:ring-1 focus:ring-[var(--secondary)] resize-none transition shadow-sm"></textarea>
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-300 uppercase tracking-wider pl-1">Mensagem ou Detalhes da Demanda</label>
+          <textarea name="mensagem" rows="4" placeholder="Descreva brevemente seu segmento de atuação e objetivos nas licitações..." required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 resize-none transition text-sm"></textarea>
         </div>
         
-        <input type="hidden" name="_subject" value="Novo lead do site Courvan">
+        <input type="hidden" name="_subject" value="Novo contato recebido pelo site Courvan">
         
-        <button type="submit" class="w-full btn-primary py-4 rounded-xl font-bold text-base transition shadow-md mt-2">
+        <button type="submit" class="w-full btn-gold py-4 rounded-xl font-extrabold text-sm uppercase tracking-wider transition shadow-lg mt-2">
           Enviar Mensagem Estratégica
         </button>
       </form>
       
-      <div class="grid md:grid-cols-3 gap-8 pt-10 border-t border-white/10 text-gray-300">
-        <div class="text-center md:text-left space-y-1">
-          <p class="font-bold text-white text-sm flex items-center justify-center md:justify-start gap-2">
-            <i class="fab fa-whatsapp text-[var(--secondary)]"></i> WhatsApp
+      <!-- Direct Contact Cards -->
+      <div class="grid md:grid-cols-3 gap-6 pt-8 border-t border-white/[0.08] text-slate-300">
+        <div class="text-center md:text-left space-y-1 bg-slate-900/40 p-4 rounded-2xl border border-white/[0.04]">
+          <p class="font-bold text-white text-xs uppercase tracking-wider flex items-center justify-center md:justify-start gap-2">
+            <i class="fa-brands fa-whatsapp text-amber-400 text-sm"></i> WhatsApp
           </p>
-          <a href="https://wa.me/5531983213540" class="hover:text-[var(--secondary)] text-sm transition font-medium block">(31) 98321-3540</a>
+          <a href="https://wa.me/5531983213540" target="_blank" class="hover:text-amber-400 text-sm transition font-medium block">(31) 98321-3540</a>
         </div>
-        <div class="text-center md:text-left space-y-1">
-          <p class="font-bold text-white text-sm flex items-center justify-center md:justify-start gap-2">
-            <i class="fas fa-envelope text-[var(--secondary)]"></i> Email Institucional
+        <div class="text-center md:text-left space-y-1 bg-slate-900/40 p-4 rounded-2xl border border-white/[0.04]">
+          <p class="font-bold text-white text-xs uppercase tracking-wider flex items-center justify-center md:justify-start gap-2">
+            <i class="fa-solid fa-envelope text-amber-400 text-sm"></i> Email Institucional
           </p>
-          <a href="mailto:contato@courvanlicitacoes.com.br" class="hover:text-[var(--secondary)] text-sm transition font-medium block break-all">contato@courvanlicitacoes.com.br</a>
+          <a href="mailto:contato@courvanlicitacoes.com.br" class="hover:text-amber-400 text-sm transition font-medium block break-all">contato@courvanlicitacoes.com.br</a>
         </div>
-        <div class="text-center md:text-left space-y-1">
-          <p class="font-bold text-white text-sm flex items-center justify-center md:justify-start gap-2">
-            <i class="fas fa-id-card text-[var(--secondary)]"></i> Registro CNPJ
+        <div class="text-center md:text-left space-y-1 bg-slate-900/40 p-4 rounded-2xl border border-white/[0.04]">
+          <p class="font-bold text-white text-xs uppercase tracking-wider flex items-center justify-center md:justify-start gap-2">
+            <i class="fa-solid fa-id-card text-amber-400 text-sm"></i> Registro CNPJ
           </p>
-          <p class="text-sm font-medium text-gray-400">62.140.400/0001-50</p>
+          <p class="text-sm font-medium text-slate-400">62.140.400/0001-50</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-[#040c17] text-center py-10 text-gray-500 text-xs border-t border-white/5 tracking-wide">
-    <p>© 2026 Courvan Assessoria em Licitações. Todos os direitos reservados. Design Corporativo Otimizado.</p>
+  <footer class="bg-[#04060a] text-center py-8 text-slate-500 text-xs border-t border-white/[0.06] tracking-wide">
+    <p>&copy; 2026 Courvan Inteligência em Licitações &bull; Todos os direitos reservados</p>
   </footer>
 
   <script>
