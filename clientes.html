@@ -611,7 +611,7 @@
           <div>
             <label style="font-size:12px; color:#64748b; font-weight:700; text-transform:uppercase; display:block; margin-bottom:6px;">Cliente / Empresa Parceira</label>
             <select id="propostaSelectCliente" onchange="window.carregarDadosPropostaCliente(this.value)" style="width:100%; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); color:white; font-size:14px;">
-              <option value="">Selecione um cliente cadastrado...</option>
+              <option value="">⚡ Proposta Avulsa (Sem cliente específico / Digitar nome livremente)</option>
             </select>
           </div>
 
@@ -1680,7 +1680,7 @@ window.abrirEditorPropostaCliente = function(clienteId, empresaNome) {
   window.mostrarSection("propostas");
   const selectProp = document.getElementById("propostaSelectCliente");
   if (selectProp) {
-    selectProp.value = clienteId;
+    selectProp.value = clienteId || "";
     window.carregarDadosPropostaCliente(clienteId);
   }
 };
@@ -1691,23 +1691,37 @@ window.carregarDadosPropostaCliente = async function(clienteId) {
   const dataTxt = document.getElementById("dataUltimaProposta");
   
   if (!clienteId) {
-    document.getElementById("propostaNomeEmpresa").value = "";
-    document.getElementById("propostaValorStart").value = "490.00";
-    document.getElementById("propostaSetupStart").value = "300.00";
-    document.getElementById("propostaValorEssencial").value = "1200.00";
-    document.getElementById("propostaSetupEssencial").value = "600.00";
-    document.getElementById("propostaExitoEssencial").value = "2,5% sobre o valor";
-    document.getElementById("propostaValorCorporate").value = "2500.00";
-    document.getElementById("propostaSetupCorporate").value = "1000.00";
-    document.getElementById("propostaExitoCorporate").value = "2,0% sobre o valor";
-    document.getElementById("propostaDescontoAtivo").checked = false;
-    document.getElementById("propostaDescontoTitulo").value = "🎁 Condição Especial de Fechamento Exclusiva";
-    document.getElementById("propostaDescontoValor").value = "Desconto Especial: De R$ 1.200 por R$ 900,00/mês no Plano Essencial + Isenção da Taxa de Setup";
-    document.getElementById("propostaDescontoDesc").value = "Condição especial válida para assinatura e aceite da proposta até o final deste mês. Garantia de renovação nas mesmas bases contratuais.";
-    document.getElementById("propostaVigencia").value = "Contrato de 12 meses (prazo essencial para maturação de processos, organização documental e recorrência de vitórias).";
-    document.getElementById("propostaObservacao").value = "";
+    // Tenta carregar dados globais/avulsos do localStorage se existirem
+    const avulsoSalvo = localStorage.getItem("proposta_avulsa_config");
+    let p = {};
+    if (avulsoSalvo) {
+      try { p = JSON.parse(avulsoSalvo); } catch(e){}
+    }
+
+    document.getElementById("propostaNomeEmpresa").value = p.empresa || localStorage.getItem("proposta_nome_cliente") || "";
+    document.getElementById("propostaValorStart").value = p.valorStart !== undefined ? p.valorStart : "490.00";
+    document.getElementById("propostaSetupStart").value = p.setupStart !== undefined ? p.setupStart : "300.00";
+    document.getElementById("propostaValorEssencial").value = p.valorEssencial !== undefined ? p.valorEssencial : "1200.00";
+    document.getElementById("propostaSetupEssencial").value = p.setupEssencial !== undefined ? p.setupEssencial : "600.00";
+    document.getElementById("propostaExitoEssencial").value = p.exitoEssencial || "2,5% sobre o valor";
+    document.getElementById("propostaValorCorporate").value = p.valorCorporate !== undefined ? p.valorCorporate : "2500.00";
+    document.getElementById("propostaSetupCorporate").value = p.setupCorporate !== undefined ? p.setupCorporate : "1000.00";
+    document.getElementById("propostaExitoCorporate").value = p.exitoCorporate || "2,0% sobre o valor";
+    
+    const descAtivo = p.descontoAtivo === true;
+    document.getElementById("propostaDescontoAtivo").checked = descAtivo;
+    document.getElementById("propostaDescontoTitulo").value = p.descontoTitulo || "🎁 Condição Especial de Fechamento Exclusiva";
+    document.getElementById("propostaDescontoValor").value = p.descontoValor || "Desconto Especial: De R$ 1.200 por R$ 900,00/mês no Plano Essencial + Isenção da Taxa de Setup";
+    document.getElementById("propostaDescontoDesc").value = p.descontoDesc || "Condição especial válida para assinatura e aceite da proposta até o final deste mês. Garantia de renovação nas mesmas bases contratuais.";
+    document.getElementById("propostaVigencia").value = p.vigencia || "Contrato de 12 meses (prazo essencial para maturação de processos, organização documental e recorrência de vitórias).";
+    document.getElementById("propostaObservacao").value = p.observacao || "";
     window.toggleCamposDesconto();
-    if (infoBox) infoBox.style.display = "none";
+
+    if (infoBox) {
+      infoBox.style.display = "flex";
+      statusTxt.innerText = "Modo Proposta Avulsa (Livre)";
+      dataTxt.innerText = p.dataAtualizacao ? "Última edição avulsa: " + new Date(p.dataAtualizacao).toLocaleString("pt-BR") : "Gere e copie links sem precisar cadastrar cliente previamente.";
+    }
     return;
   }
 
@@ -1721,7 +1735,7 @@ window.carregarDadosPropostaCliente = async function(clienteId) {
       document.getElementById("propostaValorStart").value = p.valorStart !== undefined ? p.valorStart : "490.00";
       document.getElementById("propostaSetupStart").value = p.setupStart !== undefined ? p.setupStart : "300.00";
       document.getElementById("propostaValorEssencial").value = p.valorEssencial !== undefined ? p.valorEssencial : "1200.00";
-      document.getElementById("propostaSetupEssencial").value = p.setupEssencial !== undefined ? p.setupEssencial : "600.00";
+      document.getElementById("propostaSetupEssencial").value = p.setupSetupStart !== undefined ? p.setupEssencial : (p.setupEssencial !== undefined ? p.setupEssencial : "600.00");
       document.getElementById("propostaExitoEssencial").value = p.exitoEssencial || "2,5% sobre o valor";
       document.getElementById("propostaValorCorporate").value = p.valorCorporate !== undefined ? p.valorCorporate : "2500.00";
       document.getElementById("propostaSetupCorporate").value = p.setupCorporate !== undefined ? p.setupCorporate : "1000.00";
@@ -1755,16 +1769,7 @@ window.carregarDadosPropostaCliente = async function(clienteId) {
 
 window.salvarPropostaCliente = async function() {
   const clienteId = document.getElementById("propostaSelectCliente").value;
-  if (!clienteId) {
-    alert("Por favor, selecione um cliente para salvar a proposta!");
-    return;
-  }
-
-  const empresa = document.getElementById("propostaNomeEmpresa").value.trim();
-  if (!empresa) {
-    alert("O nome da empresa é obrigatório.");
-    return;
-  }
+  const empresa = document.getElementById("propostaNomeEmpresa").value.trim() || "Empresa Parceira";
 
   const propostaData = {
     empresa: empresa,
@@ -1786,35 +1791,76 @@ window.salvarPropostaCliente = async function() {
   };
 
   try {
-    await setDoc(doc(db, "clientes", clienteId), { propostaData }, { merge: true });
-    alert(`Proposta comercial da empresa "${empresa}" salva com sucesso!`);
-    window.carregarDadosPropostaCliente(clienteId);
+    if (clienteId) {
+      await setDoc(doc(db, "clientes", clienteId), { propostaData }, { merge: true });
+      alert(`Proposta comercial da empresa "${empresa}" salva com sucesso no cadastro do cliente!`);
+      window.carregarDadosPropostaCliente(clienteId);
+    } else {
+      // Salva no Firestore como configuração global/avulsa e no localStorage
+      await setDoc(doc(db, "config_proposta", "global"), propostaData, { merge: true });
+      localStorage.setItem("proposta_avulsa_config", JSON.stringify(propostaData));
+      localStorage.setItem("proposta_nome_cliente", empresa);
+      alert(`Proposta comercial avulsa para "${empresa}" salva com sucesso!`);
+      window.carregarDadosPropostaCliente("");
+    }
   } catch (err) {
     console.error("Erro ao salvar proposta:", err);
-    alert("Erro ao salvar proposta: " + err.message);
+    // Fallback no localStorage se Firestore falhar
+    localStorage.setItem("proposta_avulsa_config", JSON.stringify(propostaData));
+    localStorage.setItem("proposta_nome_cliente", empresa);
+    alert(`Proposta avulsa salva localmente para "${empresa}"!`);
   }
+};
+
+window.obterQueryStringProposta = function() {
+  const empresa = document.getElementById("propostaNomeEmpresa").value.trim() || "Empresa Parceira";
+  const params = new URLSearchParams();
+  params.set("empresa", empresa);
+  params.set("vStart", document.getElementById("propostaValorStart").value);
+  params.set("sStart", document.getElementById("propostaSetupStart").value);
+  params.set("vEssencial", document.getElementById("propostaValorEssencial").value);
+  params.set("sEssencial", document.getElementById("propostaSetupEssencial").value);
+  params.set("eEssencial", document.getElementById("propostaExitoEssencial").value);
+  params.set("vCorp", document.getElementById("propostaValorCorporate").value);
+  params.set("sCorp", document.getElementById("propostaSetupCorporate").value);
+  params.set("eCorp", document.getElementById("propostaExitoCorporate").value);
+  params.set("descAtivo", document.getElementById("propostaDescontoAtivo").checked ? "1" : "0");
+  if (document.getElementById("propostaDescontoAtivo").checked) {
+    params.set("descTit", document.getElementById("propostaDescontoTitulo").value);
+    params.set("descVal", document.getElementById("propostaDescontoValor").value);
+    params.set("descDesc", document.getElementById("propostaDescontoDesc").value);
+  }
+  params.set("vigencia", document.getElementById("propostaVigencia").value);
+  if (document.getElementById("propostaObservacao").value.trim()) {
+    params.set("obs", document.getElementById("propostaObservacao").value.trim());
+  }
+  return params.toString();
 };
 
 window.visualizarPropostaCliente = function() {
   const clienteId = document.getElementById("propostaSelectCliente").value;
-  if (!clienteId) {
-    window.open("proposta.html", "_blank");
-  } else {
+  if (clienteId) {
     window.open("proposta.html?clienteId=" + encodeURIComponent(clienteId), "_blank");
+  } else {
+    const query = window.obterQueryStringProposta();
+    window.open("proposta.html?" + query, "_blank");
   }
 };
 
 window.copiarLinkPropostaCliente = function() {
   const clienteId = document.getElementById("propostaSelectCliente").value;
-  if (!clienteId) {
-    alert("Selecione um cliente para copiar o link personalizado da proposta!");
-    return;
+  let url = "";
+  if (clienteId) {
+    url = window.location.origin + "/proposta.html?clienteId=" + encodeURIComponent(clienteId);
+  } else {
+    const query = window.obterQueryStringProposta();
+    url = window.location.origin + "/proposta.html?" + query;
   }
-  const url = window.location.origin + "/proposta.html?clienteId=" + encodeURIComponent(clienteId);
+  
   navigator.clipboard.writeText(url).then(() => {
-    alert("Link da proposta copiado para a área de transferência:\n" + url);
+    alert("Link da proposta copiado para a área de transferência:\n\n" + url);
   }).catch(() => {
-    prompt("Copie o link abaixo:", url);
+    prompt("Copie o link da proposta abaixo:", url);
   });
 };
 </script>
