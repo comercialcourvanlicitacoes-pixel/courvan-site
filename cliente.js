@@ -2065,7 +2065,7 @@ window.renderizarDocumentos = function() {
       };
       const catTexto = categoriasMapa[d.categoria] || "📁 Documento";
       let fileIcon = "📄";
-      if (d.categoria === "gdrive") fileIcon = "🔗";
+      if (d.categoria === "gdrive" || d.categoria === "gdrive_links") fileIcon = "🔗";
       else if (d.tipo && d.tipo.includes("pdf")) fileIcon = "📕";
       else if (d.tipo && d.tipo.includes("image")) fileIcon = "🖼️";
 
@@ -2091,7 +2091,7 @@ window.renderizarDocumentos = function() {
           </div>
           <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 14px;">
             <button onclick="window.abrirAnexoDocumento('${d.id}')" class="doc-tab-btn" style="margin: 0; padding: 10px 20px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #06101e; font-weight: 700; border: none; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-              ${d.categoria === "gdrive" ? "🔗 Acessar Link" : "📥 Baixar / Abrir"}
+              ${(d.categoria === "gdrive" || d.categoria === "gdrive_links") ? "🔗 Acessar Link" : "📥 Baixar / Abrir"}
             </button>
             <button class="doc-tab-btn" style="background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15);" onclick="window.excluirDocumento('${d.id}', '${d.arquivo || ""}')">🗑 Excluir</button>
           </div>
@@ -2145,7 +2145,7 @@ window.lerArquivoComoBase64 = (file) => {
 
 window.abrirArquivoBase64 = (base64OrLink, nomeOriginal, categoria) => {
   if (!base64OrLink) return;
-  if (categoria === "gdrive" || !base64OrLink.startsWith("data:")) {
+  if (categoria === "gdrive" || categoria === "gdrive_links" || !base64OrLink.startsWith("data:")) {
     window.open(base64OrLink, "_blank");
     return;
   }
