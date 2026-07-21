@@ -1347,70 +1347,23 @@ function iniciarListenerClientes(){
               </div>
             </div>
 
-            <div style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
-              <button
-                type="button"
-                onclick="event.stopPropagation(); event.preventDefault(); const win = window.open(window.location.origin + '/proposta.html?clienteId=${emp.idPrincipal}&modo=apresentacao', '_blank'); if (!win || win.closed || typeof win.closed === 'undefined') window.open(window.location.origin + '/proposta.html?clienteId=${emp.idPrincipal}&modo=apresentacao', '_self');"
-                style="
-                  background: rgba(229, 184, 92, 0.15);
-                  color: #fcd34d;
-                  border: 1px solid rgba(229, 184, 92, 0.3);
-                  padding: 10px 6px;
-                  border-radius: 12px;
-                  font-size: 11px;
-                  font-weight: 700;
-                  cursor: pointer;
-                  transition: all 0.2s ease;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 4px;
-                "
-                onmouseover="this.style.background='#e5b85c'; this.style.color='#030712'"
-                onmouseout="this.style.background='rgba(229, 184, 92, 0.15)'; this.style.color='#fcd34d'"
-                title="Abrir proposta salva para este cliente em Modo Apresentação"
-              >
-                👁️ Proposta
-              </button>
-              <button
-                onclick="window.abrirEditorPropostaCliente('${emp.idPrincipal}', '${empresa.replace(/'/g, "\\'")}')"
-                style="
-                  background: rgba(255, 255, 255, 0.05);
-                  color: #e2e8f0;
-                  border: 1px solid rgba(255, 255, 255, 0.1);
-                  padding: 10px 6px;
-                  border-radius: 12px;
-                  font-size: 11px;
-                  font-weight: 600;
-                  cursor: pointer;
-                  transition: all 0.2s ease;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 4px;
-                "
-                onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'"
-                onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='#e2e8f0'"
-                title="Editar valores e desconto da proposta para este cliente"
-              >
-                📜 Editar
-              </button>
+            <div style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 16px; display: flex; justify-content: flex-end;">
               <button
                 onclick="excluirEmpresa('${emp.idPrincipal}', '${emp.idsDocumentos.join(',')}', '${empresa}')"
                 style="
                   background: rgba(239, 68, 68, 0.06);
                   color: #ef4444;
                   border: 1px solid rgba(239, 68, 68, 0.15);
-                  padding: 10px 6px;
+                  padding: 10px 16px;
                   border-radius: 12px;
-                  font-size: 11px;
+                  font-size: 12px;
                   font-weight: 600;
                   cursor: pointer;
                   transition: all 0.2s ease;
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  gap: 4px;
+                  gap: 6px;
                 "
                 onmouseover="this.style.background='#ef4444'; this.style.color='white'"
                 onmouseout="this.style.background='rgba(239, 68, 68, 0.06)'; this.style.color='#ef4444'"
