@@ -35,7 +35,7 @@
       font-family: 'Playfair Display', serif;
     }
 
-    /* Costom Scrollbar */
+    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -86,7 +86,7 @@
         background-color: #b45309 !important;
         color: white !important;
       }
-      .print-page .bg-slate-900\/40, .print-page .bg-slate-900\/20, .print-page .bg-slate-800\/50 {
+      .print-page .bg-slate-900\/40, .print-page .bg-slate-900\/20, .print-page .bg-slate-800\/50, .print-page .bg-slate-950\/30, .print-page .bg-slate-950\/20, .print-page .bg-slate-900\/50, .print-page .bg-slate-950\/40 {
         background: #f8fafc !important;
         border: 1px solid #e2e8f0 !important;
       }
@@ -101,7 +101,7 @@
 
   <!-- Header Section (Navigation Back to Home) -->
   <header class="no-print w-full px-6 py-4 border-b border-white/5 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between">
-    <a class="text-amber-400 hover:text-white font-semibold text-sm transition-all flex items-center gap-2" href="../index.html">
+    <a class="text-amber-400 hover:text-white font-semibold text-sm transition-all flex items-center gap-2" href="index.html">
       <i class="fa-solid fa-arrow-left"></i> Voltar ao site principal
     </a>
     <div class="flex items-center gap-3">
@@ -135,7 +135,6 @@
         <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 px-2">Estrutura da Proposta</h2>
       </div>
       <nav class="space-y-1.5 flex-1" id="menuNavegacao">
-        <!-- Generates dynamically via JS to keep index synced -->
         <button onclick="irParaSlide(0)" class="slide-nav-btn w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3 bg-slate-800 text-white border-l-4 border-amber-400">
           <span class="text-xs font-bold text-amber-400">01</span> Capa
         </button>
@@ -149,7 +148,7 @@
           <span class="text-xs font-bold text-slate-500">04</span> Método de Trabalho
         </button>
         <button onclick="irParaSlide(4)" class="slide-nav-btn w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center gap-3">
-          <span class="text-xs font-bold text-slate-500">05</span> Proposta Comercial
+          <span class="text-xs font-bold text-slate-500">05</span> Nossos Planos
         </button>
         <button onclick="irParaSlide(5)" class="slide-nav-btn w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center gap-3">
           <span class="text-xs font-bold text-slate-500">06</span> Nosso Compromisso
@@ -175,7 +174,7 @@
 
           <!-- Capa Logo Section -->
           <div class="flex items-center gap-3">
-            <img src="../assets/logo.png" alt="Courvan Licitações Logo" class="h-14 w-auto object-contain">
+            <img src="assets/logo.png" alt="Courvan Licitações Logo" class="h-14 w-auto object-contain">
             <div class="h-8 w-px bg-white/10"></div>
             <span class="text-xs tracking-widest uppercase text-amber-400 font-bold">Courvan Licitações</span>
           </div>
@@ -224,15 +223,18 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div class="lg:col-span-7 space-y-6">
-                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white leading-tight">
-                  Vender para o governo é o caminho mais rápido para escalar o faturamento, mas o mercado impõe barreiras complexas:
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-amber-400 leading-tight">
+                  O cenário atual das compras públicas
                 </h2>
+                <p class="text-slate-300 text-base leading-relaxed">
+                  Vender para o governo é o caminho mais rápido para escalar o faturamento de uma empresa, mas o mercado atual apresenta barreiras complexas:
+                </p>
                 <p class="text-slate-400 text-sm leading-relaxed">
                   Participar de licitações sem uma estratégia jurídica e tecnológica estruturada costuma resultar em perda de tempo, recursos e, principalmente, de lucratividade.
                 </p>
               </div>
               <div class="lg:col-span-5">
-                <img src="../assets/proposta1.png" alt="Desafio de Licitações" class="print-img w-full rounded-2xl border border-white/5 shadow-lg object-cover">
+                <img src="assets/proposta1.png" alt="Desafio de Licitações" class="print-img w-full rounded-2xl border border-white/5 shadow-lg object-cover">
               </div>
             </div>
 
@@ -244,23 +246,23 @@
                   <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
                 <h4 class="font-bold text-white text-base">Burocracia e Erros Técnicos</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Editais complexos que desclassificam ótimas empresas por meros formalismos e preciosismo técnico.</p>
+                <p class="text-xs text-slate-400 leading-relaxed">Editais complexos que desclassificam boas empresas por meros formalismos.</p>
               </div>
 
               <div class="bg-slate-950/30 p-5 rounded-2xl border border-white/5 space-y-3 hover:border-amber-400/20 transition-all">
                 <div class="w-10 h-10 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400">
                   <i class="fa-solid fa-scale-unbalanced-flip"></i>
                 </div>
-                <h4 class="font-bold text-white text-base">Concorrência Desleal</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Empresas sem estrutura que sacrificam a margem de lucro de forma impraticável ou utilizam artifícios irregulares para vencer.</p>
+                <h4 class="font-bold text-white text-base">Concorrência desleal</h4>
+                <p class="text-xs text-slate-400 leading-relaxed">Empresas que sacrificam a margem de lucro ou utilizam artifícios irregulares para vencer.</p>
               </div>
 
               <div class="bg-slate-950/30 p-5 rounded-2xl border border-white/5 space-y-3 hover:border-amber-400/20 transition-all">
                 <div class="w-10 h-10 rounded-xl bg-amber-400/10 flex items-center justify-center text-amber-400">
                   <i class="fa-solid fa-gavel"></i>
                 </div>
-                <h4 class="font-bold text-white text-base">Falta de Amparo Jurídico</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">Editais flagrantemente direcionados ou decisões parciais de agentes públicos que impedem uma disputa inteiramente justa.</p>
+                <h4 class="font-bold text-white text-base">Falta de acompanhamento jurídico</h4>
+                <p class="text-xs text-slate-400 leading-relaxed">Editais direcionados ou decisões parciais de agentes públicos que impedem uma disputa justa.</p>
               </div>
 
             </div>
@@ -286,15 +288,15 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div class="lg:col-span-5">
-                <img src="../assets/proposta2.png" alt="SaaS Courvan Software" class="print-img w-full rounded-2xl border border-white/5 shadow-lg object-cover">
+                <img src="assets/proposta2.png" alt="SaaS Courvan Software" class="print-img w-full rounded-2xl border border-white/5 shadow-lg object-cover">
               </div>
               <div class="lg:col-span-7 space-y-6">
-                <span class="text-xs font-bold uppercase tracking-widest text-amber-400">A Solução Integrada</span>
+                <span class="text-xs font-bold uppercase tracking-widest text-amber-400">A Solução Courvan</span>
                 <h2 class="font-display text-3xl sm:text-4xl font-bold text-white leading-tight">
-                  Nós unimos 10 anos de experiência jurídica a uma plataforma de inteligência de dados sob medida.
+                  Tecnologia Própria + Segurança Jurídica
                 </h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                  A Courvan Licitações não é apenas uma assessoria operacional tradicional. Desenvolvemos tecnologia exclusiva para blindar e automatizar a participação estratégica da sua empresa.
+                <p class="text-slate-300 text-sm leading-relaxed">
+                  A Courvan Licitações não é apenas uma assessoria operacional. Nós unimos 10 anos de experiência jurídica em contratações públicas a uma plataforma tecnológica exclusiva desenvolvida para blindar a participação da sua empresa.
                 </p>
               </div>
             </div>
@@ -303,20 +305,20 @@
               
               <div class="p-5 rounded-2xl bg-slate-950/30 border border-white/5 space-y-2">
                 <span class="text-amber-400 font-bold text-sm">01 / INTELIGÊNCIA DE DADOS</span>
-                <h4 class="font-bold text-white text-sm">Mapeamento Inteligente</h4>
-                <p class="text-[11px] text-slate-400 leading-relaxed">Mapeamos as oportunidades reais e analisamos previamente os comportamentos de concorrentes e órgãos públicos.</p>
+                <h4 class="font-bold text-white text-sm">Inteligência de Dados</h4>
+                <p class="text-[11px] text-slate-400 leading-relaxed">Mapeamento de oportunidades reais e análise prévia do comportamento de concorrentes e órgãos públicos.</p>
               </div>
 
               <div class="p-5 rounded-2xl bg-slate-950/30 border border-white/5 space-y-2">
-                <span class="text-amber-400 font-bold text-sm">02 / GESTÃO EXCLUSIVA</span>
-                <h4 class="font-bold text-white text-sm">Alertas e Credenciais</h4>
-                <p class="text-[11px] text-slate-400 leading-relaxed">Nosso software integrado garante que sua empresa nunca perca prazos ou seja inabilitada por certidões vencidas.</p>
+                <span class="text-amber-400 font-bold text-sm">02 / GESTÃO AUTOMATIZADA</span>
+                <h4 class="font-bold text-white text-sm">Gestão de Documentos e Credenciais</h4>
+                <p class="text-[11px] text-slate-400 leading-relaxed">Nosso software exclusivo garante que sua empresa nunca perca prazos ou seja desclassificada por certidões vencidas.</p>
               </div>
 
               <div class="p-5 rounded-2xl bg-slate-950/30 border border-white/5 space-y-2">
-                <span class="text-amber-400 font-bold text-sm">03 / BLINDAGEM JURÍDICA</span>
-                <h4 class="font-bold text-white text-sm">Atuação Estratégica</h4>
-                <p class="text-[11px] text-slate-400 leading-relaxed">Elaboração de impugnações e recursos de alto nível com base na Lei 14.133/21 e jurisprudências de Tribunais de Contas.</p>
+                <span class="text-amber-400 font-bold text-sm">03 / SEGURANÇA E RECURSOS</span>
+                <h4 class="font-bold text-white text-sm">Atuação Jurídica Estratégica</h4>
+                <p class="text-[11px] text-slate-400 leading-relaxed">Elaboração de impugnações e recursos de alto nível técnico, baseados na Nova Lei de Licitações (14.133/21) e na jurisprudência dos Tribunais de Contas.</p>
               </div>
 
             </div>
@@ -341,8 +343,8 @@
             </div>
 
             <div class="text-center max-w-2xl mx-auto space-y-2 py-2">
-              <h2 class="font-display text-3xl font-bold text-white">Como atuamos no dia a dia da sua empresa</h2>
-              <p class="text-xs text-slate-400">Uma esteira processual automatizada, precisa e transparente dividida em quatro fases críticas:</p>
+              <h2 class="font-display text-3xl font-bold text-amber-400">Como atuamos no dia a dia da sua empresa:</h2>
+              <p class="text-xs text-slate-400">Uma esteira processual bem definida, aliando rigor metodológico, tecnologia e segurança jurídica.</p>
             </div>
 
             <!-- Infographic timeline style -->
@@ -350,33 +352,33 @@
               
               <div class="bg-slate-950/20 p-5 rounded-2xl border border-white/5 space-y-3 relative hover:border-amber-400/30 transition-all">
                 <div class="absolute -top-3.5 left-4 bg-amber-400 text-slate-950 w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shadow-lg">1</div>
-                <h4 class="font-bold text-white text-sm pt-2">Diagnóstico e Setup</h4>
+                <h4 class="font-bold text-white text-xs pt-2">Diagnóstico Inicial e Organização (Setup)</h4>
                 <p class="text-[11px] text-slate-400 leading-relaxed">
-                  Análise de documentos, cadastro completo em portais de compras e parametrização do software para o seu nicho.
+                  Análise completa da documentação da sua empresa, cadastro nos principais portais públicos de compras e parametrização do nosso sistema para o seu segmento.
                 </p>
               </div>
 
               <div class="bg-slate-950/20 p-5 rounded-2xl border border-white/5 space-y-3 relative hover:border-amber-400/30 transition-all">
                 <div class="absolute -top-3.5 left-4 bg-amber-400 text-slate-950 w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shadow-lg">2</div>
-                <h4 class="font-bold text-white text-sm pt-2">Filtro de Editais</h4>
+                <h4 class="font-bold text-white text-xs pt-2">Monitoramento e Filtro de Editais</h4>
                 <p class="text-[11px] text-slate-400 leading-relaxed">
-                  Varredura diária de novas oportunidades do mercado. Filtramos e enviamos apenas o que entrega margem real de lucro.
+                  Varredura diária em busca das melhores oportunidades de negócios. Nós filtramos e enviamos apenas as licitações que fazem sentido para a sua margem de lucro.
                 </p>
               </div>
 
               <div class="bg-slate-950/20 p-5 rounded-2xl border border-white/5 space-y-3 relative hover:border-amber-400/30 transition-all">
                 <div class="absolute -top-3.5 left-4 bg-amber-400 text-slate-950 w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shadow-lg">3</div>
-                <h4 class="font-bold text-white text-sm pt-2">Análise e Disputa</h4>
+                <h4 class="font-bold text-white text-xs pt-2">Análise Técnica e Disputa</h4>
                 <p class="text-[11px] text-slate-400 leading-relaxed">
-                  Estudo completo do edital, elaboração da proposta técnica e atuação cirúrgica na fase de lances por especialista.
+                  Análise jurídica minuciosa do edital, elaboração da proposta e participação ativa na fase de lances realizada por especialista.
                 </p>
               </div>
 
               <div class="bg-slate-950/20 p-5 rounded-2xl border border-white/5 space-y-3 relative hover:border-amber-400/30 transition-all">
                 <div class="absolute -top-3.5 left-4 bg-amber-400 text-slate-950 w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shadow-lg">4</div>
-                <h4 class="font-bold text-white text-sm pt-2">Defesa e Habilitação</h4>
+                <h4 class="font-bold text-white text-xs pt-2">Defesa Jurídica e Habilitação</h4>
                 <p class="text-[11px] text-slate-400 leading-relaxed">
-                  Auditoria de certidões alheias e ação tempestiva com recursos para inabilitar concorrentes irregulares.
+                  Auditoria rigorosa nos documentos dos concorrentes na fase de habilitação. Caso identifiquemos irregularidades, atuamos imediatamente com recursos administrativos para garantir o direito da sua empresa.
                 </p>
               </div>
 
@@ -384,7 +386,7 @@
 
             <!-- Optional image/visual block bottom -->
             <div class="w-full h-24 rounded-2xl overflow-hidden relative border border-white/5">
-              <img src="../assets/proposta3.png" alt="Esteira Operacional" class="w-full h-full object-cover opacity-35 filter brightness-75">
+              <img src="assets/proposta3.png" alt="Esteira Operacional" class="w-full h-full object-cover opacity-35 filter brightness-75">
               <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent flex items-center px-6">
                 <p class="text-xs text-slate-300 font-medium max-w-lg">
                   <i class="fa-solid fa-circle-check text-amber-400 mr-2"></i> Transparência e rastreabilidade total: todos os prazos e resultados são sincronizados em nossa plataforma.
@@ -399,64 +401,199 @@
           </div>
         </div>
 
-        <!-- PÁGINA 5: PROPOSTA COMERCIAL -->
+        <!-- PÁGINA 5: NOSSOS PLANOS -->
         <div id="slide-4" class="print-page hidden w-full min-h-[580px] bg-slate-900/40 border border-white/5 rounded-3xl p-8 md:p-14 flex flex-col justify-between relative overflow-hidden shadow-2xl transition duration-500">
           
           <div class="space-y-6">
             <div class="flex items-center justify-between border-b border-white/5 pb-4">
               <div class="flex items-center gap-2">
                 <span class="text-amber-400 font-bold text-lg font-display">05.</span>
-                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Investimento e Condições</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Modelos de Parceria Comercial</span>
               </div>
               <span class="text-xs text-amber-400 font-bold tracking-widest">COURVAN</span>
             </div>
 
             <div>
-              <h2 class="font-display text-3xl font-bold text-white mb-2">Modelo de Parceria Comercial</h2>
+              <h2 class="font-display text-3xl font-bold text-white mb-2">Opções de Investimento e Planos</h2>
               <p class="text-slate-400 text-sm">
-                Uma solução equilibrada unindo tecnologia proprietária, dedicação exclusiva de assessoria jurídica especialista e taxa de êxito alinhada aos seus resultados.
+                Encontre o plano ideal para o momento de crescimento e a demanda de licitações da sua empresa:
               </p>
             </div>
 
-            <!-- Custom Table / Grid with lighter gray backgrounds to emphasize data -->
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-white/10 text-[10px] text-slate-400 uppercase tracking-wider">
-                    <th class="py-3 px-4 font-bold">Etapa / Serviço</th>
-                    <th class="py-3 px-4 font-bold">Descrição Técnica</th>
-                    <th class="py-3 px-4 font-bold text-right text-amber-400">Investimento</th>
-                  </tr>
-                </thead>
-                <tbody class="text-xs divide-y divide-white/5">
-                  <tr class="bg-slate-900/50 hover:bg-slate-800/50 transition">
-                    <td class="py-4.5 px-4 font-bold text-white">Taxa de Setup (Adesão)</td>
-                    <td class="py-4.5 px-4 text-slate-300">Cadastro completo inicial em portais, saneamento de certidões e parametrização de software. (Pago apenas no 1º mês).</td>
-                    <td class="py-4.5 px-4 text-right font-bold text-amber-400 text-sm whitespace-nowrap">R$ 600,00 <span class="text-[10px] text-slate-400 font-normal block">Parcela única</span></td>
-                  </tr>
-                  <tr class="bg-slate-900/50 hover:bg-slate-800/50 transition">
-                    <td class="py-4.5 px-4 font-bold text-white">Assessoria Mensal (Retainer)</td>
-                    <td class="py-4.5 px-4 text-slate-300">Monitoramento permanente de editais, uso integral da plataforma Courvan e participação em até 4 licitações/mês.</td>
-                    <td class="py-4.5 px-4 text-right font-bold text-amber-400 text-sm whitespace-nowrap">R$ 1.200,00 <span class="text-[10px] text-slate-400 font-normal block">por mês</span></td>
-                  </tr>
-                  <tr class="bg-slate-900/50 hover:bg-slate-800/50 transition">
-                    <td class="py-4.5 px-4 font-bold text-white">Taxa de Êxito (Success Fee)</td>
-                    <td class="py-4.5 px-4 text-slate-300">Percentual cobrado exclusivamente sobre as licitações vencidas em fase final e homologadas pelo órgão público.</td>
-                    <td class="py-4.5 px-4 text-right font-bold text-amber-400 text-sm whitespace-nowrap">2,5% <span class="text-[10px] text-slate-400 font-normal block">sobre o valor homologado</span></td>
-                  </tr>
-                </tbody>
-              </table>
+            <!-- Columns Layout - Three columns side by side -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2 items-stretch">
+              
+              <!-- PLANO START -->
+              <div class="bg-slate-800/40 border border-white/5 rounded-2xl p-6 flex flex-col justify-between hover:border-white/10 transition-all">
+                <div class="space-y-4">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-white font-bold text-lg">Plano Start</h3>
+                      <p class="text-[11px] text-amber-400 font-semibold uppercase tracking-wider mt-0.5">Radar e Monitoramento</p>
+                    </div>
+                  </div>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    <strong class="text-white block mb-1">Foco:</strong> Monitoramento e Radar de Oportunidades.
+                  </p>
+                  <div class="pt-2 border-t border-white/5">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-2">Incluso:</span>
+                    <ul class="text-[11px] text-slate-300 space-y-2">
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Monitoramento diário de editais.</span>
+                      </li>
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Envio de relatórios semanais com filtros inteligentes do seu nicho.</span>
+                      </li>
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Acesso ao software de gestão de certidões e credenciais Courvan.</span>
+                      </li>
+                      <li class="flex items-start gap-1.5 text-slate-500">
+                        <i class="fa-solid fa-circle-xmark mt-0.5 text-xs"></i>
+                        <span>Sem participação operacional em pregões.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-white/5 space-y-3">
+                  <div>
+                    <span class="text-[10px] text-slate-500 uppercase block">Mensalidade</span>
+                    <span class="text-2xl font-black text-white">R$ 490,00<span class="text-xs font-normal text-slate-400">/mês</span></span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400">
+                    <div>
+                      <span class="block text-slate-500">Taxa de Setup</span>
+                      <strong class="text-white">R$ 300,00 (Única)</strong>
+                    </div>
+                    <div>
+                      <span class="block text-slate-500">Taxa de Êxito</span>
+                      <strong class="text-white">Não se aplica</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PLANO ESSENCIAL (HIGHLIGHED) -->
+              <div class="bg-slate-800/80 border-2 border-amber-400/80 rounded-2xl p-6 flex flex-col justify-between relative shadow-xl transform lg:-translate-y-2">
+                <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-amber-400 text-slate-950 px-4 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest shadow-lg">
+                  Mais Escolhido / Recomendado
+                </div>
+
+                <div class="space-y-4">
+                  <div class="flex justify-between items-start pt-1">
+                    <div>
+                      <h3 class="text-white font-bold text-xl">Plano Essencial</h3>
+                      <p class="text-[11px] text-amber-400 font-extrabold uppercase tracking-wider mt-0.5">Assessoria Completa</p>
+                    </div>
+                  </div>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    <strong class="text-white block mb-1">Foco:</strong> Assessoria completa e participação ativa.
+                  </p>
+                  <div class="pt-2 border-t border-amber-400/20">
+                    <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider block mb-2">Incluso:</span>
+                    <ul class="text-[11px] text-slate-200 space-y-2">
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span><strong>Todos os benefícios do Plano Start.</strong></span>
+                      </li>
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Análise técnica completa dos editais.</span>
+                      </li>
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Participação ativa na disputa de lances em até <strong>4 licitações / mês</strong>.</span>
+                      </li>
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Apoio em recursos administrativos e impugnações diretas.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-amber-400/20 space-y-3">
+                  <div>
+                    <span class="text-[10px] text-amber-300 uppercase block">Mensalidade</span>
+                    <span class="text-3xl font-black text-amber-400">R$ 1.200,00<span class="text-xs font-normal text-slate-300">/mês</span></span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-300">
+                    <div>
+                      <span class="block text-slate-400">Taxa de Setup</span>
+                      <strong class="text-white">R$ 600,00 (Única)</strong>
+                    </div>
+                    <div>
+                      <span class="block text-slate-400">Taxa de Êxito</span>
+                      <strong class="text-amber-400">2,5% sobre o valor</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PLANO CORPORATE -->
+              <div class="bg-slate-800/40 border border-white/5 rounded-2xl p-6 flex flex-col justify-between hover:border-white/10 transition-all">
+                <div class="space-y-4">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-white font-bold text-lg">Plano Corporate</h3>
+                      <p class="text-[11px] text-amber-400 font-semibold uppercase tracking-wider mt-0.5">Grandes Volumes</p>
+                    </div>
+                  </div>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    <strong class="text-white block mb-1">Foco:</strong> Alta demanda, grandes volumes e suporte avançado.
+                  </p>
+                  <div class="pt-2 border-t border-white/5">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-2">Incluso:</span>
+                    <ul class="text-[11px] text-slate-300 space-y-2">
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span><strong>Todos os benefícios do Plano Essencial.</strong></span>
+                      </li>
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Participação ativa na disputa de lances em até <strong>8 licitações / mês</strong>.</span>
+                      </li>
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Análise jurídica complexa de concorrências públicas presenciais ou eletrônicas de alto valor.</span>
+                      </li>
+                      <li class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-0.5 text-xs"></i>
+                        <span>Atendimento prioritário e assessoria dedicada.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-white/5 space-y-3">
+                  <div>
+                    <span class="text-[10px] text-slate-500 uppercase block">Mensalidade</span>
+                    <span class="text-2xl font-black text-white">R$ 2.500,00<span class="text-xs font-normal text-slate-400">/mês</span></span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400">
+                    <div>
+                      <span class="block text-slate-500">Taxa de Setup</span>
+                      <strong class="text-white">R$ 1.000,00 (Única)</strong>
+                    </div>
+                    <div>
+                      <span class="block text-slate-500">Taxa de Êxito</span>
+                      <strong class="text-white">2,0% sobre o valor</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
-            <!-- Notice box -->
-            <div class="bg-amber-400/5 border border-amber-400/20 p-4.5 rounded-2xl flex items-start gap-3.5">
-              <div class="text-amber-400 mt-0.5"><i class="fa-solid fa-clock"></i></div>
-              <div class="space-y-1">
-                <p class="text-xs font-bold text-white">Vigência Recomendada</p>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
-                  Vigência inicial sugerida de <strong>12 meses</strong>. Esse período é essencial para a consolidação completa da esteira de processos, amadurecimento operacional e participação contínua em pregões relevantes.
-                </p>
-              </div>
+            <!-- Vigência box -->
+            <div class="bg-amber-400/5 border border-amber-400/20 p-4 rounded-2xl flex items-center justify-center gap-3">
+              <div class="text-amber-400 text-sm"><i class="fa-solid fa-calendar-days"></i></div>
+              <p class="text-xs text-slate-300">
+                <strong>Vigência inicial sugerida:</strong> Contrato de 12 meses (essencial para consolidação da esteira de processos e participação contínua em pregões).
+              </p>
             </div>
           </div>
 
@@ -485,13 +622,10 @@
                 </h3>
                 <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
                   <p>
-                    Ao fechar conosco, você não contrata um simples digitador de propostas ou extrator automatizado de editais, mas sim uma estrutura jurídica experiente e de alto gabarito técnico.
-                  </p>
-                  <p>
-                    Nossa equipe é focada em combater direcionamentos, apontar e desqualificar concorrentes irregulares na fase habilitatória e forçar a administração pública a cumprir a estrita legalidade, garantindo a lucratividade e o sucesso dos seus contratos.
+                    Ao fechar conosco, você não contrata um digitador de propostas, mas sim uma estrutura jurídica capaz de combater direcionamentos, desqualificar concorrentes irregulares e forçar a administração pública a cumprir a lei, protegendo os seus contratos e a sua rentabilidade.
                   </p>
                   <p class="font-semibold text-white pt-2">
-                    Estamos prontos e à disposição para iniciar essa parceria e estruturar seu novo canal estratégico de vendas recorrentes para o governo.
+                    Estamos à disposição para iniciar essa parceria e estruturar o seu novo canal de vendas para o governo.
                   </p>
                 </div>
               </div>
@@ -505,8 +639,8 @@
                       G
                     </div>
                     <div>
-                      <h5 class="text-white font-bold text-sm">Guilherme Courvan</h5>
-                      <p class="text-[11px] text-slate-400">Fundador e Diretor Jurídico</p>
+                      <h5 class="text-white font-bold text-sm">Guilherme Bitencourt</h5>
+                      <p class="text-[11px] text-slate-400">Fundador e Diretor Jurídico — Courvan Licitações</p>
                     </div>
                   </div>
                 </div>
