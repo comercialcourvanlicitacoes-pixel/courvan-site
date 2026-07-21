@@ -521,7 +521,7 @@ window.fecharDrawer = function(){
 
 window.abrirArquivoBase64 = (base64OrLink, nomeOriginal, categoria) => {
   if (!base64OrLink) return;
-  if (categoria === "gdrive" || !base64OrLink.startsWith("data:")) {
+  if (categoria === "gdrive" || categoria === "gdrive_links" || !base64OrLink.startsWith("data:")) {
     window.open(base64OrLink, "_blank");
     return;
   }
