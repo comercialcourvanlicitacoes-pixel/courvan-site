@@ -145,7 +145,7 @@ app.get("/api/feed/:clienteId", async (req, res) => {
     }
     const docSnap = await docQuery.get();
       
-    let icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Courvan//Courvan Agenda//PT\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Courvan - " + clienteNome + "\r\nREFRESH-INTERVAL;VALUE=DURATION:PT4H\r\n";
+    let icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Courvan//Courvan Agenda//PT\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Courvan - " + clienteNome + "\r\nX-WR-TIMEZONE:America/Sao_Paulo\r\nX-PUBLISHED-TTL:PT15M\r\nREFRESH-INTERVAL;VALUE=DURATION:PT15M\r\n";
     
     // Process licitacoes
     licSnap.forEach((docItem: any) => {
@@ -199,7 +199,10 @@ app.get("/api/feed/:clienteId", async (req, res) => {
     icsContent += "END:VCALENDAR\r\n";
     
     res.setHeader("Content-Type", "text/calendar; charset=utf-8");
-    res.setHeader("Content-Disposition", `attachment; filename="agenda_${clienteId}.ics"`);
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Content-Disposition", `inline; filename="agenda_${clienteId}.ics"`);
     res.status(200).send(icsContent);
   } catch (error: any) {
     console.error("Error generating ICS feed:", error);
