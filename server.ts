@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import path from "path";
 import fs from "fs";
 import { exec } from "child_process";
@@ -49,16 +50,29 @@ function getGenAIClient() {
   });
 }
 
-// Log requests for debugging and enable CORS
+// Configure CORS for all origins, headers and methods
+app.use(cors({
+  origin: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin", "Access-Control-Allow-Origin"],
+  credentials: true
+}));
+app.options("*", cors());
+
+// Request logger middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
   next();
+});
+
+// Health check endpoint for connection tests
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    aiConfigured: !!process.env.GEMINI_API_KEY,
+    firebaseConfigured: !!process.env.FIREBASE_SERVICE_ACCOUNT
+  });
 });
 
 // Favicon handler
@@ -382,9 +396,9 @@ ${link ? `Link do Edital: ${link}` : ""}
         contents: contents
       });
     } catch (mErr) {
-      console.warn("Retrying generateContent with gemini-2.5-flash fallback...", mErr);
+      console.warn("Retrying generateContent with gemini-flash-latest fallback...", mErr);
       response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-flash-latest",
         contents: contents
       });
     }
@@ -464,9 +478,9 @@ Diretrizes de Atendimento:
         contents: contentsArray
       });
     } catch (mErr) {
-      console.warn("Retrying pregunta with gemini-2.5-flash fallback...", mErr);
+      console.warn("Retrying pergunta with gemini-flash-latest fallback...", mErr);
       response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-flash-latest",
         contents: contentsArray
       });
     }
