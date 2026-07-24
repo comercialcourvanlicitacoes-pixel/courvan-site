@@ -7608,8 +7608,10 @@ window.executarAnaliseEditalIA = async function() {
   }
 
   // Show loading
-  document.getElementById("aiLoadingBox").style.display = "block";
-  document.getElementById("aiResultadoWrapper").style.display = "none";
+  const loadingBox = document.getElementById("aiLoadingBox");
+  if (loadingBox) loadingBox.style.display = "block";
+  const resultWrap = document.getElementById("aiResultadoWrapper");
+  if (resultWrap) resultWrap.style.display = "none";
 
   const statusMsgs = [
     "📖 Lendo o edital e processando o conteúdo...",
@@ -7635,7 +7637,19 @@ window.executarAnaliseEditalIA = async function() {
     });
 
     clearInterval(interval);
-    document.getElementById("aiLoadingBox").style.display = "none";
+    if (loadingBox) loadingBox.style.display = "none";
+
+    if (!resp.ok) {
+      let errText = "Erro " + resp.status;
+      try {
+        const errJson = await resp.json();
+        if (errJson && errJson.error) errText = errJson.error;
+      } catch(e) {
+        const raw = await resp.text().catch(() => "");
+        if (raw) errText += ": " + raw.substring(0, 100);
+      }
+      throw new Error(errText);
+    }
 
     const data = await resp.json();
     if (data.success && data.resultado) {
@@ -7645,28 +7659,124 @@ window.executarAnaliseEditalIA = async function() {
 
       // Render markdown
       const htmlContent = window.marked ? window.marked.parse(data.resultado) : data.resultado.replace(/\n/g, "<br>");
-      document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
-      document.getElementById("aiResultadoWrapper").style.display = "block";
+      if (document.getElementById("aiResultadoMarkdown")) {
+        document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
+      }
+      if (resultWrap) {
+        resultWrap.style.display = "block";
+        resultWrap.scrollIntoView({ behavior: "smooth" });
+      }
 
-      // Reset chat feed
-      document.getElementById("aiChatFeed").innerHTML = `
-        <div style="display:flex; gap:10px; align-items:flex-start;">
-          <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
-          <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#f1f5f9; font-size:13px; max-width:85%;">
-            Análise do edital concluída com sucesso! Todas as exigências e prazos foram mapeados. Qual dúvida você gostaria de tirar sobre este certame?
+      // Reset chat feeds
+      const welcomeMsg = `Análise do edital concluída com sucesso! Todas as exigências e prazos foram mapeados. Qual dúvida você gostaria de tirar sobre este certame?`;
+      if (document.getElementById("aiChatFeed")) {
+        document.getElementById("aiChatFeed").innerHTML = `
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
+            <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#f1f5f9; font-size:13px; max-width:85%;">
+              ${welcomeMsg}
+            </div>
           </div>
-        </div>
-      `;
-
-      // Scroll to result
-      document.getElementById("aiResultadoWrapper").scrollIntoView({ behavior: "smooth" });
+        `;
+      }
+      
+      // Auto notification in floating widget
+      window.appendWidgetMessage('assistant', `✅ <strong>Análise do edital concluída com sucesso!</strong><br><br>Todas as exigências de habilitação, atestados e prazos foram mapeados. Faça qualquer pergunta sobre o edital aqui no chat!`);
+      window.switchWidgetIaMode('chat');
+      window.openWidgetIaFlutuante();
     } else {
       alert("Erro ao analisar edital: " + (data.error || "Tente novamente."));
     }
   } catch (e) {
     clearInterval(interval);
-    document.getElementById("aiLoadingBox").style.display = "none";
-    alert("Ocorreu um erro de conexão ao solicitar a análise com IA: " + e.message);
+    if (loadingBox) loadingBox.style.display = "none";
+    alert("Ocorreu um erro ao solicitar a análise com IA: " + e.message);
+  }
+};
+
+window.appendTabMessage = function(role, content) {
+  const feed = document.getElementById("aiChatFeed");
+  if (!feed) return null;
+
+  if (role === 'user') {
+    const userDiv = document.createElement("div");
+    userDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start; justify-content:flex-end;";
+    userDiv.innerHTML = `
+      <div style="background:rgba(229,184,92,0.15); border:1px solid rgba(229,184,92,0.3); border-radius:12px; padding:12px 16px; color:#fcd34d; font-size:13px; max-width:85%;">
+        ${content}
+      </div>
+      <div style="width:32px; height:32px; border-radius:50%; background:#334155; color:#f1f5f9; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">👤</div>
+    `;
+    feed.appendChild(userDiv);
+    feed.scrollTop = feed.scrollHeight;
+    return userDiv;
+  } else if (role === 'thinking') {
+    const thinkingDiv = document.createElement("div");
+    thinkingDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start;";
+    thinkingDiv.innerHTML = `
+      <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
+      <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#94a3b8; font-size:13px; font-style:italic;">
+        ${content}
+      </div>
+    `;
+    feed.appendChild(thinkingDiv);
+    feed.scrollTop = feed.scrollHeight;
+    return thinkingDiv;
+  } else {
+    const aiDiv = document.createElement("div");
+    aiDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start;";
+    aiDiv.innerHTML = `
+      <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
+      <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#f1f5f9; font-size:13px; max-width:85%;">
+        ${content}
+      </div>
+    `;
+    feed.appendChild(aiDiv);
+    feed.scrollTop = feed.scrollHeight;
+    return aiDiv;
+  }
+};
+
+window.appendWidgetMessage = function(role, content) {
+  const feed = document.getElementById("widgetChatFeed");
+  if (!feed) return null;
+
+  if (role === 'user') {
+    const userDiv = document.createElement("div");
+    userDiv.style.cssText = "display:flex; gap:8px; align-items:flex-start; justify-content:flex-end;";
+    userDiv.innerHTML = `
+      <div style="background:rgba(229,184,92,0.18); border:1px solid rgba(229,184,92,0.3); border-radius:12px; padding:10px 14px; color:#fcd34d; font-size:12px; max-width:85%;">
+        ${content}
+      </div>
+      <div style="width:28px; height:28px; border-radius:50%; background:#334155; color:#f1f5f9; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">👤</div>
+    `;
+    feed.appendChild(userDiv);
+    feed.scrollTop = feed.scrollHeight;
+    return userDiv;
+  } else if (role === 'thinking') {
+    const thinkingDiv = document.createElement("div");
+    thinkingDiv.style.cssText = "display:flex; gap:8px; align-items:flex-start;";
+    thinkingDiv.innerHTML = `
+      <div style="width:28px; height:28px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">🤖</div>
+      <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:10px 14px; color:#94a3b8; font-size:12px; font-style:italic;">
+        ${content}
+      </div>
+    `;
+    feed.appendChild(thinkingDiv);
+    feed.scrollTop = feed.scrollHeight;
+    return thinkingDiv;
+  } else {
+    const aiDiv = document.createElement("div");
+    aiDiv.style.cssText = "display:flex; gap:8px; align-items:flex-start;";
+    aiDiv.innerHTML = `
+      <div style="width:28px; height:28px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">🤖</div>
+      <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:10px 14px; color:#f1f5f9; font-size:12px; max-width:85%; line-height:1.5;">
+        ${content}
+      </div>
+    `;
+    feed.appendChild(aiDiv);
+    feed.scrollTop = feed.scrollHeight;
+    return aiDiv;
   }
 };
 
@@ -7677,82 +7787,162 @@ window.enviarPerguntaChatAi = async function() {
   if (!pergunta) return;
 
   input.value = "";
+  await window.processarPerguntaGeralAi(pergunta);
+};
 
-  const feed = document.getElementById("aiChatFeed");
-  
-  // Append User message
-  const userDiv = document.createElement("div");
-  userDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start; justify-content:flex-end;";
-  userDiv.innerHTML = `
-    <div style="background:rgba(229,184,92,0.15); border:1px solid rgba(229,184,92,0.3); border-radius:12px; padding:12px 16px; color:#fcd34d; font-size:13px; max-width:85%;">
-      ${pergunta}
-    </div>
-    <div style="width:32px; height:32px; border-radius:50%; background:#334155; color:#f1f5f9; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">👤</div>
-  `;
-  feed.appendChild(userDiv);
+window.enviarPerguntaWidgetChat = async function() {
+  const input = document.getElementById("widgetChatInput");
+  if (!input) return;
+  const pergunta = input.value.trim();
+  if (!pergunta) return;
 
-  // Append thinking indicator
-  const thinkingDiv = document.createElement("div");
-  thinkingDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start;";
-  thinkingDiv.innerHTML = `
-    <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
-    <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#94a3b8; font-size:13px; font-style:italic;">
-      Analisando regras do edital e legislação...
-    </div>
-  `;
-  feed.appendChild(thinkingDiv);
-  feed.scrollTop = feed.scrollHeight;
+  input.value = "";
+  await window.processarPerguntaGeralAi(pergunta);
+};
+
+window.processarPerguntaGeralAi = async function(pergunta) {
+  window.appendTabMessage('user', pergunta);
+  window.appendWidgetMessage('user', pergunta);
+
+  const thinkingTab = window.appendTabMessage('thinking', 'Analisando regras e legislação...');
+  const thinkingWidget = window.appendWidgetMessage('thinking', 'Analisando regras e legislação...');
 
   try {
     const resp = await fetch("/api/ai/perguntar-edital", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        editalContext: window.currentEditalContext,
+        editalContext: window.currentEditalContext || "",
         pergunta: pergunta,
-        historico: window.currentChatHistoryAi,
-        analiseId: window.currentAnaliseId
+        historico: window.currentChatHistoryAi || [],
+        analiseId: window.currentAnaliseId || ""
       })
     });
 
-    feed.removeChild(thinkingDiv);
+    if (thinkingTab && thinkingTab.parentNode) thinkingTab.parentNode.removeChild(thinkingTab);
+    if (thinkingWidget && thinkingWidget.parentNode) thinkingWidget.parentNode.removeChild(thinkingWidget);
+
+    if (!resp.ok) {
+      let errText = "Erro " + resp.status;
+      try {
+        const errJson = await resp.json();
+        if (errJson && errJson.error) errText = errJson.error;
+      } catch(e) {
+        const raw = await resp.text().catch(() => "");
+        if (raw) errText += ": " + raw.substring(0, 100);
+      }
+      throw new Error(errText);
+    }
 
     const data = await resp.json();
     if (data.success && data.resposta) {
+      if (!window.currentChatHistoryAi) window.currentChatHistoryAi = [];
       window.currentChatHistoryAi.push({ role: "user", content: pergunta });
       window.currentChatHistoryAi.push({ role: "model", content: data.resposta });
 
       const htmlResp = window.marked ? window.marked.parse(data.resposta) : data.resposta.replace(/\n/g, "<br>");
 
-      const aiDiv = document.createElement("div");
-      aiDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start;";
-      aiDiv.innerHTML = `
-        <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
-        <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#f1f5f9; font-size:13px; max-width:85%;">
-          ${htmlResp}
-        </div>
-      `;
-      feed.appendChild(aiDiv);
-      feed.scrollTop = feed.scrollHeight;
+      window.appendTabMessage('assistant', htmlResp);
+      window.appendWidgetMessage('assistant', htmlResp);
     } else {
-      alert("Erro ao obter resposta do Agente de IA: " + (data.error || "Tente novamente."));
+      const err = data.error || "Não foi possível obter resposta.";
+      window.appendTabMessage('assistant', `<span style="color:#f87171;">⚠️ ${err}</span>`);
+      window.appendWidgetMessage('assistant', `<span style="color:#f87171;">⚠️ ${err}</span>`);
     }
   } catch (e) {
-    if (thinkingDiv.parentNode) feed.removeChild(thinkingDiv);
-    alert("Erro de comunicação com o servidor: " + e.message);
+    if (thinkingTab && thinkingTab.parentNode) thinkingTab.parentNode.removeChild(thinkingTab);
+    if (thinkingWidget && thinkingWidget.parentNode) thinkingWidget.parentNode.removeChild(thinkingWidget);
+
+    window.appendTabMessage('assistant', `<span style="color:#f87171;">⚠️ Erro de comunicação: ${e.message}</span>`);
+    window.appendWidgetMessage('assistant', `<span style="color:#f87171;">⚠️ Erro de comunicação: ${e.message}</span>`);
   }
 };
 
 window.perguntarRapidoAi = function(perguntaText) {
-  const input = document.getElementById("aiChatInput");
-  if (input) {
-    input.value = perguntaText;
-    window.enviarPerguntaChatAi();
+  window.processarPerguntaGeralAi(perguntaText);
+};
+
+window.perguntarRapidoWidget = function(perguntaText) {
+  window.processarPerguntaGeralAi(perguntaText);
+};
+
+window.toggleWidgetIaFlutuante = function() {
+  const card = document.getElementById("floatingAiCard");
+  if (!card) return;
+  if (card.style.display === "none" || !card.style.display) {
+    card.style.display = "flex";
+  } else {
+    card.style.display = "none";
   }
 };
 
+window.openWidgetIaFlutuante = function() {
+  const card = document.getElementById("floatingAiCard");
+  if (card) card.style.display = "flex";
+};
+
+window.switchWidgetIaMode = function(mode) {
+  const modeChat = document.getElementById("widgetModeChat");
+  const modeEdital = document.getElementById("widgetModeEdital");
+  const btnChat = document.getElementById("tabBtnWidgetChat");
+  const btnEdital = document.getElementById("tabBtnWidgetEdital");
+
+  if (mode === 'chat') {
+    if (modeChat) modeChat.style.display = "flex";
+    if (modeEdital) modeEdital.style.display = "none";
+    if (btnChat) {
+      btnChat.style.background = "rgba(229,184,92,0.15)";
+      btnChat.style.borderColor = "rgba(229,184,92,0.3)";
+      btnChat.style.color = "#fcd34d";
+    }
+    if (btnEdital) {
+      btnEdital.style.background = "transparent";
+      btnEdital.style.borderColor = "rgba(255,255,255,0.08)";
+      btnEdital.style.color = "#94a3b8";
+    }
+  } else {
+    if (modeChat) modeChat.style.display = "none";
+    if (modeEdital) modeEdital.style.display = "flex";
+    if (btnEdital) {
+      btnEdital.style.background = "rgba(229,184,92,0.15)";
+      btnEdital.style.borderColor = "rgba(229,184,92,0.3)";
+      btnEdital.style.color = "#fcd34d";
+    }
+    if (btnChat) {
+      btnChat.style.background = "transparent";
+      btnChat.style.borderColor = "rgba(255,255,255,0.08)";
+      btnChat.style.color = "#94a3b8";
+    }
+  }
+};
+
+window.handleSelectEditalFileWidget = function(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      window.currentEditalAiFileBase64 = e.target.result;
+      window.currentEditalAiMimeType = file.type || "application/pdf";
+      const badge = document.getElementById("widgetSelectedFileBadge");
+      const name = document.getElementById("widgetFileName");
+      if (badge) badge.style.display = "block";
+      if (name) name.innerText = file.name;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+window.executarAnaliseEditalWidget = function() {
+  const textVal = document.getElementById("widgetInputTextEdital") ? document.getElementById("widgetInputTextEdital").value.trim() : "";
+  if (textVal) {
+    const textInp = document.getElementById("inputTextEditalAi");
+    if (textInp) textInp.value = textVal;
+  }
+  window.executarAnaliseEditalIA();
+};
+
 window.imprimirRelatorioEditalAi = function() {
-  const content = document.getElementById("areaImpressaoParecerEdital").innerHTML;
+  const content = document.getElementById("areaImpressaoParecerEdital") ? document.getElementById("areaImpressaoParecerEdital").innerHTML : "";
   const printWindow = window.open("", "_blank");
   printWindow.document.write(`
     <html>
@@ -7801,27 +7991,32 @@ window.carregarHistoricoAnalisesIA = async function() {
     if (data.success && Array.isArray(data.analises) && data.analises.length > 0) {
       const box = document.getElementById("aiHistoricoBox");
       const list = document.getElementById("aiHistoricoLista");
-      box.style.display = "block";
-      list.innerHTML = "";
-
-      data.analises.forEach(a => {
-        const item = document.createElement("div");
-        item.style.cssText = "min-width:220px; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(229,184,92,0.2); border-radius:10px; cursor:pointer;";
-        item.onclick = function() {
-          window.currentEditalContext = a.resultadoMarkdown;
-          window.currentAnaliseId = a.id;
-          const htmlContent = window.marked ? window.marked.parse(a.resultadoMarkdown) : a.resultadoMarkdown.replace(/\n/g, "<br>");
-          document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
-          document.getElementById("aiResultadoWrapper").style.display = "block";
-          document.getElementById("aiResultadoWrapper").scrollIntoView({ behavior: "smooth" });
-        };
-        const dt = a.dataAnalise ? new Date(a.dataAnalise).toLocaleDateString("pt-BR") : "";
-        item.innerHTML = `
-          <div style="font-size:12px; font-weight:700; color:#f1f5f9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.licitacaoObjeto || 'Edital'}</div>
-          <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${dt} - ${a.clienteNome || ''}</div>
-        `;
-        list.appendChild(item);
-      });
+      if (box) box.style.display = "block";
+      if (list) {
+        list.innerHTML = "";
+        data.analises.forEach(a => {
+          const item = document.createElement("div");
+          item.style.cssText = "min-width:220px; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(229,184,92,0.2); border-radius:10px; cursor:pointer;";
+          item.onclick = function() {
+            window.currentEditalContext = a.resultadoMarkdown;
+            window.currentAnaliseId = a.id;
+            const htmlContent = window.marked ? window.marked.parse(a.resultadoMarkdown) : a.resultadoMarkdown.replace(/\n/g, "<br>");
+            if (document.getElementById("aiResultadoMarkdown")) {
+              document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
+            }
+            if (document.getElementById("aiResultadoWrapper")) {
+              document.getElementById("aiResultadoWrapper").style.display = "block";
+              document.getElementById("aiResultadoWrapper").scrollIntoView({ behavior: "smooth" });
+            }
+          };
+          const dt = a.dataAnalise ? new Date(a.dataAnalise).toLocaleDateString("pt-BR") : "";
+          item.innerHTML = `
+            <div style="font-size:12px; font-weight:700; color:#f1f5f9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.licitacaoObjeto || 'Edital'}</div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${dt} - ${a.clienteNome || ''}</div>
+          `;
+          list.appendChild(item);
+        });
+      }
     } else {
       alert("Nenhuma análise anterior registrada ainda.");
     }
@@ -7845,6 +8040,178 @@ window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
 };
 
 </script>
+
+<!-- ============================================================== -->
+<!-- BOTÃO E WIDGET FLUTUANTE PREMIUM - AGENTE DE IA COURVAN       -->
+<!-- ============================================================== -->
+
+<style>
+@keyframes floatOrbAnimation {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-7px) scale(1.03); }
+}
+@keyframes pulseAuraGold {
+  0%, 100% { box-shadow: 0 0 18px rgba(229,184,92,0.4), 0 8px 20px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 32px rgba(229,184,92,0.8), 0 12px 28px rgba(0,0,0,0.7); }
+}
+@keyframes slideUpFloatingWidget {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.floating-ai-launcher {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #111827 0%, #030712 100%);
+  border: 1px solid rgba(229, 184, 92, 0.45);
+  padding: 10px 18px 10px 12px;
+  border-radius: 99px;
+  cursor: pointer;
+  animation: floatOrbAnimation 4s ease-in-out infinite, pulseAuraGold 3s ease-in-out infinite;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
+}
+.floating-ai-launcher:hover {
+  transform: translateY(-4px) scale(1.05) !important;
+  border-color: #fcd34d;
+}
+.floating-ai-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.4);
+}
+.floating-ai-avatar::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 11px;
+  height: 11px;
+  background: #10b981;
+  border: 2px solid #030712;
+  border-radius: 50%;
+}
+.floating-ai-card {
+  position: fixed;
+  bottom: 88px;
+  right: 24px;
+  width: 430px;
+  height: 620px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 110px);
+  z-index: 99999;
+  background: rgba(9, 14, 26, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(229, 184, 92, 0.35);
+  border-radius: 24px;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.85), 0 0 50px rgba(229,184,92,0.15);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUpFloatingWidget 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+</style>
+
+<div id="floatingAiLauncher" class="floating-ai-launcher" onclick="window.toggleWidgetIaFlutuante()">
+  <div class="floating-ai-avatar">🤖</div>
+  <div style="text-align:left;">
+    <div style="font-size:13px; font-weight:800; color:#fcd34d; display:flex; align-items:center; gap:6px;">
+      Agente de IA
+      <span style="display:inline-block; width:6px; height:6px; background:#10b981; border-radius:50%;"></span>
+    </div>
+    <div style="font-size:11px; color:#cbd5e1;">Consultor de Editais</div>
+  </div>
+</div>
+
+<div id="floatingAiCard" class="floating-ai-card">
+  <!-- HEADER -->
+  <div style="padding:16px 20px; background:linear-gradient(135deg, rgba(229,184,92,0.15) 0%, rgba(15,23,42,0.8) 100%); border-bottom:1px solid rgba(229,184,92,0.2); display:flex; align-items:center; justify-content:space-between;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #fcd34d, #e5b85c); display:flex; align-items:center; justify-content:center; font-size:20px; color:#030712; box-shadow: 0 0 15px rgba(229,184,92,0.4);">🤖</div>
+      <div>
+        <div style="font-size:15px; font-weight:800; color:#f1f5f9; display:flex; align-items:center; gap:6px;">
+          Agente IA Courvan
+          <span style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:99px; border:1px solid rgba(16,185,129,0.3); font-weight:700;">ONLINE</span>
+        </div>
+        <div style="font-size:11px; color:#94a3b8;">Especialista em Licitações & Editais</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:6px;">
+      <button onclick="window.toggleWidgetIaFlutuante()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">✕</button>
+    </div>
+  </div>
+
+  <!-- MODES NAVIGATION -->
+  <div style="display:flex; padding:8px 12px; background:rgba(3,7,18,0.6); border-bottom:1px solid rgba(255,255,255,0.05); gap:6px;">
+    <button id="tabBtnWidgetChat" onclick="window.switchWidgetIaMode('chat')" style="flex:1; padding:8px; border-radius:10px; border:1px solid rgba(229,184,92,0.3); background:rgba(229,184,92,0.15); color:#fcd34d; font-size:12px; font-weight:700; cursor:pointer;">
+      💬 Chat Consultivo
+    </button>
+    <button id="tabBtnWidgetEdital" onclick="window.switchWidgetIaMode('edital')" style="flex:1; padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:transparent; color:#94a3b8; font-size:12px; font-weight:600; cursor:pointer;">
+      📄 Analisar Edital
+    </button>
+  </div>
+
+  <!-- BODY: MODE CHAT -->
+  <div id="widgetModeChat" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+    <!-- CHAT FEED -->
+    <div id="widgetChatFeed" style="flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; background:rgba(3,7,18,0.4);">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div style="width:30px; height:30px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0;">🤖</div>
+        <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.18); border-radius:14px; padding:12px 14px; color:#f1f5f9; font-size:13px; line-height:1.5;">
+          Olá! Sou o <strong>Agente de IA da Courvan</strong>. Como posso te ajudar hoje? Você pode tirar dúvidas jurídicas sobre a Nova Lei de Licitações (14.133/21) ou enviar um edital para eu analisar.
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK CHIPS -->
+    <div style="padding:8px 12px; background:rgba(3,7,18,0.8); border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:6px; overflow-x:auto;">
+      <button onclick="window.perguntarRapidoWidget('Quais os atestados de capacidade técnica mais exigidos?')" style="white-space:nowrap; padding:4px 10px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:11px; cursor:pointer;">❓ Atestados Técnicos</button>
+      <button onclick="window.perguntarRapidoWidget('Qual o prazo para impugnar o edital na Lei 14.133/21?')" style="white-space:nowrap; padding:4px 10px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:11px; cursor:pointer;">❓ Prazo Impugnação</button>
+      <button onclick="window.perguntarRapidoWidget('Como comprovar a qualificação econômico-financeira?')" style="white-space:nowrap; padding:4px 10px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:11px; cursor:pointer;">❓ Balanço Patrimonial</button>
+    </div>
+
+    <!-- INPUT BAR -->
+    <div style="padding:12px; background:rgba(9,14,26,0.95); border-top:1px solid rgba(255,255,255,0.08); display:flex; gap:8px; align-items:center;">
+      <input id="widgetChatInput" placeholder="Digite sua pergunta ou dúvida jurídica..." onkeydown="if(event.key==='Enter') window.enviarPerguntaWidgetChat()" style="flex:1; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); background:rgba(3,7,18,0.8); color:#f1f5f9; font-size:13px; outline:none;" />
+      <button onclick="window.enviarPerguntaWidgetChat()" style="padding:10px 16px; background:linear-gradient(135deg, #fcd34d, #e5b85c); border:none; border-radius:12px; color:#030712; font-weight:800; font-size:13px; cursor:pointer;">
+        Enviar ➔
+      </button>
+    </div>
+  </div>
+
+  <!-- BODY: MODE EDITAL UPLOAD -->
+  <div id="widgetModeEdital" style="display:none; flex-direction:column; flex:1; padding:16px; overflow-y:auto;">
+    <div style="font-size:13px; font-weight:700; color:#fcd34d; margin-bottom:8px;">📄 Enviar Edital para Leitura da IA</div>
+    <div style="border:2px dashed rgba(229,184,92,0.3); background:rgba(229,184,92,0.02); border-radius:16px; padding:24px 16px; text-align:center; cursor:pointer; margin-bottom:12px;" onclick="document.getElementById('inputWidgetEditalFile').click();">
+      <input type="file" id="inputWidgetEditalFile" accept=".pdf,.txt,.docx" style="display:none;" onchange="window.handleSelectEditalFileWidget(this)">
+      <div style="font-size:32px; margin-bottom:6px;">📤</div>
+      <div style="font-size:13px; font-weight:600; color:#f1f5f9;">Clique ou solte o PDF do Edital aqui</div>
+      <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Formatos: PDF ou DOCX até 50MB</div>
+    </div>
+    <div id="widgetSelectedFileBadge" style="display:none; margin-bottom:12px; padding:10px 14px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:10px; font-size:12px; color:#34d399; font-weight:600;">
+      📄 <span id="widgetFileName">edital.pdf</span>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Ou cole o texto do edital aqui:</label>
+      <textarea id="widgetInputTextEdital" placeholder="Cole aqui o texto do edital..." style="width:100%; height:90px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(3,7,18,0.6); color:#f1f5f9; font-size:12px; resize:none;"></textarea>
+    </div>
+    <button onclick="window.executarAnaliseEditalWidget()" style="width:100%; padding:12px; background:linear-gradient(135deg, #fcd34d, #e5b85c); border:none; border-radius:12px; color:#030712; font-weight:800; font-size:13px; cursor:pointer; margin-top:auto;">
+      ⚡ Analisar Edital Agora
+    </button>
+  </div>
+</div>
 
 </body>
 </html>
