@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
     /* ==========================================================================
@@ -668,6 +669,12 @@
       <span class="sidebar-label">Minhas Licitações</span>
       <span class="notificacao-badge" id="badge-licitacoes">0</span>
     </button>
+
+    <button onclick="mostrarAba('agente-ia')" id="btnSidebarAgenteIA">
+      <span class="sidebar-icon">🤖</span>
+      <span class="sidebar-label">Agente de IA (Editais)</span>
+      <span class="notificacao-badge" style="background:#e5b85c; color:#030712; font-weight:800; display:inline-flex;">NOVO</span>
+    </button>
     
     <button onclick="window.irParaAgenda()">
       <span class="sidebar-icon">📅</span>
@@ -733,6 +740,198 @@
   </div>
 
   <div class="content">
+
+    <!-- ============================================================== -->
+    <!-- ABA: AGENTE DE IA (ANÁLISE DE EDITAIS, MAPEAMENTO E CHAT)    -->
+    <!-- ============================================================== -->
+    <div id="agente-ia" class="aba" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:24px;">
+        <div>
+          <h1 style="display:flex; align-items:center; gap:12px; font-size:26px; font-weight:800; color:#f1f5f9; margin-bottom:6px;">
+            <span>🤖 Agente de IA Courvan</span>
+            <span style="font-size:12px; font-weight:700; padding:4px 10px; background:linear-gradient(135deg, rgba(229,184,92,0.2) 0%, rgba(229,184,92,0.05) 100%); border:1px solid rgba(229,184,92,0.3); color:#fcd34d; border-radius:99px;">Especialista em Editais</span>
+          </h1>
+          <p style="font-size:14px; color:#94a3b8; max-width:800px; margin:0;">
+            O Agente lê arquivos PDF ou textos de editais, mapeia instantaneamente todas as exigências de habilitação (jurídica, fiscal, técnica e financeira), identifica prazos, faz análise de riscos e responde qualquer dúvida dos seus clientes.
+          </p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button onclick="window.carregarHistoricoAnalisesIA()" class="doc-tab-btn" style="display:flex; align-items:center; gap:6px;">
+            <span>⏳ Histórico de Análises</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PAINEL PRINCIPAL DE ENVIO DE EDITAL -->
+      <div class="card" style="background:linear-gradient(180deg, #090e1a 0%, #050811 100%); border:1px solid rgba(229, 184, 92, 0.2); border-radius:18px; padding:24px; margin-bottom:30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+        <h2 style="font-size:18px; font-weight:700; color:#fcd34d; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+          <span>📄</span> Informar Edital para Análise
+        </h2>
+
+        <!-- TABS DE MÉTODOS DE ENVIO -->
+        <div style="display:flex; gap:10px; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:12px;">
+          <button id="btnAiTabUpload" onclick="window.selecionarMetodoEnvioAi('upload')" class="doc-tab-btn active">
+            📁 Upload de PDF / DOCX
+          </button>
+          <button id="btnAiTabTexto" onclick="window.selecionarMetodoEnvioAi('texto')" class="doc-tab-btn">
+            📝 Colar Texto do Edital
+          </button>
+          <button id="btnAiTabMinhasLicitacoes" onclick="window.selecionarMetodoEnvioAi('licitacao')" class="doc-tab-btn">
+            🏛️ Minhas Licitações
+          </button>
+        </div>
+
+        <!-- MÉTODO 1: UPLOAD DE ARQUIVO -->
+        <div id="aiBoxUpload" style="display:block;">
+          <div id="dropzoneEditalAi" style="border:2px dashed rgba(229,184,92,0.3); background:rgba(229,184,92,0.02); border-radius:16px; padding:32px 20px; text-align:center; cursor:pointer; transition:all 0.2s;" onclick="document.getElementById('inputArquivoEditalAi').click();" ondragover="event.preventDefault(); this.style.background='rgba(229,184,92,0.08)';" ondragleave="this.style.background='rgba(229,184,92,0.02)';" ondrop="window.handleDropEditalAi(event)">
+            <input type="file" id="inputArquivoEditalAi" accept=".pdf,.txt,.docx" style="display:none;" onchange="window.handleSelectEditalFileAi(this)">
+            <div style="font-size:36px; margin-bottom:8px;">📤</div>
+            <div style="font-size:15px; font-weight:600; color:#f1f5f9; margin-bottom:4px;">Arraste e solte o arquivo PDF ou DOCX do Edital aqui</div>
+            <div style="font-size:12px; color:#94a3b8;">ou clique para selecionar do seu computador (Suporta até 50MB)</div>
+          </div>
+          <div id="fileSelectedBadgeAi" style="display:none; margin-top:12px; padding:12px 16px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:20px;">📄</span>
+              <div>
+                <div id="fileNameAi" style="font-size:14px; font-weight:600; color:#34d399;">edital.pdf</div>
+                <div id="fileSizeAi" style="font-size:11px; color:#94a3b8;">0 MB</div>
+              </div>
+            </div>
+            <button onclick="window.removerArquivoEditalAi()" style="background:transparent; border:none; color:#f87171; cursor:pointer; font-size:13px; font-weight:600;">✕ Remover</button>
+          </div>
+        </div>
+
+        <!-- MÉTODO 2: TEXTO DIRETO -->
+        <div id="aiBoxTexto" style="display:none;">
+          <textarea id="inputTextEditalAi" placeholder="Cole aqui o conteúdo integral do edital ou os capítulos de habilitação e prazos..." style="width:100%; height:160px; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:rgba(3,7,18,0.6); color:#f3f4f6; font-size:13px; font-family:monospace; resize:vertical;"></textarea>
+        </div>
+
+        <!-- MÉTODO 3: SELECIONAR LICITAÇÃO CADASTRADA -->
+        <div id="aiBoxLicitacao" style="display:none;">
+          <label style="font-size:12px; color:#94a3b8; font-weight:600; display:block; margin-bottom:6px;">Selecione uma Licitação Ativa:</label>
+          <select id="selectLicitacaoAi" onchange="window.carregarDadosLicitacaoSelecionadaAi(this.value)" style="width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:#050811; color:#f1f5f9; font-size:14px; margin-bottom:12px;">
+            <option value="">-- Selecione uma Licitação --</option>
+          </select>
+          <input id="inputLinkLicitacaoAi" placeholder="Link do edital (se houver)" style="width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:rgba(3,7,18,0.6); color:#f1f5f9; font-size:13px;">
+        </div>
+
+        <!-- IDENTIFICAÇÃO OPCIONAL DO CLIENTE & OBJETO -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:16px;">
+          <div>
+            <label style="font-size:11px; color:#94a3b8; font-weight:600; display:block; margin-bottom:4px;">Nome do Licitante / Cliente:</label>
+            <input id="inputClienteNomeAi" placeholder="Ex: Santos Tecnologia LTDA" style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(3,7,18,0.6); color:#f1f5f9; font-size:13px;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:#94a3b8; font-weight:600; display:block; margin-bottom:4px;">Objeto / Número do Certame:</label>
+            <input id="inputObjetoCertameAi" placeholder="Ex: Pregão 05/2026 - Aquisição de Licenças de Software" style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(3,7,18,0.6); color:#f1f5f9; font-size:13px;">
+          </div>
+        </div>
+
+        <!-- BOTÃO DE AÇÃO PRINCIPAL -->
+        <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+          <button id="btnAnalisarEditalSubmit" onclick="window.executarAnaliseEditalIA()" style="display:inline-flex; align-items:center; gap:10px; padding:14px 28px; background:linear-gradient(135deg, #fcd34d 0%, #e5b85c 100%); border:none; border-radius:12px; color:#030712; font-weight:800; font-size:15px; cursor:pointer; box-shadow: 0 4px 15px rgba(229,184,92,0.3); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
+            <span>⚡ Analisar Edital & Mapear Exigências</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SPINNER / CAIXA DE CARREGAMENTO ANIMADA -->
+      <div id="aiLoadingBox" style="display:none; text-align:center; padding:40px 20px; background:#090e1a; border:1px solid rgba(229,184,92,0.2); border-radius:18px; margin-bottom:30px;">
+        <div style="display:inline-block; width:48px; height:48px; border:4px solid rgba(229,184,92,0.2); border-top-color:#e5b85c; border-radius:50%; animation: spin 1s infinite linear; margin-bottom:16px;"></div>
+        <style>
+          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          .markdown-body h3 { font-size: 18px; color: #fcd34d; border-bottom: 1px solid rgba(229,184,92,0.2); padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
+          .markdown-body h4 { font-size: 15px; color: #e5b85c; margin-top: 18px; margin-bottom: 8px; }
+          .markdown-body p { margin-bottom: 10px; }
+          .markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 12px; }
+          .markdown-body li { margin-bottom: 6px; }
+          .markdown-body table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+          .markdown-body th, .markdown-body td { border: 1px solid rgba(255,255,255,0.08); padding: 10px 14px; text-align: left; }
+          .markdown-body th { background: rgba(229,184,92,0.1); color: #fcd34d; }
+          .markdown-body hr { border: 0; height: 1px; background: rgba(255,255,255,0.08); margin: 24px 0; }
+        </style>
+        <h3 style="font-size:18px; color:#f1f5f9; font-weight:700; margin-bottom:6px;">Agente de IA Lendo o Edital...</h3>
+        <p id="aiStatusMessage" style="font-size:13px; color:#94a3b8;">Mapeando exigências de habilitação, prazos e qualificações...</p>
+      </div>
+
+      <!-- PAINEL COM HISTÓRICO DE ANÁLISES SALVAS -->
+      <div id="aiHistoricoBox" style="display:none; margin-bottom:24px; padding:16px; background:#090e1a; border:1px solid rgba(255,255,255,0.06); border-radius:14px;">
+        <div style="font-size:13px; font-weight:700; color:#e5b85c; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+          <span>⏳ Análises Recentes Salvas</span>
+        </div>
+        <div id="aiHistoricoLista" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:6px;"></div>
+      </div>
+
+      <!-- PAINEL DE RESULTADOS DA ANÁLISE -->
+      <div id="aiResultadoWrapper" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+          <h2 style="font-size:20px; font-weight:800; color:#fcd34d; display:flex; align-items:center; gap:8px;">
+            <span>📊</span> Parecer & Mapeamento do Edital
+          </h2>
+          <div style="display:flex; gap:10px;">
+            <button onclick="window.imprimirRelatorioEditalAi()" class="doc-tab-btn" style="background:rgba(255,255,255,0.05);">
+              🖨️ Imprimir / PDF
+            </button>
+            <button onclick="window.copiarResultadoEditalAi()" class="doc-tab-btn" style="background:rgba(16,185,129,0.1); color:#34d399; border-color:rgba(16,185,129,0.3);">
+              📋 Copiar Parecer
+            </button>
+          </div>
+        </div>
+
+        <div id="areaImpressaoParecerEdital">
+          <div id="aiResultadoMarkdown" class="markdown-body" style="background:#090e1a; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:28px; color:#e2e8f0; font-size:14px; line-height:1.7; box-shadow:0 8px 30px rgba(0,0,0,0.4);">
+          </div>
+        </div>
+
+        <!-- SEÇÃO DE CHAT CONSULTIVO SOBRE O EDITAL -->
+        <div style="margin-top:35px; background:linear-gradient(180deg, #090e1a 0%, #030712 100%); border:1px solid rgba(229,184,92,0.25); border-radius:18px; padding:24px; box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="font-size:24px;">💬</span>
+            <h3 style="font-size:18px; font-weight:800; color:#f1f5f9; margin:0;">Chat Consultivo em Tempo Real com o Edital</h3>
+          </div>
+          <p style="font-size:13px; color:#94a3b8; margin-bottom:16px;">
+            Faça qualquer pergunta específica sobre este edital e o Agente de IA responderá instantaneamente com base nas regras do certame e na legislação de licitações.
+          </p>
+
+          <!-- SUGESTÕES RÁPIDAS DE PERGUNTAS -->
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+            <button onclick="window.perguntarRapidoAi('Quais são os atestados de capacidade técnica exigidos?')" style="padding:6px 12px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:12px; cursor:pointer; font-weight:500;">
+              ❓ Atestados de Capacidade Técnica
+            </button>
+            <button onclick="window.perguntarRapidoAi('Qual é o prazo exato para impugnar ou pedir esclarecimentos?')" style="padding:6px 12px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:12px; cursor:pointer; font-weight:500;">
+              ❓ Prazo de Impugnação / Esclarecimentos
+            </button>
+            <button onclick="window.perguntarRapidoAi('Preciso apresentar balanço patrimonial e quais os índices financeiros exigidos?')" style="padding:6px 12px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:12px; cursor:pointer; font-weight:500;">
+              ❓ Balanço & Índices Financeiros
+            </button>
+            <button onclick="window.perguntarRapidoAi('A vistoria técnica no local é obrigatória ou facultativa?')" style="padding:6px 12px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:12px; cursor:pointer; font-weight:500;">
+              ❓ Vistoria Técnica Obrigatória?
+            </button>
+            <button onclick="window.perguntarRapidoAi('Há alguma cláusula potencialmente abusiva ou restritiva que deve ser contestada?')" style="padding:6px 12px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:12px; cursor:pointer; font-weight:500;">
+              ❓ Cláusulas Abusivas ou Direcionadas
+            </button>
+          </div>
+
+          <!-- MENSAGENS DO CHAT -->
+          <div id="aiChatFeed" style="max-height:350px; overflow-y:auto; padding:12px; background:rgba(3,7,18,0.7); border:1px solid rgba(255,255,255,0.05); border-radius:14px; margin-bottom:16px; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; gap:10px; align-items:flex-start;">
+              <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
+              <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#f1f5f9; font-size:13px; max-width:85%;">
+                Olá! Analisei o edital e mapeei todas as exigências. Qual dúvida você ou seu cliente têm sobre este certame?
+              </div>
+            </div>
+          </div>
+
+          <!-- INPUT DO CHAT -->
+          <div style="display:flex; gap:10px;">
+            <input id="aiChatInput" placeholder="Digite sua dúvida sobre o edital (ex: Qual a garantia de proposta exigida?)..." onkeypress="if(event.key === 'Enter') window.enviarPerguntaChatAi()" style="flex:1; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:rgba(3,7,18,0.8); color:#f1f5f9; font-size:14px;">
+            <button id="btnAiChatSend" onclick="window.enviarPerguntaChatAi()" style="padding:12px 20px; background:#e5b85c; border:none; border-radius:12px; color:#030712; font-weight:700; cursor:pointer;">
+              Enviar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div id="geradores" class="aba" style="display:none;">
       <h1>📄 Central de Geradores de Documentos</h1>
@@ -3599,9 +3798,12 @@ window.renderizarBoardLicitacoes = function() {
         </div>
 
         <!-- Detailed Modal Trigger -->
-        <div style="margin-top:2px;">
+        <div style="margin-top:2px; display:flex; flex-direction:column; gap:6px;">
           <button class="botaoPadrao" style="background:rgba(229,184,92,0.06); border:1px solid rgba(229,184,92,0.15); color:#e5b85c; width:100%; box-shadow:none; padding:8px 12px; font-size:11px; height:32px; border-radius:8px; font-weight:700;" onclick="window.abrirModalDetalhesLicitacao('${l.id}')">
             🔍 Ver Detalhes, Anexos & Histórico (${l.totalMovimentacoes || 0})
+          </button>
+          <button style="background:linear-gradient(135deg, rgba(229,184,92,0.15) 0%, rgba(229,184,92,0.05) 100%); border:1px solid rgba(229,184,92,0.3); color:#fcd34d; width:100%; padding:8px 12px; font-size:11px; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:0.2s;" onmouseover="this.style.background='rgba(229,184,92,0.25)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(229,184,92,0.15) 0%, rgba(229,184,92,0.05) 100%)'" onclick="event.stopPropagation(); window.abrirAgenteIaParaLicitacao('${l.id}')">
+            <span>🤖 Analisar Edital com IA</span>
           </button>
         </div>
         
@@ -7278,6 +7480,368 @@ window.renderizarCredenciais = function() {
       </div>
     `;
   });
+};
+
+// ============================================================================
+// LOGIC FOR AGENTE DE IA (ANÁLISE DE EDITAIS & CHAT CONSULTIVO)
+// ============================================================================
+
+window.currentEditalAiFileBase64 = null;
+window.currentEditalAiMimeType = null;
+window.currentEditalContext = "";
+window.currentAnaliseId = "";
+window.currentChatHistoryAi = [];
+
+window.selecionarMetodoEnvioAi = function(tipo) {
+  const btnUpload = document.getElementById("btnAiTabUpload");
+  const btnTexto = document.getElementById("btnAiTabTexto");
+  const btnLic = document.getElementById("btnAiTabMinhasLicitacoes");
+
+  if (btnUpload) btnUpload.classList.remove("active");
+  if (btnTexto) btnTexto.classList.remove("active");
+  if (btnLic) btnLic.classList.remove("active");
+
+  const boxUpload = document.getElementById("aiBoxUpload");
+  const boxTexto = document.getElementById("aiBoxTexto");
+  const boxLic = document.getElementById("aiBoxLicitacao");
+
+  if (boxUpload) boxUpload.style.display = "none";
+  if (boxTexto) boxTexto.style.display = "none";
+  if (boxLic) boxLic.style.display = "none";
+
+  if (tipo === "upload") {
+    if (btnUpload) btnUpload.classList.add("active");
+    if (boxUpload) boxUpload.style.display = "block";
+  } else if (tipo === "texto") {
+    if (btnTexto) btnTexto.classList.add("active");
+    if (boxTexto) boxTexto.style.display = "block";
+  } else if (tipo === "licitacao") {
+    if (btnLic) btnLic.classList.add("active");
+    if (boxLic) boxLic.style.display = "block";
+    window.popularSelectLicitacoesAi();
+  }
+};
+
+window.handleSelectEditalFileAi = function(input) {
+  if (input.files && input.files[0]) {
+    window.processarArquivoEditalAi(input.files[0]);
+  }
+};
+
+window.handleDropEditalAi = function(e) {
+  e.preventDefault();
+  if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+    window.processarArquivoEditalAi(e.dataTransfer.files[0]);
+  }
+};
+
+window.processarArquivoEditalAi = function(file) {
+  if (file.size > 50 * 1024 * 1024) {
+    alert("O arquivo selecionado é maior que 50MB. Escolha um arquivo menor.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    window.currentEditalAiFileBase64 = evt.target.result;
+    window.currentEditalAiMimeType = file.type || "application/pdf";
+    document.getElementById("fileNameAi").innerText = file.name;
+    document.getElementById("fileSizeAi").innerText = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+    document.getElementById("fileSelectedBadgeAi").style.display = "flex";
+    document.getElementById("dropzoneEditalAi").style.display = "none";
+  };
+  reader.readAsDataURL(file);
+};
+
+window.removerArquivoEditalAi = function() {
+  window.currentEditalAiFileBase64 = null;
+  window.currentEditalAiMimeType = null;
+  document.getElementById("inputArquivoEditalAi").value = "";
+  document.getElementById("fileSelectedBadgeAi").style.display = "none";
+  document.getElementById("dropzoneEditalAi").style.display = "block";
+};
+
+window.popularSelectLicitacoesAi = function() {
+  const sel = document.getElementById("selectLicitacaoAi");
+  if (!sel) return;
+  sel.innerHTML = '<option value="">-- Selecione uma Licitação Ativa --</option>';
+  
+  const licitacoes = window.listaLicitacoes || window.licitacoes || [];
+  if (licitacoes.length === 0) {
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.innerText = "Nenhuma licitação cadastrada encontrada";
+    sel.appendChild(opt);
+    return;
+  }
+
+  licitacoes.forEach(l => {
+    const opt = document.createElement("option");
+    opt.value = l.id || l.numero;
+    opt.innerText = `${l.orgao || 'Licitação'} - ${l.objeto || l.numero || 'Sem título'}`;
+    sel.appendChild(opt);
+  });
+};
+
+window.carregarDadosLicitacaoSelecionadaAi = function(id) {
+  if (!id) return;
+  const licitacoes = window.listaLicitacoes || window.licitacoes || [];
+  const l = licitacoes.find(x => x.id === id || x.numero === id);
+  if (l) {
+    if (l.objeto) document.getElementById("inputObjetoCertameAi").value = l.objeto;
+    if (l.linkEdital || l.link) document.getElementById("inputLinkLicitacaoAi").value = l.linkEdital || l.link;
+    if (l.resumo || l.descricao) document.getElementById("inputTextEditalAi").value = l.resumo || l.descricao;
+  }
+};
+
+window.executarAnaliseEditalIA = async function() {
+  const fileData = window.currentEditalAiFileBase64;
+  const mimeType = window.currentEditalAiMimeType;
+  const text = document.getElementById("inputTextEditalAi") ? document.getElementById("inputTextEditalAi").value.trim() : "";
+  const link = document.getElementById("inputLinkLicitacaoAi") ? document.getElementById("inputLinkLicitacaoAi").value.trim() : "";
+  const clienteNome = document.getElementById("inputClienteNomeAi") ? document.getElementById("inputClienteNomeAi").value.trim() : (window.clienteAtual ? window.clienteAtual.nome : "Cliente");
+  const licitacaoObjeto = document.getElementById("inputObjetoCertameAi") ? document.getElementById("inputObjetoCertameAi").value.trim() : "";
+  const clienteId = window.clienteAtual ? window.clienteAtual.id : "geral";
+
+  if (!fileData && !text && !link) {
+    alert("Por favor, envie um arquivo PDF, cole o texto do edital ou selecione uma licitação com link/texto para ser analisado.");
+    return;
+  }
+
+  // Show loading
+  document.getElementById("aiLoadingBox").style.display = "block";
+  document.getElementById("aiResultadoWrapper").style.display = "none";
+
+  const statusMsgs = [
+    "📖 Lendo o edital e processando o conteúdo...",
+    "⚖️ Mapeando requisitos de Habilitação Jurídica e Fiscal...",
+    "🛠️ Identificando exigências de Atestados Técnicos e Vistorias...",
+    "📈 Analisando Balanço Patrimonial e Índices Financeiros...",
+    "⏱️ Calculando prazos críticos para Impugnações e Esclarecimentos...",
+    "💡 Elaborando parecer estratégico e recomendações da Courvan..."
+  ];
+
+  let msgIdx = 0;
+  const interval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % statusMsgs.length;
+    const el = document.getElementById("aiStatusMessage");
+    if (el) el.innerText = statusMsgs[msgIdx];
+  }, 2000);
+
+  try {
+    const resp = await fetch("/api/ai/analisar-edital", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, fileData, mimeType, link, clienteNome, licitacaoObjeto, clienteId })
+    });
+
+    clearInterval(interval);
+    document.getElementById("aiLoadingBox").style.display = "none";
+
+    const data = await resp.json();
+    if (data.success && data.resultado) {
+      window.currentEditalContext = data.resultado;
+      window.currentAnaliseId = data.analiseId || "";
+      window.currentChatHistoryAi = [];
+
+      // Render markdown
+      const htmlContent = window.marked ? window.marked.parse(data.resultado) : data.resultado.replace(/\n/g, "<br>");
+      document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
+      document.getElementById("aiResultadoWrapper").style.display = "block";
+
+      // Reset chat feed
+      document.getElementById("aiChatFeed").innerHTML = `
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
+          <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#f1f5f9; font-size:13px; max-width:85%;">
+            Análise do edital concluída com sucesso! Todas as exigências e prazos foram mapeados. Qual dúvida você gostaria de tirar sobre este certame?
+          </div>
+        </div>
+      `;
+
+      // Scroll to result
+      document.getElementById("aiResultadoWrapper").scrollIntoView({ behavior: "smooth" });
+    } else {
+      alert("Erro ao analisar edital: " + (data.error || "Tente novamente."));
+    }
+  } catch (e) {
+    clearInterval(interval);
+    document.getElementById("aiLoadingBox").style.display = "none";
+    alert("Ocorreu um erro de conexão ao solicitar a análise com IA: " + e.message);
+  }
+};
+
+window.enviarPerguntaChatAi = async function() {
+  const input = document.getElementById("aiChatInput");
+  if (!input) return;
+  const pergunta = input.value.trim();
+  if (!pergunta) return;
+
+  input.value = "";
+
+  const feed = document.getElementById("aiChatFeed");
+  
+  // Append User message
+  const userDiv = document.createElement("div");
+  userDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start; justify-content:flex-end;";
+  userDiv.innerHTML = `
+    <div style="background:rgba(229,184,92,0.15); border:1px solid rgba(229,184,92,0.3); border-radius:12px; padding:12px 16px; color:#fcd34d; font-size:13px; max-width:85%;">
+      ${pergunta}
+    </div>
+    <div style="width:32px; height:32px; border-radius:50%; background:#334155; color:#f1f5f9; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">👤</div>
+  `;
+  feed.appendChild(userDiv);
+
+  // Append thinking indicator
+  const thinkingDiv = document.createElement("div");
+  thinkingDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start;";
+  thinkingDiv.innerHTML = `
+    <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
+    <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#94a3b8; font-size:13px; font-style:italic;">
+      Analisando regras do edital e legislação...
+    </div>
+  `;
+  feed.appendChild(thinkingDiv);
+  feed.scrollTop = feed.scrollHeight;
+
+  try {
+    const resp = await fetch("/api/ai/perguntar-edital", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        editalContext: window.currentEditalContext,
+        pergunta: pergunta,
+        historico: window.currentChatHistoryAi,
+        analiseId: window.currentAnaliseId
+      })
+    });
+
+    feed.removeChild(thinkingDiv);
+
+    const data = await resp.json();
+    if (data.success && data.resposta) {
+      window.currentChatHistoryAi.push({ role: "user", content: pergunta });
+      window.currentChatHistoryAi.push({ role: "model", content: data.resposta });
+
+      const htmlResp = window.marked ? window.marked.parse(data.resposta) : data.resposta.replace(/\n/g, "<br>");
+
+      const aiDiv = document.createElement("div");
+      aiDiv.style.cssText = "display:flex; gap:10px; align-items:flex-start;";
+      aiDiv.innerHTML = `
+        <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
+        <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#f1f5f9; font-size:13px; max-width:85%;">
+          ${htmlResp}
+        </div>
+      `;
+      feed.appendChild(aiDiv);
+      feed.scrollTop = feed.scrollHeight;
+    } else {
+      alert("Erro ao obter resposta do Agente de IA: " + (data.error || "Tente novamente."));
+    }
+  } catch (e) {
+    if (thinkingDiv.parentNode) feed.removeChild(thinkingDiv);
+    alert("Erro de comunicação com o servidor: " + e.message);
+  }
+};
+
+window.perguntarRapidoAi = function(perguntaText) {
+  const input = document.getElementById("aiChatInput");
+  if (input) {
+    input.value = perguntaText;
+    window.enviarPerguntaChatAi();
+  }
+};
+
+window.imprimirRelatorioEditalAi = function() {
+  const content = document.getElementById("areaImpressaoParecerEdital").innerHTML;
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Parecer Técnico de Edital - Courvan Assessoria</title>
+        <style>
+          body { font-family: sans-serif; padding: 40px; color: #111; line-height: 1.6; }
+          h1, h2, h3 { color: #0f172a; border-bottom: 2px solid #e5b85c; padding-bottom: 4px; }
+          table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+          th, td { border: 1px solid #ccc; padding: 8px 12px; }
+          th { background: #f8fafc; }
+          hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div style="text-align:center; margin-bottom:30px;">
+          <h2>COURVAN ASSESSORIA EM LICITAÇÕES</h2>
+          <p>Análise Estratégica & Mapeamento de Exigências de Edital</p>
+        </div>
+        ${content}
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => printWindow.print(), 500);
+};
+
+window.copiarResultadoEditalAi = function() {
+  if (!window.currentEditalContext) {
+    alert("Nenhuma análise disponível para copiar.");
+    return;
+  }
+  navigator.clipboard.writeText(window.currentEditalContext).then(() => {
+    alert("Parecer e Mapeamento do Edital copiado para a área de transferência com sucesso!");
+  }).catch(err => {
+    alert("Não foi possível copiar automaticamente: " + err);
+  });
+};
+
+window.carregarHistoricoAnalisesIA = async function() {
+  const clienteId = window.clienteAtual ? window.clienteAtual.id : "geral";
+  try {
+    const resp = await fetch(`/api/ai/historico-analises/${clienteId}`);
+    const data = await resp.json();
+    if (data.success && Array.isArray(data.analises) && data.analises.length > 0) {
+      const box = document.getElementById("aiHistoricoBox");
+      const list = document.getElementById("aiHistoricoLista");
+      box.style.display = "block";
+      list.innerHTML = "";
+
+      data.analises.forEach(a => {
+        const item = document.createElement("div");
+        item.style.cssText = "min-width:220px; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(229,184,92,0.2); border-radius:10px; cursor:pointer;";
+        item.onclick = function() {
+          window.currentEditalContext = a.resultadoMarkdown;
+          window.currentAnaliseId = a.id;
+          const htmlContent = window.marked ? window.marked.parse(a.resultadoMarkdown) : a.resultadoMarkdown.replace(/\n/g, "<br>");
+          document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
+          document.getElementById("aiResultadoWrapper").style.display = "block";
+          document.getElementById("aiResultadoWrapper").scrollIntoView({ behavior: "smooth" });
+        };
+        const dt = a.dataAnalise ? new Date(a.dataAnalise).toLocaleDateString("pt-BR") : "";
+        item.innerHTML = `
+          <div style="font-size:12px; font-weight:700; color:#f1f5f9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.licitacaoObjeto || 'Edital'}</div>
+          <div style="font-size:10px; color:#94a3b8; margin-top:2px;">${dt} - ${a.clienteNome || ''}</div>
+        `;
+        list.appendChild(item);
+      });
+    } else {
+      alert("Nenhuma análise anterior registrada ainda.");
+    }
+  } catch (e) {
+    console.error("Erro ao carregar histórico:", e);
+  }
+};
+
+window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
+  if (typeof window.mostrarAba === "function") {
+    window.mostrarAba('agente-ia');
+  }
+  window.selecionarMetodoEnvioAi('licitacao');
+  setTimeout(() => {
+    const sel = document.getElementById("selectLicitacaoAi");
+    if (sel) {
+      sel.value = licitacaoId;
+      window.carregarDadosLicitacaoSelecionadaAi(licitacaoId);
+    }
+  }, 150);
 };
 
 </script>
