@@ -49,10 +49,21 @@ function getGenAIClient() {
   });
 }
 
-// Log requests for debugging
+// Log requests for debugging and enable CORS
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
+});
+
+// Favicon handler
+app.get("/favicon.ico", (req, res) => {
+  res.status(204).end();
 });
 
 // Middleware for parsing JSON and URL-encoded bodies (allowing large PDF base64 payloads)
@@ -364,10 +375,19 @@ ${link ? `Link do Edital: ${link}` : ""}
     }
     contents.push(promptFinal);
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: contents
-    });
+    let response;
+    try {
+      response = await ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: contents
+      });
+    } catch (mErr) {
+      console.warn("Retrying generateContent with gemini-2.5-flash fallback...", mErr);
+      response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: contents
+      });
+    }
 
     const resultadoTexto = response.text || "Não foi possível extrair a análise do edital.";
 
@@ -437,10 +457,19 @@ Diretrizes de Atendimento:
 
     contentsArray.push({ role: "user", parts: [{ text: pergunta }] });
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: contentsArray
-    });
+    let response;
+    try {
+      response = await ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: contentsArray
+      });
+    } catch (mErr) {
+      console.warn("Retrying pregunta with gemini-2.5-flash fallback...", mErr);
+      response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: contentsArray
+      });
+    }
 
     const respostaTexto = response.text || "Não foi possível gerar uma resposta para o questionamento.";
 
