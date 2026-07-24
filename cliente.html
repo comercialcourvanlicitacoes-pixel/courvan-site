@@ -8145,7 +8145,7 @@ window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
           Agente IA Courvan
           <span style="font-size:9px; background:rgba(16,185,129,0.2); color:#34d399; padding:2px 6px; border-radius:99px; border:1px solid rgba(16,185,129,0.3); font-weight:700;">ONLINE</span>
         </div>
-        <div style="font-size:11px; color:#94a3b8;">Especialista em Licitações & Editais</div>
+        <div style="font-size:11px; color:#94a3b8;">Consultor Jurídico & Licitações</div>
       </div>
     </div>
     <div style="display:flex; gap:6px;">
@@ -8153,24 +8153,14 @@ window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
     </div>
   </div>
 
-  <!-- MODES NAVIGATION -->
-  <div style="display:flex; padding:8px 12px; background:rgba(3,7,18,0.6); border-bottom:1px solid rgba(255,255,255,0.05); gap:6px;">
-    <button id="tabBtnWidgetChat" onclick="window.switchWidgetIaMode('chat')" style="flex:1; padding:8px; border-radius:10px; border:1px solid rgba(229,184,92,0.3); background:rgba(229,184,92,0.15); color:#fcd34d; font-size:12px; font-weight:700; cursor:pointer;">
-      💬 Chat Consultivo
-    </button>
-    <button id="tabBtnWidgetEdital" onclick="window.switchWidgetIaMode('edital')" style="flex:1; padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:transparent; color:#94a3b8; font-size:12px; font-weight:600; cursor:pointer;">
-      📄 Analisar Edital
-    </button>
-  </div>
-
-  <!-- BODY: MODE CHAT -->
+  <!-- BODY: CHAT DIRECTLY -->
   <div id="widgetModeChat" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
     <!-- CHAT FEED -->
     <div id="widgetChatFeed" style="flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; background:rgba(3,7,18,0.4);">
       <div style="display:flex; gap:10px; align-items:flex-start;">
         <div style="width:30px; height:30px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0;">🤖</div>
         <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.18); border-radius:14px; padding:12px 14px; color:#f1f5f9; font-size:13px; line-height:1.5;">
-          Olá! Sou o <strong>Agente de IA da Courvan</strong>. Como posso te ajudar hoje? Você pode tirar dúvidas jurídicas sobre a Nova Lei de Licitações (14.133/21) ou enviar um edital para eu analisar.
+          Olá! Sou o <strong>Agente de IA da Courvan</strong>. Como posso te ajudar hoje? Tire dúvidas sobre a Nova Lei 14.133/21, jurisprudências ou pergunte sobre seu edital mapeado.
         </div>
       </div>
     </div>
@@ -8179,7 +8169,7 @@ window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
     <div style="padding:8px 12px; background:rgba(3,7,18,0.8); border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:6px; overflow-x:auto;">
       <button onclick="window.perguntarRapidoWidget('Quais os atestados de capacidade técnica mais exigidos?')" style="white-space:nowrap; padding:4px 10px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:11px; cursor:pointer;">❓ Atestados Técnicos</button>
       <button onclick="window.perguntarRapidoWidget('Qual o prazo para impugnar o edital na Lei 14.133/21?')" style="white-space:nowrap; padding:4px 10px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:11px; cursor:pointer;">❓ Prazo Impugnação</button>
-      <button onclick="window.perguntarRapidoWidget('Como comprovar a qualificação econômico-financeira?')" style="white-space:nowrap; padding:4px 10px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:11px; cursor:pointer;">❓ Balanço Patrimonial</button>
+      <button onclick="const el=document.getElementById('inputTextEditalAi')||document.getElementById('tabAiContent'); if(el) el.scrollIntoView({behavior:'smooth'}); window.toggleWidgetIaFlutuante();" style="white-space:nowrap; padding:4px 10px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:#34d399; border-radius:99px; font-size:11px; cursor:pointer; font-weight:700;">📄 Mapear Edital na Tela</button>
     </div>
 
     <!-- INPUT BAR -->
@@ -8189,27 +8179,6 @@ window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
         Enviar ➔
       </button>
     </div>
-  </div>
-
-  <!-- BODY: MODE EDITAL UPLOAD -->
-  <div id="widgetModeEdital" style="display:none; flex-direction:column; flex:1; padding:16px; overflow-y:auto;">
-    <div style="font-size:13px; font-weight:700; color:#fcd34d; margin-bottom:8px;">📄 Enviar Edital para Leitura da IA</div>
-    <div style="border:2px dashed rgba(229,184,92,0.3); background:rgba(229,184,92,0.02); border-radius:16px; padding:24px 16px; text-align:center; cursor:pointer; margin-bottom:12px;" onclick="document.getElementById('inputWidgetEditalFile').click();">
-      <input type="file" id="inputWidgetEditalFile" accept=".pdf,.txt,.docx" style="display:none;" onchange="window.handleSelectEditalFileWidget(this)">
-      <div style="font-size:32px; margin-bottom:6px;">📤</div>
-      <div style="font-size:13px; font-weight:600; color:#f1f5f9;">Clique ou solte o PDF do Edital aqui</div>
-      <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Formatos: PDF ou DOCX até 50MB</div>
-    </div>
-    <div id="widgetSelectedFileBadge" style="display:none; margin-bottom:12px; padding:10px 14px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:10px; font-size:12px; color:#34d399; font-weight:600;">
-      📄 <span id="widgetFileName">edital.pdf</span>
-    </div>
-    <div style="margin-bottom:12px;">
-      <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Ou cole o texto do edital aqui:</label>
-      <textarea id="widgetInputTextEdital" placeholder="Cole aqui o texto do edital..." style="width:100%; height:90px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(3,7,18,0.6); color:#f1f5f9; font-size:12px; resize:none;"></textarea>
-    </div>
-    <button onclick="window.executarAnaliseEditalWidget()" style="width:100%; padding:12px; background:linear-gradient(135deg, #fcd34d, #e5b85c); border:none; border-radius:12px; color:#030712; font-weight:800; font-size:13px; cursor:pointer; margin-top:auto;">
-      ⚡ Analisar Edital Agora
-    </button>
   </div>
 </div>
 
