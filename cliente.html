@@ -7596,8 +7596,17 @@ window.carregarDadosLicitacaoSelecionadaAi = function(id) {
 };
 
 window.getCloudRunFallbackUrl = function() {
+  if (window.COURVAN_API_BASE && window.COURVAN_API_BASE.includes("ais-dev-")) {
+    window.COURVAN_API_BASE = window.COURVAN_API_BASE.replace("ais-dev-", "ais-pre-");
+  }
   if (window.COURVAN_API_BASE) return window.COURVAN_API_BASE.replace(/\/$/, '');
-  const stored = localStorage.getItem("COURVAN_API_BASE");
+  
+  let stored = localStorage.getItem("COURVAN_API_BASE");
+  if (stored && stored.includes("ais-dev-")) {
+    stored = stored.replace("ais-dev-", "ais-pre-");
+    localStorage.setItem("COURVAN_API_BASE", stored);
+    window.COURVAN_API_BASE = stored;
+  }
   if (stored) return stored.replace(/\/$/, '');
   
   // If running directly on Cloud Run or localhost, use current origin
@@ -7605,8 +7614,8 @@ window.getCloudRunFallbackUrl = function() {
     return window.location.origin;
   }
   
-  // Cloud Run primary deployment URL fallback for external domains
-  return "https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app";
+  // Cloud Run public shared deployment URL fallback for external domains
+  return "https://ais-pre-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app";
 };
 
 window.abrirModalConfigApi = function() {
@@ -7631,7 +7640,7 @@ window.abrirModalConfigApi = function() {
           Configure ou verifique o endereço do servidor backend da Courvan (Cloud Run). Isso garante que o Agente de IA responda perfeitamente em domínios externos.
         </p>
         <label style="font-size:11px; font-weight:700; color:#94a3b8; display:block; margin-bottom:6px;">URL do Servidor Backend (API):</label>
-        <input id="inputBackendUrlCourvan" value="${currentUrl}" placeholder="https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(3,7,18,0.8); color:#f1f5f9; font-size:13px; font-family:monospace; margin-bottom:16px; outline:none;" />
+        <input id="inputBackendUrlCourvan" value="${currentUrl}" placeholder="https://ais-pre-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(3,7,18,0.8); color:#f1f5f9; font-size:13px; font-family:monospace; margin-bottom:16px; outline:none;" />
         <div id="statusTestApiCourvan" style="font-size:12px; margin-bottom:16px; display:none; padding:12px; border-radius:10px; line-height:1.4;"></div>
         <div style="display:flex; gap:10px; justify-content:flex-end;">
           <button onclick="window.testarConexaoApi()" style="padding:10px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#f1f5f9; border-radius:10px; font-size:13px; cursor:pointer; font-weight:600;">
