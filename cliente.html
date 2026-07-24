@@ -7597,13 +7597,33 @@ window.getCloudRunFallbackUrl = function() {
   return "https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app";
 };
 
+window.renderMarkdown = function(mdText) {
+  if (!mdText) return "";
+  if (window.marked && typeof window.marked.parse === "function") {
+    try {
+      return window.marked.parse(mdText);
+    } catch (e) {
+      console.warn("Marked parse error:", e);
+    }
+  }
+  return String(mdText)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/^### (.*$)/gim, '<h3 style="color:#fcd34d; font-size:16px; margin:14px 0 6px;">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 style="color:#e5b85c; font-size:18px; margin:16px 0 8px;">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 style="color:#ffffff; font-size:20px; margin:18px 0 10px;">$1</h1>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code style="background:rgba(255,255,255,0.1); padding:2px 4px; border-radius:4px;">$1</code>')
+    .replace(/\n/g, '<br>');
+};
+
 window.fetchCourvanApi = async function(endpoint, options) {
   let baseUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
   let primaryUrl = baseUrl ? (baseUrl.replace(/\/$/, '') + endpoint) : endpoint;
 
   try {
     let resp = await fetch(primaryUrl, options);
-    // If relative API call returns 405 Method Not Allowed or 404 Not Found on external host
+    // If relative API call returns 405 Method Not Allowed or 404 Not Found on external static host
     if ((resp.status === 405 || resp.status === 404) && !baseUrl && !window.location.hostname.includes("run.app") && !window.location.hostname.includes("localhost")) {
       console.warn(`Relative API call returned HTTP ${resp.status}. Retrying with Cloud Run backend...`);
       const fallbackBase = window.getCloudRunFallbackUrl();
@@ -7697,7 +7717,7 @@ window.executarAnaliseEditalIA = async function() {
       window.currentChatHistoryAi = [];
 
       // Render markdown
-      const htmlContent = window.marked ? window.marked.parse(data.resultado) : data.resultado.replace(/\n/g, "<br>");
+      const htmlContent = window.renderMarkdown(data.resultado);
       if (document.getElementById("aiResultadoMarkdown")) {
         document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
       }
@@ -7721,7 +7741,6 @@ window.executarAnaliseEditalIA = async function() {
       
       // Auto notification in floating widget
       window.appendWidgetMessage('assistant', `✅ <strong>Análise do edital concluída com sucesso!</strong><br><br>Todas as exigências de habilitação, atestados e prazos foram mapeados. Faça qualquer pergunta sobre o edital aqui no chat!`);
-      window.switchWidgetIaMode('chat');
       window.openWidgetIaFlutuante();
     } else {
       alert("Erro ao analisar edital: " + (data.error || "Tente novamente."));
@@ -7879,7 +7898,7 @@ window.processarPerguntaGeralAi = async function(pergunta) {
       window.currentChatHistoryAi.push({ role: "user", content: pergunta });
       window.currentChatHistoryAi.push({ role: "model", content: data.resposta });
 
-      const htmlResp = window.marked ? window.marked.parse(data.resposta) : data.resposta.replace(/\n/g, "<br>");
+      const htmlResp = window.renderMarkdown(data.resposta);
 
       window.appendTabMessage('assistant', htmlResp);
       window.appendWidgetMessage('assistant', htmlResp);
@@ -7918,66 +7937,6 @@ window.toggleWidgetIaFlutuante = function() {
 window.openWidgetIaFlutuante = function() {
   const card = document.getElementById("floatingAiCard");
   if (card) card.style.display = "flex";
-};
-
-window.switchWidgetIaMode = function(mode) {
-  const modeChat = document.getElementById("widgetModeChat");
-  const modeEdital = document.getElementById("widgetModeEdital");
-  const btnChat = document.getElementById("tabBtnWidgetChat");
-  const btnEdital = document.getElementById("tabBtnWidgetEdital");
-
-  if (mode === 'chat') {
-    if (modeChat) modeChat.style.display = "flex";
-    if (modeEdital) modeEdital.style.display = "none";
-    if (btnChat) {
-      btnChat.style.background = "rgba(229,184,92,0.15)";
-      btnChat.style.borderColor = "rgba(229,184,92,0.3)";
-      btnChat.style.color = "#fcd34d";
-    }
-    if (btnEdital) {
-      btnEdital.style.background = "transparent";
-      btnEdital.style.borderColor = "rgba(255,255,255,0.08)";
-      btnEdital.style.color = "#94a3b8";
-    }
-  } else {
-    if (modeChat) modeChat.style.display = "none";
-    if (modeEdital) modeEdital.style.display = "flex";
-    if (btnEdital) {
-      btnEdital.style.background = "rgba(229,184,92,0.15)";
-      btnEdital.style.borderColor = "rgba(229,184,92,0.3)";
-      btnEdital.style.color = "#fcd34d";
-    }
-    if (btnChat) {
-      btnChat.style.background = "transparent";
-      btnChat.style.borderColor = "rgba(255,255,255,0.08)";
-      btnChat.style.color = "#94a3b8";
-    }
-  }
-};
-
-window.handleSelectEditalFileWidget = function(input) {
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      window.currentEditalAiFileBase64 = e.target.result;
-      window.currentEditalAiMimeType = file.type || "application/pdf";
-      const badge = document.getElementById("widgetSelectedFileBadge");
-      const name = document.getElementById("widgetFileName");
-      if (badge) badge.style.display = "block";
-      if (name) name.innerText = file.name;
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-window.executarAnaliseEditalWidget = function() {
-  const textVal = document.getElementById("widgetInputTextEdital") ? document.getElementById("widgetInputTextEdital").value.trim() : "";
-  if (textVal) {
-    const textInp = document.getElementById("inputTextEditalAi");
-    if (textInp) textInp.value = textVal;
-  }
-  window.executarAnaliseEditalIA();
 };
 
 window.imprimirRelatorioEditalAi = function() {
@@ -8039,7 +7998,7 @@ window.carregarHistoricoAnalisesIA = async function() {
           item.onclick = function() {
             window.currentEditalContext = a.resultadoMarkdown;
             window.currentAnaliseId = a.id;
-            const htmlContent = window.marked ? window.marked.parse(a.resultadoMarkdown) : a.resultadoMarkdown.replace(/\n/g, "<br>");
+            const htmlContent = window.renderMarkdown(a.resultadoMarkdown);
             if (document.getElementById("aiResultadoMarkdown")) {
               document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
             }
@@ -8208,7 +8167,7 @@ window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
     <div style="padding:8px 12px; background:rgba(3,7,18,0.8); border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:6px; overflow-x:auto;">
       <button onclick="window.perguntarRapidoWidget('Quais os atestados de capacidade técnica mais exigidos?')" style="white-space:nowrap; padding:4px 10px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:11px; cursor:pointer;">❓ Atestados Técnicos</button>
       <button onclick="window.perguntarRapidoWidget('Qual o prazo para impugnar o edital na Lei 14.133/21?')" style="white-space:nowrap; padding:4px 10px; background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); color:#fcd34d; border-radius:99px; font-size:11px; cursor:pointer;">❓ Prazo Impugnação</button>
-      <button onclick="const el=document.getElementById('inputTextEditalAi')||document.getElementById('tabAiContent'); if(el) el.scrollIntoView({behavior:'smooth'}); window.toggleWidgetIaFlutuante();" style="white-space:nowrap; padding:4px 10px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:#34d399; border-radius:99px; font-size:11px; cursor:pointer; font-weight:700;">📄 Mapear Edital na Tela</button>
+      <button onclick="if(typeof window.mostrarAba==='function') window.mostrarAba('agente-ia'); const el=document.getElementById('inputTextEditalAi')||document.getElementById('agente-ia'); if(el) el.scrollIntoView({behavior:'smooth'}); window.toggleWidgetIaFlutuante();" style="white-space:nowrap; padding:4px 10px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:#34d399; border-radius:99px; font-size:11px; cursor:pointer; font-weight:700;">📄 Mapear Edital (Tela Principal)</button>
     </div>
 
     <!-- INPUT BAR -->
