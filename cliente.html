@@ -7593,6 +7593,45 @@ window.carregarDadosLicitacaoSelecionadaAi = function(id) {
   }
 };
 
+window.getCloudRunFallbackUrl = function() {
+  return "https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app";
+};
+
+window.fetchCourvanApi = async function(endpoint, options) {
+  let baseUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
+  let primaryUrl = baseUrl ? (baseUrl.replace(/\/$/, '') + endpoint) : endpoint;
+
+  try {
+    let resp = await fetch(primaryUrl, options);
+    // If relative API call returns 405 Method Not Allowed or 404 Not Found on external host
+    if ((resp.status === 405 || resp.status === 404) && !baseUrl && !window.location.hostname.includes("run.app") && !window.location.hostname.includes("localhost")) {
+      console.warn(`Relative API call returned HTTP ${resp.status}. Retrying with Cloud Run backend...`);
+      const fallbackBase = window.getCloudRunFallbackUrl();
+      const fallbackUrl = fallbackBase + endpoint;
+      const fallbackResp = await fetch(fallbackUrl, options);
+      if (fallbackResp.ok) {
+        localStorage.setItem("COURVAN_API_BASE", fallbackBase);
+        window.COURVAN_API_BASE = fallbackBase;
+      }
+      return fallbackResp;
+    }
+    return resp;
+  } catch (err) {
+    if (!baseUrl && !window.location.hostname.includes("run.app") && !window.location.hostname.includes("localhost")) {
+      console.warn("Primary API call failed. Retrying with Cloud Run backend...", err);
+      const fallbackBase = window.getCloudRunFallbackUrl();
+      const fallbackUrl = fallbackBase + endpoint;
+      const fallbackResp = await fetch(fallbackUrl, options);
+      if (fallbackResp.ok) {
+        localStorage.setItem("COURVAN_API_BASE", fallbackBase);
+        window.COURVAN_API_BASE = fallbackBase;
+      }
+      return fallbackResp;
+    }
+    throw err;
+  }
+};
+
 window.executarAnaliseEditalIA = async function() {
   const fileData = window.currentEditalAiFileBase64;
   const mimeType = window.currentEditalAiMimeType;
@@ -7630,7 +7669,7 @@ window.executarAnaliseEditalIA = async function() {
   }, 2000);
 
   try {
-    const resp = await fetch("/api/ai/analisar-edital", {
+    const resp = await window.fetchCourvanApi("/api/ai/analisar-edital", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, fileData, mimeType, link, clienteNome, licitacaoObjeto, clienteId })
@@ -7808,7 +7847,7 @@ window.processarPerguntaGeralAi = async function(pergunta) {
   const thinkingWidget = window.appendWidgetMessage('thinking', 'Analisando regras e legislação...');
 
   try {
-    const resp = await fetch("/api/ai/perguntar-edital", {
+    const resp = await window.fetchCourvanApi("/api/ai/perguntar-edital", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -7986,7 +8025,7 @@ window.copiarResultadoEditalAi = function() {
 window.carregarHistoricoAnalisesIA = async function() {
   const clienteId = window.clienteAtual ? window.clienteAtual.id : "geral";
   try {
-    const resp = await fetch(`/api/ai/historico-analises/${clienteId}`);
+    const resp = await window.fetchCourvanApi(`/api/ai/historico-analises/${clienteId}`);
     const data = await resp.json();
     if (data.success && Array.isArray(data.analises) && data.analises.length > 0) {
       const box = document.getElementById("aiHistoricoBox");
