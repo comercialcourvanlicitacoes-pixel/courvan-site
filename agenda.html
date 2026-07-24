@@ -890,18 +890,25 @@ window.gerarUrlGoogleAgenda = function(titulo, descricao, dataStr) {
   return `${base}&text=${t}&dates=${dates}&details=${d}`;
 };
 
+window.sincronizarGoogleAgendaDireto = function() {
+  if (typeof window.executarSincronizacaoGoogleDireta === "function") {
+    window.executarSincronizacaoGoogleDireta();
+  } else {
+    alert("Função de sincronização ainda não inicializada. Aguarde um instante e tente novamente.");
+  }
+};
+
 window.copiarLinkInscricao = function() {
   const activeClienteId = window.currentClienteIdGlobal || "admin";
-  
   const feedUrl = window.location.origin + "/api/feed/" + activeClienteId;
   
-  // Copy to clipboard
   navigator.clipboard.writeText(feedUrl).then(() => {
     alert("Link de inscrição copiado com sucesso para a área de transferência!");
-    document.getElementById("infoInscricaoBox").style.display = "block";
+    if (document.getElementById("infoInscricaoBox")) {
+      document.getElementById("infoInscricaoBox").style.display = "block";
+    }
   }).catch(err => {
     console.error("Erro ao copiar link:", err);
-    // fallback
     const tempInput = document.createElement("input");
     tempInput.value = feedUrl;
     document.body.appendChild(tempInput);
@@ -909,23 +916,10 @@ window.copiarLinkInscricao = function() {
     document.execCommand("copy");
     document.body.removeChild(tempInput);
     alert("Link de inscrição copiado!");
-    document.getElementById("infoInscricaoBox").style.display = "block";
+    if (document.getElementById("infoInscricaoBox")) {
+      document.getElementById("infoInscricaoBox").style.display = "block";
+    }
   });
-};
-
-window.sincronizarGoogleAgendaDireto = async function() {
-  // Obter todos os eventos
-  if (!window.currentCalendarInstance) {
-    alert("O calendário não está carregado.");
-    return;
-  }
-  const events = window.currentCalendarInstance.getEvents();
-  if (events.length === 0) {
-    alert("Não há eventos na agenda para sincronizar.");
-    return;
-  }
-  
-  window.mostrarModalExplicativoGoogleAgenda();
 };
 
 window.executarSincronizacaoGoogleDireta = async function() {
