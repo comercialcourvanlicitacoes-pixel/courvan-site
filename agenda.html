@@ -313,11 +313,17 @@
     ← Voltar ao Painel
   </button>
   
-  <h2 style="margin: 0; font-size: 28px; font-weight: 700; color: #e5b85c;">📅 Agenda de Licitações</h2>
+  <h2 style="margin: 0; font-size: 28px; font-weight: 700; color: #e5b85c;">📅 Agenda de Licitações & Compromissos</h2>
   
-  <button id="btnNotificacaoSininhoAgenda" onclick="window.togglePreferenciaNotificacao()" style="display: flex; align-items: center; gap: 8px; background: rgba(229, 184, 92, 0.08); border: 1.5px solid rgba(229, 184, 92, 0.2); color: #e5b85c; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" title="Configurar Notificações de E-mail">
-    <span id="sininhoIconAgenda">🔔</span> <span id="sininhoTextoAgenda">E-mail: Ativado</span>
-  </button>
+  <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+    <button onclick="window.abrirModalNovoEvento()" style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #030712; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; border: none; box-shadow: 0 4px 15px rgba(229,184,92,0.3); transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-1px) scale(1.02)'" onmouseout="this.style.transform='none'">
+      ➕ Novo Evento / Compromisso
+    </button>
+
+    <button id="btnNotificacaoSininhoAgenda" onclick="window.togglePreferenciaNotificacao()" style="display: flex; align-items: center; gap: 8px; background: rgba(229, 184, 92, 0.08); border: 1.5px solid rgba(229, 184, 92, 0.2); color: #e5b85c; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" title="Configurar Notificações de E-mail">
+      <span id="sininhoIconAgenda">🔔</span> <span id="sininhoTextoAgenda">E-mail: Ativado</span>
+    </button>
+  </div>
 </div>
 
 <!-- Painel de Sincronização de Agenda -->
@@ -412,6 +418,99 @@
 
 </div>
 
+<!-- MODAL NOVO EVENTO / COMPROMISSO -->
+<div id="modalNovoEventoAgenda" style="display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 99999; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.25s ease;">
+  <div style="background: #090e1a; border: 1px solid rgba(229, 184, 92, 0.3); border-radius: 20px; width: 100%; max-width: 540px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); overflow: hidden; font-family: var(--font-sans);">
+    
+    <!-- Modal Header -->
+    <div style="background: rgba(229, 184, 92, 0.08); padding: 20px 24px; border-bottom: 1px solid rgba(229, 184, 92, 0.15); display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 22px;">📅</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #e5b85c; font-family: var(--font-display);">Cadastrar Evento ou Compromisso</h3>
+      </div>
+      <button onclick="window.fecharModalNovoEvento()" style="background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+    </div>
+
+    <!-- Modal Body -->
+    <form onsubmit="event.preventDefault(); window.salvarNovoEventoAgenda();" style="padding: 24px; display: flex; flex-direction: column; gap: 18px;">
+      
+      <!-- Título -->
+      <div>
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+          Título do Evento / Compromisso *
+        </label>
+        <input type="text" id="inputTituloEventoAgenda" required placeholder="Ex: Reunião de Alinhamento / Sessão de Lances / Visita Técnica" style="width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #f8fafc; font-size: 14px; outline: none;" onfocus="this.style.borderColor='#e5b85c'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      </div>
+
+      <!-- Categoria & Cor -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+            Categoria
+          </label>
+          <select id="inputCategoriaEventoAgenda" style="width: 100%; padding: 12px 14px; background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #f8fafc; font-size: 13px; outline: none;">
+            <option value="🤝 Reunião">🤝 Reunião / Alinhamento</option>
+            <option value="🏛️ Sessão / Pregão">🏛️ Sessão / Pregão</option>
+            <option value="🛠️ Vistoria Técnica">🛠️ Vistoria Técnica</option>
+            <option value="📄 Prazo / Recurso">📄 Prazo / Impugnação</option>
+            <option value="🔔 Lembrete">🔔 Lembrete / Geral</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+            Cor de Destaque
+          </label>
+          <select id="inputCorEventoAgenda" style="width: 100%; padding: 12px 14px; background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #f8fafc; font-size: 13px; outline: none;">
+            <option value="#e5b85c">🟡 Dourado (Padrão)</option>
+            <option value="#3b82f6">🔵 Azul (Reuniões)</option>
+            <option value="#10b981">🟢 Verde (Aprovados)</option>
+            <option value="#a855f7">💜 Roxo (Estratégico)</option>
+            <option value="#ef4444">🔴 Vermelho (Urgente/Prazo)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Data & Hora -->
+      <div>
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+          Data e Horário do Evento *
+        </label>
+        <input type="datetime-local" id="inputDataHoraEventoAgenda" required style="width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #f8fafc; font-size: 14px; outline: none; color-scheme: dark;" onfocus="this.style.borderColor='#e5b85c'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      </div>
+
+      <!-- Cliente Vinculado -->
+      <div>
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+          Cliente Vinculado
+        </label>
+        <select id="inputClienteEventoAgenda" style="width: 100%; padding: 12px 14px; background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #f8fafc; font-size: 13px; outline: none;">
+          <option value="geral">🌐 Geral / Todos os Analistas</option>
+        </select>
+      </div>
+
+      <!-- Observações -->
+      <div>
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+          Observações / Anotações
+        </label>
+        <textarea id="inputObsEventoAgenda" rows="3" placeholder="Insira detalhes da pauta, link do Google Meet/Teams ou instruções adicionais..." style="width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #f8fafc; font-size: 13px; outline: none; resize: vertical;" onfocus="this.style.borderColor='#e5b85c'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+      </div>
+
+      <!-- Footer Action Buttons -->
+      <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px;">
+        <button type="button" onclick="window.fecharModalNovoEvento()" style="padding: 12px 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;">
+          Cancelar
+        </button>
+        <button type="submit" id="btnSalvarEventoAgenda" style="padding: 12px 24px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); border: none; color: #030712; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(229,184,92,0.3);">
+          💾 Salvar Evento
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
 <script type="module">
@@ -429,7 +528,10 @@ import {
   onSnapshot,
   getDoc,
   doc,
-  setDoc
+  setDoc,
+  addDoc,
+  deleteDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -710,6 +812,100 @@ onAuthStateChanged(auth, async (user)=>{
 
 window.currentCalendarInstance = null;
 window.currentClienteIdGlobal = null;
+window.globalClientesList = [];
+
+window.abrirModalNovoEvento = function() {
+  const modal = document.getElementById("modalNovoEventoAgenda");
+  if (!modal) return;
+
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  const nowISO = now.toISOString().slice(0, 16);
+  document.getElementById("inputDataHoraEventoAgenda").value = nowISO;
+  document.getElementById("inputTituloEventoAgenda").value = "";
+  document.getElementById("inputObsEventoAgenda").value = "";
+
+  const sel = document.getElementById("inputClienteEventoAgenda");
+  if (sel) {
+    sel.innerHTML = '<option value="geral">🌐 Geral / Sem cliente específico</option>';
+    if (window.globalClientesList && window.globalClientesList.length > 0) {
+      window.globalClientesList.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.innerText = c.nome || c.empresa || "Cliente";
+        if (window.currentClienteIdGlobal === c.id) {
+          opt.selected = true;
+        }
+        sel.appendChild(opt);
+      });
+    }
+  }
+
+  modal.style.display = "flex";
+};
+
+window.fecharModalNovoEvento = function() {
+  const modal = document.getElementById("modalNovoEventoAgenda");
+  if (modal) modal.style.display = "none";
+};
+
+window.salvarNovoEventoAgenda = async function() {
+  const titulo = document.getElementById("inputTituloEventoAgenda").value.trim();
+  const categoria = document.getElementById("inputCategoriaEventoAgenda").value;
+  const cor = document.getElementById("inputCorEventoAgenda").value;
+  const dataHora = document.getElementById("inputDataHoraEventoAgenda").value;
+  const clienteId = document.getElementById("inputClienteEventoAgenda").value;
+  const observacoes = document.getElementById("inputObsEventoAgenda").value.trim();
+
+  if (!titulo || !dataHora) {
+    alert("Por favor, preencha o título e a data/horário do evento.");
+    return;
+  }
+
+  const btn = document.getElementById("btnSalvarEventoAgenda");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = "⏳ Salvando...";
+  }
+
+  try {
+    await addDoc(collection(db, "eventos_agenda"), {
+      clienteId: clienteId || "geral",
+      titulo: titulo,
+      categoria: categoria,
+      cor: cor,
+      dataHora: dataHora,
+      observacoes: observacoes,
+      criadoPor: auth.currentUser ? auth.currentUser.email : "",
+      dataCriacao: serverTimestamp()
+    });
+
+    alert("Compromisso cadastrado com sucesso na agenda!");
+    window.fecharModalNovoEvento();
+  } catch (err) {
+    console.error("Erro ao salvar evento:", err);
+    alert("Erro ao cadastrar evento: " + err.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = "💾 Salvar Evento";
+    }
+  }
+};
+
+window.excluirEventoAgenda = async function(eventId) {
+  if (!eventId) return;
+  if (!confirm("Tem certeza que deseja excluir este compromisso da agenda?")) return;
+
+  try {
+    await deleteDoc(doc(db, "eventos_agenda", eventId));
+    alert("Evento excluído com sucesso!");
+    window.fecharDrawer();
+  } catch (err) {
+    console.error("Erro ao excluir evento:", err);
+    alert("Erro ao excluir compromisso: " + err.message);
+  }
+};
 
 window.exportarAgendaICS = function() {
   if (!window.currentCalendarInstance) {
@@ -733,6 +929,8 @@ window.exportarAgendaICS = function() {
     let description = "";
     if (p.tipoEvento === "documento") {
       description = `Documento: ${p.nome || ""}\\nCategoria: ${p.categoria || ""}\\nCliente: ${p.clienteNome || ""}`;
+    } else if (p.tipoEvento === "custom_evento") {
+      description = `Compromisso: ${p.titulo || ""}\\nCategoria: ${p.categoria || ""}\\nDetalhes: ${p.observacoes || ""}\\nCliente: ${p.clienteNome || ""}`;
     } else {
       description = `Órgão: ${p.orgao || ""}\\nObjeto: ${p.objeto || ""}\\nValor: ${p.valor || ""}\\nCliente: ${p.clienteNome || ""}`;
     }
@@ -999,6 +1197,8 @@ window.executarSincronizacaoGoogleDireta = async function() {
       let description = "";
       if (p.tipoEvento === "documento") {
         description = `Documento: ${p.nome || ""}\nCategoria: ${p.categoria || ""}\nCliente: ${p.clienteNome || ""}`;
+      } else if (p.tipoEvento === "custom_evento") {
+        description = `Compromisso: ${p.titulo || ""}\nCategoria: ${p.categoria || ""}\nDetalhes: ${p.observacoes || ""}\nCliente: ${p.clienteNome || ""}`;
       } else {
         description = `Órgão: ${p.orgao || ""}\nObjeto: ${p.objeto || ""}\nValor: ${p.valor || ""}\nCliente: ${p.clienteNome || ""}`;
       }
@@ -1392,6 +1592,8 @@ async function iniciarCalendario(clienteId){
 
   const clientesMap = {};
 
+  window.globalClientesList = clientesSnap.docs.map(c => ({ id: c.id, ...c.data() }));
+
   clientesSnap.forEach(c=>{
 
     clientesMap[c.id] =
@@ -1509,9 +1711,10 @@ async function iniciarCalendario(clienteId){
 
   let listaLicitacoesEventos = [];
   let listaDocumentosEventos = [];
+  let listaCustomEventos = [];
 
   function atualizarCalendarioCompleto() {
-    const todosEventos = [...listaLicitacoesEventos, ...listaDocumentosEventos];
+    const todosEventos = [...listaLicitacoesEventos, ...listaDocumentosEventos, ...listaCustomEventos];
     calendar.removeAllEvents();
     calendar.addEventSource(todosEventos);
   }
@@ -1587,6 +1790,44 @@ async function iniciarCalendario(clienteId){
     atualizarCalendarioCompleto();
   });
 
+  // TEMPO REAL EVENTOS E COMPROMISSOS CUSTOMIZADOS
+  let qCustomEvents;
+  if (!clienteId) {
+    qCustomEvents = query(collection(db, "eventos_agenda"));
+  } else {
+    if (clientIds.length > 1) {
+      qCustomEvents = query(collection(db, "eventos_agenda"), where("clienteId", "in", [...clientIds, "geral"]));
+    } else {
+      qCustomEvents = query(collection(db, "eventos_agenda"), where("clienteId", "in", [clienteId, "geral"]));
+    }
+  }
+
+  onSnapshot(qCustomEvents, (snapshotCustom) => {
+    listaCustomEventos = [];
+    snapshotCustom.forEach((docItem) => {
+      const e = docItem.data();
+      if (!e.dataHora) return;
+      listaCustomEventos.push({
+        id: docItem.id,
+        title: `${e.categoria ? e.categoria.split(' ')[0] : '📌'} ${e.titulo}`,
+        start: e.dataHora,
+        color: e.cor || "#e5b85c",
+        extendedProps: {
+          tipoEvento: "custom_evento",
+          eventId: docItem.id,
+          titulo: e.titulo,
+          categoria: e.categoria || "Compromisso",
+          dataHora: e.dataHora,
+          observacoes: e.observacoes || "",
+          clienteNome: clientesMap[e.clienteId] || (e.clienteId === "geral" ? "Geral / Todos" : "Desconhecido"),
+          clienteId: e.clienteId,
+          criadoPor: e.criadoPor || ""
+        }
+      });
+    });
+    atualizarCalendarioCompleto();
+  });
+
   // CLICK EVENTO
   calendar.on(
     "eventClick",
@@ -1596,6 +1837,54 @@ async function iniciarCalendario(clienteId){
         info.event.extendedProps;
 
       window.currentActiveEventProps = p;
+
+      if (p.tipoEvento === "custom_evento") {
+        const dtFmt = p.dataHora ? p.dataHora.replace("T", " às ") : "-";
+        abrirDrawer(`
+          <div class="item">
+            <strong>Tipo de Evento:</strong>
+            ${p.categoria || "📌 Compromisso"}
+          </div>
+
+          <div class="item">
+            <strong>Título / Pauta:</strong>
+            ${p.titulo || "-"}
+          </div>
+
+          <div class="item">
+            <strong>Data & Horário:</strong>
+            📅 ${dtFmt}
+          </div>
+
+          <div class="item">
+            <strong>Cliente Vinculado:</strong>
+            ${p.clienteNome || "Geral"}
+          </div>
+
+          <div class="item">
+            <strong>Observações / Detalhes:</strong>
+            <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); white-space: pre-wrap; color: #cbd5e1; margin-top: 4px; font-size: 13px;">${p.observacoes || "Nenhuma observação cadastrada."}</div>
+          </div>
+
+          ${p.criadoPor ? `
+            <div class="item">
+              <strong>Cadastrado por:</strong>
+              ${p.criadoPor}
+            </div>
+          ` : ''}
+
+          <div class="item" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <button onclick="window.open(window.gerarUrlGoogleAgenda('${p.titulo || 'Compromisso'}', '${(p.observacoes || '').replace(/'/g, "\\'")}\\nCliente: ${p.clienteNome || ''}', '${p.dataHora || new Date().toISOString()}'), '_blank')" style="display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center; padding: 12px; background: #e5b85c; color: #060b13; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+              📅 Agendar no Google Agenda
+            </button>
+
+            <button onclick="window.excluirEventoAgenda('${p.eventId}')" style="display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center; padding: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
+              🗑️ Excluir este Compromisso
+            </button>
+          </div>
+        `);
+        return;
+      }
 
       if (p.tipoEvento === "documento") {
         abrirDrawer(`
