@@ -160,6 +160,17 @@ app.get("/api/feed/:clienteId", async (req, res) => {
       }
     }
     const docSnap = await docQuery.get();
+
+    // Query custom eventos_agenda
+    let customEvQuery: any = dbAdmin.collection("eventos_agenda");
+    if (!isGeral) {
+      if (clientIds.length === 1) {
+        customEvQuery = customEvQuery.where("clienteId", "in", [clientIds[0], "geral"]);
+      } else {
+        customEvQuery = customEvQuery.where("clienteId", "in", [...clientIds, "geral"]);
+      }
+    }
+    const customEvSnap = await customEvQuery.get();
       
     let icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Courvan//Courvan Agenda//PT\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Courvan - " + clienteNome + "\r\nX-WR-TIMEZONE:America/Sao_Paulo\r\nX-PUBLISHED-TTL:PT15M\r\nREFRESH-INTERVAL;VALUE=DURATION:PT15M\r\n";
     
@@ -203,6 +214,28 @@ app.get("/api/feed/:clienteId", async (req, res) => {
       let dateStr = d.vencimento; // Expecting YYYY-MM-DD
       const ymd = dateStr.replace(/-/g, "").substring(0, 8);
       
+      icsContent += "BEGIN:VEVENT\r\n";
+      icsContent += `UID:${uid}\r\n`;
+      icsContent += `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z\r\n`;
+      icsContent += `DTSTART;VALUE=DATE:${ymd}\r\n`;
+      icsContent += `SUMMARY:${summary.replace(/,/g, "\\,").replace(/;/g, "\\;")}\r\n`;
+      icsContent += `DESCRIPTION:${description.replace(/,/g, "\\,").replace(/;/g, "\\;")}\r\n`;
+      icsContent += "END:VEVENT\r\n";
+    });
+    
+    // Process custom eventos_agenda
+    customEvSnap.forEach((docItem: any) => {
+      const e = docItem.data();
+      if (!e.dataHora) return;
+
+      const uid = docItem.id + "@courvan.com.br";
+      const eventClienteNome = clientesMap[e.clienteId] || (e.clienteId === "geral" ? "Geral / Todos" : clienteNome);
+      const summary = `${e.categoria ? e.categoria : "📌 Compromisso"}: ${e.titulo || "Compromisso"}`;
+      const description = `Compromisso: ${e.titulo || ""}\\nCategoria: ${e.categoria || ""}\\nDetalhes: ${e.observacoes || ""}\\nCliente: ${eventClienteNome}`;
+
+      let dateStr = e.dataHora; // Expecting YYYY-MM-DDTHH:mm or YYYY-MM-DD
+      const ymd = dateStr.replace(/-/g, "").substring(0, 8);
+
       icsContent += "BEGIN:VEVENT\r\n";
       icsContent += `UID:${uid}\r\n`;
       icsContent += `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z\r\n`;
@@ -316,7 +349,7 @@ ${link ? `Link do Edital: ${link}` : ""}
 
     const contents: any[] = [];
     if (fileData) {
-      const cleanBase64 = fileData.replace(/^data:[^;]+;base64,/, "");
+      const cleanBase64 = fileData.replace(/^data:[^;]+;base64,/, "").replace(/\s/g, "");
       contents.push({
         inlineData: {
           data: cleanBase64,
@@ -333,7 +366,7 @@ ${link ? `Link do Edital: ${link}` : ""}
 
     const response = await ai.models.generateContent({
       model: "gemini-3.6-flash",
-      contents: contents.length === 1 ? contents[0] : { parts: contents }
+      contents: contents
     });
 
     const resultadoTexto = response.text || "Não foi possível extrair a análise do edital.";
@@ -374,34 +407,41 @@ app.post("/api/ai/perguntar-edital", async (req, res) => {
 
     const ai = getGenAIClient();
     
-    const systemInstruction = `Você é o Agente de IA Consultor da Courvan Assessoria em Licitações e Compras Públicas.
-Sua missão é responder de forma direta, precisa, esclarecedora e juridicamente fundamentada (com base na Nova Lei de Licitações 14.133/21 e jurisprudência dos Tribunais de Contas) a qualquer questionamento do cliente referente ao Edital que foi analisado.
+    const systemInstruction = `Você é o Agente de IA Consultor da Courvan Assessoria em Licitações e Compras Públicas (especialista na Lei 14.133/21, Lei 8.666/93 e compras públicas do Brasil).
+Sua missão é responder de forma direta, atenciosa, precisa, esclarecedora e juridicamente fundamentada a qualquer questionamento do cliente ou licitante.
 
-Contexto da Análise do Edital:
-${editalContext || "Análise de Edital de Licitação Pública"}
+Contexto da Análise do Edital (se houver):
+${editalContext || "Atendimento e Consultoria Geral em Licitações da Courvan Assessoria"}
 
 Diretrizes de Atendimento:
 - Responda objetivamente à dúvida do cliente.
-- Cite as exigências do edital ou os dispositivos legais cabíveis de maneira clara e fácil de entender.
+- Cite as exigências do edital ou os dispositivos legais cabíveis (ex: Nova Lei de Licitações 14.133/21) de maneira clara e didática.
 - Forneça orientação prática sobre o que a empresa deve fazer.
-- Mantenha a identidade profissional e prestativa da Courvan Assessoria.`;
+- Mantenha a identidade profissional, prestativa e confiável da Courvan Assessoria.`;
 
-    const chat = ai.chats.create({
-      model: "gemini-3.6-flash",
-      config: {
-        systemInstruction
-      }
-    });
+    const contentsArray: any[] = [
+      { role: "user", parts: [{ text: `[INSTRUÇÕES DO SISTEMA E CONTEXTO DO CERTAME]\n${systemInstruction}` }] },
+      { role: "model", parts: [{ text: "Entendido! Sou o Agente de IA Especialista da Courvan Assessoria. Estou pronto para responder todas as dúvidas com precisão jurídica e prática." }] }
+    ];
 
     if (Array.isArray(historico)) {
-      for (const msg of historico) {
-        if (msg.role === "user" && msg.content) {
-          await chat.sendMessage({ message: msg.content });
+      historico.forEach((m: any) => {
+        if (m.role && m.content) {
+          contentsArray.push({
+            role: m.role === "user" ? "user" : "model",
+            parts: [{ text: String(m.content) }]
+          });
         }
-      }
+      });
     }
 
-    const response = await chat.sendMessage({ message: pergunta });
+    contentsArray.push({ role: "user", parts: [{ text: pergunta }] });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.6-flash",
+      contents: contentsArray
+    });
+
     const respostaTexto = response.text || "Não foi possível gerar uma resposta para o questionamento.";
 
     // Save chat interaction to Firestore if analiseId is provided
@@ -464,6 +504,16 @@ app.use(express.static(publicDir));
 // Fallback to index.html for root path or HTML-expecting requests
 app.get("/", (req, res) => {
   res.sendFile(path.join(publicDir, "index.html"));
+});
+
+// Global Error Handler returning JSON
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("Global Express error caught:", err);
+  if (res.headersSent) return next(err);
+  res.status(err.status || 500).json({
+    success: false,
+    error: err.message || "Erro interno no servidor de IA."
+  });
 });
 
 app.listen(PORT, "0.0.0.0", () => {
