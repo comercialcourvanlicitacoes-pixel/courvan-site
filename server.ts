@@ -51,6 +51,19 @@ function getGenAIClient() {
 }
 
 // Configure CORS for all origins, headers and methods
+app.use((req, res, next) => {
+  const origin = req.headers.origin || "*";
+  res.header("Access-Control-Allow-Origin", origin);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Allow-Origin");
+  
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  next();
+});
+
 app.use(cors({
   origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
