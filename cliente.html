@@ -7595,49 +7595,58 @@ window.carregarDadosLicitacaoSelecionadaAi = function(id) {
   }
 };
 
+window.CLOUD_RUN_BACKEND_URLS = [
+  "https://ais-pre-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app",
+  "https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app"
+];
+
 window.getCloudRunFallbackUrl = function() {
   let stored = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
-  
-  // Clean up stale or broken ais-pre / ais-dev URLs from localStorage
-  if (stored && (stored.includes("ais-pre-") || stored.includes("ais-dev-"))) {
-    // Only keep if it matches current origin
-    if (!stored.includes(window.location.hostname)) {
-      localStorage.removeItem("COURVAN_API_BASE");
-      window.COURVAN_API_BASE = "";
-      stored = "";
-    }
-  }
-  
   if (stored) return stored.replace(/\/$/, '');
-  
-  // By default, use current origin or relative requests
   return window.location.origin || "";
 };
 
 window.abrirModalConfigApi = function() {
-  const currentUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || window.location.origin;
+  const storedUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
+  const cloudRunUrl = window.CLOUD_RUN_BACKEND_URLS[0];
   let modal = document.getElementById("modalConfigApiCourvan");
+  
   if (modal) {
-    document.getElementById("inputBackendUrlCourvan").value = currentUrl;
+    document.getElementById("inputBackendUrlCourvan").value = storedUrl;
     modal.style.display = "flex";
   } else {
     modal = document.createElement("div");
     modal.id = "modalConfigApiCourvan";
     modal.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(3,7,18,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px;";
     modal.innerHTML = `
-      <div style="background:#090e1a; border:1px solid rgba(229,184,92,0.35); border-radius:20px; padding:28px; max-width:500px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.85), 0 0 30px rgba(229,184,92,0.15); color:#f1f5f9; font-family:'Inter', sans-serif;">
+      <div style="background:#090e1a; border:1px solid rgba(229,184,92,0.35); border-radius:20px; padding:28px; max-width:540px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.85), 0 0 30px rgba(229,184,92,0.15); color:#f1f5f9; font-family:'Inter', sans-serif;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h3 style="font-size:18px; font-weight:800; color:#fcd34d; margin:0; display:flex; align-items:center; gap:8px;">
-            <span>⚙️</span> Servidor Backend de IA & API
+            <span>⚙️</span> Conexão do Agente de IA & API
           </h3>
           <button onclick="document.getElementById('modalConfigApiCourvan').style.display='none'" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
         </div>
-        <p style="font-size:13px; color:#cbd5e1; line-height:1.5; margin-bottom:16px;">
-          Configure ou verifique o endereço do servidor backend de IA da Courvan. Se estiver rodando no mesmo servidor, deixe em branco para usar a rota relativa padrão.
-        </p>
-        <label style="font-size:11px; font-weight:700; color:#94a3b8; display:block; margin-bottom:6px;">URL do Servidor Backend (API):</label>
-        <input id="inputBackendUrlCourvan" value="${currentUrl}" placeholder="https://seu-backend.run.app (ou deixe vazio para relativo)" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(3,7,18,0.8); color:#f1f5f9; font-size:13px; font-family:monospace; margin-bottom:16px; outline:none;" />
-        <div id="statusTestApiCourvan" style="font-size:12px; margin-bottom:16px; display:none; padding:12px; border-radius:10px; line-height:1.4;"></div>
+        
+        <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:12px; color:#e2e8f0; line-height:1.5;">
+          <strong>💡 Guia de Configuração:</strong><br>
+          • <strong>Se estiver acessando no Cloud Run / AI Studio:</strong> Deixe em branco (usa rota relativa automática).<br>
+          • <strong>Se estiver usando no seu SaaS externo (<code>www.courvanlicitacoes.com.br</code>):</strong> Cole a URL do servidor backend no Cloud Run para que o chat e análise de edital funcionem.
+        </div>
+
+        <label style="font-size:11px; font-weight:700; color:#94a3b8; display:block; margin-bottom:6px;">URL do Servidor Backend de IA (API):</label>
+        <input id="inputBackendUrlCourvan" value="${storedUrl}" placeholder="Ex: https://ais-pre-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app (ou vazio para relativo)" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(3,7,18,0.8); color:#f1f5f9; font-size:12px; font-family:monospace; margin-bottom:12px; outline:none;" />
+        
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+          <button onclick="document.getElementById('inputBackendUrlCourvan').value='${cloudRunUrl}'; window.testarConexaoApi();" style="font-size:11px; padding:6px 10px; background:rgba(229,184,92,0.15); border:1px solid rgba(229,184,92,0.3); color:#fcd34d; border-radius:6px; cursor:pointer; font-weight:600;">
+            🚀 Usar URL Cloud Run (SaaS)
+          </button>
+          <button onclick="document.getElementById('inputBackendUrlCourvan').value=''; window.testarConexaoApi();" style="font-size:11px; padding:6px 10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; border-radius:6px; cursor:pointer; font-weight:600;">
+            🔄 Deixar Vazio (Relativo)
+          </button>
+        </div>
+
+        <div id="statusTestApiCourvan" style="font-size:12px; margin-bottom:16px; display:none; padding:12px; border-radius:10px; line-height:1.5;"></div>
+
         <div style="display:flex; gap:10px; justify-content:flex-end;">
           <button onclick="window.testarConexaoApi()" style="padding:10px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#f1f5f9; border-radius:10px; font-size:13px; cursor:pointer; font-weight:600;">
             🧪 Testar Conexão
@@ -7655,7 +7664,8 @@ window.abrirModalConfigApi = function() {
 window.testarConexaoApi = async function() {
   const input = document.getElementById("inputBackendUrlCourvan");
   if (!input) return;
-  const url = input.value.trim().replace(/\/$/, '');
+  const rawUrl = input.value.trim();
+  const url = rawUrl.replace(/\/$/, '');
   const statusEl = document.getElementById("statusTestApiCourvan");
   statusEl.style.display = "block";
   statusEl.style.background = "rgba(229,184,92,0.12)";
@@ -7673,34 +7683,40 @@ window.testarConexaoApi = async function() {
       statusEl.style.background = "rgba(16,185,129,0.15)";
       statusEl.style.border = "1px solid rgba(16,185,129,0.3)";
       statusEl.style.color = "#34d399";
-      statusEl.innerHTML = `✅ Conexão estabelecida com sucesso! Servidor Respondendo. (IA Gemini: ${data.aiConfigured ? 'Ativa 🟢' : 'Aguardando Chave ⚠️'})`;
+      statusEl.innerHTML = `✅ Conexão estabelecida com sucesso com <strong>${target}</strong>!<br>Servidor Respondendo. (IA Gemini: ${data.aiConfigured ? 'Ativa 🟢' : 'Aguardando Chave ⚠️'})`;
       return;
     }
   } catch (e) {
     console.warn("Primary test failed:", e);
   }
 
-  // Fallback test with relative endpoint if custom target failed
-  if (target !== "" && target !== window.location.origin) {
+  // Fallback test: Check Cloud Run backend endpoints if the typed URL failed (e.g., if user typed site domain)
+  for (const fallbackUrl of window.CLOUD_RUN_BACKEND_URLS) {
     try {
-      const relResp = await fetch("/api/health", { method: "GET" });
-      if (relResp.ok) {
-        const data = await relResp.json();
-        statusEl.style.background = "rgba(16,185,129,0.15)";
-        statusEl.style.border = "1px solid rgba(16,185,129,0.3)";
-        statusEl.style.color = "#34d399";
-        statusEl.innerHTML = `✅ Conexão relativa local estabelecida! Servidor Respondendo. (IA Gemini: ${data.aiConfigured ? 'Ativa 🟢' : 'Aguardando Chave ⚠️'})`;
+      const crResp = await fetch(fallbackUrl + "/api/health", { method: "GET" });
+      if (crResp.ok) {
+        const data = await crResp.json();
+        statusEl.style.background = "rgba(229,184,92,0.15)";
+        statusEl.style.border = "1px solid rgba(229,184,92,0.35)";
+        statusEl.style.color = "#fcd34d";
+        statusEl.innerHTML = `
+          ⚠️ A URL informada (${target}) não respondeu como backend de API.<br>
+          <span style="color:#34d399; font-weight:bold;">🟢 Servidor Cloud Run Encontrado e Ativo!</span> (${fallbackUrl})<br><br>
+          <button onclick="document.getElementById('inputBackendUrlCourvan').value='${fallbackUrl}'; window.salvarConfigApi();" style="margin-top:4px; padding:8px 14px; background:#fcd34d; color:#030712; border:none; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">
+            👉 Usar URL do Cloud Run (${fallbackUrl})
+          </button>
+        `;
         return;
       }
     } catch (e2) {
-      console.warn("Relative test failed:", e2);
+      console.warn("Cloud Run test fallback failed:", e2);
     }
   }
 
   statusEl.style.background = "rgba(248,113,113,0.15)";
   statusEl.style.border = "1px solid rgba(248,113,113,0.3)";
   statusEl.style.color = "#f87171";
-  statusEl.innerHTML = `⚠️ Não foi possível conectar ao backend (${target}). Certifique-se de que o servidor está rodando ou verifique as configurações de CORS.`;
+  statusEl.innerHTML = `⚠️ Não foi possível conectar ao backend (${target}). Certifique-se de que o servidor está rodando ou use a opção de preencher com a URL do Cloud Run.`;
 };
 
 window.salvarConfigApi = function() {
@@ -7710,12 +7726,12 @@ window.salvarConfigApi = function() {
   if (url) {
     localStorage.setItem("COURVAN_API_BASE", url);
     window.COURVAN_API_BASE = url;
-    alert("URL da API backend salva com sucesso!");
+    alert("URL da API backend salva com sucesso: " + url);
     document.getElementById("modalConfigApiCourvan").style.display = "none";
   } else {
     localStorage.removeItem("COURVAN_API_BASE");
     window.COURVAN_API_BASE = "";
-    alert("URL da API resetada para o padrão automático.");
+    alert("URL da API resetada para o modo relativo automático.");
     document.getElementById("modalConfigApiCourvan").style.display = "none";
   }
 };
@@ -7742,54 +7758,33 @@ window.renderMarkdown = function(mdText) {
 
 window.fetchCourvanApi = async function(endpoint, options) {
   let baseUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
-  
-  // Clean up bad stored URLs
-  if (baseUrl && (baseUrl.includes("ais-pre-") || baseUrl.includes("ais-dev-"))) {
-    if (!baseUrl.includes(window.location.hostname)) {
-      localStorage.removeItem("COURVAN_API_BASE");
-      window.COURVAN_API_BASE = "";
-      baseUrl = "";
-    }
-  }
 
-  // 1. Try with configured baseUrl if present
-  if (baseUrl) {
-    const customUrl = baseUrl.replace(/\/$/, '') + endpoint;
+  // List of candidate bases to try sequentially
+  const candidateBases = [];
+  if (baseUrl) candidateBases.push(baseUrl.replace(/\/$/, ''));
+  candidateBases.push(window.location.origin.replace(/\/$/, ''));
+  window.CLOUD_RUN_BACKEND_URLS.forEach(u => {
+    if (!candidateBases.includes(u)) candidateBases.push(u);
+  });
+
+  for (const candidateBase of candidateBases) {
+    const fullUrl = candidateBase ? (candidateBase + endpoint) : endpoint;
     try {
-      const resp = await fetch(customUrl, options);
-      if (resp.ok) return resp;
-      console.warn(`Custom API call to ${customUrl} returned status ${resp.status}. Trying relative route fallback...`);
+      const resp = await fetch(fullUrl, options);
+      if (resp.ok || (resp.status !== 404 && resp.status !== 405 && resp.status !== 502 && resp.status !== 503)) {
+        return resp;
+      }
     } catch (err) {
-      console.warn(`Custom API call to ${customUrl} failed. Trying relative route fallback...`, err);
+      console.warn(`Fetch to ${fullUrl} failed. Trying next candidate endpoint...`, err);
     }
   }
 
-  // 2. Try relative endpoint directly (same-origin)
+  // Final attempt: direct relative fetch
   try {
     const relResp = await fetch(endpoint, options);
-    if (relResp.ok) {
-      // If relative succeeded, clear bad stored custom baseUrl
-      if (baseUrl) {
-        localStorage.removeItem("COURVAN_API_BASE");
-        window.COURVAN_API_BASE = "";
-      }
-      return relResp;
-    }
-    // Return relResp if it came back with status (e.g., 400 or 500 business errors)
-    if (relResp.status !== 404 && relResp.status !== 405) {
-      return relResp;
-    }
+    return relResp;
   } catch (relErr) {
-    console.warn("Relative fetch failed:", relErr);
-  }
-
-  // 3. Try origin + endpoint
-  try {
-    const originUrl = window.location.origin.replace(/\/$/, '') + endpoint;
-    const originResp = await fetch(originUrl, options);
-    return originResp;
-  } catch (originErr) {
-    throw new Error(`Não foi possível conectar ao servidor backend. Verifique se o backend está ativo.`);
+    throw new Error(`Não foi possível conectar ao servidor backend de IA. Verifique se o servidor está ativo.`);
   }
 };
 
