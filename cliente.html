@@ -755,7 +755,10 @@
             O Agente lê arquivos PDF ou textos de editais, mapeia instantaneamente todas as exigências de habilitação (jurídica, fiscal, técnica e financeira), identifica prazos, faz análise de riscos e responde qualquer dúvida dos seus clientes.
           </p>
         </div>
-        <div style="display:flex; gap:10px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button onclick="window.abrirModalConfigApi()" class="doc-tab-btn" style="display:flex; align-items:center; gap:6px; background:rgba(229,184,92,0.1); border:1px solid rgba(229,184,92,0.3); color:#fcd34d;">
+            <span>⚙️ Servidor API</span>
+          </button>
           <button onclick="window.carregarHistoricoAnalisesIA()" class="doc-tab-btn" style="display:flex; align-items:center; gap:6px;">
             <span>⏳ Histórico de Análises</span>
           </button>
@@ -7594,7 +7597,106 @@ window.carregarDadosLicitacaoSelecionadaAi = function(id) {
 };
 
 window.getCloudRunFallbackUrl = function() {
+  if (window.COURVAN_API_BASE) return window.COURVAN_API_BASE.replace(/\/$/, '');
+  const stored = localStorage.getItem("COURVAN_API_BASE");
+  if (stored) return stored.replace(/\/$/, '');
+  
+  // If running directly on Cloud Run or localhost, use current origin
+  if (window.location.hostname.includes("run.app") || window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1")) {
+    return window.location.origin;
+  }
+  
+  // Cloud Run primary deployment URL fallback for external domains
   return "https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app";
+};
+
+window.abrirModalConfigApi = function() {
+  const currentUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || window.getCloudRunFallbackUrl();
+  let modal = document.getElementById("modalConfigApiCourvan");
+  if (modal) {
+    document.getElementById("inputBackendUrlCourvan").value = currentUrl;
+    modal.style.display = "flex";
+  } else {
+    modal = document.createElement("div");
+    modal.id = "modalConfigApiCourvan";
+    modal.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(3,7,18,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px;";
+    modal.innerHTML = `
+      <div style="background:#090e1a; border:1px solid rgba(229,184,92,0.35); border-radius:20px; padding:28px; max-width:500px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.85), 0 0 30px rgba(229,184,92,0.15); color:#f1f5f9; font-family:'Inter', sans-serif;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="font-size:18px; font-weight:800; color:#fcd34d; margin:0; display:flex; align-items:center; gap:8px;">
+            <span>⚙️</span> Servidor Backend de IA & API
+          </h3>
+          <button onclick="document.getElementById('modalConfigApiCourvan').style.display='none'" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        </div>
+        <p style="font-size:13px; color:#cbd5e1; line-height:1.5; margin-bottom:16px;">
+          Configure ou verifique o endereço do servidor backend da Courvan (Cloud Run). Isso garante que o Agente de IA responda perfeitamente em domínios externos.
+        </p>
+        <label style="font-size:11px; font-weight:700; color:#94a3b8; display:block; margin-bottom:6px;">URL do Servidor Backend (API):</label>
+        <input id="inputBackendUrlCourvan" value="${currentUrl}" placeholder="https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(3,7,18,0.8); color:#f1f5f9; font-size:13px; font-family:monospace; margin-bottom:16px; outline:none;" />
+        <div id="statusTestApiCourvan" style="font-size:12px; margin-bottom:16px; display:none; padding:12px; border-radius:10px; line-height:1.4;"></div>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+          <button onclick="window.testarConexaoApi()" style="padding:10px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#f1f5f9; border-radius:10px; font-size:13px; cursor:pointer; font-weight:600;">
+            🧪 Testar Conexão
+          </button>
+          <button onclick="window.salvarConfigApi()" style="padding:10px 20px; background:linear-gradient(135deg, #fcd34d, #e5b85c); border:none; color:#030712; border-radius:10px; font-size:13px; cursor:pointer; font-weight:800;">
+            💾 Salvar URL
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+};
+
+window.testarConexaoApi = async function() {
+  const input = document.getElementById("inputBackendUrlCourvan");
+  if (!input) return;
+  const url = input.value.trim().replace(/\/$/, '');
+  const statusEl = document.getElementById("statusTestApiCourvan");
+  statusEl.style.display = "block";
+  statusEl.style.background = "rgba(229,184,92,0.12)";
+  statusEl.style.border = "1px solid rgba(229,184,92,0.3)";
+  statusEl.style.color = "#fcd34d";
+  statusEl.innerHTML = "⏳ Testando conexão com o servidor backend...";
+
+  try {
+    const target = url || window.getCloudRunFallbackUrl();
+    const resp = await fetch(target + "/api/health", { method: "GET" });
+    if (resp.ok) {
+      const data = await resp.json();
+      statusEl.style.background = "rgba(16,185,129,0.15)";
+      statusEl.style.border = "1px solid rgba(16,185,129,0.3)";
+      statusEl.style.color = "#34d399";
+      statusEl.innerHTML = `✅ Conexão estabelecida com sucesso! Servidor Respondendo. (IA: ${data.aiConfigured ? 'Ativa 🟢' : 'Ativa'})`;
+    } else {
+      statusEl.style.background = "rgba(248,113,113,0.15)";
+      statusEl.style.border = "1px solid rgba(248,113,113,0.3)";
+      statusEl.style.color = "#f87171";
+      statusEl.innerHTML = `⚠️ Servidor respondeu com código HTTP ${resp.status}`;
+    }
+  } catch (e) {
+    statusEl.style.background = "rgba(248,113,113,0.15)";
+    statusEl.style.border = "1px solid rgba(248,113,113,0.3)";
+    statusEl.style.color = "#f87171";
+    statusEl.innerHTML = `⚠️ Não foi possível conectar: ${e.message}`;
+  }
+};
+
+window.salvarConfigApi = function() {
+  const input = document.getElementById("inputBackendUrlCourvan");
+  if (!input) return;
+  const url = input.value.trim().replace(/\/$/, '');
+  if (url) {
+    localStorage.setItem("COURVAN_API_BASE", url);
+    window.COURVAN_API_BASE = url;
+    alert("URL da API backend salva com sucesso!");
+    document.getElementById("modalConfigApiCourvan").style.display = "none";
+  } else {
+    localStorage.removeItem("COURVAN_API_BASE");
+    window.COURVAN_API_BASE = "";
+    alert("URL da API resetada para o padrão automático.");
+    document.getElementById("modalConfigApiCourvan").style.display = "none";
+  }
 };
 
 window.renderMarkdown = function(mdText) {
@@ -7619,12 +7721,18 @@ window.renderMarkdown = function(mdText) {
 
 window.fetchCourvanApi = async function(endpoint, options) {
   let baseUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
+  
+  // If no explicit baseUrl is configured and running on an external domain, default directly to Cloud Run
+  if (!baseUrl && !window.location.hostname.includes("run.app") && !window.location.hostname.includes("localhost") && !window.location.hostname.includes("127.0.0.1")) {
+    baseUrl = window.getCloudRunFallbackUrl();
+  }
+
   let primaryUrl = baseUrl ? (baseUrl.replace(/\/$/, '') + endpoint) : endpoint;
 
   try {
     let resp = await fetch(primaryUrl, options);
-    // If relative API call returns 405 Method Not Allowed or 404 Not Found on external static host
-    if ((resp.status === 405 || resp.status === 404) && !baseUrl && !window.location.hostname.includes("run.app") && !window.location.hostname.includes("localhost")) {
+    // If primary relative request returned 405 or 404
+    if ((resp.status === 405 || resp.status === 404) && primaryUrl.startsWith("/")) {
       console.warn(`Relative API call returned HTTP ${resp.status}. Retrying with Cloud Run backend...`);
       const fallbackBase = window.getCloudRunFallbackUrl();
       const fallbackUrl = fallbackBase + endpoint;
@@ -7637,7 +7745,7 @@ window.fetchCourvanApi = async function(endpoint, options) {
     }
     return resp;
   } catch (err) {
-    if (!baseUrl && !window.location.hostname.includes("run.app") && !window.location.hostname.includes("localhost")) {
+    if (primaryUrl.startsWith("/")) {
       console.warn("Primary API call failed. Retrying with Cloud Run backend...", err);
       const fallbackBase = window.getCloudRunFallbackUrl();
       const fallbackUrl = fallbackBase + endpoint;
@@ -8147,6 +8255,7 @@ window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
       </div>
     </div>
     <div style="display:flex; gap:6px;">
+      <button onclick="window.abrirModalConfigApi()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'" title="Configurações do Servidor API">⚙️</button>
       <button onclick="window.toggleWidgetIaFlutuante()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">✕</button>
     </div>
   </div>
