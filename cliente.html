@@ -755,9 +755,6 @@
           </p>
         </div>
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button onclick="window.abrirModalConfigApi()" class="doc-tab-btn" style="display:flex; align-items:center; gap:6px; background:rgba(229,184,92,0.1); border:1px solid rgba(229,184,92,0.3); color:#fcd34d;">
-            <span>⚙️ Servidor API</span>
-          </button>
           <button onclick="window.carregarHistoricoAnalisesIA()" class="doc-tab-btn" style="display:flex; align-items:center; gap:6px;">
             <span>⏳ Histórico de Análises</span>
           </button>
@@ -7600,141 +7597,7 @@ window.CLOUD_RUN_BACKEND_URLS = [
   "https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app"
 ];
 
-window.getCloudRunFallbackUrl = function() {
-  let stored = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
-  if (stored) return stored.replace(/\/$/, '');
-  return window.location.origin || "";
-};
-
-window.abrirModalConfigApi = function() {
-  const storedUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
-  const cloudRunUrl = window.CLOUD_RUN_BACKEND_URLS[0];
-  let modal = document.getElementById("modalConfigApiCourvan");
-  
-  if (modal) {
-    document.getElementById("inputBackendUrlCourvan").value = storedUrl;
-    modal.style.display = "flex";
-  } else {
-    modal = document.createElement("div");
-    modal.id = "modalConfigApiCourvan";
-    modal.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(3,7,18,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px;";
-    modal.innerHTML = `
-      <div style="background:#090e1a; border:1px solid rgba(229,184,92,0.35); border-radius:20px; padding:28px; max-width:540px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.85), 0 0 30px rgba(229,184,92,0.15); color:#f1f5f9; font-family:'Inter', sans-serif;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h3 style="font-size:18px; font-weight:800; color:#fcd34d; margin:0; display:flex; align-items:center; gap:8px;">
-            <span>⚙️</span> Conexão do Agente de IA & API
-          </h3>
-          <button onclick="document.getElementById('modalConfigApiCourvan').style.display='none'" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
-        </div>
-        
-        <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.2); border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:12px; color:#e2e8f0; line-height:1.5;">
-          <strong>💡 Guia de Configuração:</strong><br>
-          • <strong>Se estiver acessando no Cloud Run / AI Studio:</strong> Deixe em branco (usa rota relativa automática).<br>
-          • <strong>Se estiver usando no seu SaaS externo (<code>www.courvanlicitacoes.com.br</code>):</strong> Cole a URL do servidor backend no Cloud Run para que o chat e análise de edital funcionem.
-        </div>
-
-        <label style="font-size:11px; font-weight:700; color:#94a3b8; display:block; margin-bottom:6px;">URL do Servidor Backend de IA (API):</label>
-        <input id="inputBackendUrlCourvan" value="${storedUrl}" placeholder="Ex: https://ais-pre-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app (ou vazio para relativo)" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(3,7,18,0.8); color:#f1f5f9; font-size:12px; font-family:monospace; margin-bottom:12px; outline:none;" />
-        
-        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
-          <button onclick="document.getElementById('inputBackendUrlCourvan').value='${cloudRunUrl}'; window.testarConexaoApi();" style="font-size:11px; padding:6px 10px; background:rgba(229,184,92,0.15); border:1px solid rgba(229,184,92,0.3); color:#fcd34d; border-radius:6px; cursor:pointer; font-weight:600;">
-            🚀 Usar URL Cloud Run (SaaS)
-          </button>
-          <button onclick="document.getElementById('inputBackendUrlCourvan').value=''; window.testarConexaoApi();" style="font-size:11px; padding:6px 10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; border-radius:6px; cursor:pointer; font-weight:600;">
-            🔄 Deixar Vazio (Relativo)
-          </button>
-        </div>
-
-        <div id="statusTestApiCourvan" style="font-size:12px; margin-bottom:16px; display:none; padding:12px; border-radius:10px; line-height:1.5;"></div>
-
-        <div style="display:flex; gap:10px; justify-content:flex-end;">
-          <button onclick="window.testarConexaoApi()" style="padding:10px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#f1f5f9; border-radius:10px; font-size:13px; cursor:pointer; font-weight:600;">
-            🧪 Testar Conexão
-          </button>
-          <button onclick="window.salvarConfigApi()" style="padding:10px 20px; background:linear-gradient(135deg, #fcd34d, #e5b85c); border:none; color:#030712; border-radius:10px; font-size:13px; cursor:pointer; font-weight:800;">
-            💾 Salvar URL
-          </button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  }
-};
-
-window.testarConexaoApi = async function() {
-  const input = document.getElementById("inputBackendUrlCourvan");
-  if (!input) return;
-  const rawUrl = input.value.trim();
-  const url = rawUrl.replace(/\/$/, '');
-  const statusEl = document.getElementById("statusTestApiCourvan");
-  statusEl.style.display = "block";
-  statusEl.style.background = "rgba(229,184,92,0.12)";
-  statusEl.style.border = "1px solid rgba(229,184,92,0.3)";
-  statusEl.style.color = "#fcd34d";
-  statusEl.innerHTML = "⏳ Testando conexão com o servidor backend...";
-
-  // Primary test target
-  const target = url || window.location.origin;
-
-  try {
-    const resp = await fetch(target + "/api/health", { method: "GET" });
-    if (resp.ok) {
-      const data = await resp.json();
-      statusEl.style.background = "rgba(16,185,129,0.15)";
-      statusEl.style.border = "1px solid rgba(16,185,129,0.3)";
-      statusEl.style.color = "#34d399";
-      statusEl.innerHTML = `✅ Conexão estabelecida com sucesso com <strong>${target}</strong>!<br>Servidor Respondendo. (IA Gemini: ${data.aiConfigured ? 'Ativa 🟢' : 'Aguardando Chave ⚠️'})`;
-      return;
-    }
-  } catch (e) {
-    console.warn("Primary test failed:", e);
-  }
-
-  // Fallback test: Check Cloud Run backend endpoints if the typed URL failed (e.g., if user typed site domain)
-  for (const fallbackUrl of window.CLOUD_RUN_BACKEND_URLS) {
-    try {
-      const crResp = await fetch(fallbackUrl + "/api/health", { method: "GET" });
-      if (crResp.ok) {
-        const data = await crResp.json();
-        statusEl.style.background = "rgba(229,184,92,0.15)";
-        statusEl.style.border = "1px solid rgba(229,184,92,0.35)";
-        statusEl.style.color = "#fcd34d";
-        statusEl.innerHTML = `
-          ⚠️ A URL informada (${target}) não respondeu como backend de API.<br>
-          <span style="color:#34d399; font-weight:bold;">🟢 Servidor Cloud Run Encontrado e Ativo!</span> (${fallbackUrl})<br><br>
-          <button onclick="document.getElementById('inputBackendUrlCourvan').value='${fallbackUrl}'; window.salvarConfigApi();" style="margin-top:4px; padding:8px 14px; background:#fcd34d; color:#030712; border:none; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">
-            👉 Usar URL do Cloud Run (${fallbackUrl})
-          </button>
-        `;
-        return;
-      }
-    } catch (e2) {
-      console.warn("Cloud Run test fallback failed:", e2);
-    }
-  }
-
-  statusEl.style.background = "rgba(248,113,113,0.15)";
-  statusEl.style.border = "1px solid rgba(248,113,113,0.3)";
-  statusEl.style.color = "#f87171";
-  statusEl.innerHTML = `⚠️ Não foi possível conectar ao backend (${target}). Certifique-se de que o servidor está rodando ou use a opção de preencher com a URL do Cloud Run.`;
-};
-
-window.salvarConfigApi = function() {
-  const input = document.getElementById("inputBackendUrlCourvan");
-  if (!input) return;
-  const url = input.value.trim().replace(/\/$/, '');
-  if (url) {
-    localStorage.setItem("COURVAN_API_BASE", url);
-    window.COURVAN_API_BASE = url;
-    alert("URL da API backend salva com sucesso: " + url);
-    document.getElementById("modalConfigApiCourvan").style.display = "none";
-  } else {
-    localStorage.removeItem("COURVAN_API_BASE");
-    window.COURVAN_API_BASE = "";
-    alert("URL da API resetada para o modo relativo automático.");
-    document.getElementById("modalConfigApiCourvan").style.display = "none";
-  }
-};
+window.COURVAN_AUTO_DETECTED_BASE = null;
 
 window.renderMarkdown = function(mdText) {
   if (!mdText) return "";
@@ -7757,34 +7620,65 @@ window.renderMarkdown = function(mdText) {
 };
 
 window.fetchCourvanApi = async function(endpoint, options) {
-  let baseUrl = window.COURVAN_API_BASE || localStorage.getItem("COURVAN_API_BASE") || "";
-
-  // List of candidate bases to try sequentially
-  const candidateBases = [];
-  if (baseUrl) candidateBases.push(baseUrl.replace(/\/$/, ''));
-  candidateBases.push(window.location.origin.replace(/\/$/, ''));
-  window.CLOUD_RUN_BACKEND_URLS.forEach(u => {
-    if (!candidateBases.includes(u)) candidateBases.push(u);
-  });
-
-  for (const candidateBase of candidateBases) {
-    const fullUrl = candidateBase ? (candidateBase + endpoint) : endpoint;
+  // If we already auto-detected a working backend URL, try it first
+  if (window.COURVAN_AUTO_DETECTED_BASE) {
+    const fullUrl = window.COURVAN_AUTO_DETECTED_BASE + endpoint;
     try {
       const resp = await fetch(fullUrl, options);
-      if (resp.ok || (resp.status !== 404 && resp.status !== 405 && resp.status !== 502 && resp.status !== 503)) {
-        return resp;
-      }
+      if (resp.ok) return resp;
     } catch (err) {
-      console.warn(`Fetch to ${fullUrl} failed. Trying next candidate endpoint...`, err);
+      console.warn(`[Courvan AI] Saved backend ${window.COURVAN_AUTO_DETECTED_BASE} failed, re-detecting...`);
+      window.COURVAN_AUTO_DETECTED_BASE = null;
     }
   }
 
-  // Final attempt: direct relative fetch
+  // Build list of candidate backend URLs to try automatically (zero user config needed)
+  const candidateBases = [
+    window.location.origin.replace(/\/$/, '')
+  ];
+
+  window.CLOUD_RUN_BACKEND_URLS.forEach(u => {
+    const clean = u.replace(/\/$/, '');
+    if (!candidateBases.includes(clean)) candidateBases.push(clean);
+  });
+
+  let lastError = null;
+
+  for (const candidateBase of candidateBases) {
+    const fullUrl = candidateBase + endpoint;
+    try {
+      const resp = await fetch(fullUrl, options);
+      const contentType = resp.headers.get("content-type") || "";
+      
+      // Successful response
+      if (resp.ok && (contentType.includes("json") || contentType.includes("text") || !contentType.includes("html"))) {
+        window.COURVAN_AUTO_DETECTED_BASE = candidateBase;
+        return resp;
+      }
+      
+      // If got 404 HTML on origin (e.g. static site hosting without backend routes), continue to Cloud Run fallback
+      if (resp.status === 404 && candidateBase === window.location.origin.replace(/\/$/, '')) {
+        console.warn(`[Courvan AI] Origin ${candidateBase} returned 404 for ${endpoint}. Auto-switching to Cloud Run backend...`);
+        continue;
+      }
+
+      // If valid API returned non-500 error code with JSON body (e.g. 400 Bad Request), pass it to caller
+      if (resp.status < 500 && contentType.includes("json")) {
+        window.COURVAN_AUTO_DETECTED_BASE = candidateBase;
+        return resp;
+      }
+    } catch (err) {
+      console.warn(`[Courvan AI] Connection attempt to ${fullUrl} failed. Auto-switching to next candidate...`, err);
+      lastError = err;
+    }
+  }
+
+  // Final fallback attempt if needed
   try {
     const relResp = await fetch(endpoint, options);
     return relResp;
   } catch (relErr) {
-    throw new Error(`Não foi possível conectar ao servidor backend de IA. Verifique se o servidor está ativo.`);
+    throw new Error(lastError ? lastError.message : "Não foi possível conectar ao servidor backend de IA.");
   }
 };
 
@@ -8283,7 +8177,6 @@ window.abrirAgenteIaParaLicitacao = function(licitacaoId) {
       </div>
     </div>
     <div style="display:flex; gap:6px;">
-      <button onclick="window.abrirModalConfigApi()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'" title="Configurações do Servidor API">⚙️</button>
       <button onclick="window.toggleWidgetIaFlutuante()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">✕</button>
     </div>
   </div>
