@@ -91,6 +91,15 @@
       height: 100%;
     }
 
+    .fc-daygrid-day, .fc-timegrid-slot {
+      cursor: pointer !important;
+    }
+
+    .fc-daygrid-day:hover {
+      background: rgba(229, 184, 92, 0.08) !important;
+      transition: background 0.15s ease;
+    }
+
     .fc-toolbar-title {
       color: #ffffff;
       font-family: var(--font-display) !important;
@@ -313,13 +322,12 @@
     ← Voltar ao Painel
   </button>
   
-  <h2 style="margin: 0; font-size: 28px; font-weight: 700; color: #e5b85c;">📅 Agenda de Licitações & Compromissos</h2>
+  <div>
+    <h2 style="margin: 0; font-size: 28px; font-weight: 700; color: #e5b85c;">📅 Agenda de Licitações & Compromissos</h2>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: #94a3b8; font-weight: 500;">💡 Clique diretamente em qualquer dia no calendário para criar um evento ou compromisso</p>
+  </div>
   
   <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-    <button onclick="window.abrirModalNovoEvento()" style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #e5b85c 0%, #d8a84e 100%); color: #030712; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; border: none; box-shadow: 0 4px 15px rgba(229,184,92,0.3); transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-1px) scale(1.02)'" onmouseout="this.style.transform='none'">
-      ➕ Novo Evento / Compromisso
-    </button>
-
     <button id="btnNotificacaoSininhoAgenda" onclick="window.togglePreferenciaNotificacao()" style="display: flex; align-items: center; gap: 8px; background: rgba(229, 184, 92, 0.08); border: 1.5px solid rgba(229, 184, 92, 0.2); color: #e5b85c; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" title="Configurar Notificações de E-mail">
       <span id="sininhoIconAgenda">🔔</span> <span id="sininhoTextoAgenda">E-mail: Ativado</span>
     </button>
@@ -814,16 +822,34 @@ window.currentCalendarInstance = null;
 window.currentClienteIdGlobal = null;
 window.globalClientesList = [];
 
-window.abrirModalNovoEvento = function() {
+window.abrirModalNovoEvento = function(dataStr) {
   const modal = document.getElementById("modalNovoEventoAgenda");
   if (!modal) return;
 
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  const nowISO = now.toISOString().slice(0, 16);
-  document.getElementById("inputDataHoraEventoAgenda").value = nowISO;
-  document.getElementById("inputTituloEventoAgenda").value = "";
-  document.getElementById("inputObsEventoAgenda").value = "";
+  let isoVal = "";
+  if (dataStr) {
+    if (dataStr.includes("T")) {
+      isoVal = dataStr.slice(0, 16);
+    } else {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      isoVal = `${dataStr}T${hh}:${mm}`;
+    }
+  } else {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    isoVal = now.toISOString().slice(0, 16);
+  }
+
+  const dtInput = document.getElementById("inputDataHoraEventoAgenda");
+  if (dtInput) dtInput.value = isoVal;
+
+  const titInput = document.getElementById("inputTituloEventoAgenda");
+  if (titInput) titInput.value = "";
+
+  const obsInput = document.getElementById("inputObsEventoAgenda");
+  if (obsInput) obsInput.value = "";
 
   const sel = document.getElementById("inputClienteEventoAgenda");
   if (sel) {
@@ -842,6 +868,10 @@ window.abrirModalNovoEvento = function() {
   }
 
   modal.style.display = "flex";
+  
+  setTimeout(() => {
+    if (titInput) titInput.focus();
+  }, 100);
 };
 
 window.fecharModalNovoEvento = function() {
@@ -1694,11 +1724,17 @@ async function iniciarCalendario(clienteId){
 
         expandRows:true,
 
+        selectable:true,
+
         headerToolbar:{
           left:"prev,next today",
           center:"title",
           right:
             "dayGridMonth,timeGridWeek,listWeek"
+        },
+
+        dateClick: function(info) {
+          window.abrirModalNovoEvento(info.dateStr);
         },
 
         events:[]
