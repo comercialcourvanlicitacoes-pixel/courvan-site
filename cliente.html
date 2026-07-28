@@ -7656,9 +7656,9 @@ window.fetchCourvanApi = async function(endpoint, options) {
         return resp;
       }
       
-      // If got 404 HTML on origin (e.g. static site hosting without backend routes), continue to Cloud Run fallback
-      if (resp.status === 404 && candidateBase === window.location.origin.replace(/\/$/, '')) {
-        console.warn(`[Courvan AI] Origin ${candidateBase} returned 404 for ${endpoint}. Auto-switching to Cloud Run backend...`);
+      // If got 404 or 405 on origin (e.g. static site hosting like GitHub Pages without POST backend routes), continue to Cloud Run fallback
+      if ((resp.status === 404 || resp.status === 405) && candidateBase === window.location.origin.replace(/\/$/, '')) {
+        console.warn(`[Courvan AI] Origin ${candidateBase} returned ${resp.status} for ${endpoint}. Auto-switching to Cloud Run backend...`);
         continue;
       }
 
