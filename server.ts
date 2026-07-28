@@ -401,7 +401,7 @@ ${link ? `Link do Edital: ${link}` : ""}
     contents.push(promptFinal);
 
     let response;
-    const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"];
+    const modelsToTry = ["gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash"];
     let lastAiError: any = null;
 
     for (const modelName of modelsToTry) {
@@ -494,7 +494,7 @@ Diretrizes de Atendimento:
     contentsArray.push({ role: "user", parts: [{ text: pergunta }] });
 
     let response;
-    const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"];
+    const modelsToTry = ["gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash"];
     let lastAiError: any = null;
 
     for (const modelName of modelsToTry) {
