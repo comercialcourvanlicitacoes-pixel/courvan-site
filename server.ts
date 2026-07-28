@@ -403,17 +403,28 @@ ${link ? `Link do Edital: ${link}` : ""}
     contents.push(promptFinal);
 
     let response;
-    try {
-      response = await ai.models.generateContent({
-        model: "gemini-3.6-flash",
-        contents: contents
-      });
-    } catch (mErr) {
-      console.warn("Retrying generateContent with gemini-flash-latest fallback...", mErr);
-      response = await ai.models.generateContent({
-        model: "gemini-flash-latest",
-        contents: contents
-      });
+    const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"];
+    let lastAiError: any = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        console.log(`[Courvan AI] Tentando modelo Gemini: ${modelName}`);
+        response = await ai.models.generateContent({
+          model: modelName,
+          contents: contents
+        });
+        if (response && response.text) {
+          console.log(`[Courvan AI] Sucesso com modelo ${modelName}`);
+          break;
+        }
+      } catch (mErr: any) {
+        console.warn(`[Courvan AI] Modelo ${modelName} falhou:`, mErr?.message || mErr);
+        lastAiError = mErr;
+      }
+    }
+
+    if (!response || !response.text) {
+      throw new Error(`Não foi possível conectar ao Gemini. Detalhe do erro: ${lastAiError?.message || 'Chave GEMINI_API_KEY inválida ou sem cota.'}`);
     }
 
     const resultadoTexto = response.text || "Não foi possível extrair a análise do edital.";
@@ -485,17 +496,28 @@ Diretrizes de Atendimento:
     contentsArray.push({ role: "user", parts: [{ text: pergunta }] });
 
     let response;
-    try {
-      response = await ai.models.generateContent({
-        model: "gemini-3.6-flash",
-        contents: contentsArray
-      });
-    } catch (mErr) {
-      console.warn("Retrying pergunta with gemini-flash-latest fallback...", mErr);
-      response = await ai.models.generateContent({
-        model: "gemini-flash-latest",
-        contents: contentsArray
-      });
+    const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"];
+    let lastAiError: any = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        console.log(`[Courvan AI] Tentando modelo Gemini para chat: ${modelName}`);
+        response = await ai.models.generateContent({
+          model: modelName,
+          contents: contentsArray
+        });
+        if (response && response.text) {
+          console.log(`[Courvan AI] Sucesso no chat com modelo ${modelName}`);
+          break;
+        }
+      } catch (mErr: any) {
+        console.warn(`[Courvan AI] Modelo ${modelName} falhou no chat:`, mErr?.message || mErr);
+        lastAiError = mErr;
+      }
+    }
+
+    if (!response || !response.text) {
+      throw new Error(`Não foi possível gerar resposta do Gemini. Detalhe do erro: ${lastAiError?.message || 'Chave GEMINI_API_KEY inválida ou sem cota.'}`);
     }
 
     const respostaTexto = response.text || "Não foi possível gerar uma resposta para o questionamento.";
