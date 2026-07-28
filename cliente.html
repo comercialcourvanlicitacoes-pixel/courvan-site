@@ -7592,12 +7592,55 @@ window.carregarDadosLicitacaoSelecionadaAi = function(id) {
   }
 };
 
-window.CLOUD_RUN_BACKEND_URLS = [
-  "https://ais-pre-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app",
-  "https://ais-dev-ga2cbat3gmwaxzsxsbjlzg-383261049525.us-west2.run.app"
-];
+window.COURVAN_GEMINI_KEY_DEFAULT = "";
 
-window.COURVAN_AUTO_DETECTED_BASE = null;
+window.callGeminiDirectly = async function(promptText, fileDataBase64, mimeType) {
+  const apiKey = localStorage.getItem("COURVAN_GEMINI_KEY") || window.COURVAN_GEMINI_KEY || window.COURVAN_GEMINI_KEY_DEFAULT;
+  if (!apiKey) {
+    throw new Error("Chave de API do Gemini não configurada. Por favor, adicione sua chave nas configurações (localStorage 'COURVAN_GEMINI_KEY').");
+  }
+
+  const parts = [];
+  if (fileDataBase64) {
+    parts.push({
+      inlineData: {
+        mimeType: mimeType || "application/pdf",
+        data: String(fileDataBase64).replace(/^data:.*?;base64,/, "").replace(/\s/g, "")
+      }
+    });
+  }
+  parts.push({ text: promptText });
+
+  const models = ["gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash"];
+  let lastError = null;
+
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts }] })
+      });
+
+      if (resp.ok) {
+        const data = await resp.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) return text;
+      } else {
+        const errData = await resp.json().catch(() => ({}));
+        if (errData?.error?.message) {
+          lastError = new Error(errData.error.message);
+        }
+      }
+    } catch (err) {
+      console.warn(`[Courvan AI] Model ${model} direct call warning:`, err);
+      lastError = err;
+    }
+  }
+
+  throw new Error(lastError ? lastError.message : "Falha ao consultar a Inteligência Artificial.");
+};
 
 window.renderMarkdown = function(mdText) {
   if (!mdText) return "";
@@ -7620,66 +7663,14 @@ window.renderMarkdown = function(mdText) {
 };
 
 window.fetchCourvanApi = async function(endpoint, options) {
-  // If we already auto-detected a working backend URL, try it first
-  if (window.COURVAN_AUTO_DETECTED_BASE) {
-    const fullUrl = window.COURVAN_AUTO_DETECTED_BASE + endpoint;
-    try {
-      const resp = await fetch(fullUrl, options);
-      if (resp.ok) return resp;
-    } catch (err) {
-      console.warn(`[Courvan AI] Saved backend ${window.COURVAN_AUTO_DETECTED_BASE} failed, re-detecting...`);
-      window.COURVAN_AUTO_DETECTED_BASE = null;
-    }
-  }
-
-  // Build list of candidate backend URLs to try automatically (zero user config needed)
-  const candidateBases = [
-    window.location.origin.replace(/\/$/, '')
-  ];
-
-  window.CLOUD_RUN_BACKEND_URLS.forEach(u => {
-    const clean = u.replace(/\/$/, '');
-    if (!candidateBases.includes(clean)) candidateBases.push(clean);
-  });
-
-  let lastError = null;
-
-  for (const candidateBase of candidateBases) {
-    const fullUrl = candidateBase + endpoint;
-    try {
-      const resp = await fetch(fullUrl, options);
-      const contentType = resp.headers.get("content-type") || "";
-      
-      // Successful response
-      if (resp.ok && (contentType.includes("json") || contentType.includes("text") || !contentType.includes("html"))) {
-        window.COURVAN_AUTO_DETECTED_BASE = candidateBase;
-        return resp;
-      }
-      
-      // If got 404 or 405 on origin (e.g. static site hosting like GitHub Pages without POST backend routes), continue to Cloud Run fallback
-      if ((resp.status === 404 || resp.status === 405) && candidateBase === window.location.origin.replace(/\/$/, '')) {
-        console.warn(`[Courvan AI] Origin ${candidateBase} returned ${resp.status} for ${endpoint}. Auto-switching to Cloud Run backend...`);
-        continue;
-      }
-
-      // If valid API returned non-500 error code with JSON body (e.g. 400 Bad Request), pass it to caller
-      if (resp.status < 500 && contentType.includes("json")) {
-        window.COURVAN_AUTO_DETECTED_BASE = candidateBase;
-        return resp;
-      }
-    } catch (err) {
-      console.warn(`[Courvan AI] Connection attempt to ${fullUrl} failed. Auto-switching to next candidate...`, err);
-      lastError = err;
-    }
-  }
-
-  // Final fallback attempt if needed
   try {
-    const relResp = await fetch(endpoint, options);
-    return relResp;
-  } catch (relErr) {
-    throw new Error(lastError ? lastError.message : "Não foi possível conectar ao servidor backend de IA.");
+    const fullUrl = window.location.origin.replace(/\/$/, '') + endpoint;
+    const resp = await fetch(fullUrl, options);
+    if (resp.ok) return resp;
+  } catch (err) {
+    // static or cross-origin endpoint failed
   }
+  return { ok: false };
 };
 
 window.executarAnaliseEditalIA = async function() {
@@ -7692,11 +7683,10 @@ window.executarAnaliseEditalIA = async function() {
   const clienteId = window.clienteAtual ? window.clienteAtual.id : "geral";
 
   if (!fileData && !text && !link) {
-    alert("Por favor, envie um arquivo PDF, cole o texto do edital ou selecione uma licitação com link/texto para ser analisado.");
+    alert("Por favor, envie um arquivo PDF, cole o texto do edital ou selecione uma licitação para ser analisada.");
     return;
   }
 
-  // Show loading
   const loadingBox = document.getElementById("aiLoadingBox");
   if (loadingBox) loadingBox.style.display = "block";
   const resultWrap = document.getElementById("aiResultadoWrapper");
@@ -7718,36 +7708,46 @@ window.executarAnaliseEditalIA = async function() {
     if (el) el.innerText = statusMsgs[msgIdx];
   }, 2000);
 
+  const promptEdital = `Atue como um Consultor Jurídico Especialista na Nova Lei de Licitações (Lei 14.133/21). Faça uma ANÁLISE COMPLETA E DETALHADA do edital abaixo para o cliente "${clienteNome}". Objeto: "${licitacaoObjeto}". Mapeie em tópicos estruturados em Markdown:
+1. Resumo do Certame e Objeto
+2. Requisitos de Habilitação Jurídica e Fiscal
+3. Exigências de Atestados Técnicos e Qualificação
+4. Balanço Patrimonial e Índices Financeiros Exigidos
+5. Prazos Críticos (Impugnação, Esclarecimentos, Abertura)
+6. Parecer Estratégico e Recomendações
+
+Conteúdo/Texto do Edital:
+${text || link || "Arquivo anexado em PDF."}`;
+
+  let resultadoEdital = null;
+
   try {
-    const resp = await window.fetchCourvanApi("/api/ai/analisar-edital", {
+    const backendResp = await window.fetchCourvanApi("/api/ai/analisar-edital", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, fileData, mimeType, link, clienteNome, licitacaoObjeto, clienteId })
     });
 
+    if (backendResp && backendResp.ok) {
+      const data = await backendResp.json();
+      if (data.success && data.resultado) {
+        resultadoEdital = data.resultado;
+        window.currentAnaliseId = data.analiseId || "";
+      }
+    }
+
+    if (!resultadoEdital) {
+      resultadoEdital = await window.callGeminiDirectly(promptEdital, fileData, mimeType);
+    }
+
     clearInterval(interval);
     if (loadingBox) loadingBox.style.display = "none";
 
-    if (!resp.ok) {
-      let errText = "Erro " + resp.status;
-      try {
-        const errJson = await resp.json();
-        if (errJson && errJson.error) errText = errJson.error;
-      } catch(e) {
-        const raw = await resp.text().catch(() => "");
-        if (raw) errText += ": " + raw.substring(0, 100);
-      }
-      throw new Error(errText);
-    }
-
-    const data = await resp.json();
-    if (data.success && data.resultado) {
-      window.currentEditalContext = data.resultado;
-      window.currentAnaliseId = data.analiseId || "";
+    if (resultadoEdital) {
+      window.currentEditalContext = resultadoEdital;
       window.currentChatHistoryAi = [];
 
-      // Render markdown
-      const htmlContent = window.renderMarkdown(data.resultado);
+      const htmlContent = window.renderMarkdown(resultadoEdital);
       if (document.getElementById("aiResultadoMarkdown")) {
         document.getElementById("aiResultadoMarkdown").innerHTML = htmlContent;
       }
@@ -7756,29 +7756,15 @@ window.executarAnaliseEditalIA = async function() {
         resultWrap.scrollIntoView({ behavior: "smooth" });
       }
 
-      // Reset chat feeds
-      const welcomeMsg = `Análise do edital concluída com sucesso! Todas as exigências e prazos foram mapeados. Qual dúvida você gostaria de tirar sobre este certame?`;
-      if (document.getElementById("aiChatFeed")) {
-        document.getElementById("aiChatFeed").innerHTML = `
-          <div style="display:flex; gap:10px; align-items:flex-start;">
-            <div style="width:32px; height:32px; border-radius:50%; background:#e5b85c; color:#030712; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0;">🤖</div>
-            <div style="background:rgba(229,184,92,0.08); border:1px solid rgba(229,184,92,0.15); border-radius:12px; padding:12px 16px; color:#f1f5f9; font-size:13px; max-width:85%;">
-              ${welcomeMsg}
-            </div>
-          </div>
-        `;
-      }
-      
-      // Auto notification in floating widget
-      window.appendWidgetMessage('assistant', `✅ <strong>Análise do edital concluída com sucesso!</strong><br><br>Todas as exigências de habilitação, atestados e prazos foram mapeados. Faça qualquer pergunta sobre o edital aqui no chat!`);
+      window.appendWidgetMessage('assistant', `✅ <strong>Análise do edital concluída com sucesso!</strong><br><br>Todas as exigências de habilitação e prazos foram mapeados. Faça qualquer pergunta sobre o edital aqui no chat!`);
       window.openWidgetIaFlutuante();
     } else {
-      alert("Erro ao analisar edital: " + (data.error || "Tente novamente."));
+      alert("Não foi possível concluir a análise do edital. Tente novamente.");
     }
   } catch (e) {
     clearInterval(interval);
     if (loadingBox) loadingBox.style.display = "none";
-    alert("Ocorreu um erro ao solicitar a análise com IA: " + e.message);
+    alert("Ocorreu um erro ao processar o edital: " + e.message);
   }
 };
 
@@ -7895,54 +7881,59 @@ window.processarPerguntaGeralAi = async function(pergunta) {
   const thinkingTab = window.appendTabMessage('thinking', 'Analisando regras e legislação...');
   const thinkingWidget = window.appendWidgetMessage('thinking', 'Analisando regras e legislação...');
 
-  try {
-    const resp = await window.fetchCourvanApi("/api/ai/perguntar-edital", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        editalContext: window.currentEditalContext || "",
-        pergunta: pergunta,
-        historico: window.currentChatHistoryAi || [],
-        analiseId: window.currentAnaliseId || ""
-      })
-    });
-
+  const removeThinking = () => {
     if (thinkingTab && thinkingTab.parentNode) thinkingTab.parentNode.removeChild(thinkingTab);
     if (thinkingWidget && thinkingWidget.parentNode) thinkingWidget.parentNode.removeChild(thinkingWidget);
+  };
 
-    if (!resp.ok) {
-      let errText = "Erro " + resp.status;
-      try {
-        const errJson = await resp.json();
-        if (errJson && errJson.error) errText = errJson.error;
-      } catch(e) {
-        const raw = await resp.text().catch(() => "");
-        if (raw) errText += ": " + raw.substring(0, 100);
+  try {
+    const promptSystem = `Você é o Agente de IA da Courvan, Consultor Jurídico Sênior Especialista na Nova Lei de Licitações (Lei 14.133/21). Responda com clareza, embasamento legal e tom profissional em Markdown a seguinte dúvida:\n\n${pergunta}\n\n${window.currentEditalContext ? "Contexto do Edital Analisado: " + window.currentEditalContext : ""}`;
+
+    let textResponse = null;
+
+    try {
+      const backendResp = await window.fetchCourvanApi("/api/ai/perguntar-edital", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          editalContext: window.currentEditalContext || "",
+          pergunta: pergunta,
+          historico: window.currentChatHistoryAi || [],
+          analiseId: window.currentAnaliseId || ""
+        })
+      });
+
+      if (backendResp && backendResp.ok) {
+        const data = await backendResp.json();
+        if (data.success && data.resposta) {
+          textResponse = data.resposta;
+        }
       }
-      throw new Error(errText);
+    } catch(err) {
+      // Continue to direct call
     }
 
-    const data = await resp.json();
-    if (data.success && data.resposta) {
+    if (!textResponse) {
+      textResponse = await window.callGeminiDirectly(promptSystem);
+    }
+
+    removeThinking();
+
+    if (textResponse) {
       if (!window.currentChatHistoryAi) window.currentChatHistoryAi = [];
       window.currentChatHistoryAi.push({ role: "user", content: pergunta });
-      window.currentChatHistoryAi.push({ role: "model", content: data.resposta });
+      window.currentChatHistoryAi.push({ role: "model", content: textResponse });
 
-      const htmlResp = window.renderMarkdown(data.resposta);
-
+      const htmlResp = window.renderMarkdown(textResponse);
       window.appendTabMessage('assistant', htmlResp);
       window.appendWidgetMessage('assistant', htmlResp);
     } else {
-      const err = data.error || "Não foi possível obter resposta.";
-      window.appendTabMessage('assistant', `<span style="color:#f87171;">⚠️ ${err}</span>`);
-      window.appendWidgetMessage('assistant', `<span style="color:#f87171;">⚠️ ${err}</span>`);
+      throw new Error("Não foi possível gerar a resposta.");
     }
   } catch (e) {
-    if (thinkingTab && thinkingTab.parentNode) thinkingTab.parentNode.removeChild(thinkingTab);
-    if (thinkingWidget && thinkingWidget.parentNode) thinkingWidget.parentNode.removeChild(thinkingWidget);
-
-    window.appendTabMessage('assistant', `<span style="color:#f87171;">⚠️ Erro de comunicação: ${e.message}</span>`);
-    window.appendWidgetMessage('assistant', `<span style="color:#f87171;">⚠️ Erro de comunicação: ${e.message}</span>`);
+    removeThinking();
+    window.appendTabMessage('assistant', `<span style="color:#f87171;">⚠️ Erro ao consultar a IA: ${e.message}</span>`);
+    window.appendWidgetMessage('assistant', `<span style="color:#f87171;">⚠️ Erro ao consultar a IA: ${e.message}</span>`);
   }
 };
 
