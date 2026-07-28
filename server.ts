@@ -3,11 +3,9 @@ import cors from "cors";
 import path from "path";
 import fs from "fs";
 import { exec } from "child_process";
-import { createRequire } from "module";
 import admin from "firebase-admin";
 import { GoogleGenAI } from "@google/genai";
 
-const require = createRequire(import.meta.url);
 const app = express();
 const PORT = 3000;
 
@@ -56,7 +54,8 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", origin);
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Allow-Origin");
+  res.header("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Max-Age", "86400");
   
   if (req.method === "OPTIONS") {
     return res.status(200).end();
@@ -67,10 +66,9 @@ app.use((req, res, next) => {
 app.use(cors({
   origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin", "Access-Control-Allow-Origin"],
+  allowedHeaders: "*",
   credentials: true
 }));
-app.options("*", cors());
 
 // Request logger middleware
 app.use((req, res, next) => {
