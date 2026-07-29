@@ -1,0 +1,253 @@
+/* ==========================================================================
+   COURVAN LICITAÇÕES - SISTEMA DE TEMAS (DARK & LIGHT MODE)
+   ========================================================================== */
+
+/* ☀️ MODO CLARO (LIGHT MODE) OVERRIDES */
+html.light-mode,
+body.light-mode {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  --dark: #f8fafc;
+  --card-bg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --border-color: #e2e8f0;
+}
+
+/* Backgrounds e Layouts Principais */
+.light-mode,
+.light-mode body,
+.light-mode .layout,
+.light-mode .content,
+.light-mode .main-content {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Sidebars e Navegação */
+.light-mode .sidebar,
+.light-mode #sidebarProposta,
+.light-mode aside {
+  background: #ffffff !important;
+  border-right-color: #e2e8f0 !important;
+  border-left-color: #e2e8f0 !important;
+  box-shadow: 2px 0 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+.light-mode .sidebar h2,
+.light-mode .sidebar-title {
+  color: #b8860b !important;
+  -webkit-text-fill-color: #b8860b !important;
+}
+
+.light-mode .sidebar button,
+.light-mode .sidebar a {
+  color: #475569 !important;
+}
+
+.light-mode .sidebar button:hover,
+.light-mode .sidebar a:hover {
+  background: #f1f5f9 !important;
+  color: #b8860b !important;
+  border-color: rgba(184, 134, 11, 0.2) !important;
+}
+
+.light-mode .sidebar button.active,
+.light-mode .sidebar a.active {
+  background: rgba(216, 168, 78, 0.12) !important;
+  color: #b8860b !important;
+  border-color: rgba(216, 168, 78, 0.4) !important;
+  font-weight: 700 !important;
+}
+
+/* Cards e Contêineres */
+.light-mode .card,
+.light-mode .box,
+.light-mode .container,
+.light-mode [class*="card"],
+.light-mode .modal-content,
+.light-mode .popup-content,
+.light-mode .status {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Textos e Títulos */
+.light-mode h1,
+.light-mode h2,
+.light-mode h3,
+.light-mode h4,
+.light-mode h5,
+.light-mode h6 {
+  color: #0f172a !important;
+}
+
+.light-mode p,
+.light-mode label,
+.light-mode span:not(.badge-no-change) {
+  color: #334155;
+}
+
+.light-mode .text-muted,
+.light-mode .subtext,
+.light-mode small {
+  color: #64748b !important;
+}
+
+/* Inputs, Selects e Textareas */
+.light-mode input[type="text"],
+.light-mode input[type="email"],
+.light-mode input[type="password"],
+.light-mode input[type="number"],
+.light-mode input[type="date"],
+.light-mode input[type="search"],
+.light-mode select,
+.light-mode textarea,
+.light-mode .inputPadrao {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+.light-mode input:focus,
+.light-mode select:focus,
+.light-mode textarea:focus {
+  border-color: #d8a84e !important;
+  box-shadow: 0 0 0 3px rgba(216, 168, 78, 0.2) !important;
+}
+
+/* Tabelas */
+.light-mode table {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light-mode th {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.light-mode td {
+  border-bottom: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+.light-mode tr:hover td {
+  background: #f8fafc !important;
+}
+
+/* FullCalendar (agenda.html) */
+.light-mode .fc {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+}
+
+.light-mode .fc-theme-standard td,
+.light-mode .fc-theme-standard th,
+.light-mode .fc-scrollgrid {
+  border-color: #e2e8f0 !important;
+}
+
+.light-mode .fc-col-header-cell {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+}
+
+.light-mode .fc-daygrid-day-number {
+  color: #0f172a !important;
+}
+
+.light-mode .fc-toolbar-title {
+  color: #0f172a !important;
+}
+
+.light-mode .fc-button-primary {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light-mode .fc-button-primary:hover,
+.light-mode .fc-button-primary.fc-button-active {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Tailwind Classes Especificas em Light Mode */
+.light-mode .bg-[#030712],
+.light-mode .bg-[#050811],
+.light-mode .bg-[#080c14],
+.light-mode .bg-[#090e1a],
+.light-mode .bg-[#0c1524],
+.light-mode .bg-[#07162b],
+.light-mode .bg-[#0c2748],
+.light-mode .bg-[#16385f],
+.light-mode .bg-slate-950,
+.light-mode .bg-slate-900,
+.light-mode .bg-slate-800 {
+  background-color: #ffffff !important;
+}
+
+.light-mode .text-white,
+.light-mode .text-slate-100,
+.light-mode .text-slate-200,
+.light-mode .text-slate-300 {
+  color: #0f172a !important;
+}
+
+.light-mode .text-slate-400,
+.light-mode .text-slate-500 {
+  color: #475569 !important;
+}
+
+.light-mode .border-white\/10,
+.light-mode .border-white\/5,
+.light-mode .border-slate-800,
+.light-mode .border-slate-700 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Modais e Overlays */
+.light-mode .modal,
+.light-mode [id*="modal"],
+.light-mode [id*="Modal"] {
+  color: #0f172a !important;
+}
+
+/* Botões com Tema */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(229, 184, 92, 0.1);
+  color: #e5b85c;
+  border: 1px solid rgba(229, 184, 92, 0.25);
+}
+
+.light-mode .theme-toggle-btn {
+  background: #f1f5f9 !important;
+  color: #b8860b !important;
+  border: 1px solid rgba(184, 134, 11, 0.3) !important;
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(229, 184, 92, 0.2);
+}
